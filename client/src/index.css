@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .flex--center {
+        @apply flex justify-center items-center
+    }
+
+    .underline--style {
+        @apply before:content-[''] before:absolute before:w-[50%] before:h-[10%] before:bg-gray-500 before:bottom-[-0.5rem] before:mx-auto before:left-0 before:right-0 before:transition-all before:duration-500
+    }
+
+    .underline--hover {
+        @apply before:hover:w-[80%]
+    }
+
+    .section--style {
+        @apply border-black border-[4px] shadow-[6px_8px_0_0_black] bg-gray-200
+    }
+
+    .form--style {
+        @apply border-black border-[3px] shadow-[5px_6px_0_0_black] bg-gray-100 rounded-sm
+    }
+
+    .box--style {
+        @apply shadow-[4px_6px_0_0_black]
+    }
+
+    .board--style {
+        @apply shadow-[0px_6px_0_0] rounded-md cursor-pointer
+    }
+
+    .board--hover {
+        @apply hover:mt-[6px] hover:shadow-none hover:brightness-110  transition-all
+    }
+
+    .button--style {
+        @apply border-gray-600 border-[3px] px-4 py-2 text-gray-600 box-border font-semibold
+    }
+
+    .button--style--dark {
+        @apply px-4 py-2 bg-gray-600 text-white hover:bg-gray-500 transition-all
+    }
+
+    .anchor--style {
+        @apply hover:text-white hover:bg-gray-400 flex justify-center items-center p-2 rounded-md transition-all text-gray-600
+    }
+
+    .anchor--style--selected {
+        @apply hover:text-white text-white bg-gray-500 flex justify-center items-center p-2 rounded-md
+    }
+}
+
+body {
+    background-color: rgb(245, 245, 245);
+}
+
+label {
+    margin-top: 0.5rem;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+a {
+    font-weight: 500;
+    color: #646cff;
+    text-decoration: inherit;
+}
+
+a:hover {
+    color: #535bf2;
+}
+
+h1 {
+    font-size: 3.5rem;
+}
+
+/* body { */
+/*     margin: 0; */
+/*     display: flex; */
+/*     place-items: center; */
+/*     min-width: 320px; */
+/*     min-height: 100vh; */
+/* } */
+
