@@ -13,4 +13,22 @@ const addList = async (req, res) => {
     return res.status(201).json({ msg: 'new list created', newList });
 }
 
-module.exports = { addList }
+const updateLists = async (req, res) => {
+    const { lists } = req.body;
+
+    const bulkOps = lists.map(({ _id, order }, index) => ({
+        updateOne: {
+            filter: { _id },
+            update: { $set: { order: index } },
+        },
+    }));
+
+    await List.bulkWrite(bulkOps);
+
+    res.status(200).json({ message: 'List order updated successfully' });
+};
+
+module.exports = {
+    addList,
+    updateLists
+}

@@ -20,16 +20,21 @@ const getBoards = async (req, res) => {
 
 const getBoard = async (req, res) => {
     const { id } = req.params;
-    const board = await Board.findOne({ _id: id });
-    const lists = await List.find({ boardId: id });
 
-    const listsWithCards = lists.map(async (list) => {
-        const cards = await Card.find({ listId: list._id })
+    const board = await Board.findOne({ _id: id });
+    if (!board) return res.status(404).json({ msg: "board not found" });
+
+    const lists = await List.find({ boardId: id }).sort({ order: 'asc' });
+
+    const listsWithCardsPromises = lists.map(async (list) => {
+        const cards = await Card.find({ listId: list._id }).sort({ order: 'asc' });
         return {
             ...list.toObject(),
             cards
         }
     })
+
+    const listsWithCards = await Promise.all(listsWithCardsPromises);
 
     return res.json({
         board,

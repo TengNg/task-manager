@@ -37,6 +37,7 @@ app.use("/refresh", require("./routes/refresh"));
 app.use("/check-cookies", require("./routes/checkCookies"));
 
 app.use("/boards", require("./routes/api/boards"));
+app.use("/lists", require("./routes/api/lists"));
 
 // =================
 

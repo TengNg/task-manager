@@ -42,7 +42,7 @@ export default function Login() {
             setUsername('');
             setPassword('');
             setSuccess(true);
-            navigate(`/u/${username}/boards`, { replace: true });
+            navigate(`/boards`, { replace: true });
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No Server Response');
