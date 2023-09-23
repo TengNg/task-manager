@@ -3,13 +3,15 @@ import axios from "../api/axios";
 import { useNavigate, useParams } from "react-router-dom"
 import ListContainer from "../components/list/ListContainer";
 import BoardTitle from "../components/board/BoardTitle";
+import useBoardState from "../hooks/useBoardState";
 
 const Board = () => {
+    const { boardState, setBoardState } = useBoardState();
+
     const [isDataLoaded, setIsDataLoaded] = useState(false);
 
     const [title, setTitle] = useState("");
     const [lists, setLists] = useState([]);
-    const [board, setBoard] = useState();
 
     const { boardId } = useParams();
     const navigate = useNavigate();
@@ -17,21 +19,29 @@ const Board = () => {
     useEffect(() => {
         const getBoardData = async () => {
             const response = await axios.get(`/boards/${boardId}`);
+            console.log(response.data);
+            setBoardState(response.data);
             setLists(response.data.lists);
-            setBoard(response.data.board);
             setTitle(response.data.board.title);
             setIsDataLoaded(true);
         }
 
         getBoardData().catch(err => {
+            console.log(err);
             setIsDataLoaded(false);
-            // navigate("/notfound");
+            navigate("/notfound");
         });
     }, []);
 
     const handleSaveBoard = async () => {
-        const response = await axios.put("/lists", JSON.stringify({ lists }));
-        console.log(response.data);
+        // update list orders
+        const response1 = await axios.put("/lists", JSON.stringify({ lists }));
+
+        // update cards in lists
+        const response2 = await axios.put("/lists/cards", JSON.stringify({ lists }));
+
+        console.log(response1.data);
+        console.log(response2.data);
     }
 
     if (isDataLoaded === false) {
@@ -39,29 +49,25 @@ const Board = () => {
     }
 
     return (
-        <>
-            <>
-                <div className="flex flex-col px-10 py-5 gap-2">
-                    <div className="flex gap-3">
-                        <input
-                            className='border-[3px] border-gray-600 text-gray-600 p-1 font-semibold select-none'
-                            onChange={(e) => setTitle(e.target.value)}
-                            value={title}
-                            required
-                        />
-                        <button
-                            onClick={() => handleSaveBoard()}
-                            className="button--style--dark">
-                            Save
-                        </button>
-                    </div>
-                    <ListContainer
-                        lists={lists}
-                        setLists={setLists}
-                    />
-                </div>
-            </>
-        </>
+        <div className="flex flex-col px-10 py-5 gap-2">
+            <div className="flex gap-3">
+                <input
+                    className='border-[3px] border-gray-600 text-gray-600 p-1 font-semibold select-none'
+                    onChange={(e) => setTitle(e.target.value)}
+                    value={title}
+                    required
+                />
+                <button
+                    onClick={() => handleSaveBoard()}
+                    className="button--style--dark">
+                    Save
+                </button>
+            </div>
+            <ListContainer
+                lists={lists}
+                setLists={setLists}
+            />
+        </div>
     )
 }
 

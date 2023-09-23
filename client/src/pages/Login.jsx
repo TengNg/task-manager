@@ -19,18 +19,18 @@ export default function Login() {
     const location = useLocation();
     const from = location.state?.from?.pathname || "/";
 
-    // useEffect(() => {
-    //     const isLoggedIn = async () => {
-    //         const response = await axiosPrivate.get('/check-cookies');
-    //         if (response.status === 200) {
-    //             navigate('/')
-    //         }
-    //     }
-    //     isLoggedIn().catch(_ => {
-    //         setSuccess(false);
-    //         usernameInputEl.current.focus();
-    //     });
-    // }, []);
+    useEffect(() => {
+        const isLoggedIn = async () => {
+            const response = await axiosPrivate.get('/check-cookies');
+            if (response.status === 200) {
+                navigate('/boards', { replace: true });
+            }
+        }
+        isLoggedIn().catch(_ => {
+            setSuccess(false);
+            usernameInputEl.current.focus();
+        });
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

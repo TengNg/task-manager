@@ -8,6 +8,11 @@ const cardSchema = new mongoose.Schema({
 
     description: String,
 
+    order: {
+        type: Number,
+        required: true,
+    },
+
     listId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'List',

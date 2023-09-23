@@ -2,18 +2,13 @@ const express = require('express');
 const router = express.Router();
 
 const {
-    addList,
-    updateLists,
-    updateListsCards,
-} = require('../../controllers/listsController');
+    addCard,
+} = require('../../controllers/cardsController');
 
 const { authenticateToken } = require("../../middlewares/authenticateToken");
 
 router.route("/")
-    .put(updateLists)
-    .post(addList)
+    .post(addCard)
 
-router.route("/cards")
-    .put(updateListsCards)
 
 module.exports = router;

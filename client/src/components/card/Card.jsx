@@ -13,7 +13,7 @@ const Card = ({ index, card }) => {
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className="w-full h-[2rem] border-[1px] border-black px-3 py-2 flex items-center"
+                        className="w-full h-[2rem] border-[1px] border-black px-3 py-2 flex items-center mt-2"
                     >
                         <p>{card.title}</p>
                     </div>
