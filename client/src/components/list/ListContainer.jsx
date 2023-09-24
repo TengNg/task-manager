@@ -2,20 +2,25 @@ import React from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { StrictModeDroppable as Droppable } from '../../helpers/StrictModeDroppable';
 import List from './List';
+import useBoardState from '../../hooks/useBoardState';
 
-const ListContainer = ({ lists, setLists }) => {
+const ListContainer = () => {
+    const { boardState, setBoardState } = useBoardState();
+
     const handleOnDragEnd = (result) => {
         const { destination, source, type } = result;
 
         if (!destination) return;
 
         if (type === "LIST") {
-            const newLists = [...lists];
+            const newLists = [...boardState.lists];
             const [removed] = newLists.splice(source.index, 1);
             newLists.splice(destination.index, 0, removed);
-            setLists(newLists);
+            setBoardState(prev => {
+                return { ...prev, lists: newLists };
+            });
         } else {
-            const currentLists = JSON.parse(JSON.stringify(lists)); // deep copy
+            const currentLists = JSON.parse(JSON.stringify(boardState.lists)); // deep copy
             const fromList = currentLists.find(list => list._id === source.droppableId);
             const toList = currentLists.find(list => list._id === destination.droppableId);
 
@@ -33,11 +38,15 @@ const ListContainer = ({ lists, setLists }) => {
 
             if (fromList._id === toList._id) {
                 fromListCards.splice(destination.index, 0, removed);
-                setLists(currentLists);
+                setBoardState(prev => {
+                    return { ...prev, lists: currentLists };
+                });
             } else {
                 toListCards.splice(destination.index, 0, removed);
                 removed.listId = destination.droppableId;
-                setLists(currentLists);
+                setBoardState(prev => {
+                    return { ...prev, lists: currentLists };
+                });
             }
         }
     };
@@ -51,7 +60,7 @@ const ListContainer = ({ lists, setLists }) => {
                         ref={provided.innerRef}
                         className='flex form--style p-3 h-[50vh] items-start'
                     >
-                        {lists.map((list, index) => (
+                        {boardState.lists.map((list, index) => (
                             <List
                                 key={list._id}
                                 list={list}

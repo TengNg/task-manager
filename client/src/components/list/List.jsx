@@ -4,9 +4,10 @@ import { StrictModeDroppable as Droppable } from '../../helpers/StrictModeDroppa
 import Card from "../card/Card";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import useBoardState from "../../hooks/useBoardState";
 
-const List = ({ list, index, cards }) => {
-    const [listTitle, setListTitle] = useState(list.title);
+const List = ({ index, list, cards }) => {
+    const { setListTitle } = useBoardState();
 
     const titleRef = useRef(null);
 
@@ -40,9 +41,9 @@ const List = ({ list, index, cards }) => {
                         </div>
                         <input
                             className="hidden bg-gray-200 w-full h-full top-[-0.5px] right-0 py-2 px-2 focus:outline-none z-20"
-                            value={listTitle}
+                            value={list.title}
                             ref={titleRef}
-                            onChange={(e) => setListTitle(e.target.value)}
+                            onChange={(e) => setListTitle(list._id, e.target.value)}
                             onBlur={handleTitleInputBlur}
                         />
                     </div>

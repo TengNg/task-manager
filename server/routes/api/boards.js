@@ -5,6 +5,7 @@ const {
     getBoards,
     createBoard,
     getBoard,
+    updateBoard,
 } = require('../../controllers/boardsController');
 
 const { authenticateToken } = require("../../middlewares/authenticateToken");
@@ -15,6 +16,7 @@ router.route("/")
 
 router.route("/:id")
     .get(getBoard)
+    .put(updateBoard)
 
 
 module.exports = router;
