@@ -78,8 +78,8 @@ const Board = () => {
     }
 
     return (
-        <div className="flex flex-col px-10 py-5 gap-2">
-            <div className="flex gap-3">
+        <>
+            <div className="flex gap-3 fixed top-[1.5rem] left-[1rem]">
                 <input
                     className='border-[3px] border-gray-600 text-gray-600 p-1 font-semibold select-none'
                     onChange={(e) => setBoardTitle(e.target.value)}
@@ -94,11 +94,12 @@ const Board = () => {
                 </button>
             </div>
 
-            <div className="flex gap-5">
-                <BoardNav />
+            <div className="flex flex-col justify-start items-start gap-5 w-fit px-20 h-[65vh]">
                 <ListContainer />
             </div>
-        </div>
+
+            <BoardNav />
+        </>
     )
 }
 

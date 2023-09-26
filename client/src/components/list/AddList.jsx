@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import useBoardState from "../../hooks/useBoardState";
 import axios from "../../api/axios";
 
@@ -8,8 +8,15 @@ const AddList = () => {
     const [open, setOpen] = useState(false);
     const [listTitle, setListTitle] = useState("");
     const titleInputRef = useRef();
+    const containerRef = useRef();
 
     const { boardState, addListToBoard } = useBoardState();
+
+    useEffect(() => {
+        if (titleInputRef.current && open === true) {
+            titleInputRef.current.focus();
+        }
+    }, [open]);
 
     const handleAddList = async () => {
         if (listTitle.trim() === "") return;
@@ -32,20 +39,30 @@ const AddList = () => {
 
     const handleOpenAddListForm = () => {
         if (titleInputRef.current) {
-            titleInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
             setOpen(true);
         }
     }
 
-    const handleKeyDown = async (event) => {
+    const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
-            titleInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
             handleAddList();
         }
     };
 
+    const handleInputChange = (e) => {
+        setListTitle(e.target.value)
+    };
+
+    const handleInputBlur = (e) => {
+        if (!containerRef.current.contains(e.relatedTarget) && open === true) {
+            setOpen(false);
+        }
+    };
+
     return (
-        <div className='box--style overflow-hidden bg-gray-200 w-[250px] min-w-[250px] border-[2px] min-h-[3rem] select-none cursor-pointer me-3 border-gray-500 shadow-gray-500 text-[0.8rem] text-gray-500 font-semibold'>
+        <div
+            ref={containerRef}
+            className='box--style--sm overflow-hidden bg-gray-200 w-[250px] min-w-[250px] border-[2px] min-h-[3rem] select-none cursor-pointer me-3 border-gray-500 shadow-gray-500 text-[0.8rem] text-gray-500 font-semibold'>
             {
                 open === false &&
                 <button
@@ -67,10 +84,11 @@ const AddList = () => {
                     type="text"
                     autoComplete="off"
                     placeholder="Your list title"
+                    autoFocus
                     value={listTitle}
                     ref={titleInputRef}
-                    onChange={(e) => setListTitle(e.target.value)}
-                    onBlur={() => setOpen(false)}
+                    onChange={handleInputChange}
+                    onBlur={handleInputBlur}
                     onKeyDown={handleKeyDown}
                     required
                 />
@@ -78,10 +96,10 @@ const AddList = () => {
                 <div className="flex gap-2">
                     <button
                         onClick={handleAddList}
-                        className="button--style--dark">Add list</button>
+                        className="button--style--dark rounded-md">Add list</button>
                     <button
                         onClick={() => setOpen(false)}
-                        className="button--style">Cancel</button>
+                        className="button--style border-gray-500 rounded-md">Cancel</button>
                 </div>
             </div>
         </div>

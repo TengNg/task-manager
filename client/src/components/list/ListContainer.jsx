@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { StrictModeDroppable as Droppable } from '../../helpers/StrictModeDroppable';
 import List from './List';
@@ -7,6 +7,32 @@ import AddList from './AddList';
 
 const ListContainer = () => {
     const { boardState, setBoardState } = useBoardState();
+    const listContainerRef = useRef();
+
+    useEffect(() => {
+        if (listContainerRef.current) {
+            listContainerRef.current.scrollLeft = 0;
+        }
+    }, []);
+
+    useEffect(() => {
+        const handleKeyPress = (e) => {
+            if (e.key === 'a' || e.key === 'A') {
+                listContainerRef.current.scrollLeft -= 200;
+            } else if (e.key === 'd' || e.key === 'D') {
+                listContainerRef.current.scrollLeft += 200;
+            }
+        };
+
+        // Attach the event listener to the document
+        document.addEventListener('keydown', handleKeyPress);
+
+        // Remove the event listener when the component unmounts
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+    }, []);
+
 
     const handleOnDragEnd = (result) => {
         const { destination, source, type } = result;
@@ -58,9 +84,12 @@ const ListContainer = () => {
                 {(provided) => (
                     <div
                         {...provided.droppableProps}
-                        ref={provided.innerRef}
+                        ref={(element) => {
+                            provided.innerRef(element)
+                            listContainerRef.current = element
+                        }}
                         ignoreContainerClipping={true}
-                        className='flex flex-1 p-3 h-[70vh] w-full items-start box--style border-[3px] border-gray-600 shadow-gray-600 overflow-auto'
+                        className='flex flex-1 w-fit h-full items-start justify-start mt-[10rem]'
                     >
                         {boardState.lists.map((list, index) => (
                             <List
@@ -71,6 +100,7 @@ const ListContainer = () => {
                             />
                         ))}
                         {provided.placeholder}
+
                         <AddList />
                     </div>
                 )}

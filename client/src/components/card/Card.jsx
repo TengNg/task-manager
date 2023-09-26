@@ -1,8 +1,10 @@
 import { Draggable } from "react-beautiful-dnd"
 import useBoardState from "../../hooks/useBoardState"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 
 const Card = ({ index, card }) => {
-    const { setCardTitle }  = useBoardState();
+    const { setCardTitle } = useBoardState();
 
     return (
         <>
@@ -11,19 +13,20 @@ const Card = ({ index, card }) => {
                 draggableId={card._id}
                 index={index}
             >
-                {(provided) => (
+                {(provided, snapshot) => (
                     <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className="w-full border-[1px] border-black px-3 py-2 flex items-center mt-2"
+                        className={`w-full border-[2px] border-gray-500 px-3 py-2 flex mt-3 shadow-[0_3px_0_0] shadow-gray-600 rounded-sm bg-gray-50
+                                ${snapshot.isDragging && 'bg-blue-50 border-blue-700 shadow-blue-700'} `}
                     >
-                        <input
-                            className="w-full h-full bg-inherit top-[-0.5px] right-0 py-1 px-2 focus:outline-none z-20 text-[0.75rem]"
-                            value={card.title}
-                            onChange={(e) => setCardTitle(card._id, e.target.value)}
-                        />
-
+                        <p className="w-full h-full bg-inherit font-semibold text-gray-600 rounded-sm py-1 px-2 focus:outline-none z-20 text-[0.8rem] break-words whitespace-pre-line" >
+                            {card.title}
+                        </p>
+                        <button className="text-transparent hover:text-gray-400 mb-auto">
+                            <FontAwesomeIcon icon={faPenToSquare} />
+                        </button>
                     </div>
                 )}
             </Draggable>

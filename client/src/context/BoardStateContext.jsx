@@ -65,6 +65,22 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
+    const addCardToList = (listId, card) => {
+        const currentBoardState = { ...boardState };
+        const list = currentBoardState.lists.find(list => list._id === listId);
+
+        if (list) {
+            const newCard = {
+                _id: Date.now().toString(),
+                listId: list._id,
+                order: currentBoardState.lists.length,
+                ...card
+            };
+            list.cards.push(newCard);
+            setBoardState(currentBoardState);
+        }
+    };
+
     return (
         <BoardStateContext.Provider
             value={{
@@ -76,6 +92,7 @@ export const BoardStateContextProvider = ({ children }) => {
                 setBoardLinks,
                 setBoardLinkTitle,
                 addListToBoard,
+                addCardToList,
             }}
         >
             {children}

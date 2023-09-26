@@ -6,14 +6,14 @@ const BoardNav = () => {
 
     return (
         <>
-            <nav className="mx-auto border-gray-600 border-[3px] bg-gray-100 p-3 pb-5 box--style shadow-gray-600 min-w-[150px] mb-auto">
-                <ul className="w-[100%] h-[100%] flex flex-col gap-4">
+            <nav className="fixed z-30 bottom-[1rem] left-[1rem]">
+                <ul className="flex gap-4">
                     {
                         boardState.links.map((link, index) => {
                             return (
                                 <li
                                     key={index}
-                                    className="w-full h-[2.5rem] text-[0.65rem] font-semibold text-gray-600 select-none"
+                                    className="w-fit h-[2.5rem] text-[0.65rem] font-semibold text-gray-600 select-none"
                                 >
                                     <NavLink
                                         to={`/b/${link.id}`}
