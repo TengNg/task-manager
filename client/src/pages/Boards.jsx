@@ -11,6 +11,7 @@ import simplifyString from "../utils/simplifyString";
 
 const Boards = () => {
     const [boards, setBoards] = useState([]);
+
     const [openBoardForm, setOpenBoardForm] = useState(false);
     const axiosPrivate = useAxiosPrivate();
 

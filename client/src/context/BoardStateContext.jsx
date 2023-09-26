@@ -27,13 +27,43 @@ export const BoardStateContextProvider = ({ children }) => {
                 lists: prev.lists.map(list => {
                     return {
                         ...list,
-                        cards: list.cards.map(card => card._id === cardId ? { ...card, title: value } : card )
+                        cards: list.cards.map(card => card._id === cardId ? { ...card, title: value } : card)
                     }
                 })
             }
         });
     };
 
+    const setBoardLinks = (boards) => {
+        const links = boards.map((board) => {
+            return {
+                id: board._id,
+                title: board.title,
+            }
+        });
+
+        setBoardState(prev => {
+            return { ...prev, links }
+        });
+    }
+
+    const setBoardLinkTitle = (boardId, value) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                links: prev.links.map(link => link.id === boardId ? { ...link, title: value } : link)
+            }
+        });
+    };
+
+    const addListToBoard = (list) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: [...prev.lists, list]
+            }
+        });
+    };
 
     return (
         <BoardStateContext.Provider
@@ -43,6 +73,9 @@ export const BoardStateContextProvider = ({ children }) => {
                 setBoardTitle,
                 setListTitle,
                 setCardTitle,
+                setBoardLinks,
+                setBoardLinkTitle,
+                addListToBoard,
             }}
         >
             {children}

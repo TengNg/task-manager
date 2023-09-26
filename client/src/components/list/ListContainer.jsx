@@ -3,6 +3,7 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import { StrictModeDroppable as Droppable } from '../../helpers/StrictModeDroppable';
 import List from './List';
 import useBoardState from '../../hooks/useBoardState';
+import AddList from './AddList';
 
 const ListContainer = () => {
     const { boardState, setBoardState } = useBoardState();
@@ -58,17 +59,19 @@ const ListContainer = () => {
                     <div
                         {...provided.droppableProps}
                         ref={provided.innerRef}
-                        className='flex form--style p-3 h-[50vh] items-start'
+                        ignoreContainerClipping={true}
+                        className='flex flex-1 p-3 h-[70vh] w-full items-start box--style border-[3px] border-gray-600 shadow-gray-600 overflow-auto'
                     >
                         {boardState.lists.map((list, index) => (
                             <List
                                 key={list._id}
                                 list={list}
                                 index={index}
-                                cards={list.cards}
+                                cards={list?.cards || []}
                             />
                         ))}
                         {provided.placeholder}
+                        <AddList />
                     </div>
                 )}
             </Droppable>

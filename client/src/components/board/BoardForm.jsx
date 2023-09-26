@@ -1,17 +1,18 @@
-import { useEffect, useRef, useState, forwardRef } from "react"
-import axios, { axiosPrivate } from "../../api/axios";
+import { useState, forwardRef } from "react"
+import { axiosPrivate } from "../../api/axios";
+import { useNavigate } from "react-router-dom";
 
 const BoardForm = forwardRef(({ }, ref) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
 
+    const navigate = useNavigate();
+
     const handleCreateBoard = async () => {
         if (!title) return;
-
         const response = await axiosPrivate.post("/boards", JSON.stringify({ title, description }));
-        console.log(response);
-
-        // navigate to Board page
+        console.log(response.data);
+        navigate(`/b/${response.data.newBoard._id}`);
     };
 
     return (

@@ -63,8 +63,6 @@ const updateBoard = async (req, res) => {
     const { id } = req.params;
     const { title, description } = req.body;
     const newBoard = await Board.findOneAndUpdate({ _id: id }, { title, description }, { new: true });
-    console.log(id);
-    console.log(newBoard);
     return res.status(200).json({ msg: 'board updated', newBoard });
 };
 

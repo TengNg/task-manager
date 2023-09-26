@@ -16,10 +16,10 @@ const Card = ({ index, card }) => {
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className="w-full h-[2rem] border-[1px] border-black px-3 py-2 flex items-center mt-2"
+                        className="w-full border-[1px] border-black px-3 py-2 flex items-center mt-2"
                     >
                         <input
-                            className="w-full h-full bg-inherit top-[-0.5px] right-0 py-2 px-2 focus:outline-none z-20"
+                            className="w-full h-full bg-inherit top-[-0.5px] right-0 py-1 px-2 focus:outline-none z-20 text-[0.75rem]"
                             value={card.title}
                             onChange={(e) => setCardTitle(card._id, e.target.value)}
                         />

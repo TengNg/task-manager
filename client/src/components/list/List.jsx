@@ -24,11 +24,12 @@ const List = ({ index, list, cards }) => {
 
     return (
         <Draggable key={list._id} draggableId={list._id} index={index}>
-            {(provided) => (
+            {(provided, snapshot) => (
                 <div
                     {...provided.draggableProps}
                     ref={provided.innerRef}
-                    className="w-[200px] max-h-full border-black border-[2px] select-none px-1 pt-1 cursor-pointer ms-2"
+                    className={`bg-gray-100 min-w-[250px] min-h-[100px] max-h-full border-[3px] select-none px-3 pt-1 cursor-pointer me-3 box--style border-gray-600 shadow-gray-600
+                                ${snapshot.isDragging ? 'opacity-90 bg-blue-100' : ''} `}
                 >
                     <div
                         {...provided.dragHandleProps}
@@ -48,13 +49,13 @@ const List = ({ index, list, cards }) => {
                         />
                     </div>
 
-                    <Droppable droppableId={list._id} type="CARD">
+                    <Droppable droppableId={list._id} type="CARD" ignoreContainerClipping={true}>
                         {(provided) => (
                             <div
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
                             >
-                                <div className="flex flex-col">
+                                <div className="flex flex-col overflow-y-auto">
                                     {cards.map((card, index) => {
                                         return <Card
                                             key={card._id}
@@ -75,7 +76,7 @@ const List = ({ index, list, cards }) => {
                             <FontAwesomeIcon className="group-hover:rotate-180 transition duration-300" icon={faPlus} />
                         </span>
                         <span>
-                            Add card
+                            Add a card
                         </span>
                     </button>
                 </div>

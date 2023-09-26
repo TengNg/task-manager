@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouse, faShop, faListCheck, faClockRotateLeft, faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faHouse, faListCheck, faEnvelope, faChalkboard } from '@fortawesome/free-solid-svg-icons';
 import UserAccount from "./UserAccount";
 import useAuth from "../../hooks/useAuth";
 
@@ -18,6 +18,11 @@ const NavBar = () => {
                         </li>
                         <li>
                             <NavLink to="/boards" className={({ isActive }) => isActive ? 'anchor--style--selected' : 'anchor--style'} >
+                                <FontAwesomeIcon icon={faChalkboard} />
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink to="/todo-list" className={({ isActive }) => isActive ? 'anchor--style--selected' : 'anchor--style'} >
                                 <FontAwesomeIcon icon={faListCheck} />
                             </NavLink>
                         </li>
