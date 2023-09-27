@@ -3,6 +3,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useState, useRef, useEffect } from "react"
 import useBoardState from "../../hooks/useBoardState";
 import axios from "../../api/axios";
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
 const AddList = () => {
     const [open, setOpen] = useState(false);
@@ -12,9 +13,12 @@ const AddList = () => {
 
     const { boardState, addListToBoard } = useBoardState();
 
+    const axiosPrivate = useAxiosPrivate();
+
     useEffect(() => {
         if (titleInputRef.current && open === true) {
             titleInputRef.current.focus();
+            containerRef.current.scrollIntoView({ block: 'end' });
         }
     }, [open]);
 
@@ -28,7 +32,7 @@ const AddList = () => {
         };
 
         try {
-            const response = await axios.post("/lists", JSON.stringify(newList));
+            const response = await axiosPrivate.post("/lists", JSON.stringify(newList));
             addListToBoard(response.data.newList);
             setListTitle("");
             titleInputRef.current.focus();
@@ -84,22 +88,20 @@ const AddList = () => {
                     type="text"
                     autoComplete="off"
                     placeholder="Your list title"
-                    autoFocus
                     value={listTitle}
                     ref={titleInputRef}
                     onChange={handleInputChange}
                     onBlur={handleInputBlur}
                     onKeyDown={handleKeyDown}
-                    required
                 />
 
                 <div className="flex gap-2">
                     <button
                         onClick={handleAddList}
-                        className="button--style--dark rounded-md">Add list</button>
+                        className="button--style--dark">Add list</button>
                     <button
                         onClick={() => setOpen(false)}
-                        className="button--style border-gray-500 rounded-md">Cancel</button>
+                        className="button--style border-gray-500 border-[2px]">Cancel</button>
                 </div>
             </div>
         </div>

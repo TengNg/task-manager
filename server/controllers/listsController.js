@@ -7,7 +7,7 @@ const addList = async (req, res) => {
     const newList = new List({
         title,
         order,
-        boardId
+        boardId,
     });
 
     await newList.save();

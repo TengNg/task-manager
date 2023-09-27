@@ -20,6 +20,7 @@ const getBoards = async (req, res) => {
 
 const getBoard = async (req, res) => {
     const { id } = req.params;
+    console.log(req.params);
 
     const board = await Board.findOne({ _id: id });
     if (!board) return res.status(404).json({ msg: "board not found" });

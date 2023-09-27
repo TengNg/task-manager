@@ -5,8 +5,6 @@ const {
     addCard,
 } = require('../../controllers/cardsController');
 
-const { authenticateToken } = require("../../middlewares/authenticateToken");
-
 router.route("/")
     .post(addCard)
 

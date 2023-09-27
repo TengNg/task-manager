@@ -1,22 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import useBoardState from "../../hooks/useBoardState";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const CardComposer = ({ list, open, setOpen }) => {
-    const { addCardToList } = useBoardState();
+    const [text, setText] = useState("");
+    const { addCardToList, boardState } = useBoardState();
+
     const textAreaRef = useRef();
     const composerRef = useRef();
 
-    const [text, setText] = useState("");
-
-    useEffect(() => {
-        if (list.cards & composerRef.current) {
-            composerRef.current.scrollIntoView({ block: 'end' });
-        }
-    }, [list.cards.length])
+    const axiosPrivate = useAxiosPrivate();
 
     useEffect(() => {
         if (textAreaRef.current && open === true) {
             textAreaRef.current.focus();
+            composerRef.current.scrollIntoView({ block: 'end' });
         }
     }, [open]);
 
@@ -30,17 +28,35 @@ const CardComposer = ({ list, open, setOpen }) => {
         composerRef.current.scrollIntoView({ block: 'end' });
     };
 
-    const handleAddCard = () => {
+    const handleTextAreaOnEnter = (e) => {
+        if (e.key == 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleAddCard();
+        }
+    };
+
+    const handleAddCard = async () => {
         if (!text || text.trim() === "") return;
 
-        const newCard = {
-            title: text,
-        }
+        const currentList = boardState.lists.find(list => list._id === list._id);
 
-        addCardToList(list._id, newCard);
-        setText("");
-        textAreaRef.current.style.height = 'auto';
-        textAreaRef.current.focus();
+        const cardData = {
+            listId: list._id,
+            order: currentList.cards.length,
+            title: textAreaRef.current.value
+        };
+
+        try {
+            const response = await axiosPrivate.post("/cards", JSON.stringify(cardData));
+            const { newCard } = response.data;
+            addCardToList(list._id, newCard);
+            setText("");
+            textAreaRef.current.style.height = 'auto';
+            textAreaRef.current.focus();
+            composerRef.current.scrollIntoView({ block: 'end' });
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     const handleInputBlur = (e) => {
@@ -58,6 +74,7 @@ const CardComposer = ({ list, open, setOpen }) => {
                 className="text-[0.8rem] h-fit bg-gray-50 border-[2px] py-3 px-5 text-gray-600 border-gray-500 shadow-[0_3px_0_0] shadow-gray-500 leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50"
                 placeholder='Title for this card'
                 onChange={handleTextAreaChanged}
+                onKeyDown={handleTextAreaOnEnter}
                 onBlur={handleInputBlur}
                 value={text}
             >

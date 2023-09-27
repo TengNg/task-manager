@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
+const authenticateToken = require("./middlewares/authenticateToken.js");
 const errorHandler = require('./middlewares/errorHandler');
 const credentials = require('./middlewares/credentials');
 const cookieParser = require('cookie-parser');
@@ -36,6 +37,7 @@ app.use("/logout", require("./routes/logout"));
 app.use("/refresh", require("./routes/refresh"));
 app.use("/check-cookies", require("./routes/checkCookies"));
 
+app.use(authenticateToken);
 app.use("/boards", require("./routes/api/boards"));
 app.use("/lists", require("./routes/api/lists"));
 app.use("/cards", require("./routes/api/cards"));

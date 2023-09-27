@@ -15,25 +15,6 @@ const ListContainer = () => {
         }
     }, []);
 
-    useEffect(() => {
-        const handleKeyPress = (e) => {
-            if (e.key === 'a' || e.key === 'A') {
-                listContainerRef.current.scrollLeft -= 200;
-            } else if (e.key === 'd' || e.key === 'D') {
-                listContainerRef.current.scrollLeft += 200;
-            }
-        };
-
-        // Attach the event listener to the document
-        document.addEventListener('keydown', handleKeyPress);
-
-        // Remove the event listener when the component unmounts
-        return () => {
-            document.removeEventListener('keydown', handleKeyPress);
-        };
-    }, []);
-
-
     const handleOnDragEnd = (result) => {
         const { destination, source, type } = result;
 
@@ -89,7 +70,7 @@ const ListContainer = () => {
                             listContainerRef.current = element
                         }}
                         ignoreContainerClipping={true}
-                        className='flex flex-1 w-fit h-full items-start justify-start mt-[10rem]'
+                        className='flex w-fit h-[80%] items-start justify-start'
                     >
                         {boardState.lists.map((list, index) => (
                             <List
@@ -106,6 +87,7 @@ const ListContainer = () => {
                 )}
             </Droppable>
         </DragDropContext>
+
     );
 };
 

@@ -60,7 +60,7 @@ export const BoardStateContextProvider = ({ children }) => {
         setBoardState(prev => {
             return {
                 ...prev,
-                lists: [...prev.lists, list]
+                lists: [...prev.lists, { ...list, cards: [] }]
             }
         });
     };
@@ -68,15 +68,8 @@ export const BoardStateContextProvider = ({ children }) => {
     const addCardToList = (listId, card) => {
         const currentBoardState = { ...boardState };
         const list = currentBoardState.lists.find(list => list._id === listId);
-
         if (list) {
-            const newCard = {
-                _id: Date.now().toString(),
-                listId: list._id,
-                order: currentBoardState.lists.length,
-                ...card
-            };
-            list.cards.push(newCard);
+            list.cards.push(card);
             setBoardState(currentBoardState);
         }
     };

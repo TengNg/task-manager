@@ -76,13 +76,13 @@ const Boards = () => {
                         })
                     }
 
-                    <div className="relative w-[200px] h-[100px]">
+                    <div className="relative w-[200px] min-w-[200px] min-h-[100px] h-[100px]">
                         <div
                             onClick={() => setOpenBoardForm(open => !open)}
                             ref={createBoardButtonRef}
-                            className="h-full w-full board--style board--hover border-[3px] border-gray-600 p-4 rounded-md shadow-gray-600 select-none bg-gray-50"
+                            className="h-full w-full board--style board--hover border-[3px] border-gray-600 p-4 rounded-md shadow-gray-600 select-none bg-gray-50 opacity-60"
                         >
-                            <div className="flex justify-center items-center gap-2 text-gray-600 font-semibold">
+                            <div className="flex justify-center items-center gap-2 text-gray-600 text-[0.75rem] font-semibold">
                                 <FontAwesomeIcon icon={faSquarePlus} />
                                 <p>Create new board</p>
                             </div>
@@ -91,6 +91,7 @@ const Boards = () => {
                         {
                             openBoardForm &&
                             <BoardForm
+                                nBoards={boards.length}
                                 ref={boardFormRef}
                             />
                         }

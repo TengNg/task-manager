@@ -8,11 +8,9 @@ const {
     updateBoard,
 } = require('../../controllers/boardsController');
 
-const { authenticateToken } = require("../../middlewares/authenticateToken");
-
 router.route("/")
-    .get(authenticateToken, getBoards)
-    .post(authenticateToken, createBoard)
+    .get(getBoards)
+    .post(createBoard)
 
 router.route("/:id")
     .get(getBoard)

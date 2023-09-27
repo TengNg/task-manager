@@ -36,7 +36,6 @@ const cardSchema = new mongoose.Schema({
     //     filename: String,
     //     url: String,
     // }],
-
 });
 
 module.exports = mongoose.model('Card', cardSchema);;

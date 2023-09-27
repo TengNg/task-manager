@@ -59,7 +59,7 @@ const UserAccount = () => {
     };
 
     return (
-        <div className="absolute top-4 right-4 flex--center flex-col justify-start gap-2 z-50">
+        <div className="absolute top-4 right-4 flex--center h-fit flex-col justify-start gap-2">
             <div
                 onClick={() => setCollapse(collapse => !collapse)}
                 ref={userProfileImageRef}
@@ -75,7 +75,7 @@ const UserAccount = () => {
                 collapse === false &&
                 <div
                     ref={userInfoRef}
-                    className='relative flex flex-col box--style shadow-gray-600 border-[2px] border-gray-600 p-3 select-none gap-4 bg-gray-100 z-50'
+                    className='relative flex flex-col box--style shadow-gray-600 border-[2px] border-gray-600 p-3 select-none gap-4 bg-gray-100'
                 >
                     <button
                         className="absolute top-0 right-1 text-[0.8rem] text-gray-600"

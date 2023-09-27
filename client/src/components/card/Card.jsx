@@ -18,8 +18,8 @@ const Card = ({ index, card }) => {
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className={`w-full border-[2px] border-gray-500 px-3 py-2 flex mt-3 shadow-[0_3px_0_0] shadow-gray-600 rounded-sm bg-gray-50
-                                ${snapshot.isDragging && 'bg-blue-50 border-blue-700 shadow-blue-700'} `}
+                        className={`w-full border-[2px] border-gray-500 px-2 py-3 flex mt-3 shadow-[0_3px_0_0] shadow-gray-600 bg-gray-50
+                                ${snapshot.isDragging && 'opacity-80'} `}
                     >
                         <p className="w-full h-full bg-inherit font-semibold text-gray-600 rounded-sm py-1 px-2 focus:outline-none z-20 text-[0.8rem] break-words whitespace-pre-line" >
                             {card.title}

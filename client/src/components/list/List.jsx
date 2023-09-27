@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState } from "react"
 import { Draggable } from "react-beautiful-dnd"
 import { StrictModeDroppable as Droppable } from '../../helpers/StrictModeDroppable';
 import Card from "../card/Card";
@@ -9,27 +9,48 @@ import CardComposer from "../card/CardComposer";
 
 const List = ({ index, list, cards }) => {
     const { setListTitle } = useBoardState();
-    const [initialListData, _] = useState(list.title);
+    const [initialListData, setInitialListData] = useState(list.title);
     const [openCardComposer, setOpenCardComposer] = useState(false);
 
+    const textAreaRef = useRef(null);
     const titleRef = useRef(null);
 
-    const handleMouseUp = () => {
+    const onInputConfirm = () => {
+        if (textAreaRef.current.value === "") {
+            setListTitle(list._id, initialListData);
+        }
+        textAreaRef.current.classList.remove('block');
+        textAreaRef.current.classList.add('hidden');
         titleRef.current.classList.remove('hidden');
-        titleRef.current.classList.add('absolute');
-        titleRef.current.focus();
+        setInitialListData(textAreaRef.current.value);
+    };
+
+    const handleMouseUp = () => {
+        textAreaRef.current.classList.remove('hidden');
+        textAreaRef.current.classList.add('block');
+        titleRef.current.classList.add('hidden');
+        textAreaRef.current.focus();
+        textAreaRef.current.selectionStart = textAreaRef.current.value.length;
     };
 
     const handleTitleInputBlur = () => {
-        if (titleRef.current.value === "") {
-            setListTitle(list._id, initialListData);
-        }
-        titleRef.current.classList.remove('absolute');
-        titleRef.current.classList.add('hidden');
+        onInputConfirm();
     };
 
-    const handleListTitleChanged = () => {
-        setListTitle(list._id, titleRef.current.value);
+    const handleTextAreaChanged = () => {
+        const textarea = textAreaRef.current;
+        // setText(textarea.value);
+        textarea.style.height = 'auto';
+
+        const littleOffset = 4; // prevent resizing when start typing
+        textarea.style.height = `${textarea.scrollHeight + littleOffset}px`;
+        setListTitle(list._id, textAreaRef.current.value);
+    };
+
+    const handleTextAreaOnEnter = (e) => {
+        if (e.key === 'Enter') {
+            onInputConfirm();
+        }
     };
 
     return (
@@ -38,28 +59,32 @@ const List = ({ index, list, cards }) => {
                 <div
                     {...provided.draggableProps}
                     ref={provided.innerRef}
-                    className={`flex flex-col justify-start bg-gray-100 w-[250px] min-w-[250px] h-fit max-h-full min-h-auto border-[3px] select-none px-4 pt-2 cursor-pointer me-4 box--style border-gray-600 shadow-gray-600
-                                ${snapshot.isDragging && 'bg-teal-100'} `}
+                    className={`flex flex-col justify-start bg-gray-100 w-[280px] min-w-[280px] h-fit max-h-full min-h-auto border-[2px] select-none py-2 px-3 cursor-pointer me-4 box--style border-gray-600 shadow-gray-600
+                                ${snapshot.isDragging && 'opacity-80 bg-teal-100'} `}
                 >
                     <div
                         {...provided.dragHandleProps}
                         className="relative w-full bg-inherit">
                         <div
-                            className="w-full h-[2rem] font-semibold text-gray-600"
+                            ref={titleRef}
+                            className="w-full font-semibold text-gray-600 break-words whitespace-pre-line"
                             onMouseUp={handleMouseUp}
                         >
                             <p>{list.title}</p>
                         </div>
 
-                        <div className="mx-auto h-[1.5px] w-[100%] bg-gray-500"></div>
+                        <p className="absolute -top-2 -right-2 text-[0.7rem]">{list.cards.length || ''}</p>
 
-                        <input
-                            className="hidden bg-gray-100 w-full top-0 right-0 focus:outline-none z-[2] font-semibold text-gray-600"
+                        <textarea
+                            className="hidden bg-gray-100 w-full focus:outline-none font-semibold text-gray-600 leading-normal overflow-y-hidden resize-none"
                             value={list.title}
-                            ref={titleRef}
-                            onChange={handleListTitleChanged}
+                            ref={textAreaRef}
+                            onChange={handleTextAreaChanged}
                             onBlur={handleTitleInputBlur}
+                            onKeyDown={handleTextAreaOnEnter}
                         />
+
+                        <div className="mx-auto h-[1.5px] mt-1 w-[100%] bg-gray-500"></div>
                     </div>
 
                     <div className="max-h-full overflow-y-auto">
