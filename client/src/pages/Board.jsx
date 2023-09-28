@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import axios from "../api/axios";
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams, useLocation } from "react-router-dom"
 import ListContainer from "../components/list/ListContainer";
 import useBoardState from "../hooks/useBoardState";
 import BoardNav from "../components/board/BoardNav";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { useHorizontalScroll } from "../hooks/useHorizontalScroll";
+import Loading from "../components/ui/Loading";
 
 const Board = () => {
     const {
@@ -13,26 +12,33 @@ const Board = () => {
         setBoardState,
         setBoardTitle,
         setBoardLinks,
-        setBoardLinkTitle,
     } = useBoardState();
 
     const [initialBoardData, setInitialBoardData] = useState();
     const [isDataLoaded, setIsDataLoaded] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const axiosPrivate = useAxiosPrivate();
 
     const { boardId } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const { pathname } = location;
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyPress);
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [navigate]);
+    }, []);
 
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+
+        // save current boardState before route changed
+        if (Object.keys(boardState).length > 0)  {
+            handleSaveBoard();
+        }
 
         const getBoardData = async () => {
             const response = await axiosPrivate.get(`/boards/${boardId}`);
@@ -42,12 +48,13 @@ const Board = () => {
             setBoardLinks(response2.data);
             setIsDataLoaded(true);
         }
+
         getBoardData().catch(err => {
             console.log(err);
             setIsDataLoaded(false);
             navigate("/notfound");
         });
-    }, [navigate]);
+    }, [pathname]);
 
     const handleKeyPress = (e) => {
         const isInputField = e.target.tagName.toLowerCase() === 'input';
@@ -75,13 +82,16 @@ const Board = () => {
 
     const handleSaveBoard = async () => {
         try {
-            axiosPrivate.put(`/boards/${boardState.board._id}`, JSON.stringify(boardState.board));
-            axiosPrivate.put("/lists", JSON.stringify({ lists: boardState.lists }));
-            axiosPrivate.put("/lists/cards", JSON.stringify({ lists: boardState.lists }));
+            setLoading(true);
+            await axiosPrivate.put(`/boards/${boardState.board._id}`, JSON.stringify(boardState.board));
+            await axiosPrivate.put("/lists", JSON.stringify({ lists: boardState.lists }));
+            await axiosPrivate.put("/lists/cards", JSON.stringify({ lists: boardState.lists }));
+            setLoading(false);
             console.log('data saved');
         } catch (err) {
             console.log(err);
-            navigate("/home");
+            setLoading(false);
+            navigate("/boards");
         }
     }
 
@@ -95,16 +105,7 @@ const Board = () => {
             return;
         }
 
-        setBoardLinkTitle(boardState.board._id, e.target.value);
         setInitialBoardData(e.target.value);
-
-        try {
-            const response = await axiosPrivate.put(`/boards/${boardState.board._id}`, JSON.stringify(boardState.board));
-            console.log(response.data);
-        } catch (err) {
-            console.log(err);
-            navigate("/home");
-        }
     }
 
     if (isDataLoaded === false) {
@@ -113,7 +114,8 @@ const Board = () => {
 
     return (
         <>
-            <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-[1rem] mt-[5rem] min-w-full">
+            <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4 mt-4 min-w-full">
+                {loading && <Loading />}
                 <div className="sticky inset-0 left-4 flex gap-3">
                     <input
                         className='border-[3px] w-[15rem] border-gray-600 text-gray-600 p-1 font-semibold select-none font-mono'
@@ -121,11 +123,11 @@ const Board = () => {
                         onBlur={(e) => handleUpdateBoardInfo(e)}
                         value={boardState?.board?.title}
                     />
-                    <button
-                        onClick={() => handleSaveBoard()}
-                        className="button--style--dark text-[0.8rem] font-bold">
-                        Save
-                    </button>
+                    {/* <button */}
+                    {/*     onClick={() => handleSaveBoard()} */}
+                    {/*     className="button--style--dark text-[0.8rem] font-bold"> */}
+                    {/*     Save */}
+                    {/* </button> */}
                 </div>
 
                 <ListContainer />

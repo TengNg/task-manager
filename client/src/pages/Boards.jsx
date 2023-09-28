@@ -4,7 +4,7 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import Title from "../components/ui/Title";
 import BoardItem from "../components/board/BoardItem";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSquarePlus } from '@fortawesome/free-solid-svg-icons';
+import { faSquarePlus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import BoardForm from "../components/board/BoardForm";
 import { useNavigate } from "react-router-dom";
 import simplifyString from "../utils/simplifyString";
@@ -63,7 +63,7 @@ const Boards = () => {
 
             <div>
                 <Title titleName="your boards" />
-                <div className="flex flex-wrap gap-4 p-8 border-[1px] border-gray-800 mx-8 rounded-lg">
+                <div className="flex flex-wrap gap-4 p-8 border-[2px] mx-8 box--style shadow-gray-500 border-gray-500">
                     {
                         boards.map(item => {
                             return (
@@ -80,11 +80,11 @@ const Boards = () => {
                         <div
                             onClick={() => setOpenBoardForm(open => !open)}
                             ref={createBoardButtonRef}
-                            className="h-full w-full board--style board--hover border-[3px] border-gray-600 p-4 rounded-md shadow-gray-600 select-none bg-gray-50 opacity-60"
+                            className="h-full w-full border-[2px] border-gray-400 board--style shadow-gray-400 p-3 px-4 rounded-md select-none bg-gray-200 cursor-pointer"
                         >
-                            <div className="flex justify-center items-center gap-2 text-gray-600 text-[0.75rem] font-semibold">
-                                <FontAwesomeIcon icon={faSquarePlus} />
-                                <p>Create new board</p>
+                            <div className="flex items-center gap-2 text-gray-400">
+                                <FontAwesomeIcon icon={faPlus} />
+                                <p>New board</p>
                             </div>
                         </div>
 

@@ -20,9 +20,8 @@ const getBoards = async (req, res) => {
 
 const getBoard = async (req, res) => {
     const { id } = req.params;
-    console.log(req.params);
 
-    const board = await Board.findOne({ _id: id });
+    const board = await Board.findById(id);
     if (!board) return res.status(404).json({ msg: "board not found" });
 
     const lists = await List.find({ boardId: id }).sort({ order: 'asc' });

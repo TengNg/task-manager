@@ -6,7 +6,7 @@ export default function NotFound() {
     const navigate = useNavigate();
     return (
         <>
-            <section className='flex-col flex--center w-full mt-8'>
+            <section className='absoulute flex-col flex--center w-full mt-8'>
                 <Title titleName={"page not found"} />
                 <p className='my-4 ms-3 text-gray-400 text-center'>Oops, looks like you are lost...</p>
                 <button
