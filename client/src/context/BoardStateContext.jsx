@@ -23,6 +23,12 @@ export const BoardStateContextProvider = ({ children }) => {
                 });
             });
 
+            socket.on("getBoardWithUpdatedTitle", (data) => {
+                setBoardState(prev => {
+                    return { ...prev, board: { ...prev.board, title: data } }
+                });
+            });
+
             socket.on("newList", (data) => {
                 const newList = { ...data, cards: [] };
                 addListToBoard(newList);
@@ -34,6 +40,10 @@ export const BoardStateContextProvider = ({ children }) => {
 
             socket.on("updatedListTitle", (data) => {
                 setListTitle(data.listId, data.title);
+            });
+
+            socket.on("updatedCardTitle", (data) => {
+                setCardTitle(data.id, data.listId, data.title);
             });
 
             // socket.on("getBoardWithUpdatedTitle", (data) => {
@@ -57,16 +67,15 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
-    const setCardTitle = (cardId, value) => {
+    const setCardTitle = (cardId, listId, value) => {
+        console.log(value);
         setBoardState(prev => {
             return {
                 ...prev,
-                lists: prev.lists.map(list => {
-                    return {
-                        ...list,
-                        cards: list.cards.map(card => card._id === cardId ? { ...card, title: value } : card)
-                    }
-                })
+                lists: prev.lists.map(list => list._id === listId ? {
+                    ...list,
+                    cards: list.cards.map(card => card._id === cardId ? { ...card, title: value } : card)
+                } : list)
             }
         });
     };

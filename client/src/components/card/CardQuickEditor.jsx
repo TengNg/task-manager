@@ -1,10 +1,14 @@
 import { useRef, useState, useEffect } from "react";
 import useBoardState from "../../hooks/useBoardState";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const CardQuickEditor = ({ open, setOpen, card, attribute }) => {
     const {
-        setCardTitle
+        setCardTitle,
+        socket,
     } = useBoardState();
+
+    const axiosPrivate = useAxiosPrivate();
 
     const [initialTitle, setInitialTitle] = useState(card.title);
     const textAreaRef = useRef();
@@ -23,13 +27,24 @@ const CardQuickEditor = ({ open, setOpen, card, attribute }) => {
         }
     }
 
-    const handleSetCardTitle = () => {
+    const handleSetCardTitle = async () => {
         if (textAreaRef.current.value === "") {
             setInitialTitle(card.title);
             return;
         }
-        setCardTitle(card._id, textAreaRef.current.value);
-        setInitialTitle(textAreaRef.current.value);
+
+        try {
+            const response = await axiosPrivate.put(`/cards/${card._id}/new-title`, JSON.stringify({ title: textAreaRef.current.value }));
+            console.log(response);
+
+            const newTitle = response.data.newCard.title;
+
+            setCardTitle(card._id, card.listId, newTitle);
+            setInitialTitle(newTitle);
+            socket.emit("updateCardTitle", { id: card._id, listId: card.listId, title: newTitle });
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     const handleTextAreaChanged = () => {
@@ -45,7 +60,6 @@ const CardQuickEditor = ({ open, setOpen, card, attribute }) => {
         if (e.key == 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleSetCardTitle();
-            setInitialTitle(textAreaRef.current.value);
             setOpen(false);
         }
     };
@@ -69,6 +83,7 @@ const CardQuickEditor = ({ open, setOpen, card, attribute }) => {
                     left: `${attribute.left}px`,
                     width: `${attribute.width}px`,
                     height: `${attribute.height}px`,
+                    minHeight: '80px',
                     transform: `translateY(${-attribute.height}px)`
                 }}
             >

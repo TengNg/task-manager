@@ -67,9 +67,17 @@ const updateBoard = async (req, res) => {
     return res.status(200).json({ msg: 'board updated', newBoard });
 };
 
+const updateTitle = async (req, res) => {
+    const { id } = req.params;
+    const { title } = req.body;
+    const newBoard = await Board.findOneAndUpdate({ _id: id }, { title }, { new: true });
+    return res.status(200).json({ msg: 'board updated', newBoard });
+};
+
 module.exports = {
     getBoards,
     createBoard,
     getBoard,
     updateBoard,
+    updateTitle,
 };

@@ -41,8 +41,24 @@ const updateListsCards = async (req, res) => {
     res.status(200).json({ message: 'all lists updated' });
 };
 
+const reorder = async (req, res) => {
+    const { id } = req.params;
+    const { rank } = req.body;
+    const newList = await List.findOneAndUpdate({ _id: id }, { order: rank }, { new: true });
+    res.status(200).json({ message: 'list updated', newList });
+};
+
+const updateTitle = async (req, res) => {
+    const { id } = req.params;
+    const { title } = req.body;
+    const newList = await List.findOneAndUpdate({ _id: id }, { title }, { new: true });
+    res.status(200).json({ message: 'list updated', newList });
+};
+
 module.exports = {
     addList,
     updateLists,
-    updateListsCards
+    updateListsCards,
+    updateTitle,
+    reorder,
 }

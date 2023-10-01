@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { lexorank } from "../../utils/class/Lexorank";
 
 const CardComposer = ({ list, open, setOpen }) => {
     const [text, setText] = useState("");
@@ -44,9 +45,16 @@ const CardComposer = ({ list, open, setOpen }) => {
 
         const currentList = boardState.lists.find(list => list._id === list._id);
 
+        let prevOrder = '';
+        if (currentList.cards.length > 0) {
+            prevOrder = currentList.cards[currentList.cards.length - 1].order;
+        }
+
+        const [rank, _] = lexorank.insert(prevOrder);
+
         const cardData = {
             listId: list._id,
-            order: currentList.cards.length,
+            order: rank,
             title: textAreaRef.current.value
         };
 
@@ -76,7 +84,7 @@ const CardComposer = ({ list, open, setOpen }) => {
             className="flex flex-col py-2 gap-2 items-start justify-start">
             <textarea
                 ref={textAreaRef}
-                className="text-[0.8rem] h-fit bg-gray-50 border-[2px] py-3 px-5 text-gray-600 border-gray-500 shadow-[0_3px_0_0] shadow-gray-500 leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50"
+                className="text-[0.8rem] h-fit bg-gray-50 border-[2px] py-4 px-4 text-gray-600 border-gray-500 shadow-[0_3px_0_0] shadow-gray-500 leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50"
                 placeholder='Title for this card'
                 onChange={handleTextAreaChanged}
                 onKeyDown={handleTextAreaOnEnter}

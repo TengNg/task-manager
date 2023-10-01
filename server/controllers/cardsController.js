@@ -21,7 +21,23 @@ const updateCard = async (req, res) => {
     return res.status(200).json({ msg: 'new card updated', newCard });
 };
 
+const reorder = async (req, res) => {
+    const { id } = req.params;
+    const { rank, listId } = req.body;
+    const newCard = await Card.findOneAndUpdate({ _id: id }, { order: rank, listId }, { new: true });
+    res.status(200).json({ message: 'card updated', newCard });
+};
+
+const updateTitle = async (req, res) => {
+    const { id } = req.params;
+    const { title } = req.body;
+    const newCard = await Card.findOneAndUpdate({ _id: id }, { title }, { new: true });
+    res.status(200).json({ message: 'card updated', newCard });
+};
+
 module.exports = {
     addCard,
     updateCard,
+    updateTitle,
+    reorder,
 }

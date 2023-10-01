@@ -32,26 +32,26 @@ const AddList = () => {
 
         let prevOrder = '';
         if (boardState.lists.length > 0) {
-            prevOrder = boardState.lists.length;
+            prevOrder = boardState.lists[boardState.lists.length - 1].order;
         }
 
-        console.log(lexorank.insert());
+        const [rank, _] = lexorank.insert(prevOrder);
 
-        // const newList = {
-        //     title: listTitle,
-        //     prevOrder,
-        //     boardId: boardState.board._id,
-        // };
-        //
-        // try {
-        //     const response = await axiosPrivate.post("/lists", JSON.stringify(newList));
-        //     socket.emit("addList", response.data.newList);
-        //     addListToBoard(response.data.newList);
-        //     setListTitle("");
-        //     titleInputRef.current.focus();
-        // } catch (err) {
-        //     console.log(err);
-        // }
+        const newList = {
+            title: listTitle,
+            order: rank,
+            boardId: boardState.board._id,
+        };
+
+        try {
+            const response = await axiosPrivate.post("/lists", JSON.stringify(newList));
+            socket.emit("addList", response.data.newList);
+            addListToBoard(response.data.newList);
+            setListTitle("");
+            titleInputRef.current.focus();
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     const handleOpenAddListForm = () => {

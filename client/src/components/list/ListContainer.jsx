@@ -4,6 +4,8 @@ import { StrictModeDroppable as Droppable } from '../../helpers/StrictModeDroppa
 import List from './List';
 import useBoardState from '../../hooks/useBoardState';
 import AddList from './AddList';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import { lexorank } from '../../utils/class/Lexorank';
 
 const ListContainer = () => {
     const {
@@ -14,25 +16,50 @@ const ListContainer = () => {
 
     const listContainerRef = useRef();
 
+    const axiosPrivate = useAxiosPrivate();
+
     useEffect(() => {
         if (listContainerRef.current) {
             listContainerRef.current.scrollLeft = 0;
         }
     }, []);
 
-    const handleOnDragEnd = (result) => {
+    const handleOnDragEnd = async (result) => {
         const { destination, source, type } = result;
 
         if (!destination) return;
 
+        const { index: destIndex } = destination;
+        const { index: srcIndex } = source
+
         if (type === "LIST") {
             const newLists = [...boardState.lists];
             const [removed] = newLists.splice(source.index, 1);
+
+            if (destIndex === srcIndex) return;
+
             newLists.splice(destination.index, 0, removed);
-            setBoardState(prev => {
-                return { ...prev, lists: newLists };
-            });
-            socket.emit("updateLists", newLists);
+
+            let prevRank = newLists[destIndex - 1]?.order;
+            let nextRank = newLists[destIndex + 1]?.order;
+
+            let [rank, _] = lexorank.insert(prevRank, nextRank);
+            const removedId = removed._id;
+
+            removed.order = rank;
+
+            try {
+                setBoardState(prev => {
+                    return { ...prev, lists: newLists };
+                });
+
+                const response = await axiosPrivate.put(`/lists/${removedId}/reorder`, JSON.stringify({ rank }));
+                console.log(response.data.newList);
+
+                socket.emit("updateLists", newLists);
+            } catch (err) {
+                console.log(err);
+            }
         } else {
             const currentLists = JSON.parse(JSON.stringify(boardState.lists)); // deep copy
             const fromList = currentLists.find(list => list._id === source.droppableId);
@@ -49,20 +76,40 @@ const ListContainer = () => {
 
             // get dragged card
             const [removed] = fromListCards.splice(source.index, 1);
+            const removedId = removed._id;
+
+            let rank = '';
 
             if (fromList._id === toList._id) {
                 fromListCards.splice(destination.index, 0, removed);
-                setBoardState(prev => {
-                    return { ...prev, lists: currentLists };
-                });
+
+                let prevRank = fromListCards[destIndex - 1]?.order;
+                let nextRank = fromListCards[destIndex + 1]?.order;
+                rank = lexorank.insert(prevRank, nextRank)[0];
+                removed.order = rank;
+
             } else {
                 toListCards.splice(destination.index, 0, removed);
                 removed.listId = destination.droppableId;
+
+                let prevRank = toListCards[destIndex - 1]?.order;
+                let nextRank = toListCards[destIndex + 1]?.order;
+                rank = lexorank.insert(prevRank, nextRank)[0];
+                removed.order = rank;
+            }
+
+            try {
                 setBoardState(prev => {
                     return { ...prev, lists: currentLists };
                 });
+
+                const response = await axiosPrivate.put(`/cards/${removedId}/reorder`, JSON.stringify({ rank, listId: removed.listId }));
+                console.log(response.data.newCard);
+
+                socket.emit("updateLists", currentLists);
+            } catch (err) {
+                console.log(err);
             }
-            socket.emit("updateLists", currentLists);
         }
     };
 

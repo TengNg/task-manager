@@ -27,6 +27,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on("updateListTitle", (data) => {
+        console.log(data);
         socket.broadcast.emit("updatedListTitle", data);
     });
 

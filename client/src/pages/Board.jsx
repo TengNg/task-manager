@@ -12,6 +12,7 @@ const Board = () => {
         setBoardState,
         setBoardTitle,
         setBoardLinks,
+        socket
     } = useBoardState();
 
     const [title, setTitle] = useState("");
@@ -41,11 +42,6 @@ const Board = () => {
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
 
-        // save current boardState before route changed
-        if (Object.keys(boardState).length > 0) {
-            handleSaveBoard();
-        }
-
         const getBoardData = async () => {
             const response = await axiosPrivate.get(`/boards/${boardId}`);
             const response2 = await axiosPrivate.get(`/boards`);
@@ -60,7 +56,7 @@ const Board = () => {
             setIsDataLoaded(false);
             navigate("/notfound");
         });
-        }, [pathname]);
+    }, [pathname]);
 
     const handleKeyPress = (e) => {
         const isInputField = e.target.tagName.toLowerCase() === 'input';
@@ -87,26 +83,46 @@ const Board = () => {
     };
 
     const handleSaveBoard = async () => {
-        try {
-            setLoading(true);
-            await axiosPrivate.put(`/boards/${boardState.board._id}`, JSON.stringify(boardState.board));
-            await axiosPrivate.put("/lists", JSON.stringify({ lists: boardState.lists }));
-            await axiosPrivate.put("/lists/cards", JSON.stringify({ lists: boardState.lists }));
-            setLoading(false);
-        } catch (err) {
-            console.log(err);
-            setLoading(false);
-            navigate("/boards");
-        }
+        // try {
+        //     setLoading(true);
+        //     await axiosPrivate.put(`/boards/${boardState.board._id}`, JSON.stringify(boardState.board));
+        //     await axiosPrivate.put("/lists", JSON.stringify({ lists: boardState.lists }));
+        //     await axiosPrivate.put("/lists/cards", JSON.stringify({ lists: boardState.lists }));
+        //     setLoading(false);
+        // } catch (err) {
+        //     console.log(err);
+        //     setLoading(false);
+        //     navigate("/boards");
+        // }
     }
 
-    const handleBoardTitleInputOnBlur = (e) => {
-        if (e.target.value === "") {
-            setTitle(boardState.board.title);
+    const confirmBoardTitle = async (value) => {
+        if (value === "") {
+            setBoardTitle(title);
             return;
         }
-        setTitle(e.target.value);
-        setBoardTitle(e.target.value);
+
+        try {
+            const response = await axiosPrivate.put(`/boards/${boardState.board._id}/new-title`, JSON.stringify({ title: value }));
+            setTitle(response.data.newBoard.title);
+            setBoardTitle(response.data.newBoard.title);
+
+            socket.emit("updateBoardTitle", value);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const handleBoardTitleInputOnKeyDown = (e) => {
+        if (e.key == 'Enter' && !e.shiftKey) {
+            confirmBoardTitle(e.target.value.trim());
+            e.target.blur();
+        }
+
+    };
+
+    const handleBoardTitleInputOnBlur = async (e) => {
+        confirmBoardTitle(e.target.value.trim());
     }
 
     if (isDataLoaded === false) {
@@ -118,19 +134,21 @@ const Board = () => {
             <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4 mt-[5rem] min-w-full">
                 {loading && <Loading />}
                 <div className="sticky inset-0 left-4 flex--center gap-3">
-                    <button
-                        onClick={() => handleSaveBoard()}
-                        className="button--style text-[0.8rem] font-bold">
-                        Save
-                    </button>
+                    {/* <button */}
+                    {/*     onClick={() => handleSaveBoard()} */}
+                    {/*     className="button--style text-[0.8rem] font-bold"> */}
+                    {/*     Save */}
+                    {/* </button> */}
                     <input
                         className={`border-b-[3px] bg-gray-100 border-black text-black py-1 font-bold select-none font-mono mb-2 focus:outline-none`}
                         style={{
-                            width: `${boardState?.board?.title.length + 1}ch`
+                            width: `${boardState.board.title.length + 1}ch`
                         }}
-                        onChange={(e) => setTitle(e.target.value)}
+                        onKeyDown={(e) => handleBoardTitleInputOnKeyDown(e)}
+                        onFocus={(e) => e.target.select()}
+                        onChange={(e) => setBoardTitle(e.target.value)}
                         onBlur={(e) => handleBoardTitleInputOnBlur(e)}
-                        value={title}
+                        value={boardState.board.title}
                     />
                 </div>
 

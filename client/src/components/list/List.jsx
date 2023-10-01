@@ -6,27 +6,40 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from "../../hooks/useBoardState";
 import CardComposer from "../card/CardComposer";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const List = ({ index, list, cards }) => {
     const {
         setListTitle,
         socket,
     } = useBoardState();
+
+    const axiosPrivate = useAxiosPrivate();
+
     const [initialListData, setInitialListData] = useState(list.title);
     const [openCardComposer, setOpenCardComposer] = useState(false);
 
     const textAreaRef = useRef(null);
     const titleRef = useRef(null);
 
-    const onInputConfirm = () => {
+    const onInputConfirm = async () => {
         if (textAreaRef.current.value === "") {
             setListTitle(list._id, initialListData);
         }
+
         textAreaRef.current.classList.remove('block');
         textAreaRef.current.classList.add('hidden');
         titleRef.current.classList.remove('hidden');
-        setInitialListData(textAreaRef.current.value);
-        socket.emit("updateListTitle", { listId: list._id, title: textAreaRef.current.value });
+
+        try {
+            const response = await axiosPrivate.put(`/lists/${list._id}/new-title`, JSON.stringify({ title: textAreaRef.current.value }));
+            console.log(response.data.newList);
+
+            setInitialListData(textAreaRef.current.value);
+            socket.emit("updateListTitle", { listId: list._id, title: textAreaRef.current.value });
+        } catch(err) {
+            console.log(err);
+        }
     };
 
     const handleMouseUp = () => {
@@ -35,10 +48,6 @@ const List = ({ index, list, cards }) => {
         titleRef.current.classList.add('hidden');
         textAreaRef.current.focus();
         textAreaRef.current.selectionStart = textAreaRef.current.value.length;
-    };
-
-    const handleTitleInputBlur = () => {
-        onInputConfirm();
     };
 
     const handleTextAreaChanged = () => {
@@ -55,6 +64,10 @@ const List = ({ index, list, cards }) => {
         const textarea = textAreaRef.current;
         const littleOffset = 4;
         textarea.style.height = `${textarea.scrollHeight + littleOffset}px`;
+    };
+
+    const handleTitleInputBlur = () => {
+        onInputConfirm();
     };
 
     const handleTextAreaOnEnter = (e) => {
@@ -84,6 +97,7 @@ const List = ({ index, list, cards }) => {
                         </div>
 
                         <p className="absolute -top-2 -right-2 text-[0.7rem]">{list.cards.length || ''}</p>
+                        <p className="absolute -top-2 right-3 text-[0.7rem]">rank: {list.order}</p>
 
                         <textarea
                             className="hidden bg-gray-100 h-fit w-full focus:outline-none font-semibold text-gray-600 leading-normal overflow-y-hidden resize-none"

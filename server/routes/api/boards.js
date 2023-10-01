@@ -6,6 +6,7 @@ const {
     createBoard,
     getBoard,
     updateBoard,
+    updateTitle,
 } = require('../../controllers/boardsController');
 
 router.route("/")
@@ -16,5 +17,7 @@ router.route("/:id")
     .get(getBoard)
     .put(updateBoard)
 
+router.route("/:id/new-title")
+    .put(updateTitle)
 
 module.exports = router;

@@ -5,6 +5,8 @@ const {
     addList,
     updateLists,
     updateListsCards,
+    updateTitle,
+    reorder,
 } = require('../../controllers/listsController');
 
 router.route("/")
@@ -13,5 +15,12 @@ router.route("/")
 
 router.route("/cards")
     .put(updateListsCards)
+
+router.route("/:id/reorder")
+    .put(reorder)
+
+router.route("/:id/new-title")
+    .put(updateTitle)
+
 
 module.exports = router;
