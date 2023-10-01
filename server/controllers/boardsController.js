@@ -14,7 +14,8 @@ const getBoards = async (req, res) => {
     const foundUser = await getUser(username);
     if (!foundUser) return res.status(403).json({ msg: "user not found" });
 
-    const boards = await Board.find({ createBy: foundUser._id });
+    // const boards = await Board.find({ createdBy: foundUser._id });
+    const boards = await Board.find();
     return res.json(boards);
 };
 

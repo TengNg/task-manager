@@ -4,7 +4,11 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const CardComposer = ({ list, open, setOpen }) => {
     const [text, setText] = useState("");
-    const { addCardToList, boardState } = useBoardState();
+    const {
+        socket,
+        addCardToList,
+        boardState,
+    } = useBoardState();
 
     const textAreaRef = useRef();
     const composerRef = useRef();
@@ -50,6 +54,7 @@ const CardComposer = ({ list, open, setOpen }) => {
             const response = await axiosPrivate.post("/cards", JSON.stringify(cardData));
             const { newCard } = response.data;
             addCardToList(list._id, newCard);
+            socket.emit("addCard", newCard);
             setText("");
             textAreaRef.current.style.height = 'auto';
             textAreaRef.current.focus();

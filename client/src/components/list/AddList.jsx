@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import useBoardState from "../../hooks/useBoardState";
 import axios from "../../api/axios";
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import { lexorank } from '../../utils/class/Lexorank';
 
 const AddList = () => {
     const [open, setOpen] = useState(false);
@@ -11,7 +12,11 @@ const AddList = () => {
     const titleInputRef = useRef();
     const containerRef = useRef();
 
-    const { boardState, addListToBoard } = useBoardState();
+    const {
+        boardState,
+        addListToBoard,
+        socket,
+    } = useBoardState();
 
     const axiosPrivate = useAxiosPrivate();
 
@@ -25,20 +30,28 @@ const AddList = () => {
     const handleAddList = async () => {
         if (listTitle.trim() === "") return;
 
-        const newList = {
-            title: listTitle,
-            order: boardState.lists.length,
-            boardId: boardState.board._id,
-        };
-
-        try {
-            const response = await axiosPrivate.post("/lists", JSON.stringify(newList));
-            addListToBoard(response.data.newList);
-            setListTitle("");
-            titleInputRef.current.focus();
-        } catch (err) {
-            console.log(err);
+        let prevOrder = '';
+        if (boardState.lists.length > 0) {
+            prevOrder = boardState.lists.length;
         }
+
+        console.log(lexorank.insert());
+
+        // const newList = {
+        //     title: listTitle,
+        //     prevOrder,
+        //     boardId: boardState.board._id,
+        // };
+        //
+        // try {
+        //     const response = await axiosPrivate.post("/lists", JSON.stringify(newList));
+        //     socket.emit("addList", response.data.newList);
+        //     addListToBoard(response.data.newList);
+        //     setListTitle("");
+        //     titleInputRef.current.focus();
+        // } catch (err) {
+        //     console.log(err);
+        // }
     };
 
     const handleOpenAddListForm = () => {

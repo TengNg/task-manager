@@ -8,7 +8,10 @@ import useBoardState from "../../hooks/useBoardState";
 import CardComposer from "../card/CardComposer";
 
 const List = ({ index, list, cards }) => {
-    const { setListTitle } = useBoardState();
+    const {
+        setListTitle,
+        socket,
+    } = useBoardState();
     const [initialListData, setInitialListData] = useState(list.title);
     const [openCardComposer, setOpenCardComposer] = useState(false);
 
@@ -23,6 +26,7 @@ const List = ({ index, list, cards }) => {
         textAreaRef.current.classList.add('hidden');
         titleRef.current.classList.remove('hidden');
         setInitialListData(textAreaRef.current.value);
+        socket.emit("updateListTitle", { listId: list._id, title: textAreaRef.current.value });
     };
 
     const handleMouseUp = () => {
@@ -45,6 +49,12 @@ const List = ({ index, list, cards }) => {
         const littleOffset = 4; // prevent resizing when start typing
         textarea.style.height = `${textarea.scrollHeight + littleOffset}px`;
         setListTitle(list._id, textAreaRef.current.value);
+    };
+
+    const handleTextAreaOnFocus = () => {
+        const textarea = textAreaRef.current;
+        const littleOffset = 4;
+        textarea.style.height = `${textarea.scrollHeight + littleOffset}px`;
     };
 
     const handleTextAreaOnEnter = (e) => {
@@ -76,9 +86,10 @@ const List = ({ index, list, cards }) => {
                         <p className="absolute -top-2 -right-2 text-[0.7rem]">{list.cards.length || ''}</p>
 
                         <textarea
-                            className="hidden bg-gray-100 w-full focus:outline-none font-semibold text-gray-600 leading-normal overflow-y-hidden resize-none"
+                            className="hidden bg-gray-100 h-fit w-full focus:outline-none font-semibold text-gray-600 leading-normal overflow-y-hidden resize-none"
                             value={list.title}
                             ref={textAreaRef}
+                            onFocus={handleTextAreaOnFocus}
                             onChange={handleTextAreaChanged}
                             onBlur={handleTitleInputBlur}
                             onKeyDown={handleTextAreaOnEnter}
@@ -123,7 +134,7 @@ const List = ({ index, list, cards }) => {
                     {
                         openCardComposer === false &&
                         <button
-                            className="flex gap-2 group text-gray-400 w-full mb-2 mt-1 p-2 text-[0.8rem] hover:bg-gray-300 transition-all font-semibold text-start"
+                            className="flex gap-2 group text-gray-400 w-full mt-2 p-2 text-[0.8rem] hover:bg-gray-300 transition-all font-semibold text-start"
                             onClick={() => setOpenCardComposer(true)}
                         >
                             <span>

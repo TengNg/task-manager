@@ -4,7 +4,7 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import Title from "../components/ui/Title";
 import BoardItem from "../components/board/BoardItem";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSquarePlus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import BoardForm from "../components/board/BoardForm";
 import { useNavigate } from "react-router-dom";
 import simplifyString from "../utils/simplifyString";

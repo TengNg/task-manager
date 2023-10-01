@@ -6,7 +6,12 @@ import useBoardState from '../../hooks/useBoardState';
 import AddList from './AddList';
 
 const ListContainer = () => {
-    const { boardState, setBoardState } = useBoardState();
+    const {
+        boardState,
+        setBoardState,
+        socket,
+    } = useBoardState();
+
     const listContainerRef = useRef();
 
     useEffect(() => {
@@ -27,6 +32,7 @@ const ListContainer = () => {
             setBoardState(prev => {
                 return { ...prev, lists: newLists };
             });
+            socket.emit("updateLists", newLists);
         } else {
             const currentLists = JSON.parse(JSON.stringify(boardState.lists)); // deep copy
             const fromList = currentLists.find(list => list._id === source.droppableId);
@@ -56,6 +62,7 @@ const ListContainer = () => {
                     return { ...prev, lists: currentLists };
                 });
             }
+            socket.emit("updateLists", currentLists);
         }
     };
 

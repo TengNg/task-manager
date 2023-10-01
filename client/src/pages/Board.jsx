@@ -14,7 +14,7 @@ const Board = () => {
         setBoardLinks,
     } = useBoardState();
 
-    const [initialBoardData, setInitialBoardData] = useState();
+    const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -26,7 +26,13 @@ const Board = () => {
     const { pathname } = location;
 
     useEffect(() => {
+        window.addEventListener('beforeunload', function(e) {
+            const confirmationMessage = 'You have unsaved changes. Do you want to leave?';
+            e.returnValue = confirmationMessage;
+        });
+
         window.addEventListener('keydown', handleKeyPress);
+
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
@@ -36,15 +42,15 @@ const Board = () => {
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
 
         // save current boardState before route changed
-        if (Object.keys(boardState).length > 0)  {
+        if (Object.keys(boardState).length > 0) {
             handleSaveBoard();
         }
 
         const getBoardData = async () => {
             const response = await axiosPrivate.get(`/boards/${boardId}`);
             const response2 = await axiosPrivate.get(`/boards`);
-            setInitialBoardData(response.data.board);
             setBoardState(response.data);
+            setTitle(response.data.board.title);
             setBoardLinks(response2.data);
             setIsDataLoaded(true);
         }
@@ -54,7 +60,7 @@ const Board = () => {
             setIsDataLoaded(false);
             navigate("/notfound");
         });
-    }, [pathname]);
+        }, [pathname]);
 
     const handleKeyPress = (e) => {
         const isInputField = e.target.tagName.toLowerCase() === 'input';
@@ -87,7 +93,6 @@ const Board = () => {
             await axiosPrivate.put("/lists", JSON.stringify({ lists: boardState.lists }));
             await axiosPrivate.put("/lists/cards", JSON.stringify({ lists: boardState.lists }));
             setLoading(false);
-            console.log('data saved');
         } catch (err) {
             console.log(err);
             setLoading(false);
@@ -95,17 +100,13 @@ const Board = () => {
         }
     }
 
-    const handleUpdateBoardInfo = async (e) => {
-        if (e.target.value === initialBoardData.title) {
+    const handleBoardTitleInputOnBlur = (e) => {
+        if (e.target.value === "") {
+            setTitle(boardState.board.title);
             return;
         }
-
-        if (!e.target.value || e.target.value.trim() === "") {
-            setBoardTitle(initialBoardData.title);
-            return;
-        }
-
-        setInitialBoardData(e.target.value);
+        setTitle(e.target.value);
+        setBoardTitle(e.target.value);
     }
 
     if (isDataLoaded === false) {
@@ -114,20 +115,23 @@ const Board = () => {
 
     return (
         <>
-            <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4 mt-4 min-w-full">
+            <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4 mt-[5rem] min-w-full">
                 {loading && <Loading />}
-                <div className="sticky inset-0 left-4 flex gap-3">
+                <div className="sticky inset-0 left-4 flex--center gap-3">
+                    <button
+                        onClick={() => handleSaveBoard()}
+                        className="button--style text-[0.8rem] font-bold">
+                        Save
+                    </button>
                     <input
-                        className='border-[3px] w-[15rem] border-gray-600 text-gray-600 p-1 font-semibold select-none font-mono'
-                        onChange={(e) => setBoardTitle(e.target.value)}
-                        onBlur={(e) => handleUpdateBoardInfo(e)}
-                        value={boardState?.board?.title}
+                        className={`border-b-[3px] bg-gray-100 border-black text-black py-1 font-bold select-none font-mono mb-2 focus:outline-none`}
+                        style={{
+                            width: `${boardState?.board?.title.length + 1}ch`
+                        }}
+                        onChange={(e) => setTitle(e.target.value)}
+                        onBlur={(e) => handleBoardTitleInputOnBlur(e)}
+                        value={title}
                     />
-                    {/* <button */}
-                    {/*     onClick={() => handleSaveBoard()} */}
-                    {/*     className="button--style--dark text-[0.8rem] font-bold"> */}
-                    {/*     Save */}
-                    {/* </button> */}
                 </div>
 
                 <ListContainer />

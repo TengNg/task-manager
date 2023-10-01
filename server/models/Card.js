@@ -9,7 +9,7 @@ const cardSchema = new mongoose.Schema({
     description: String,
 
     order: {
-        type: Number,
+        type: String,
         required: true,
     },
 

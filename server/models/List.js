@@ -7,7 +7,7 @@ const listSchema = new mongoose.Schema({
     },
 
     order: {
-        type: Number,
+        type: String,
         required: true,
     },
 

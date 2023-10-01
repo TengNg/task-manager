@@ -9,7 +9,7 @@ const BoardNav = () => {
             <nav className="fixed z-30 bottom-[1rem] left-[1rem]">
                 <ul className="flex gap-4">
                     {
-                        boardState.links.map((link, index) => {
+                        boardState.links && boardState.links.map((link, index) => {
                             return (
                                 <li
                                     key={index}
