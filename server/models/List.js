@@ -16,6 +16,12 @@ const listSchema = new mongoose.Schema({
         ref: 'Board',
         required: true,
     },
+
+    createdAt: {
+        type: Date,
+        required: true,
+        default: Date.now,
+    },
 });
 
 module.exports = mongoose.model('List', listSchema);;

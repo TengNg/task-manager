@@ -1,7 +1,7 @@
 const Card = require('../models/Card.js');
 
 const addCard = async (req, res) => {
-    const { title, description, order, listId } = req.body;
+    const { title, description = "", order, listId } = req.body;
 
     const newCard = new Card({
         title,

@@ -68,7 +68,6 @@ export const BoardStateContextProvider = ({ children }) => {
     };
 
     const setCardTitle = (cardId, listId, value) => {
-        console.log(value);
         setBoardState(prev => {
             return {
                 ...prev,

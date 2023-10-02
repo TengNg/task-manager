@@ -6,7 +6,10 @@ const cardSchema = new mongoose.Schema({
         required: true,
     },
 
-    description: String,
+    description: {
+        type: String,
+        default: undefined,
+    },
 
     order: {
         type: String,
@@ -17,6 +20,15 @@ const cardSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'List',
         required: true,
+    },
+
+    createdAt: {
+        type: Date,
+        required: true,
+        default: Date.now,
+    },
+
+    updatedBy: {
     },
 
     // labels: [{

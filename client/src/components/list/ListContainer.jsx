@@ -53,9 +53,7 @@ const ListContainer = () => {
                     return { ...prev, lists: newLists };
                 });
 
-                const response = await axiosPrivate.put(`/lists/${removedId}/reorder`, JSON.stringify({ rank }));
-                console.log(response.data.newList);
-
+                await axiosPrivate.put(`/lists/${removedId}/reorder`, JSON.stringify({ rank }));
                 socket.emit("updateLists", newLists);
             } catch (err) {
                 console.log(err);
@@ -103,9 +101,7 @@ const ListContainer = () => {
                     return { ...prev, lists: currentLists };
                 });
 
-                const response = await axiosPrivate.put(`/cards/${removedId}/reorder`, JSON.stringify({ rank, listId: removed.listId }));
-                console.log(response.data.newCard);
-
+                await axiosPrivate.put(`/cards/${removedId}/reorder`, JSON.stringify({ rank, listId: removed.listId }));
                 socket.emit("updateLists", currentLists);
             } catch (err) {
                 console.log(err);

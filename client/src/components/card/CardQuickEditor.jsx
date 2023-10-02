@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
-const CardQuickEditor = ({ open, setOpen, card, attribute }) => {
+const CardQuickEditor = ({ open, setOpen, card, attribute, openCardDetail, setOpenCardDetail }) => {
     const {
         setCardTitle,
         socket,
@@ -18,7 +18,7 @@ const CardQuickEditor = ({ open, setOpen, card, attribute }) => {
             textAreaRef.current.focus();
             textAreaRef.current.selectionStart = textAreaRef.current.value.length;
         }
-    }, []);
+    }, [open]);
 
     const handleClose = (e) => {
         if (e.target === e.currentTarget) {
@@ -34,13 +34,12 @@ const CardQuickEditor = ({ open, setOpen, card, attribute }) => {
         }
 
         try {
-            const response = await axiosPrivate.put(`/cards/${card._id}/new-title`, JSON.stringify({ title: textAreaRef.current.value }));
-            console.log(response);
-
-            const newTitle = response.data.newCard.title;
-
+            const newTitle = textAreaRef.current.value;
             setCardTitle(card._id, card.listId, newTitle);
             setInitialTitle(newTitle);
+
+            await axiosPrivate.put(`/cards/${card._id}/new-title`, JSON.stringify({ title: newTitle }));
+
             socket.emit("updateCardTitle", { id: card._id, listId: card.listId, title: newTitle });
         } catch (err) {
             console.log(err);
@@ -69,11 +68,16 @@ const CardQuickEditor = ({ open, setOpen, card, attribute }) => {
         setOpen(false);
     };
 
+    const handleOpenCardDetail = () => {
+        setOpen(false);
+        setOpenCardDetail(true);
+    };
+
     return (
         <>
             <div
                 onClick={handleClose}
-                className="fixed top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-300 opacity-60 z-50">
+                className="fixed top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-300 opacity-60 z-50 cursor-auto">
             </div>
 
             <div
@@ -83,25 +87,37 @@ const CardQuickEditor = ({ open, setOpen, card, attribute }) => {
                     left: `${attribute.left}px`,
                     width: `${attribute.width}px`,
                     height: `${attribute.height}px`,
-                    minHeight: '80px',
                     transform: `translateY(${-attribute.height}px)`
                 }}
             >
-                <textarea
-                    ref={textAreaRef}
-                    className="text-[0.8rem] h-full bg-gray-50 border-[2px] py-4 px-4 text-gray-600 border-black shadow-[0_3px_0_0] shadow-black leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50"
-                    placeholder='Title for this card'
-                    onChange={handleTextAreaChanged}
-                    onKeyDown={handleTextAreaOnEnter}
-                    value={initialTitle}
-                />
+                <div className="flex h-full relative mb-2">
+                    <textarea
+                        ref={textAreaRef}
+                        className="text-[0.8rem] h-full bg-gray-50 border-[2px] py-4 px-4 text-gray-600 border-black shadow-[0_3px_0_0] shadow-black leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50"
+                        placeholder='Title for this card'
+                        onChange={handleTextAreaChanged}
+                        onKeyDown={handleTextAreaOnEnter}
+                        value={initialTitle}
+                    />
+                    <div className="flex flex-col gap-2 absolute top-0 -right-1 translate-x-[100%] justify-start items-start w-[200px]">
+                        <button
+                            onClick={() => handleOpenCardDetail()}
+                            className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-600 px-3 py-1 flex--center opacity-80">Open Card</button>
+                        <button
+                            onClick={() => handleOpenCardDetail()}
+                            className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-600 px-3 py-1 flex--center opacity-80">Add label</button>
+                        <button
+                            onClick={() => handleOpenCardDetail()}
+                            className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-600 px-3 py-1 flex--center opacity-80">Change highlight</button>
+                        <button className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-600 px-3 py-1 flex--center opacity-80">Close</button>
+                    </div>
+                </div>
                 <button
                     onClick={handleSaveButtonOnClick}
-                    className="button--style--dark text-[0.75rem] font-semibold">
+                    className="button--style--dark text-[0.8rem] font-semibold">
                     Save
                 </button>
             </div>
-
         </>
     )
 }

@@ -32,9 +32,7 @@ const List = ({ index, list, cards }) => {
         titleRef.current.classList.remove('hidden');
 
         try {
-            const response = await axiosPrivate.put(`/lists/${list._id}/new-title`, JSON.stringify({ title: textAreaRef.current.value }));
-            console.log(response.data.newList);
-
+            await axiosPrivate.put(`/lists/${list._id}/new-title`, JSON.stringify({ title: textAreaRef.current.value }));
             setInitialListData(textAreaRef.current.value);
             socket.emit("updateListTitle", { listId: list._id, title: textAreaRef.current.value });
         } catch(err) {
@@ -53,16 +51,14 @@ const List = ({ index, list, cards }) => {
     const handleTextAreaChanged = () => {
         const textarea = textAreaRef.current;
         // setText(textarea.value);
-        textarea.style.height = 'auto';
-
-        const littleOffset = 4; // prevent resizing when start typing
-        textarea.style.height = `${textarea.scrollHeight + littleOffset}px`;
+        textarea.style.height = '24px';
+        textarea.style.height = `${textarea.scrollHeight}px`;
         setListTitle(list._id, textAreaRef.current.value);
     };
 
     const handleTextAreaOnFocus = () => {
         const textarea = textAreaRef.current;
-        const littleOffset = 4;
+        textarea.style.height = '24px';
         textarea.style.height = `${textarea.scrollHeight + littleOffset}px`;
     };
 
