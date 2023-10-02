@@ -19,6 +19,12 @@ const boardSchema = new mongoose.Schema({
         required: true,
     },
 
+    createdAt: {
+        type: Date,
+        required: true,
+        default: Date.now,
+    },
+
     // labels: [{
     //     type: mongoose.Schema.Types.ObjectId,
     //     ref: 'Label',

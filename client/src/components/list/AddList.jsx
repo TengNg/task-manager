@@ -2,7 +2,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useState, useRef, useEffect } from "react"
 import useBoardState from "../../hooks/useBoardState";
-import axios from "../../api/axios";
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { lexorank } from '../../utils/class/Lexorank';
 

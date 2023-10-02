@@ -8,7 +8,7 @@ const cardSchema = new mongoose.Schema({
 
     description: {
         type: String,
-        default: undefined,
+        default: null,
     },
 
     order: {
@@ -28,8 +28,10 @@ const cardSchema = new mongoose.Schema({
         default: Date.now,
     },
 
-    updatedBy: {
-    },
+    highlight: {
+        type: String,
+        default: null,
+    }
 
     // labels: [{
     //     type: mongoose.Schema.Types.ObjectId,

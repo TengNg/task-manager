@@ -59,7 +59,7 @@ const List = ({ index, list, cards }) => {
     const handleTextAreaOnFocus = () => {
         const textarea = textAreaRef.current;
         textarea.style.height = '24px';
-        textarea.style.height = `${textarea.scrollHeight + littleOffset}px`;
+        textarea.style.height = `${textarea.scrollHeight}px`;
     };
 
     const handleTitleInputBlur = () => {

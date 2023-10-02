@@ -29,6 +29,18 @@ const Card = ({ index, card }) => {
         setOpenCardDetail(true);
     };
 
+    function getStyle(style, snapshot) {
+        // if (!snapshot.isDropAnimating) {
+        //     return style;
+        // }
+        return {
+            ...style,
+            boxShadow: `${card.highlight == null ? '0 3px 0 0 #4b5563' : `0 3px 0 0 ${card.highlight}`}`,
+            borderColor: `${card.highlight == null ? '#4b5563' : `${card.highlight}`}` ,
+            // transitionDuration: `0.001s`,
+        };
+    }
+
     return (
         <>
             {
@@ -64,9 +76,8 @@ const Card = ({ index, card }) => {
                         }}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className={`w-full border-[2px] border-gray-500 px-2 py-3 flex flex-col mt-3 shadow-[0_3px_0_0] shadow-gray-600 bg-gray-50 relative hover:cursor-pointer
-                                ${snapshot.isDragging && 'opacity-80 bg-blue-100'}`}
-
+                        className={`w-full border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_3px_0_0] shadow-gray-600 bg-gray-50 relative hover:cursor-pointer`}
+                        style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >
                         <p className="w-full h-full bg-inherit font-semibold text-gray-600 rounded-sm py-1 px-2 focus:outline-none text-[0.8rem] break-words whitespace-pre-line" >

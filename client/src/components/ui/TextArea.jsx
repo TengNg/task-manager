@@ -9,15 +9,14 @@ const TextArea = ({ initialValue, minHeight, ...props }) => {
         textarea.style.height = minHeight;
         const littleOffset = 4; // prevent resizing when start typing
         textarea.style.height = `${textarea.scrollHeight + littleOffset}px`;
-        textAreaRef.current.focus();
-        textAreaRef.current.selectionStart = textAreaRef.current.value.length;
     }, []);
 
     const handleTextAreaChanged = () => {
         const textarea = textAreaRef.current;
         setText(textarea.value);
+        const littleOffset = 4;
         textarea.style.height = minHeight;
-        textarea.style.height = `${textarea.scrollHeight}px`;
+        textarea.style.height = `${textarea.scrollHeight + littleOffset}px`;
     };
 
     return (

@@ -5,6 +5,7 @@ const {
     addCard,
     updateCard,
     updateTitle,
+    updateDescription,
     reorder,
 } = require('../../controllers/cardsController');
 
@@ -20,5 +21,10 @@ router.route("/:id/reorder")
 router.route("/:id/new-title")
     .put(updateTitle)
 
+router.route("/:id/new-description")
+    .put(updateDescription)
+
+router.route("/:id/new-highlight")
+    .put(updateHighlight)
 
 module.exports = router;

@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import HighlightPicker from "./HighlightPicker";
 
 const CardQuickEditor = ({ open, setOpen, card, attribute, openCardDetail, setOpenCardDetail }) => {
     const {
@@ -11,6 +12,8 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, openCardDetail, setOp
     const axiosPrivate = useAxiosPrivate();
 
     const [initialTitle, setInitialTitle] = useState(card.title);
+    const [openHighlightPicker, setOpenHighlightPicker] = useState(false);
+
     const textAreaRef = useRef();
 
     useEffect(() => {
@@ -75,9 +78,10 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, openCardDetail, setOp
 
     return (
         <>
+
             <div
                 onClick={handleClose}
-                className="fixed top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-300 opacity-60 z-50 cursor-auto">
+                className="fixed top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-300 opacity-60 z-20 cursor-auto">
             </div>
 
             <div
@@ -94,6 +98,7 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, openCardDetail, setOp
                     <textarea
                         ref={textAreaRef}
                         className="text-[0.8rem] h-full bg-gray-50 border-[2px] py-4 px-4 text-gray-600 border-black shadow-[0_3px_0_0] shadow-black leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50"
+                        style={{ boxShadow: `${card.highlight == null ? '0 3px 0 0 black' : `0 3px 0 0 ${card.highlight}`}`, borderColor: `${card.highlight == null ? 'black' : `${card.highlight}`}` }}
                         placeholder='Title for this card'
                         onChange={handleTextAreaChanged}
                         onKeyDown={handleTextAreaOnEnter}
@@ -104,12 +109,17 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, openCardDetail, setOp
                             onClick={() => handleOpenCardDetail()}
                             className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-600 px-3 py-1 flex--center opacity-80">Open Card</button>
                         <button
-                            onClick={() => handleOpenCardDetail()}
                             className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-600 px-3 py-1 flex--center opacity-80">Add label</button>
                         <button
-                            onClick={() => handleOpenCardDetail()}
-                            className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-600 px-3 py-1 flex--center opacity-80">Change highlight</button>
-                        <button className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-600 px-3 py-1 flex--center opacity-80">Close</button>
+                            className="hover:ms-1 transition-all text-[0.75rem] relative text-white bg-gray-600 px-3 py-1 flex--center opacity-80 z-30"
+                        >
+                            Change highlight
+                            <HighlightPicker card={card}/>
+                        </button>
+                        <button
+                            onClick={() => setOpen(false)}
+                            className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-600 px-3 py-1 flex--center opacity-80 z-0"
+                        >Close</button>
                     </div>
                 </div>
                 <button

@@ -58,6 +58,11 @@
     .anchor--style--selected {
         @apply hover:text-white text-white bg-gray-500 flex justify-center items-center p-2 rounded-md
     }
+
+    .card--detail--button {
+        @apply bg-gray-100 border-[2px] border-black shadow-[0_3px_0_0] w-fit text-[0.8rem] px-3 py-4 cursor-pointer
+
+    }
 }
 
 body {

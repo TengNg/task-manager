@@ -2,10 +2,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import TextArea from "../ui/TextArea";
 import useBoardState from "../../hooks/useBoardState";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+
 const CardDetail = ({ open, setOpen, card }) => {
-    const textAreaRef = useRef();
-    const { boardState } = useBoardState();
+    const {
+        boardState,
+        setCardDescription,
+        setCardTitle,
+        socket,
+    } = useBoardState();
+
     const [openDescriptionComposer, setOpenDescriptionComposer] = useState(false);
+    const axiosPrivate = useAxiosPrivate();
 
     const listTitle = useCallback(() => {
         return boardState.lists.find(list => list._id == card.listId).title
@@ -15,20 +25,41 @@ const CardDetail = ({ open, setOpen, card }) => {
         setOpen(false);
     };
 
-    const confirmTitle = () => {
-    };
+    const confirmDescription = async (e) => {
+        if (card.description === e.target.value.trim()) {
+            return;
+        }
 
-    const handleTextAreaOnFocus = (e) => {
-    };
+        try {
+            const response = await axiosPrivate.put(`/cards/${card._id}/new-description`, JSON.stringify({ description: e.target.value.trim() }));
+            console.log(response);
 
-    const handleTextAreaOnBlur = (e) => {
-        if (e.target.value.trim() === "") {
-            setOpenDescriptionComposer(false);
+            setCardDescription(card._id, card.listId, e.target.value.trim());
+
+            socket.emit("updateCardDescription", { id: card._id, listId: card.listId, description: e.target.value.trim() });
+        } catch (err) {
+            console.log(err);
         }
     };
 
-    const handleTextAreaOnEnter = (e) => {
-        if (e.key == 'Enter') {
+    const confirmTitle = async (e) => {
+        if (card.title === e.target.value.trim()) {
+            return;
+        }
+
+        if (e.target.value.trim() === "") {
+            return;
+        }
+
+        try {
+            const response = await axiosPrivate.put(`/cards/${card._id}/new-title`, JSON.stringify({ title: e.target.value.trim() }));
+            console.log(response);
+
+            setCardTitle(card._id, card.listId, e.target.value.trim());
+
+            socket.emit("updateCardTitle", { id: card._id, listId: card.listId, title: e.target.value.trim() });
+        } catch (err) {
+            console.log(err);
         }
     };
 
@@ -39,14 +70,29 @@ const CardDetail = ({ open, setOpen, card }) => {
                 className="fixed box-border top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-500 opacity-40 z-50 cursor-auto">
             </div>
 
-            <div className="box--style flex p-3 pb-6 flex-col absolute top-[4rem] right-0 left-[50%] -translate-x-[50%] min-w-[700px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
+            <div className="box--style flex flex-col p-3 pb-6 flex-col absolute top-[4rem] right-0 left-[50%] -translate-x-[50%] min-w-[700px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
+                {
+                    card.highlight != null &&
+                        <div
+                            className="w-[90%] h-[1rem]"
+                            style={{ backgroundColor: `${card.highlight}` }}
+                        ></div>
+                }
+
                 <button
                     onClick={() => setOpen(false)}
-                    className="absolute top-3 right-3 text-[0.75rem] text-white bg-gray-600 px-3 py-1 flex--center">Close</button>
+                    className="absolute top-2 right-1 text-[0.75rem] px-3 py-1 text-gray-500 flex--center">
+                    <FontAwesomeIcon icon={faXmark} size='xl' />
+                </button>
 
                 <TextArea
                     className="break-words box-border p-1 h-[2rem] w-[90%] text-gray-600 bg-gray-200 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-blue-600 focus:bg-gray-100"
-                    onKeyDown={handleTextAreaOnEnter}
+                    onKeyDown={(e) => {
+                        if (e.key == 'Enter') {
+                            e.target.blur();
+                        }
+                    }}
+                    onBlur={(e) => confirmTitle(e)}
                     initialValue={card.title}
                     minHeight={'2rem'}
                 />
@@ -57,7 +103,7 @@ const CardDetail = ({ open, setOpen, card }) => {
 
                 <div className="w-full flex">
                     <div className="flex-1">
-                        <p className="text-[0.8rem] font-semibold">Description</p>
+                        <p className="text-[0.9rem] font-semibold">Description</p>
 
                         {
                             (card.description.trim() === "" && openDescriptionComposer === false) &&
@@ -76,21 +122,22 @@ const CardDetail = ({ open, setOpen, card }) => {
                             <div className="flex flex-col items-start gap-2">
                                 <TextArea
                                     className="border-[2px] shadow-[0_2px_0_0] border-black shadow-black break-words box-border text-[0.8rem] py-1 px-2 w-[90%] text-gray-600 bg-gray-100 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-none"
-                                    onKeyDown={handleTextAreaOnEnter}
-                                    onBlur={handleTextAreaOnBlur}
+                                    onBlur={(e) => confirmDescription(e)}
                                     placeholder={"Add more description..."}
                                     initialValue={card.description}
                                     minHeight={'auto'}
                                 />
-                                <button className="button--style--dark py-1 px-3 text-[0.8rem]">Save</button>
+                                <button
+                                    onClick={(e) => e.target.blur()}
+                                    className="button--style--dark py-1 px-3 text-[0.8rem]">Save</button>
                             </div>
                         }
 
                     </div>
 
-                    <div className="flex flex-col gap-2">
-                        <button className="text-[0.75rem] text-white bg-gray-500 px-3 py-2 flex justify-start">Add label</button>
-                        <button className="text-[0.75rem] text-white bg-gray-500 px-3 py-2 flex justify-start">Change highlight</button>
+                    <div className="flex flex-col gap-3">
+                        <button className="card--detail--button px-2 py-2">Add label</button>
+                        <button className="card--detail--button px-2 py-2">Change highlight</button>
                     </div>
                 </div>
 

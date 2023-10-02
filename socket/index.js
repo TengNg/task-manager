@@ -35,6 +35,10 @@ io.on('connection', (socket) => {
         socket.broadcast.emit("updatedCardTitle", data);
     });
 
+    socket.on("updateCardDescription", (data) => {
+        socket.broadcast.emit("updatedCardDescription", data);
+    });
+
     socket.on("send_message", (data) => {
         socket.broadcast.emit("receive_message", data);
     });

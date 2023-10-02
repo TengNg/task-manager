@@ -46,6 +46,10 @@ export const BoardStateContextProvider = ({ children }) => {
                 setCardTitle(data.id, data.listId, data.title);
             });
 
+            socket.on("updatedCardDescription", (data) => {
+                setCardDescription(data.id, data.listId, data.description);
+            });
+
             // socket.on("getBoardWithUpdatedTitle", (data) => {
             //     setBoardTitle(data.title);
             // });
@@ -74,6 +78,30 @@ export const BoardStateContextProvider = ({ children }) => {
                 lists: prev.lists.map(list => list._id === listId ? {
                     ...list,
                     cards: list.cards.map(card => card._id === cardId ? { ...card, title: value } : card)
+                } : list)
+            }
+        });
+    };
+
+    const setCardDescription = (cardId, listId, value) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.map(list => list._id === listId ? {
+                    ...list,
+                    cards: list.cards.map(card => card._id === cardId ? { ...card, description: value } : card)
+                } : list)
+            }
+        });
+    };
+
+    const setCardHighlight = (cardId, listId, value) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.map(list => list._id === listId ? {
+                    ...list,
+                    cards: list.cards.map(card => card._id === cardId ? { ...card, highlight: value } : card)
                 } : list)
             }
         });
@@ -134,6 +162,8 @@ export const BoardStateContextProvider = ({ children }) => {
                 setBoardTitle,
                 setListTitle,
                 setCardTitle,
+                setCardDescription,
+                setCardHighlight,
                 setBoardLinks,
                 setBoardLinkTitle,
                 addListToBoard,
