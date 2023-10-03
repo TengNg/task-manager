@@ -6,6 +6,7 @@ const {
     updateCard,
     updateTitle,
     updateDescription,
+    updateHighlight,
     reorder,
 } = require('../../controllers/cardsController');
 

@@ -73,38 +73,42 @@ const CardDetail = ({ open, setOpen, card }) => {
             <div className="box--style flex flex-col p-3 pb-6 flex-col absolute top-[4rem] right-0 left-[50%] -translate-x-[50%] min-w-[700px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
                 {
                     card.highlight != null &&
-                        <div
-                            className="w-[90%] h-[1rem]"
-                            style={{ backgroundColor: `${card.highlight}` }}
-                        ></div>
+                    <div
+                        className="w-full h-[1rem]"
+                        style={{ backgroundColor: `${card.highlight}` }}
+                    ></div>
                 }
 
-                <button
-                    onClick={() => setOpen(false)}
-                    className="absolute top-2 right-1 text-[0.75rem] px-3 py-1 text-gray-500 flex--center">
-                    <FontAwesomeIcon icon={faXmark} size='xl' />
-                </button>
+                <div className="flex justify-start items start">
+                    <div className="flex flex-col flex-1">
+                        <TextArea
 
-                <TextArea
-                    className="break-words box-border p-1 h-[2rem] w-[90%] text-gray-600 bg-gray-200 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-blue-600 focus:bg-gray-100"
-                    onKeyDown={(e) => {
-                        if (e.key == 'Enter') {
-                            e.target.blur();
-                        }
-                    }}
-                    onBlur={(e) => confirmTitle(e)}
-                    initialValue={card.title}
-                    minHeight={'2rem'}
-                />
+                            className="break-words box-border p-1 h-[2rem] w-[90%] text-gray-600 bg-gray-200 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-blue-600 focus:bg-gray-100"
+                            onKeyDown={(e) => {
+                                if (e.key == 'Enter') {
+                                    e.target.blur();
+                                }
+                            }}
+                            onBlur={(e) => confirmTitle(e)}
+                            initialValue={card.title}
+                            minHeight={'2rem'}
+                        />
 
-                <p className="mx-1 text-[0.75rem]">in list <span className="underline">{listTitle()}</span></p>
+                        <p className="mx-1 text-[0.75rem]">in list <span className="underline">{listTitle()}</span></p>
+                    </div>
+
+                    <button
+                        onClick={() => setOpen(false)}
+                        className="text-[0.75rem] py-1 text-gray-500 flex">
+                        <FontAwesomeIcon icon={faXmark} size='xl' />
+                    </button>
+                </div>
 
                 <div className="bg-black h-[1px] w-[100%] my-4"></div>
 
                 <div className="w-full flex">
                     <div className="flex-1">
                         <p className="text-[0.9rem] font-semibold">Description</p>
-
                         {
                             (card.description.trim() === "" && openDescriptionComposer === false) &&
                             <div
@@ -136,7 +140,6 @@ const CardDetail = ({ open, setOpen, card }) => {
                     </div>
 
                     <div className="flex flex-col gap-3">
-                        <button className="card--detail--button px-2 py-2">Add label</button>
                         <button className="card--detail--button px-2 py-2">Change highlight</button>
                     </div>
                 </div>

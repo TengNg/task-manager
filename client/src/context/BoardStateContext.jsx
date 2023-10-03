@@ -50,6 +50,10 @@ export const BoardStateContextProvider = ({ children }) => {
                 setCardDescription(data.id, data.listId, data.description);
             });
 
+            socket.on("updatedCardHighlight", (data) => {
+                setCardHighlight(data.id, data.listId, data.highlight);
+            });
+
             // socket.on("getBoardWithUpdatedTitle", (data) => {
             //     setBoardTitle(data.title);
             // });

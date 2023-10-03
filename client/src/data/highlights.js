@@ -1,5 +1,5 @@
 const highlightColors = {
-    lighterShade: "#5a6472",
+    lighterShade: "#8d97a5",
     roseAlert: "#fb7185",
     redAlert: "#e11d48",
     yellowAlert: "#ca9502",

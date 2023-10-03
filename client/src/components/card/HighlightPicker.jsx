@@ -1,11 +1,25 @@
-import { useState } from 'react';
 import highlightColors from "../../data/highlights";
 import useBoardState from '../../hooks/useBoardState';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
 const HighlightPicker = ({ card }) => {
     const {
         setCardHighlight,
+        socket,
     } = useBoardState();
+
+    const axiosPrivate = useAxiosPrivate();
+
+    const handleSetCardHighlight = async (value) => {
+        try {
+            setCardHighlight(card._id, card.listId, value);
+            const response = await axiosPrivate.put(`/cards/${card._id}/new-highlight`, { highlight: value });
+            console.log(response);
+
+            socket.emit("updateCardHighlight", { id: card._id, listId: card.listId, highlight: value });
+        } catch (err) {
+        }
+    };
 
     return (
         <div
@@ -17,7 +31,7 @@ const HighlightPicker = ({ card }) => {
                         key={index}
                         className={`box-border w-full h-[25px] rounded-lg border-[2px] hover:border-blue-400`}
                         style={{ background: `${highlightColors[item]}` }}
-                        onClick={() => setCardHighlight(card._id, card.listId, highlightColors[item])}
+                        onClick={() => handleSetCardHighlight(highlightColors[item])}
                     >
                     </div>
                 })
@@ -25,7 +39,7 @@ const HighlightPicker = ({ card }) => {
 
             <div
                 className={`w-full h-[25px] rounded-lg bg-gray-400 flex--center font-bold border-[2px] hover:border-blue-400`}
-                onClick={() => setCardHighlight(card._id, card.listId, null)}
+                onClick={() => handleSetCardHighlight(null)}
             >
                 x
             </div>

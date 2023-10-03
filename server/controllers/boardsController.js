@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const Board = require("../models/Board");
 const List = require("../models/List");
 const Card = require("../models/Card");
@@ -14,15 +16,31 @@ const getBoards = async (req, res) => {
     const foundUser = await getUser(username);
     if (!foundUser) return res.status(403).json({ msg: "user not found" });
 
-    // const boards = await Board.find({ createdBy: foundUser._id });
-    const boards = await Board.find();
+    const boards = await Board.find({
+        $or: [
+            { createdBy: foundUser._id },
+            { members: foundUser._id },
+        ]
+    });
+
     return res.json(boards);
 };
 
 const getBoard = async (req, res) => {
     const { id } = req.params;
+    const { username } = req.user;
 
-    const board = await Board.findById(id);
+    const foundUser = await getUser(username);
+    if (!foundUser) return res.status(403).json({ msg: "user not found" });
+
+    const board = await Board.findOne({
+        _id: id,
+        $or: [
+            { createdBy: foundUser._id },
+            { members: foundUser._id },
+        ],
+    });
+
     if (!board) return res.status(404).json({ msg: "board not found" });
 
     const lists = await List.find({ boardId: id }).sort({ order: 'asc' });

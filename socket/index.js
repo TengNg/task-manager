@@ -27,12 +27,15 @@ io.on('connection', (socket) => {
     });
 
     socket.on("updateListTitle", (data) => {
-        console.log(data);
         socket.broadcast.emit("updatedListTitle", data);
     });
 
     socket.on("updateCardTitle", (data) => {
         socket.broadcast.emit("updatedCardTitle", data);
+    });
+
+    socket.on("updateCardHighlight", (data) => {
+        socket.broadcast.emit("updatedCardHighlight", data);
     });
 
     socket.on("updateCardDescription", (data) => {
