@@ -39,7 +39,15 @@ const getBoard = async (req, res) => {
             { createdBy: foundUser._id },
             { members: foundUser._id },
         ],
-    });
+    })
+        .populate({
+            path: 'createdBy',
+            select: 'username profileImage'
+        })
+        .populate({
+            path: 'members',
+            select: 'username profileImage'
+        });
 
     if (!board) return res.status(404).json({ msg: "board not found" });
 

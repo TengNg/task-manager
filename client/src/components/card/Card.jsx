@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faAlignLeft } from '@fortawesome/free-solid-svg-icons';
 import CardQuickEditor from "./CardQuickEditor";
 import CardDetail from './CardDetail';
+import InvitationForm from '../invitation/InvitationForm';
 
 const Card = ({ index, card }) => {
     const [openQuickEditor, setOpenQuickEditor] = useState(false);
@@ -36,7 +37,7 @@ const Card = ({ index, card }) => {
         return {
             ...style,
             boxShadow: `${card.highlight == null ? '0 3px 0 0 #4b5563' : `0 3px 0 0 ${card.highlight}`}`,
-            borderColor: `${card.highlight == null ? '#4b5563' : `${card.highlight}`}` ,
+            borderColor: `${card.highlight == null ? '#4b5563' : `${card.highlight}`}`,
             // transitionDuration: `0.001s`,
         };
     }
@@ -63,6 +64,7 @@ const Card = ({ index, card }) => {
                     setOpenCardDetail={setOpenCardDetail}
                 />
             }
+
             <Draggable
                 key={card._id}
                 draggableId={card._id}

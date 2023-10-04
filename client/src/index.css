@@ -51,6 +51,10 @@
         @apply px-4 py-2 bg-gray-600 text-white hover:bg-gray-500 transition-all
     }
 
+    .button--style--rounded {
+        @apply shadow-[0_3px_0_0] border-[2px] rounded-md font-semibold
+    }
+
     .anchor--style {
         @apply hover:text-white hover:bg-gray-400 flex justify-center items-center p-2 rounded-md transition-all text-gray-600
     }

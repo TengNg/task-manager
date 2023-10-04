@@ -13,11 +13,6 @@ const boardSchema = new mongoose.Schema({
         ref: 'User',
     }],
 
-    // members: {
-    //     type: Array,
-    //     default: [],
-    // },
-
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

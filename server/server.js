@@ -60,6 +60,7 @@ app.use(authenticateToken);
 app.use("/boards", require("./routes/api/boards"));
 app.use("/lists", require("./routes/api/lists"));
 app.use("/cards", require("./routes/api/cards"));
+app.use("/invitations", require("./routes/api/invitations"));
 
 // =================
 

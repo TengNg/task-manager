@@ -5,6 +5,7 @@ import useBoardState from "../hooks/useBoardState";
 import BoardNav from "../components/board/BoardNav";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import Loading from "../components/ui/Loading";
+import InvitationForm from "../components/invitation/InvitationForm";
 
 const Board = () => {
     const {
@@ -15,6 +16,7 @@ const Board = () => {
         socket
     } = useBoardState();
 
+    const [openInvitationForm, setOpenInvitationForm] = useState(false);
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -27,6 +29,8 @@ const Board = () => {
     const { pathname } = location;
 
     useEffect(() => {
+        socket.emit("joinBoard", boardId);
+
         window.addEventListener('beforeunload', function(e) {
             const confirmationMessage = 'You have unsaved changes. Do you want to leave?';
             e.returnValue = confirmationMessage;
@@ -131,25 +135,49 @@ const Board = () => {
 
     return (
         <>
-            <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4 mt-[5rem] min-w-full">
+            {
+                openInvitationForm &&
+                <InvitationForm
+                    open={openInvitationForm}
+                    setOpen={setOpenInvitationForm}
+                />
+            }
+
+
+            <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4 mt-[5rem] min-w-[100vw]">
                 {loading && <Loading />}
-                <div className="sticky inset-0 left-4 flex--center gap-3">
+                <div className="sticky inset-0 left-4 flex gap-6">
                     {/* <button */}
                     {/*     onClick={() => handleSaveBoard()} */}
                     {/*     className="button--style text-[0.8rem] font-bold"> */}
                     {/*     Save */}
                     {/* </button> */}
-                    <input
-                        className={`border-b-[3px] bg-gray-100 border-black text-black py-1 font-bold select-none font-mono mb-2 focus:outline-none`}
-                        style={{
-                            width: `${boardState.board.title.length + 1}ch`
-                        }}
-                        onKeyDown={(e) => handleBoardTitleInputOnKeyDown(e)}
-                        onFocus={(e) => e.target.select()}
-                        onChange={(e) => setBoardTitle(e.target.value)}
-                        onBlur={(e) => handleBoardTitleInputOnBlur(e)}
-                        value={boardState.board.title}
-                    />
+                    <div className="flex-1 w-[98vw] justify-start">
+                        <input
+                            className={`flex-1 overflow-hidden whitespace-nowrap text-ellipsis border-b-[3px] bg-gray-100 border-black text-black py-1 font-bold select-none font-mono mb-2 focus:outline-none`}
+                            style={{
+                                width: `${boardState.board.title.length + 1}ch`,
+                                maxWidth: '100%',
+                            }}
+                            onKeyDown={(e) => handleBoardTitleInputOnKeyDown(e)}
+                            onFocus={(e) => e.target.select()}
+                            onChange={(e) => setBoardTitle(e.target.value)}
+                            onBlur={(e) => handleBoardTitleInputOnBlur(e)}
+                            value={boardState.board.title}
+                        />
+                    </div>
+
+                    <div className="flex h-full gap-2 absolute -top-1 right-0">
+                        <button
+                            onClick={() => setOpenInvitationForm(true)}
+                            className="h-full border-gray-600 shadow-[0_3px_0_0] shadow-gray-600 rounded-lg px-3 bg-gray-100 border-[3px] text-[0.75rem] text-gray-600 font-bold"
+                        >Invite</button>
+
+                        <button
+                            className="h-full border-gray-600 shadow-[0_3px_0_0] shadow-gray-600 rounded-lg px-3 bg-gray-100 border-[3px] text-[0.75rem] text-gray-600 font-bold"
+                        >Options</button>
+                    </div>
+
                 </div>
 
                 <ListContainer />

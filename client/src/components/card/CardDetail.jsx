@@ -70,7 +70,7 @@ const CardDetail = ({ open, setOpen, card }) => {
                 className="fixed box-border top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-500 opacity-40 z-50 cursor-auto">
             </div>
 
-            <div className="box--style flex flex-col p-3 pb-6 flex-col absolute top-[4rem] right-0 left-[50%] -translate-x-[50%] min-w-[700px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
+            <div className="fixed box--style flex flex-col p-3 pb-6 top-[4rem] right-0 left-[50%] -translate-x-[50%] min-w-[700px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
                 {
                     card.highlight != null &&
                     <div

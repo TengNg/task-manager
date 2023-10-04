@@ -1,19 +1,22 @@
 import { createContext, useEffect, useState } from "react";
 import { io } from 'socket.io-client'
+import useAuth from "../hooks/useAuth";
+
+const socketId = io.connect("http://localhost:3000");
 
 const BoardStateContext = createContext({});
 
 export const BoardStateContextProvider = ({ children }) => {
     const [boardState, setBoardState] = useState({});
-    const [socket, setSocket] = useState(null);
+    const [socket, setSocket] = useState(socketId);
 
-    useEffect(() => {
-        const newSocket = io('http://localhost:3000');
-        setSocket(newSocket);
-        return () => {
-            newSocket.disconnect();
-        }
-    }, []);
+    // useEffect(() => {
+    //     const newSocket = io('http://localhost:3000');
+    //     setSocket(newSocket);
+    //     return () => {
+    //         newSocket.disconnect();
+    //     }
+    // }, []);
 
     useEffect(() => {
         if (socket) {

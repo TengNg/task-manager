@@ -2,48 +2,64 @@ const { Server } = require('socket.io');
 
 const io = new Server({ cors: "http://localhost:5173" });
 
-let boardState = null;
+const boardIdMap = new Map();
 
 io.on('connection', (socket) => {
-    socket.on("addBoardState", (data) => {
-        boardState = data;
-        socket.broadcast.emit("getBoardState", data);
+    socket.on("joinBoard", (data) => {
+        boardIdMap.set(socket.id, data);
+        socket.join(data);
     });
 
     socket.on("updateBoardTitle", (data) => {
-        socket.broadcast.emit("getBoardWithUpdatedTitle", data);
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("getBoardWithUpdatedTitle", data);
     });
 
     socket.on("updateLists", (data) => {
-        socket.broadcast.emit("getBoardWithUpdatedLists", data);
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("getBoardWithUpdatedLists", data);
     });
 
     socket.on("addList", (data) => {
-        socket.broadcast.emit("newList", data);
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("newList", data);
     });
 
     socket.on("addCard", (data) => {
-        socket.broadcast.emit("newCard", data);
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("newCard", data);
     });
 
     socket.on("updateListTitle", (data) => {
-        socket.broadcast.emit("updatedListTitle", data);
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("updatedListTitle", data);
     });
 
     socket.on("updateCardTitle", (data) => {
-        socket.broadcast.emit("updatedCardTitle", data);
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("updatedCardTitle", data);
     });
 
     socket.on("updateCardHighlight", (data) => {
-        socket.broadcast.emit("updatedCardHighlight", data);
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("updatedCardHighlight", data);
     });
 
     socket.on("updateCardDescription", (data) => {
-        socket.broadcast.emit("updatedCardDescription", data);
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("updatedCardDescription", data);
     });
 
-    socket.on("send_message", (data) => {
-        socket.broadcast.emit("receive_message", data);
+    socket.on("disconnect", () => {
+        boardIdMap.delete(socket.id);
     });
 });
 
