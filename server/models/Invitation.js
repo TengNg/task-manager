@@ -19,6 +19,12 @@ const invitationSchema = new mongoose.Schema({
         required: true,
     },
 
+    createdAt: {
+        type: Date,
+        required: true,
+        default: Date.now,
+    },
+
     // role: String, // The role assigned upon accepting the invitation. Could be 'Observer' or 'Member'
 
     status: {

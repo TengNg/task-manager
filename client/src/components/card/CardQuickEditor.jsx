@@ -3,7 +3,7 @@ import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HighlightPicker from "./HighlightPicker";
 
-const CardQuickEditor = ({ open, setOpen, card, attribute, openCardDetail, setOpenCardDetail }) => {
+const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail }) => {
     const {
         setCardTitle,
         socket,
@@ -81,7 +81,7 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, openCardDetail, setOp
 
             <div
                 onClick={handleClose}
-                className="fixed top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-300 opacity-60 z-20 cursor-auto">
+                className="fixed top-0 left-0 text-gray-700 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-400 opacity-60 z-20 cursor-auto">
             </div>
 
             <div
@@ -107,24 +107,24 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, openCardDetail, setOp
                     <div className="flex flex-col gap-2 absolute top-0 -right-1 translate-x-[100%] justify-start items-start w-[200px]">
                         <button
                             onClick={() => handleOpenCardDetail()}
-                            className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-600 px-3 py-1 flex--center opacity-80">Open Card</button>
+                            className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-800 px-3 py-1 flex--center opacity-80">Open Card</button>
+
                         <button
-                            className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-600 px-3 py-1 flex--center opacity-80">Add label</button>
-                        <button
-                            className="hover:ms-1 transition-all text-[0.75rem] relative text-white bg-gray-600 px-3 py-1 flex--center opacity-80 z-30"
+                            className="hover:ms-1 transition-all text-[0.75rem] relative text-white bg-gray-800 px-3 py-1 flex--center opacity-80 z-30"
                         >
                             Change highlight
                             <HighlightPicker card={card}/>
                         </button>
+
                         <button
                             onClick={() => setOpen(false)}
-                            className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-600 px-3 py-1 flex--center opacity-80 z-0"
+                            className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-800 px-3 py-1 flex--center opacity-80 z-0"
                         >Close</button>
                     </div>
                 </div>
                 <button
                     onClick={handleSaveButtonOnClick}
-                    className="button--style--dark text-[0.8rem] font-semibold">
+                    className="button--style--dark bg-gray-700 text-[0.8rem] font-semibold">
                     Save
                 </button>
             </div>

@@ -42,11 +42,11 @@ const getBoard = async (req, res) => {
     })
         .populate({
             path: 'createdBy',
-            select: 'username profileImage'
+            select: 'username profileImage createdAt'
         })
         .populate({
             path: 'members',
-            select: 'username profileImage'
+            select: 'username profileImage createdAt'
         });
 
     if (!board) return res.status(404).json({ msg: "board not found" });
@@ -100,10 +100,35 @@ const updateTitle = async (req, res) => {
     return res.status(200).json({ msg: 'board updated', newBoard });
 };
 
+const removeMemberFromBoard = async (req, res) => {
+    try {
+        const { id, memberId } = req.params;
+
+        const board = await Board.findById(id);
+
+        if (!board) {
+            return res.status(404).json({ error: 'Board not found' });
+        }
+
+        const indexOfMember = board.members.indexOf(memberId);
+        if (indexOfMember !== -1) {
+            board.members.splice(indexOfMember, 1);
+            await board.save();
+        } else {
+            return res.status(404).json({ error: 'Member not found in the board' });
+        }
+
+        res.status(200).json({ msg: 'Member removed from the board successfully' });
+    } catch (err) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 module.exports = {
     getBoards,
     createBoard,
     getBoard,
     updateBoard,
     updateTitle,
+    removeMemberFromBoard,
 };

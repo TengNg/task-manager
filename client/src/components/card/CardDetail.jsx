@@ -125,11 +125,11 @@ const CardDetail = ({ open, setOpen, card }) => {
                             (card.description.trim() !== "" || openDescriptionComposer === true) &&
                             <div className="flex flex-col items-start gap-2">
                                 <TextArea
-                                    className="border-[2px] shadow-[0_2px_0_0] border-black shadow-black break-words box-border text-[0.8rem] py-1 px-2 w-[90%] text-gray-600 bg-gray-100 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-none"
+                                    className="border-[2px] shadow-[0_2px_0_0] border-black shadow-black break-words box-border text-[0.9rem] py-2 px-3 w-[90%] text-gray-600 bg-gray-100 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-none"
                                     onBlur={(e) => confirmDescription(e)}
                                     placeholder={"Add more description..."}
                                     initialValue={card.description}
-                                    minHeight={'auto'}
+                                    minHeight={'100px'}
                                 />
                                 <button
                                     onClick={(e) => e.target.blur()}

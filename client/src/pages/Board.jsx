@@ -6,6 +6,8 @@ import BoardNav from "../components/board/BoardNav";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import Loading from "../components/ui/Loading";
 import InvitationForm from "../components/invitation/InvitationForm";
+import Avatar from "../components/avatar/Avatar";
+import BoardMenu from "../components/board/BoardMenu";
 
 const Board = () => {
     const {
@@ -17,6 +19,7 @@ const Board = () => {
     } = useBoardState();
 
     const [openInvitationForm, setOpenInvitationForm] = useState(false);
+    const [openBoardMenu, setOpenBoardMenu] = useState(false);
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -31,11 +34,6 @@ const Board = () => {
     useEffect(() => {
         socket.emit("joinBoard", boardId);
 
-        window.addEventListener('beforeunload', function(e) {
-            const confirmationMessage = 'You have unsaved changes. Do you want to leave?';
-            e.returnValue = confirmationMessage;
-        });
-
         window.addEventListener('keydown', handleKeyPress);
 
         return () => {
@@ -49,6 +47,7 @@ const Board = () => {
         const getBoardData = async () => {
             const response = await axiosPrivate.get(`/boards/${boardId}`);
             const response2 = await axiosPrivate.get(`/boards`);
+            console.log(response.data);
             setBoardState(response.data);
             setTitle(response.data.board.title);
             setBoardLinks(response2.data);
@@ -143,10 +142,10 @@ const Board = () => {
                 />
             }
 
-
             <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4 mt-[5rem] min-w-[100vw]">
-                {loading && <Loading />}
-                <div className="sticky inset-0 left-4 flex gap-6">
+                {/* <Loading loanding={loading} /> */}
+
+                <div className="sticky inset-0 left-4 flex gap-6 z-[2]">
                     {/* <button */}
                     {/*     onClick={() => handleSaveBoard()} */}
                     {/*     className="button--style text-[0.8rem] font-bold"> */}
@@ -170,19 +169,49 @@ const Board = () => {
                     <div className="flex h-full gap-2 absolute -top-1 right-0">
                         <button
                             onClick={() => setOpenInvitationForm(true)}
-                            className="h-full border-gray-600 shadow-[0_3px_0_0] shadow-gray-600 rounded-lg px-3 bg-gray-100 border-[3px] text-[0.75rem] text-gray-600 font-bold"
+                            className={`h-full border-gray-600 shadow-gray-600 w-[80px] rounded-lg px-3 bg-gray-100 border-[3px] text-[0.75rem] text-gray-600 font-bold hover:bg-white
+                                    ${openInvitationForm ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]' }`}
                         >Invite</button>
 
                         <button
-                            className="h-full border-gray-600 shadow-[0_3px_0_0] shadow-gray-600 rounded-lg px-3 bg-gray-100 border-[3px] text-[0.75rem] text-gray-600 font-bold"
-                        >Options</button>
+                            onClick={(e) => {
+                                if (e.target === e.currentTarget) {
+                                    setOpenBoardMenu(prev => !prev);
+                                }
+                            }}
+                            className={`relative h-full border-gray-600 w-[80px] shadow-gray-600 rounded-lg px-3 bg-gray-100 border-[3px] text-[0.75rem] text-gray-600 font-bold hover:bg-white
+                                    ${openBoardMenu ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]' }`}
+                        >
+                            Options
+                            {openBoardMenu && <BoardMenu setOpen={setOpenBoardMenu} />}
+                        </button>
+
                     </div>
 
                 </div>
 
                 <ListContainer />
 
-                <div className="min-w-[100%] w-full h-[1px] mt-[2rem] bg-black"></div>
+                <div className="fixed top-[1rem] left-[1rem] flex items-center gap-1 z-10 w-fit min-w-">
+                    <Avatar
+                        username={boardState.board.createdBy.username}
+                        profileImage={boardState.board.createdBy.profileImage}
+                        size="md"
+                        isAdmin={true}
+                    />
+
+                    {
+                        boardState.board.members.map(user => {
+                            return <Avatar
+                                username={user.username}
+                                profileImage={user.profileImage}
+                                size="md"
+                            />
+                        })
+                    }
+
+                </div>
+
             </div>
 
             <BoardNav />

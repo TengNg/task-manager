@@ -1,5 +1,6 @@
 const Invitation = require("../models/Invitation");
 const User = require("../models/User");
+const Board = require("../models/Board");
 
 const getUser = (username) => {
     const foundUser = User.findOne({ username });
@@ -17,11 +18,11 @@ const getInvitations = async (req, res) => {
             .find({ invitedUserId: foundUser._id })
             .populate({
                 path: 'invitedUserId',
-                select: 'username profileImage'
+                select: 'username profileImage createdAt'
             })
             .populate({
                 path: 'invitedByUserId',
-                select: 'username profileImage'
+                select: 'username profileImage createdAt'
             });
         ;
 
@@ -67,6 +68,19 @@ const acceptInvitation = async (req, res) => {
             { new: true }
         );
 
+        const { boardId, invitedUserId } = invitation;
+
+        const board = await Board.findById(boardId);
+
+        if (!board) {
+            return res.status(404).json({ error: 'Board not found' });
+        }
+
+        if (!board.members.includes(invitedUserId)) {
+            board.members.push(invitedUserId);
+            await board.save(); // Save the board to persist the changes
+        }
+
         res.json({ invitation });
     } catch (error) {
         console.error(error);
@@ -91,9 +105,26 @@ const rejectInvitation = async (req, res) => {
     }
 }
 
+const removeInvitation = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const removed = await Invitation.findByIdAndRemove(id);
+
+        if (!removed) {
+            return res.status(404).json({ error: 'Invitation not found' });
+        }
+
+        res.status(200).json({ message: 'Invitation removed successfully' });
+    } catch (err) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 module.exports = {
     getInvitations,
     sendInvitation,
     acceptInvitation,
     rejectInvitation,
+    removeInvitation,
 };

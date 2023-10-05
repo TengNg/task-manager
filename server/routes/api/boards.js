@@ -7,6 +7,7 @@ const {
     getBoard,
     updateBoard,
     updateTitle,
+    removeMemberFromBoard,
 } = require('../../controllers/boardsController');
 
 router.route("/")
@@ -16,6 +17,9 @@ router.route("/")
 router.route("/:id")
     .get(getBoard)
     .put(updateBoard)
+
+router.route("/:id/members/:memberId")
+    .put(removeMemberFromBoard)
 
 router.route("/:id/new-title")
     .put(updateTitle)

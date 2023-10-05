@@ -161,6 +161,18 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
+    const removeMemberFromBoard = (memberId) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                board: {
+                    ...prev.board,
+                    members: prev.board.members.filter(member => member._id !== memberId)
+                }
+            };
+        });
+    };
+
     return (
         <BoardStateContext.Provider
             value={{
@@ -175,6 +187,7 @@ export const BoardStateContextProvider = ({ children }) => {
                 setBoardLinkTitle,
                 addListToBoard,
                 addCardToList,
+                removeMemberFromBoard,
                 socket,
             }}
         >

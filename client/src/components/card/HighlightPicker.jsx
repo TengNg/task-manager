@@ -29,7 +29,7 @@ const HighlightPicker = ({ card }) => {
                 Object.keys(highlightColors).map((item, index) => {
                     return <div
                         key={index}
-                        className={`box-border w-full h-[25px] rounded-lg border-[2px] hover:border-blue-400`}
+                        className={`box-border w-full h-[25px] rounded-md border-[2px] hover:border-blue-400`}
                         style={{ background: `${highlightColors[item]}` }}
                         onClick={() => handleSetCardHighlight(highlightColors[item])}
                     >

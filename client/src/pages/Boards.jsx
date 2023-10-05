@@ -62,7 +62,10 @@ const Boards = () => {
             {/* </div> */}
 
             <div>
-                <Title titleName="your boards" />
+                <Title
+                    titleName="your boards"
+                />
+
                 <div className="flex flex-wrap gap-4 p-8 border-[2px] mx-8 box--style shadow-gray-500 border-gray-500">
                     {
                         boards.map(item => {
