@@ -16,6 +16,7 @@ const getInvitations = async (req, res) => {
 
         const invitations = await Invitation
             .find({ invitedUserId: foundUser._id })
+            .sort({ createdAt: -1 })
             .populate({
                 path: 'invitedUserId',
                 select: 'username profileImage createdAt'
@@ -24,7 +25,6 @@ const getInvitations = async (req, res) => {
                 path: 'invitedByUserId',
                 select: 'username profileImage createdAt'
             });
-        ;
 
         res.status(200).json({ invitations });
     } catch (error) {
@@ -43,6 +43,19 @@ const sendInvitation = async (req, res) => {
 
         const receiver = await getUser(receiverName);
         if (!receiver) return res.status(404).json({ msg: "Username is not found" });
+
+        const board = await Board.findById(boardId);
+        if (board.members.indexOf(receiver._id) !== -1) return res.status(409).json({ msg: "User is already in this board" });
+
+        const foundInvitation = await Invitation
+            .findOne({
+                invitedByUserId: sender._id,
+                invitedUserId: receiver._id,
+                status: { $in: ['pending', 'accepted'] }
+            })
+            .sort({ createdAt: -1 })
+
+        if (foundInvitation) return res.status(409).json({ msg: "Invitation is already sent" }); // Conflict
 
         const invitation = new Invitation({
             boardId,

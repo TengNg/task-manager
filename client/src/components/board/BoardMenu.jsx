@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import useAuth from "../../hooks/useAuth";
 
-const BoardMenu = ({ open, setOpen }) => {
+const BoardMenu = ({ setOpen }) => {
     const { auth } = useAuth();
     const [showDescription, setShowDescription] = useState(false);
 

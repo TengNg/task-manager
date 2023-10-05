@@ -1,6 +1,5 @@
 import { createContext, useEffect, useState } from "react";
 import { io } from 'socket.io-client'
-import useAuth from "../hooks/useAuth";
 
 const socketId = io.connect("http://localhost:3000");
 

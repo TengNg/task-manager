@@ -20,6 +20,8 @@ const Board = () => {
 
     const [openInvitationForm, setOpenInvitationForm] = useState(false);
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
+    const [openChatBox, setOpenChatBox] = useState(false);
+
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -47,7 +49,6 @@ const Board = () => {
         const getBoardData = async () => {
             const response = await axiosPrivate.get(`/boards/${boardId}`);
             const response2 = await axiosPrivate.get(`/boards`);
-            console.log(response.data);
             setBoardState(response.data);
             setTitle(response.data.board.title);
             setBoardLinks(response2.data);
@@ -145,7 +146,7 @@ const Board = () => {
             <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4 mt-[5rem] min-w-[100vw]">
                 {/* <Loading loanding={loading} /> */}
 
-                <div className="sticky inset-0 left-4 flex gap-6 z-[2]">
+                <div className="sticky inset-0 left-4 flex gap-6">
                     {/* <button */}
                     {/*     onClick={() => handleSaveBoard()} */}
                     {/*     className="button--style text-[0.8rem] font-bold"> */}
@@ -167,6 +168,12 @@ const Board = () => {
                     </div>
 
                     <div className="flex h-full gap-2 absolute -top-1 right-0">
+                        <button
+                            onClick={() => setOpenChatBox(prev => !prev)}
+                            className={`h-full border-gray-600 shadow-gray-600 w-[80px] rounded-lg px-3 bg-gray-100 border-[3px] text-[0.75rem] text-gray-600 font-bold hover:bg-white
+                                    ${openChatBox ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]' }`}
+                        >Chats</button>
+
                         <button
                             onClick={() => setOpenInvitationForm(true)}
                             className={`h-full border-gray-600 shadow-gray-600 w-[80px] rounded-lg px-3 bg-gray-100 border-[3px] text-[0.75rem] text-gray-600 font-bold hover:bg-white
@@ -192,7 +199,7 @@ const Board = () => {
 
                 <ListContainer />
 
-                <div className="fixed top-[1rem] left-[1rem] flex items-center gap-1 z-10 w-fit min-w-">
+                <div className="fixed top-[1rem] left-[1rem] flex items-center gap-1 w-fit min-w-">
                     <Avatar
                         username={boardState.board.createdBy.username}
                         profileImage={boardState.board.createdBy.profileImage}

@@ -1,26 +1,15 @@
-import { useEffect, useState } from 'react';
 import Title from '../components/ui/Title';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import dateFormatter from '../utils/dateFormatter';
 import Avatar from '../components/avatar/Avatar';
 import { useNavigate } from 'react-router-dom';
+import useAppContext from '../hooks/useAppContext';
 
 const Activities = () => {
-    const [invitations, setInvitations] = useState([]);
-
+    const { invitations, setInvitations } = useAppContext();
     const axiosPrivate = useAxiosPrivate();
+
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const getInvitations = async () => {
-            const response = await axiosPrivate.get("/invitations");
-            setInvitations(response.data.invitations);
-        };
-
-        getInvitations().catch(err => {
-            console.log(err);
-        });
-    }, []);
 
     const handleAcceptInvitation = async (invitationId) => {
         try {
@@ -62,7 +51,7 @@ const Activities = () => {
         <section className='w-full mt-8 '>
             <Title titleName="activities" />
             <div className='box--style border-[2px] border-black min-h-[300px] min-w-[500px] w-[800px] mx-auto p-10 bg-gray-100 flex flex-col gap-3'>
-                {
+                { invitations &&
                     invitations.length === 0
                         ? <p className='w-full text-center mx-auto mt-[4rem] select-none font-semibold'>Nothing to show here :(</p>
                         : <>

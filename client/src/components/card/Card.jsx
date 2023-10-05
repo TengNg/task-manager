@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faAlignLeft } from '@fortawesome/free-solid-svg-icons';
 import CardQuickEditor from "./CardQuickEditor";
 import CardDetail from './CardDetail';
-import InvitationForm from '../invitation/InvitationForm';
 
 const Card = ({ index, card }) => {
     const [openQuickEditor, setOpenQuickEditor] = useState(false);
