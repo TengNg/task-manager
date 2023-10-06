@@ -2,10 +2,25 @@ import { useState } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import useAuth from "../../hooks/useAuth";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useBoardState from "../../hooks/useBoardState";
 
 const BoardMenu = ({ setOpen }) => {
     const { auth } = useAuth();
+    const { boardState } = useBoardState();
+
     const [showDescription, setShowDescription] = useState(false);
+
+    const axiosPrivate = useAxiosPrivate();
+
+    const handleCopyBoard = async (e) => {
+    };
+
+    const handleLeaveBoard = async () => {
+    };
+
+    const handleCloseBoard = async () => {
+    };
 
     return (
         <div
@@ -23,20 +38,35 @@ const BoardMenu = ({ setOpen }) => {
             <button
                 onClick={() => setShowDescription(true)}
                 className="button--style--dark text-[0.75rem] font-bold text-gray-200">About</button>
-            <button className="button--style--dark text-[0.75rem] font-bold text-gray-200">Copy board</button>
-            <button className="button--style--dark text-[0.75rem] font-bold text-gray-200">Leave board</button>
+            <button
+                onClick={() => handleCopyBoard()}
+                className="button--style--dark text-[0.75rem] font-bold text-gray-200"
+            >Copy board</button>
+
+            {
+                boardState.board.createdBy.username === auth.username
+                    ?
+                    <button
+                        onClick={() => handleLeaveBoard()}
+                        className="button--style--dark text-[0.75rem] font-bold text-gray-200"
+                    >Close board</button>
+                    : <button
+                        onClick={() => handleLeaveBoard()}
+                        className="button--style--dark text-[0.75rem] font-bold text-gray-200"
+                    >Leave board</button>
+            }
 
             <div className={`absolute w-full h-fit min-h-full bg-gray-50 top-0 right-0 flex flex-col px-5 transition-all ${showDescription === true ? 'translate-x-0' : '-translate-x-[100%]'}`}>
 
                 <button
-                    onClick={() => setShowDescription(false) }
+                    onClick={() => setShowDescription(false)}
                     className="absolute top-1 left-3 text-gray-600"
                 >
                     <FontAwesomeIcon icon={faAngleLeft} size='lg' />
                 </button>
 
                 <button
-                    onClick={() => setOpen(false) }
+                    onClick={() => setOpen(false)}
                     className="absolute top-1 right-2 text-gray-600"
                 >
                     <FontAwesomeIcon icon={faXmark} size='lg' />

@@ -4,10 +4,10 @@ import ListContainer from "../components/list/ListContainer";
 import useBoardState from "../hooks/useBoardState";
 import BoardNav from "../components/board/BoardNav";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import Loading from "../components/ui/Loading";
 import InvitationForm from "../components/invitation/InvitationForm";
 import Avatar from "../components/avatar/Avatar";
 import BoardMenu from "../components/board/BoardMenu";
+import ChatBox from "../components/chat/ChatBox";
 
 const Board = () => {
     const {
@@ -20,11 +20,11 @@ const Board = () => {
 
     const [openInvitationForm, setOpenInvitationForm] = useState(false);
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
+    const [openBoardNav, setOpenBoardNav] = useState(false);
     const [openChatBox, setOpenChatBox] = useState(false);
 
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
-    const [loading, setLoading] = useState(false);
 
     const axiosPrivate = useAxiosPrivate();
 
@@ -136,6 +136,13 @@ const Board = () => {
     return (
         <>
             {
+                openChatBox &&
+                <ChatBox
+                    setOpen={setOpenChatBox}
+                />
+            }
+
+            {
                 openInvitationForm &&
                 <InvitationForm
                     open={openInvitationForm}
@@ -146,13 +153,13 @@ const Board = () => {
             <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4 mt-[5rem] min-w-[100vw]">
                 {/* <Loading loanding={loading} /> */}
 
-                <div className="sticky inset-0 left-4 flex gap-6">
+                <div className="sticky inset-0 left-4 flex w-[100vw] z-10">
                     {/* <button */}
                     {/*     onClick={() => handleSaveBoard()} */}
                     {/*     className="button--style text-[0.8rem] font-bold"> */}
                     {/*     Save */}
                     {/* </button> */}
-                    <div className="flex-1 w-[98vw] justify-start">
+                    <div className="flex-1 max-w-[70vw] justify-start">
                         <input
                             className={`flex-1 overflow-hidden whitespace-nowrap text-ellipsis border-b-[3px] bg-gray-100 border-black text-black py-1 font-bold select-none font-mono mb-2 focus:outline-none`}
                             style={{
@@ -167,17 +174,23 @@ const Board = () => {
                         />
                     </div>
 
-                    <div className="flex h-full gap-2 absolute -top-1 right-0">
+                    <div className="absolute right-8 -top-2 flex h-full gap-2">
+                        <button
+                            onClick={() => setOpenBoardNav(prev => !prev)}
+                            className={`h-full border-gray-600 shadow-gray-600 w-[80px] rounded-md px-3 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
+                                    ${openBoardNav ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
+                        >Boards</button>
+
                         <button
                             onClick={() => setOpenChatBox(prev => !prev)}
-                            className={`h-full border-gray-600 shadow-gray-600 w-[80px] rounded-lg px-3 bg-gray-100 border-[3px] text-[0.75rem] text-gray-600 font-bold hover:bg-white
-                                    ${openChatBox ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]' }`}
+                            className={`h-full border-gray-600 shadow-gray-600 w-[80px] rounded-md px-3 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
+                                    ${openChatBox ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                         >Chats</button>
 
                         <button
                             onClick={() => setOpenInvitationForm(true)}
-                            className={`h-full border-gray-600 shadow-gray-600 w-[80px] rounded-lg px-3 bg-gray-100 border-[3px] text-[0.75rem] text-gray-600 font-bold hover:bg-white
-                                    ${openInvitationForm ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]' }`}
+                            className={`h-full border-gray-600 shadow-gray-600 w-[80px] rounded-md px-3 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
+                                    ${openInvitationForm ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                         >Invite</button>
 
                         <button
@@ -186,11 +199,17 @@ const Board = () => {
                                     setOpenBoardMenu(prev => !prev);
                                 }
                             }}
-                            className={`relative h-full border-gray-600 w-[80px] shadow-gray-600 rounded-lg px-3 bg-gray-100 border-[3px] text-[0.75rem] text-gray-600 font-bold hover:bg-white
-                                    ${openBoardMenu ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]' }`}
+                            className={`relative h-full border-gray-600 w-[80px] shadow-gray-600 rounded-md px-3 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
+                                    ${openBoardMenu ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                         >
                             Options
-                            {openBoardMenu && <BoardMenu setOpen={setOpenBoardMenu} />}
+                            {
+                                openBoardMenu &&
+                                <BoardMenu
+                                    setOpen={setOpenBoardMenu}
+                                    board={boardState.board}
+                                />
+                            }
                         </button>
 
                     </div>
@@ -199,7 +218,7 @@ const Board = () => {
 
                 <ListContainer />
 
-                <div className="fixed top-[1rem] left-[1rem] flex items-center gap-1 w-fit min-w-">
+                <div className="fixed top-[1rem] left-[1rem] flex items-center gap-1 w-fit min-w-[200px] z-[21]">
                     <Avatar
                         username={boardState.board.createdBy.username}
                         profileImage={boardState.board.createdBy.profileImage}
@@ -221,7 +240,6 @@ const Board = () => {
 
             </div>
 
-            <BoardNav />
         </>
     )
 }

@@ -10,6 +10,15 @@ io.on('connection', (socket) => {
         socket.join(data);
     });
 
+    socket.on("leaveBoard", (_) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (boardId) {
+            socket.leave(boardId);
+            boardIdMap.delete(socket.id);
+            console.log(`User with socket ID ${socket.id} left board ${boardId}`);
+        }
+    });
+
     socket.on("updateBoardTitle", (data) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
@@ -59,7 +68,18 @@ io.on('connection', (socket) => {
     });
 
     socket.on("disconnect", () => {
-        boardIdMap.delete(socket.id);
+        // console.log('user disconnected');
+        // boardIdMap.delete(socket.id);
+
+        const boardId = boardIdMap.get(socket.id);
+        if (boardId) {
+            socket.leave(boardId);
+            boardIdMap.delete(socket.id);
+            console.log(`User with socket ID ${socket.id} disconnected from board ${boardId}`);
+        } else {
+            console.log(`User with socket ID ${socket.id} disconnected without joining a board`);
+        }
+
     });
 });
 

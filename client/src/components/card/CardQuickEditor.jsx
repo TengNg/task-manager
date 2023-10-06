@@ -12,7 +12,6 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail }) 
     const axiosPrivate = useAxiosPrivate();
 
     const [initialTitle, setInitialTitle] = useState(card.title);
-    const [openHighlightPicker, setOpenHighlightPicker] = useState(false);
 
     const textAreaRef = useRef();
 
@@ -114,6 +113,12 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail }) 
                         >
                             Change highlight
                             <HighlightPicker card={card}/>
+                        </button>
+
+                        <button
+                            className="hover:ms-1 transition-all text-[0.75rem] relative text-white bg-gray-800 px-3 py-1 flex--center opacity-80 z-30"
+                        >
+                            Delete card
                         </button>
 
                         <button

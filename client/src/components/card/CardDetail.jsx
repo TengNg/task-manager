@@ -70,7 +70,7 @@ const CardDetail = ({ open, setOpen, card }) => {
                 className="fixed box-border top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-500 opacity-40 z-50 cursor-auto">
             </div>
 
-            <div className="fixed box--style flex flex-col p-3 pb-6 top-[5rem] right-0 left-[50%] -translate-x-[50%] min-w-[700px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
+            <div className="box--style flex p-3 pb-6 flex-col absolute top-[5rem] right-0 left-[50%] -translate-x-[50%] min-w-[700px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
                 {
                     card.highlight != null &&
                     <div
@@ -82,7 +82,6 @@ const CardDetail = ({ open, setOpen, card }) => {
                 <div className="flex justify-start items start">
                     <div className="flex flex-col flex-1">
                         <TextArea
-
                             className="break-words box-border p-1 h-[2rem] w-[90%] text-gray-600 bg-gray-200 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-blue-600 focus:bg-gray-100"
                             onKeyDown={(e) => {
                                 if (e.key == 'Enter') {
