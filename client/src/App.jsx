@@ -10,6 +10,7 @@ import Board from './pages/Board'
 import Activities from './pages/Activities'
 import Profile from './pages/Profile'
 import NotFound from './pages/NotFound'
+import TodoList from './pages/TodoList'
 // import Missing from './pages/Missing'
 
 const noNavPaths = ["/login", "/register"];
@@ -32,6 +33,7 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/b/:boardId/" element={<Board />} />
                 <Route path="/boards" element={<Boards />} />
+                <Route path="/todo-list" element={<TodoList />} />
                 <Route path="/activities" element={<Activities />} />
                 <Route path="/u/:username" element={<Profile />} />
                 <Route path="*" element={<NotFound />} />

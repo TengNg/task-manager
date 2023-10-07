@@ -8,6 +8,8 @@ import InvitationForm from "../components/invitation/InvitationForm";
 import Avatar from "../components/avatar/Avatar";
 import BoardMenu from "../components/board/BoardMenu";
 import ChatBox from "../components/chat/ChatBox";
+import useLocalStorage from "../hooks/useLocalStorage";
+import LOCAL_STORAGE_KEYS from "../data/localStorageKeys";
 
 const Board = () => {
     const {
@@ -15,8 +17,11 @@ const Board = () => {
         setBoardState,
         setBoardTitle,
         setBoardLinks,
+        setChats,
         socket
     } = useBoardState();
+
+    const [_, setRecentBoards] = useLocalStorage(LOCAL_STORAGE_KEYS.recentlyViewedBoards, []);
 
     const [openInvitationForm, setOpenInvitationForm] = useState(false);
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
@@ -49,9 +54,14 @@ const Board = () => {
         const getBoardData = async () => {
             const response = await axiosPrivate.get(`/boards/${boardId}`);
             const response2 = await axiosPrivate.get(`/boards`);
+            const response3 = await axiosPrivate.get(`/chats/b/${boardId}`);
             setBoardState(response.data);
             setTitle(response.data.board.title);
             setBoardLinks(response2.data);
+            setChats(response3.data.messages);
+
+            setRecentBoards(response.data.board);
+
             setIsDataLoaded(true);
         }
 
@@ -176,10 +186,18 @@ const Board = () => {
 
                     <div className="absolute right-8 -top-2 flex h-full gap-2">
                         <button
-                            onClick={() => setOpenBoardNav(prev => !prev)}
-                            className={`h-full border-gray-600 shadow-gray-600 w-[80px] rounded-md px-3 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
+                            onClick={(e) => {
+                                if (e.target !== e.currentTarget) return;
+                                setOpenBoardNav(prev => !prev)
+                            }}
+                            className={`relative h-full border-gray-600 shadow-gray-600 w-[80px] rounded-md px-3 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
                                     ${openBoardNav ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
-                        >Boards</button>
+                        >Boards
+                            {
+                                openBoardNav &&
+                                <BoardNav open={openBoardNav} />
+                            }
+                        </button>
 
                         <button
                             onClick={() => setOpenChatBox(prev => !prev)}
@@ -227,8 +245,9 @@ const Board = () => {
                     />
 
                     {
-                        boardState.board.members.map(user => {
+                        boardState.board.members.map((user, index) => {
                             return <Avatar
+                                key={index}
                                 username={user.username}
                                 profileImage={user.profileImage}
                                 size="md"

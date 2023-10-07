@@ -13,8 +13,7 @@ const Activities = () => {
 
     const handleAcceptInvitation = async (invitationId) => {
         try {
-            const response = await axiosPrivate.put(`/invitations/${invitationId}/accept`, JSON.stringify({ id: invitationId }));
-            console.log(response.data);
+            await axiosPrivate.put(`/invitations/${invitationId}/accept`, JSON.stringify({ id: invitationId }));
             setInvitations(prev => {
                 return prev.map(item => item._id === invitationId ? { ...item, status: 'accepted' } : item);
             });
@@ -25,8 +24,7 @@ const Activities = () => {
 
     const handleRejectInvitation = async (invitationId) => {
         try {
-            const response = await axiosPrivate.put(`/invitations/${invitationId}/accept`, JSON.stringify({ id: invitationId }));
-            console.log(response.data);
+            await axiosPrivate.put(`/invitations/${invitationId}/accept`, JSON.stringify({ id: invitationId }));
             setInvitations(prev => {
                 return prev.map(item => item._id === invitationId ? { ...item, status: 'rejected' } : item);
             });
@@ -50,10 +48,10 @@ const Activities = () => {
     return (
         <section className='w-full mt-8 '>
             <Title titleName="activities" />
-            <div className='box--style border-[2px] border-black min-h-[300px] min-w-[500px] w-[800px] mx-auto p-10 bg-gray-100 flex flex-col gap-3'>
+            <div className='box--style border-[2px] border-gray-600 shadow-gray-600 min-h-[300px] min-w-[500px] w-[800px] mx-auto p-10 bg-gray-100 flex flex-col gap-3'>
                 { invitations &&
                     invitations.length === 0
-                        ? <p className='w-full text-center mx-auto mt-[4rem] select-none font-semibold'>Nothing to show here :(</p>
+                        ? <p className='w-full text-center mx-auto mt-[4rem] text-gray-600 select-none font-semibold'>Nothing to show here :(</p>
                         : <>
                             {invitations.map((item, index) => {
                                 const { _id, invitedByUserId: sender, createdAt, status, boardId } = item;

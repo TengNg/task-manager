@@ -102,12 +102,17 @@ const updateTitle = async (req, res) => {
 
 const removeMemberFromBoard = async (req, res) => {
     try {
+        const { username } = req.username;
         const { id, memberId } = req.params;
 
         const board = await Board.findById(id);
-
         if (!board) {
             return res.status(404).json({ error: 'Board not found' });
+        }
+
+        const foundUser = await getUser(username);
+        if (board.createdBy !== foundUser._id) {
+            return res.status(401).json({ error: 'Unauthorized' });
         }
 
         const indexOfMember = board.members.indexOf(memberId);

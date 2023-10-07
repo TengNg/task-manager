@@ -67,6 +67,12 @@ io.on('connection', (socket) => {
         socket.to(boardId).emit("updatedCardDescription", data);
     });
 
+    socket.on("sendMessage", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("receiveMessage", data);
+    });
+
     socket.on("disconnect", () => {
         // console.log('user disconnected');
         // boardIdMap.delete(socket.id);

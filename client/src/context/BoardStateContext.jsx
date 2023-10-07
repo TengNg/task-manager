@@ -5,6 +5,7 @@ const BoardStateContext = createContext({});
 
 export const BoardStateContextProvider = ({ children }) => {
     const [boardState, setBoardState] = useState({});
+    const [chats, setChats] = useState([]);
 
     // useEffect(() => {
     //     const newSocket = io('http://localhost:3000');
@@ -51,6 +52,10 @@ export const BoardStateContextProvider = ({ children }) => {
 
             socket.on("updatedCardHighlight", (data) => {
                 setCardHighlight(data.id, data.listId, data.highlight);
+            });
+
+            socket.on("receiveMessage", (data) => {
+                setChats(prev => [...prev, data]);
             });
 
             // socket.on("getBoardWithUpdatedTitle", (data) => {
@@ -184,6 +189,8 @@ export const BoardStateContextProvider = ({ children }) => {
                 addListToBoard,
                 addCardToList,
                 removeMemberFromBoard,
+                setChats,
+                chats,
                 socket,
             }}
         >

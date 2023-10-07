@@ -50,12 +50,17 @@ const UserAccount = () => {
     const handleLogout = async () => {
         try {
             await axiosPrivate.get('/logout/');
+            localStorage.clear();
             setAuth({});
             navigate("/login");
         } catch (err) {
             setAuth({});
             navigate('/login');
         }
+    };
+
+    const handleOpenProfile = () => {
+        navigate(`/u/${auth.username}`);
     };
 
     return (
@@ -90,7 +95,9 @@ const UserAccount = () => {
                         Username: {auth?.username}
                     </div>
 
-                    <button className="button--style text-[0.75rem] font-bold">Edit account</button>
+                    <button
+                            onClick={handleOpenProfile}
+                            className="button--style text-[0.75rem] font-bold">Edit account</button>
                     <button
                         onClick={handleLogout}
                         className="button--style--dark text-[0.75rem] font-bold text-gray-200">Log out</button>

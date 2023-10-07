@@ -1,13 +1,14 @@
 import { NavLink } from "react-router-dom"
 import useBoardState from "../../hooks/useBoardState"
 
-const BoardNav = () => {
+const BoardNav = ({ open }) => {
     const { boardState } = useBoardState();
 
     return (
         <>
-            <nav className="fixed z-10 bottom-[1rem] left-[1rem]">
-                <ul className="flex gap-4">
+            {/* <nav className={`absolute bottom-0 right-0 transition-all ${!open ? 'translate-x-[100%]' : '-translate-x-[30%]'}`}> */}
+            <nav className={`absolute bottom-0 right-0 -translate-x-[30%]`}>
+                <ul className="flex gap-2">
                     {
                         boardState.links && boardState.links.map((link, index) => {
                             return (
