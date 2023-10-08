@@ -43,6 +43,13 @@ io.on('connection', (socket) => {
         socket.to(boardId).emit("newCard", data);
     });
 
+    socket.on("deleteCard", (data) => {
+        console.log(data);
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("deletedCard", data);
+    });
+
     socket.on("updateListTitle", (data) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;

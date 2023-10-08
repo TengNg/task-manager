@@ -55,14 +55,13 @@ const InvitationForm = ({ setOpen }) => {
     const handleRemoveMemberFromBoard = async (memberId) => {
         try {
             setLoading(true);
-            const response = await axiosPrivate.put(`/boards/${boardState.board._id}/members/${memberId}/`);
-            console.log(response);
+            await axiosPrivate.put(`/boards/${boardState.board._id}/members/${memberId}`);
             removeMemberFromBoard(memberId);
             setLoading(false);
         } catch (err) {
             console.log(err);
             setLoading(false);
-            setErrMsg(err.response.data);
+            setErrMsg(err.response.data.toString());
         }
     };
 
@@ -120,7 +119,7 @@ const InvitationForm = ({ setOpen }) => {
 
                     {
                         boardState.board.members.map((user, index) => {
-                            return <div key={index} className="flex gap-1">
+                            return <div key={user._id} className="flex gap-1">
                                 <div className="flex gap-1 flex-1">
                                     <Avatar
                                         username={user.username}

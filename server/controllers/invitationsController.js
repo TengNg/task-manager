@@ -46,7 +46,7 @@ const sendInvitation = async (req, res) => {
             boardId,
             invitedByUserId: sender._id,
             invitedUserId: receiver._id,
-            status: { $in: ['pending', 'accepted'] }
+            status: { $in: ['pending'] }
         })
         .sort({ createdAt: -1 })
 

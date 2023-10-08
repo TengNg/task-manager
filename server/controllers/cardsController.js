@@ -49,11 +49,25 @@ const updateHighlight = async (req, res) => {
     res.status(200).json({ message: 'card updated', newCard });
 };
 
+const deleteCard = async (req, res) => {
+    const { id } = req.params;
+    console.log(id);
+    const removed = await Card.findByIdAndRemove(id);
+
+    if (!removed) {
+        return res.status(404).json({ error: 'Card not found' });
+    }
+
+    res.status(200).json({ message: 'Card removed successfully' });
+
+};
+
 module.exports = {
     addCard,
     updateCard,
     updateTitle,
     updateDescription,
     updateHighlight,
+    deleteCard,
     reorder,
 }

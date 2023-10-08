@@ -185,39 +185,39 @@ const Board = () => {
                     </div>
 
                     <div className="absolute right-8 -top-2 flex h-full gap-2">
-                        <button
+                        <div
                             onClick={(e) => {
                                 if (e.target !== e.currentTarget) return;
                                 setOpenBoardNav(prev => !prev)
                             }}
-                            className={`relative h-full border-gray-600 shadow-gray-600 w-[80px] rounded-md px-3 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
+                            className={`relative flex--center cursor-pointer select-none h-full border-gray-600 shadow-gray-600 w-[80px] rounded-md px-3 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
                                     ${openBoardNav ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                         >Boards
                             {
                                 openBoardNav &&
                                 <BoardNav open={openBoardNav} />
                             }
-                        </button>
+                        </div>
 
-                        <button
+                        <div
                             onClick={() => setOpenChatBox(prev => !prev)}
-                            className={`h-full border-gray-600 shadow-gray-600 w-[80px] rounded-md px-3 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
+                            className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] rounded-md px-3 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
                                     ${openChatBox ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
-                        >Chats</button>
+                        >Chats</div>
 
-                        <button
+                        <div
                             onClick={() => setOpenInvitationForm(true)}
-                            className={`h-full border-gray-600 shadow-gray-600 w-[80px] rounded-md px-3 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
+                            className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] rounded-md px-3 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
                                     ${openInvitationForm ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
-                        >Invite</button>
+                        >Invite</div>
 
-                        <button
+                        <div
                             onClick={(e) => {
                                 if (e.target === e.currentTarget) {
                                     setOpenBoardMenu(prev => !prev);
                                 }
                             }}
-                            className={`relative h-full border-gray-600 w-[80px] shadow-gray-600 rounded-md px-3 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
+                            className={`relative flex--center cursor-pointer select-none h-full border-gray-600 w-[80px] shadow-gray-600 rounded-md px-3 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
                                     ${openBoardMenu ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                         >
                             Options
@@ -228,7 +228,7 @@ const Board = () => {
                                     board={boardState.board}
                                 />
                             }
-                        </button>
+                        </div>
 
                     </div>
 

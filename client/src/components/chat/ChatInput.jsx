@@ -40,7 +40,7 @@ const ChatInput = ({ sendMessage }) => {
         <form className="flex w-full px-1 py-2 gap-1 bg-gray-200 justify-start items-start">
             <textarea
                 className="text-[0.75rem] bg-gray-100 h-[2rem] max-h-[100px] border rounded-md border-gray-400 leading-normal overflow-y-auto resize-none w-full py-2 px-3 font-medium placeholder-gray-500 focus:outline-none focus:bg-white"
-                placeholder='Type Your Comment'
+                placeholder='Write something...'
                 ref={textAreaRef}
                 value={message}
                 onChange={handleTextAreaChanged}

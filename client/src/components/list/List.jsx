@@ -93,7 +93,7 @@ const List = ({ index, list, cards }) => {
                         </div>
 
                         <p className="absolute -top-2 -right-2 text-[0.7rem]">{list.cards.length || ''}</p>
-                        <p className="absolute -top-2 right-3 text-[0.7rem]">rank: {list.order}</p>
+                        {/* <p className="absolute -top-2 right-3 text-[0.7rem]">rank: {list.order}</p> */}
 
                         <textarea
                             className="hidden bg-gray-100 h-fit w-full focus:outline-none font-semibold text-gray-600 leading-normal overflow-y-hidden resize-none"

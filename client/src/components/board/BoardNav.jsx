@@ -7,7 +7,7 @@ const BoardNav = ({ open }) => {
     return (
         <>
             {/* <nav className={`absolute bottom-0 right-0 transition-all ${!open ? 'translate-x-[100%]' : '-translate-x-[30%]'}`}> */}
-            <nav className={`absolute bottom-0 right-0 -translate-x-[30%]`}>
+            <nav className={`absolute bottom-0 -left-2 -translate-x-[100%]`}>
                 <ul className="flex gap-2">
                     {
                         boardState.links && boardState.links.map((link, index) => {

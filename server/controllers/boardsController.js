@@ -33,13 +33,15 @@ const getBoard = async (req, res) => {
     const foundUser = await getUser(username);
     if (!foundUser) return res.status(403).json({ msg: "user not found" });
 
-    const board = await Board.findOne({
-        _id: id,
-        $or: [
-            { createdBy: foundUser._id },
-            { members: foundUser._id },
-        ],
-    })
+    const board = await Board
+        .findOne({
+            _id: id,
+            $or: [
+                { createdBy: foundUser._id },
+                { members: foundUser._id },
+            ],
+        })
+        .sort({ createdAt: -1 })
         .populate({
             path: 'createdBy',
             select: 'username profileImage createdAt'
@@ -100,33 +102,37 @@ const updateTitle = async (req, res) => {
     return res.status(200).json({ msg: 'board updated', newBoard });
 };
 
+const updateDescription = async (req, res) => {
+    const { id } = req.params;
+    const { description } = req.body;
+    const newBoard = await Board.findOneAndUpdate({ _id: id }, { description }, { new: true });
+    return res.status(200).json({ msg: 'board updated', newBoard });
+};
+
 const removeMemberFromBoard = async (req, res) => {
-    try {
-        const { username } = req.username;
-        const { id, memberId } = req.params;
+    const { username } = req.user;
+    const { id, memberId } = req.params;
 
-        const board = await Board.findById(id);
-        if (!board) {
-            return res.status(404).json({ error: 'Board not found' });
-        }
-
-        const foundUser = await getUser(username);
-        if (board.createdBy !== foundUser._id) {
-            return res.status(401).json({ error: 'Unauthorized' });
-        }
-
-        const indexOfMember = board.members.indexOf(memberId);
-        if (indexOfMember !== -1) {
-            board.members.splice(indexOfMember, 1);
-            await board.save();
-        } else {
-            return res.status(404).json({ error: 'Member not found in the board' });
-        }
-
-        res.status(200).json({ msg: 'Member removed from the board successfully' });
-    } catch (err) {
-        res.status(500).json({ error: 'Internal server error' });
+    const board = await Board.findById(id);
+    if (!board) {
+        return res.status(404).json({ error: 'Board not found' });
     }
+
+    const foundUser = await getUser(username);
+
+    if (board.createdBy.toString() !== foundUser._id.toString()) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const indexOfMember = board.members.indexOf(memberId);
+    if (indexOfMember !== -1) {
+        board.members.splice(indexOfMember, 1);
+        await board.save();
+    } else {
+        return res.status(404).json({ error: 'Member not found in the board' });
+    }
+
+    res.status(200).json({ msg: 'Member removed from the board successfully' });
 };
 
 module.exports = {
@@ -135,5 +141,6 @@ module.exports = {
     getBoard,
     updateBoard,
     updateTitle,
+    updateDescription,
     removeMemberFromBoard,
 };

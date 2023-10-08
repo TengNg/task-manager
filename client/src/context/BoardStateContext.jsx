@@ -38,6 +38,10 @@ export const BoardStateContextProvider = ({ children }) => {
                 addCardToList(data.listId, data);
             });
 
+            socket.on("deletedCard", (data) => {
+                deleteCard(data.listId, data.cardId);
+            });
+
             socket.on("updatedListTitle", (data) => {
                 setListTitle(data.listId, data.title);
             });
@@ -67,6 +71,12 @@ export const BoardStateContextProvider = ({ children }) => {
     const setBoardTitle = (value) => {
         setBoardState(prev => {
             return { ...prev, board: { ...prev.board, title: value } };
+        });
+    };
+
+    const setBoardDescription = (value) => {
+        setBoardState(prev => {
+            return { ...prev, board: { ...prev.board, description: value } };
         });
     };
 
@@ -162,6 +172,20 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
+    const deleteCard = (listId, cardId) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.map(list => list._id === listId
+                    ? {
+                        ...list,
+                        cards: list.cards.filter(card => card._id !== cardId)
+                    } : list)
+            };
+        });
+
+    };
+
     const removeMemberFromBoard = (memberId) => {
         setBoardState(prev => {
             return {
@@ -180,17 +204,25 @@ export const BoardStateContextProvider = ({ children }) => {
                 boardState,
                 setBoardState,
                 setBoardTitle,
+                setBoardDescription,
+                setBoardLinks,
+                setBoardLinkTitle,
+
                 setListTitle,
+
                 setCardTitle,
                 setCardDescription,
                 setCardHighlight,
-                setBoardLinks,
-                setBoardLinkTitle,
+                deleteCard,
+
                 addListToBoard,
                 addCardToList,
+
                 removeMemberFromBoard,
+
                 setChats,
                 chats,
+
                 socket,
             }}
         >

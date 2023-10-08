@@ -5,8 +5,9 @@ import useBoardState from "../../hooks/useBoardState";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import HighlightPicker from "./HighlightPicker";
 
-const CardDetail = ({ open, setOpen, card }) => {
+const CardDetail = ({ setOpen, card, handleDeleteCard }) => {
     const {
         boardState,
         setCardDescription,
@@ -15,6 +16,7 @@ const CardDetail = ({ open, setOpen, card }) => {
     } = useBoardState();
 
     const [openDescriptionComposer, setOpenDescriptionComposer] = useState(false);
+    const [openHighlightPicker, setOpenHighlightPicker] = useState(false);
     const axiosPrivate = useAxiosPrivate();
 
     const listTitle = useCallback(() => {
@@ -63,6 +65,11 @@ const CardDetail = ({ open, setOpen, card }) => {
         }
     };
 
+    const deleteCard = () => {
+        handleDeleteCard();
+        setOpen(false);
+    }
+
     return (
         <>
             <div
@@ -107,7 +114,6 @@ const CardDetail = ({ open, setOpen, card }) => {
 
                 <div className="w-full flex">
                     <div className="flex-1">
-                        <p className="text-[0.9rem] font-semibold">Description</p>
                         {
                             (card.description.trim() === "" && openDescriptionComposer === false) &&
                             <div
@@ -138,8 +144,16 @@ const CardDetail = ({ open, setOpen, card }) => {
 
                     </div>
 
-                    <div className="flex flex-col gap-3">
-                        <button className="card--detail--button px-2 py-2">Change highlight</button>
+                    <div className="relative flex flex-col gap-3">
+                        <button
+                            onClick={() => setOpenHighlightPicker(prev => !prev)}
+                            className="card--detail--button px-2 py-2 font-semibold">Change highlight</button>
+
+                        <button
+                            onClick={() => deleteCard()}
+                            className="card--detail--button px-2 py-2 font-semibold">Delete card</button>
+
+                        { openHighlightPicker && <HighlightPicker card={card} /> }
                     </div>
                 </div>
 

@@ -4,11 +4,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faAlignLeft } from '@fortawesome/free-solid-svg-icons';
 import CardQuickEditor from "./CardQuickEditor";
 import CardDetail from './CardDetail';
+import { axiosPrivate } from '../../api/axios';
+import useBoardState from '../../hooks/useBoardState';
 
 const Card = ({ index, card }) => {
     const [openQuickEditor, setOpenQuickEditor] = useState(false);
     const [openCardDetail, setOpenCardDetail] = useState(false);
     const [cardAttribute, setCardAttribute] = useState({});
+
+    const {
+        deleteCard,
+        socket,
+    } = useBoardState();
 
     const cardRef = useRef();
 
@@ -27,6 +34,16 @@ const Card = ({ index, card }) => {
 
     const handleOpenCardDetail = () => {
         setOpenCardDetail(true);
+    };
+
+    const handleDeleteCard = async () => {
+        try {
+            await axiosPrivate.delete(`/cards/${card._id}`);
+            deleteCard(card.listId, card._id);
+            socket.emit('deleteCard', { listId: card.listId, cardId: card._id });
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     function getStyle(style, snapshot) {
@@ -49,6 +66,7 @@ const Card = ({ index, card }) => {
                     card={card}
                     open={openCardDetail}
                     setOpen={setOpenCardDetail}
+                    handleDeleteCard={handleDeleteCard}
                 />
             }
 
@@ -61,6 +79,7 @@ const Card = ({ index, card }) => {
                     setOpen={setOpenQuickEditor}
                     openCardDetail={openCardDetail}
                     setOpenCardDetail={setOpenCardDetail}
+                    handleDeleteCard={handleDeleteCard}
                 />
             }
 

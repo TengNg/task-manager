@@ -3,7 +3,7 @@ import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HighlightPicker from "./HighlightPicker";
 
-const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail }) => {
+const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, handleDeleteCard }) => {
     const {
         setCardTitle,
         socket,
@@ -75,6 +75,11 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail }) 
         setOpenCardDetail(true);
     };
 
+    const deleteCard = () => {
+        handleDeleteCard();
+        setOpen(false);
+    };
+
     return (
         <>
 
@@ -116,6 +121,7 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail }) 
                         </button>
 
                         <button
+                            onClick={() => deleteCard()}
                             className="hover:ms-1 transition-all text-[0.75rem] relative text-white bg-gray-800 px-3 py-1 flex--center opacity-80 z-30"
                         >
                             Delete card

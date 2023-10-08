@@ -18,6 +18,7 @@ const HighlightPicker = ({ card }) => {
 
             socket.emit("updateCardHighlight", { id: card._id, listId: card.listId, highlight: value });
         } catch (err) {
+            console.log(err);
         }
     };
 

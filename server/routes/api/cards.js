@@ -7,14 +7,16 @@ const {
     updateTitle,
     updateDescription,
     updateHighlight,
+    deleteCard,
     reorder,
 } = require('../../controllers/cardsController');
 
 router.route("/")
     .post(addCard)
 
-router.route(":/id")
+router.route("/:id")
     .put(updateCard)
+    .delete(deleteCard)
 
 router.route("/:id/reorder")
     .put(reorder)

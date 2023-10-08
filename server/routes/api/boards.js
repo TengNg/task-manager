@@ -7,6 +7,7 @@ const {
     getBoard,
     updateBoard,
     updateTitle,
+    updateDescription,
     removeMemberFromBoard,
 } = require('../../controllers/boardsController');
 
@@ -23,5 +24,8 @@ router.route("/:id/members/:memberId")
 
 router.route("/:id/new-title")
     .put(updateTitle)
+
+router.route("/:id/new-description")
+    .put(updateDescription)
 
 module.exports = router;
