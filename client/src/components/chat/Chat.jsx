@@ -1,4 +1,3 @@
-import useAuth from "../../hooks/useAuth";
 import dateFormatter from "../../utils/dateFormatter";
 
 const Chat = ({ chat }) => {
@@ -11,7 +10,7 @@ const Chat = ({ chat }) => {
 
                 <div className='flex w-full justify-start items-start'>
                     <div className='flex w-full gap-2 relative'>
-                        <p className="text-[0.75rem] font-bold text-gray-600">{sentBy.username}</p>
+                        <p className="text-[0.75rem] font-bold text-gray-600">{sentBy?.username}</p>
                         <p className="text-[0.6rem] text-gray-400 absolute right-0 top-0">{dateFormatter(createdAt)}</p>
                     </div>
                 </div>

@@ -49,14 +49,6 @@ const ChatInput = ({ sendMessage }) => {
             >
             </textarea>
 
-            <button
-                type='submit'
-                className="h-[full] text-[0.75rem] rounded-md font-medium py-2 px-4 border bg-gray-700 text-white cursor-pointer transition-all hover:bg-gray-500"
-                onClick={(e) => send(e)}
-            >
-                Send
-            </button>
-
         </form>
     )
 }

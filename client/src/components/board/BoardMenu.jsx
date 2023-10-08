@@ -24,7 +24,7 @@ const BoardMenu = ({ setOpen }) => {
 
     return (
         <div
-            className='absolute bottom-0 right-0 overflow-x-hidden flex flex-col min-w-[300px] box--style shadow-gray-600 border-[2px] border-gray-600 px-3 py-4 select-none gap-2 bg-gray-100 translate-y-[108%]'
+            className='absolute bottom-0 right-0 overflow-x-hidden flex flex-col min-w-[300px] min-h-[200px] box--style shadow-gray-600 border-[2px] border-gray-600 px-3 py-4 select-none gap-2 bg-gray-100 translate-y-[108%]'
         >
             <button
                 onClick={() => setOpen(false)}
@@ -33,15 +33,16 @@ const BoardMenu = ({ setOpen }) => {
                 <FontAwesomeIcon icon={faXmark} size='lg' />
             </button>
 
-            <div className="font-bold text-gray-600">Menu</div>
+            <div className="font-bold text-gray-600 flex-1">Menu</div>
 
             <button
                 onClick={() => setShowDescription(true)}
                 className="button--style--dark text-[0.75rem] font-bold text-gray-200">About</button>
-            <button
-                onClick={() => handleCopyBoard()}
-                className="button--style--dark text-[0.75rem] font-bold text-gray-200"
-            >Copy board</button>
+
+            {/* <button */}
+            {/*     onClick={() => handleCopyBoard()} */}
+            {/*     className="button--style--dark text-[0.75rem] font-bold text-gray-200" */}
+            {/* >Copy board</button> */}
 
             {
                 boardState.board.createdBy.username === auth.username
