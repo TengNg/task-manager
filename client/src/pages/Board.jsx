@@ -18,6 +18,7 @@ const Board = () => {
         setBoardTitle,
         setBoardLinks,
         setChats,
+        isRemoved,
         socket
     } = useBoardState();
 
@@ -47,6 +48,12 @@ const Board = () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
     }, []);
+
+    useEffect(() => {
+        if (isRemoved) {
+            window.location.reload();
+        }
+    }, [isRemoved])
 
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });

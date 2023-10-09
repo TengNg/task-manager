@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import useAuth from "../../hooks/useAuth";
@@ -11,6 +11,7 @@ const BoardMenu = ({ setOpen }) => {
     const {
         boardState,
         setBoardDescription,
+        socket,
     } = useBoardState();
 
     const [showDescription, setShowDescription] = useState(false);
@@ -33,6 +34,13 @@ const BoardMenu = ({ setOpen }) => {
     };
 
     const handleCloseBoard = async () => {
+        try {
+            await axiosPrivate.delete(`/boards/${boardState.board._id}`);
+            socket.emit('removeFromBoard');
+            window.location.reload();
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     const handleUpdateDescription = async (e) => {
@@ -74,7 +82,7 @@ const BoardMenu = ({ setOpen }) => {
                 boardState.board.createdBy.username === auth.username
                     ?
                     <button
-                        onClick={() => handleLeaveBoard()}
+                        onClick={() => handleCloseBoard()}
                         className="button--style--dark text-[0.75rem] font-bold text-gray-200"
                     >Close board</button>
                     : <button

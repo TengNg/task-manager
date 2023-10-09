@@ -3,7 +3,7 @@ import { Draggable } from "react-beautiful-dnd"
 import { StrictModeDroppable as Droppable } from '../../helpers/StrictModeDroppable';
 import Card from "../card/Card";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrashCan, faDeleteLeft } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from "../../hooks/useBoardState";
 import CardComposer from "../card/CardComposer";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -11,6 +11,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 const List = ({ index, list, cards }) => {
     const {
         setListTitle,
+        deleteList,
         socket,
     } = useBoardState();
 
@@ -23,8 +24,9 @@ const List = ({ index, list, cards }) => {
     const titleRef = useRef(null);
 
     const onInputConfirm = async () => {
-        if (textAreaRef.current.value === "") {
+        if (textAreaRef.current.value.trim() === "") {
             setListTitle(list._id, initialListData);
+            return;
         }
 
         textAreaRef.current.classList.remove('block');
@@ -72,6 +74,16 @@ const List = ({ index, list, cards }) => {
         }
     };
 
+    const handleDeleteList = async () => {
+        try {
+            deleteList(list._id)
+            socket.emit("deleteList", list._id);
+            await axiosPrivate.delete(`/lists/${list._id}`);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     return (
         <Draggable key={list._id} draggableId={list._id} index={index}>
             {(provided, snapshot) => (
@@ -92,7 +104,12 @@ const List = ({ index, list, cards }) => {
                             <p>{list.title}</p>
                         </div>
 
-                        <p className="absolute -top-2 -right-2 text-[0.7rem]">{list.cards.length || ''}</p>
+                        <p className="absolute -top-2 right-4 text-[0.7rem]">{list.cards.length || ''}</p>
+                        <button
+                            onClick={handleDeleteList}
+                            className="absolute -top-3 -right-2 text-gray-500 hover:text-pink-500 transition-all">
+                            <FontAwesomeIcon icon={faDeleteLeft} />
+                        </button>
                         {/* <p className="absolute -top-2 right-3 text-[0.7rem]">rank: {list.order}</p> */}
 
                         <textarea

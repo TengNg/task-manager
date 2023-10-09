@@ -6,10 +6,15 @@ import Avatar from "../avatar/Avatar";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import Loading from "../ui/Loading";
+import { useNavigate } from "react-router-dom";
 
 const InvitationForm = ({ setOpen }) => {
     const { auth } = useAuth();
-    const { boardState, removeMemberFromBoard } = useBoardState();
+    const {
+        boardState,
+        removeMemberFromBoard,
+        socket,
+    } = useBoardState();
 
     const axiosPrivate = useAxiosPrivate();
 
@@ -58,6 +63,7 @@ const InvitationForm = ({ setOpen }) => {
             await axiosPrivate.put(`/boards/${boardState.board._id}/members/${memberId}`);
             removeMemberFromBoard(memberId);
             setLoading(false);
+            socket.emit('removeFromBoard');
         } catch (err) {
             console.log(err);
             setLoading(false);
@@ -73,7 +79,7 @@ const InvitationForm = ({ setOpen }) => {
             </div>
 
             <div className="fixed box--style flex flex-col items-start py-3 px-10 top-[5rem] right-0 left-[50%] -translate-x-[50%] min-w-[700px] h-[300px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
-                <Loading loading={loading}/>
+                <Loading loading={loading} />
 
                 <button
                     className="absolute top-2 right-3 text-gray-600"

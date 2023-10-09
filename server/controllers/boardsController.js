@@ -135,6 +135,21 @@ const removeMemberFromBoard = async (req, res) => {
     res.status(200).json({ msg: 'Member removed from the board successfully' });
 };
 
+const closeBoard = async (req, res) => {
+    const { id } = req.params;
+    const lists = await List.find({ boardId: id });
+
+    const cardPromises = lists.map(async (list) => {
+        await Card.deleteMany({ listId: list._id });
+    });
+
+    await Promise.all(cardPromises);
+    await List.deleteMany({ boardId: id });
+    await Board.findByIdAndDelete(id);
+
+    res.status(200).json({ msg: 'board closed' });
+};
+
 module.exports = {
     getBoards,
     createBoard,
@@ -143,4 +158,5 @@ module.exports = {
     updateTitle,
     updateDescription,
     removeMemberFromBoard,
+    closeBoard,
 };

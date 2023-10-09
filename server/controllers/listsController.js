@@ -55,10 +55,18 @@ const updateTitle = async (req, res) => {
     res.status(200).json({ message: 'list updated', newList });
 };
 
+const deleteList = async (req, res) => {
+    const { id } = req.params;
+    await List.findByIdAndDelete(id);
+    await Card.deleteMany({ listId: id });
+    res.status(200).json({ message: 'list deleted' });
+};
+
 module.exports = {
     addList,
     updateLists,
     updateListsCards,
     updateTitle,
+    deleteList,
     reorder,
 }

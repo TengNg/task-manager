@@ -19,6 +19,14 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on("removeFromBoard", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        // socket.leave(boardId);
+        // boardIdMap.delete(socket.id);
+        socket.to(boardId).emit("removedFromBoard", data);
+    });
+
     socket.on("updateBoardTitle", (data) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
@@ -37,6 +45,12 @@ io.on('connection', (socket) => {
         socket.to(boardId).emit("newList", data);
     });
 
+    socket.on("deleteList", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("deletedList", data);
+    });
+
     socket.on("addCard", (data) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
@@ -44,7 +58,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on("deleteCard", (data) => {
-        console.log(data);
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
         socket.to(boardId).emit("deletedCard", data);

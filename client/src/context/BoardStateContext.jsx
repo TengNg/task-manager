@@ -6,6 +6,7 @@ const BoardStateContext = createContext({});
 export const BoardStateContextProvider = ({ children }) => {
     const [boardState, setBoardState] = useState({});
     const [chats, setChats] = useState([]);
+    const [isRemoved, setIsRemoved] = useState(false);
 
     // useEffect(() => {
     //     const newSocket = io('http://localhost:3000');
@@ -17,6 +18,10 @@ export const BoardStateContextProvider = ({ children }) => {
 
     useEffect(() => {
         if (socket) {
+            socket.on("removedFromBoard", (_) => {
+                setIsRemoved(true);
+            });
+
             socket.on("getBoardWithUpdatedLists", (data) => {
                 setBoardState(prev => {
                     return { ...prev, lists: data }
@@ -32,6 +37,10 @@ export const BoardStateContextProvider = ({ children }) => {
             socket.on("newList", (data) => {
                 const newList = { ...data, cards: [] };
                 addListToBoard(newList);
+            });
+
+            socket.on("deletedList", (data) => {
+                deleteList(data);
             });
 
             socket.on("newCard", (data) => {
@@ -186,6 +195,15 @@ export const BoardStateContextProvider = ({ children }) => {
 
     };
 
+    const deleteList = (listId) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.filter(list => list._id != listId)
+            }
+        });
+    };
+
     const removeMemberFromBoard = (memberId) => {
         setBoardState(prev => {
             return {
@@ -209,6 +227,7 @@ export const BoardStateContextProvider = ({ children }) => {
                 setBoardLinkTitle,
 
                 setListTitle,
+                deleteList,
 
                 setCardTitle,
                 setCardDescription,
@@ -222,6 +241,9 @@ export const BoardStateContextProvider = ({ children }) => {
 
                 setChats,
                 chats,
+
+                isRemoved,
+                setIsRemoved,
 
                 socket,
             }}
