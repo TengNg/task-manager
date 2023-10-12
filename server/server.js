@@ -4,7 +4,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const http = require("http");
 const cors = require("cors");
-const socket = require("socket.io");
 
 const authenticateToken = require("./middlewares/authenticateToken.js");
 const errorHandler = require('./middlewares/errorHandler');
@@ -12,9 +11,6 @@ const credentials = require('./middlewares/credentials');
 const cookieParser = require('cookie-parser');
 
 const app = express();
-
-const server = http.createServer(app);
-const io = socket(server);
 
 const PORT = process.env.PORT || 3001;
 
@@ -31,17 +27,6 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
-
-/// Socket =========
-
-io.on('connection', (socket) => {
-    console.log("user is connected");
-
-    socket.on('disconnect', () => {
-        console.log("user is disconnected");
-    });
-
-});
 
 // Routes ==========
 app.get("/", (_, res) => {

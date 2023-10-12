@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import useAuth from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import useBoardState from "../../hooks/useBoardState";
 import { useNavigate } from "react-router-dom";
+import useLocalStorage from "../../hooks/useLocalStorage";
+import LOCAL_STORAGE_KEYS from "../../data/localStorageKeys";
 
 const BoardMenu = ({ setOpen }) => {
     const { auth } = useAuth();
@@ -13,6 +15,8 @@ const BoardMenu = ({ setOpen }) => {
         setBoardDescription,
         socket,
     } = useBoardState();
+
+    const [_, setRecentBoards] = useLocalStorage(LOCAL_STORAGE_KEYS.recentlyViewedBoards, {});
 
     const [showDescription, setShowDescription] = useState(false);
 
@@ -48,6 +52,12 @@ const BoardMenu = ({ setOpen }) => {
         try {
             await axiosPrivate.put(`/boards/${boardState.board._id}/new-description`, JSON.stringify({ description: e.target.value.trim() }));
             setBoardDescription(e.target.value.trim());
+            setRecentBoards(prev => {
+                return {
+                    ...prev,
+                    description: e.target.value.trim()
+                }
+            });
         } catch (err) {
             console.log(err);
         }

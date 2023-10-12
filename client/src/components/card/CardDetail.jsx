@@ -50,6 +50,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard }) => {
         }
 
         if (e.target.value.trim() === "") {
+            setOpenDescriptionComposer(false);
             return;
         }
 
@@ -117,12 +118,12 @@ const CardDetail = ({ setOpen, card, handleDeleteCard }) => {
                         {
                             (card.description.trim() === "" && openDescriptionComposer === false) &&
                             <div
-                                className="bg-gray-100 border-[2px] border-black shadow-[0_3px_0_0] w-fit text-[0.8rem] px-3 py-4 cursor-pointer"
+                                className="bg-gray-100 border-[2px] border-black shadow-[0_3px_0_0] w-fit text-[0.8rem] px-3 py-4 cursor-pointer font-semibold"
                                 onClick={() => {
                                     setOpenDescriptionComposer(true);
                                 }}
                             >
-                                <p>Add description for this card...</p>
+                                <p>Add description</p>
                             </div>
                         }
 

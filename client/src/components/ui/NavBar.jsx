@@ -1,17 +1,16 @@
-import { useState, useEffect, useCallback } from 'react';
 import { NavLink, useLocation } from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHouse, faListCheck, faEnvelope, faChalkboard } from '@fortawesome/free-solid-svg-icons';
 import UserAccount from "./UserAccount";
-import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAppContext from '../../hooks/useAppContext';
 
 const NavBar = () => {
     const location = useLocation();
     const { pathname } = location;
 
-    const { invitations, setInvitations } = useAppContext();
-    const pendingInvitations = useCallback(() => invitations.filter(inv => inv.status === 'pending').length);
+    const { invitations, _ } = useAppContext();
+
+    const pendingInvitations = invitations.filter(inv => inv.status === "pending");
 
     return (
         <>

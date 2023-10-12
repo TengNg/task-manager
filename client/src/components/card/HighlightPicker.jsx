@@ -1,6 +1,8 @@
 import highlightColors from "../../data/highlights";
 import useBoardState from '../../hooks/useBoardState';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const HighlightPicker = ({ card }) => {
     const {
@@ -11,6 +13,8 @@ const HighlightPicker = ({ card }) => {
     const axiosPrivate = useAxiosPrivate();
 
     const handleSetCardHighlight = async (value) => {
+        if (card.highlight === value) return;
+
         try {
             setCardHighlight(card._id, card.listId, value);
             const response = await axiosPrivate.put(`/cards/${card._id}/new-highlight`, { highlight: value });
@@ -39,10 +43,10 @@ const HighlightPicker = ({ card }) => {
             }
 
             <div
-                className={`w-full h-[25px] rounded-lg bg-gray-400 flex--center font-bold border-[2px] hover:border-blue-400`}
+                className={`w-full h-[25px] rounded-md bg-gray-400 flex--center font-bold border-[2px] hover:border-blue-400 text-white text-[0.75rem]`}
                 onClick={() => handleSetCardHighlight(null)}
             >
-                x
+                <FontAwesomeIcon icon={faXmark} />
             </div>
 
         </div>
