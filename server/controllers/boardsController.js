@@ -118,11 +118,10 @@ const removeMemberFromBoard = async (req, res) => {
         return res.status(404).json({ error: 'Board not found' });
     }
 
-    const foundUser = await getUser(username);
-
-    if (board.createdBy.toString() !== foundUser._id.toString()) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
+    // const foundUser = await getUser(username);
+    // if (board.createdBy.toString() !== foundUser._id.toString()) {
+    //     return res.status(401).json({ error: 'Unauthorized' });
+    // }
 
     const indexOfMember = board.members.indexOf(memberId);
     if (indexOfMember !== -1) {

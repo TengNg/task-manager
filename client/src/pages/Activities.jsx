@@ -24,7 +24,7 @@ const Activities = () => {
 
     const handleRejectInvitation = async (invitationId) => {
         try {
-            await axiosPrivate.put(`/invitations/${invitationId}/accept`, JSON.stringify({ id: invitationId }));
+            await axiosPrivate.put(`/invitations/${invitationId}/reject`, JSON.stringify({ id: invitationId }));
             setInvitations(prev => {
                 return prev.map(item => item._id === invitationId ? { ...item, status: 'rejected' } : item);
             });

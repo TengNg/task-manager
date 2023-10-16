@@ -13,6 +13,7 @@ const BoardMenu = ({ setOpen }) => {
     const {
         boardState,
         setBoardDescription,
+        removeMemberFromBoard,
         socket,
     } = useBoardState();
 
