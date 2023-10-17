@@ -33,6 +33,12 @@ io.on('connection', (socket) => {
         socket.to(boardId).emit("getBoardWithUpdatedTitle", data);
     });
 
+    socket.on("updateBoardDescription", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("getBoardWithUpdatedDescription", data);
+    });
+
     socket.on("updateLists", (data) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;

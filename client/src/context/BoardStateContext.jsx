@@ -34,6 +34,12 @@ export const BoardStateContextProvider = ({ children }) => {
                 });
             });
 
+            socket.on("getBoardWithUpdatedDescription", (data) => {
+                setBoardState(prev => {
+                    return { ...prev, board: { ...prev.board, description: data } }
+                });
+            });
+
             socket.on("newList", (data) => {
                 const newList = { ...data, cards: [] };
                 addListToBoard(newList);

@@ -59,6 +59,7 @@ const BoardMenu = ({ setOpen }) => {
                     description: e.target.value.trim()
                 }
             });
+            socket.emit("updateBoardDescription", e.target.value.trim());
         } catch (err) {
             console.log(err);
         }
