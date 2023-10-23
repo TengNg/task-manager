@@ -5,3 +5,22 @@ Trello-like task-manager web application built with MERN stack and Socket.io (co
 > Shout out to Trello - my favorite tool, and I use it for every project I make. I want to build a web application like it but modify some stuff to fit my taste.
 
 ![Board Screenshot](./media/screenshot1.png)
+
+---
+
+### Quickstart
+
+1. Clone this repo
+2. At server folder - config .env
+    Ex: (in .env)
+    ```
+    PORT=3001
+    ACCESS_TOKEN=accesstokensecret
+    REFRESH_TOKEN=refreshtokensecret
+    ```
+3. Install packages and run command at 3 folders: server, client, socket
+   ```bash
+   npm install
+   npm run dev
+   ```
+4. Open http://localhost:3001
