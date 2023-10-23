@@ -23,4 +23,4 @@ Trello-like task-manager web application built with MERN stack and Socket.io (co
    npm install
    npm run dev
    ```
-4. Open http://localhost:3001
+4. Open http://localhost:5173/
