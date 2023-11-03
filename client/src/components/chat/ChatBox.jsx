@@ -44,7 +44,7 @@ const ChatBox = ({ setOpen }) => {
     };
 
     return (
-        <div className="fixed flex flex-col border-[2px] border-black right-1 bottom-0 bg-white w-[300px] h-[400px] overflow-auto">
+        <div className="fixed flex flex-col border-[2px] border-black right-1 bottom-0 bg-white w-[300px] h-[400px] overflow-auto z-10">
             {/* <Loading loading={true} position={'absolute'} /> */}
             <div className='relative flex border-b-2 border-black bg-white px-2 py-1'>
                 <p className='flex-1 font-semibold text-gray-600'>Chats</p>
