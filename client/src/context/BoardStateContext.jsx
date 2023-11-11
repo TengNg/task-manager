@@ -8,14 +8,6 @@ export const BoardStateContextProvider = ({ children }) => {
     const [chats, setChats] = useState([]);
     const [isRemoved, setIsRemoved] = useState(false);
 
-    // useEffect(() => {
-    //     const newSocket = io('http://localhost:3000');
-    //     setSocket(newSocket);
-    //     return () => {
-    //         newSocket.disconnect();
-    //     }
-    // }, []);
-
     useEffect(() => {
         if (socket) {
             socket.on("removedFromBoard", (_) => {

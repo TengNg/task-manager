@@ -32,6 +32,8 @@ const ListContainer = () => {
         const { index: destIndex } = destination;
         const { index: srcIndex } = source
 
+        const tempLists = [...boardState.lists]; // need this when failed to reorder
+
         if (type === "LIST") {
             const newLists = [...boardState.lists];
             const [removed] = newLists.splice(source.index, 1);
@@ -52,10 +54,12 @@ const ListContainer = () => {
                 setBoardState(prev => {
                     return { ...prev, lists: newLists };
                 });
-
                 await axiosPrivate.put(`/lists/${removedId}/reorder`, JSON.stringify({ rank }));
                 socket.emit("updateLists", newLists);
             } catch (err) {
+                setBoardState(prev => {
+                    return { ...prev, lists: tempLists };
+                });
                 console.log(err);
             }
         } else {
@@ -100,10 +104,12 @@ const ListContainer = () => {
                 setBoardState(prev => {
                     return { ...prev, lists: currentLists };
                 });
-
                 await axiosPrivate.put(`/cards/${removedId}/reorder`, JSON.stringify({ rank, listId: removed.listId }));
                 socket.emit("updateLists", currentLists);
             } catch (err) {
+                setBoardState(prev => {
+                    return { ...prev, lists: tempLists };
+                });
                 console.log(err);
             }
         }

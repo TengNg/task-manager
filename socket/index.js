@@ -1,5 +1,4 @@
 const { Server } = require('socket.io');
-
 const io = new Server({ cors: "http://localhost:5173" });
 
 const boardIdMap = new Map();
@@ -7,7 +6,9 @@ const boardIdMap = new Map();
 io.on('connection', (socket) => {
     socket.on("joinBoard", (data) => {
         boardIdMap.set(socket.id, data);
+        const boardId = boardIdMap.get(socket.id);
         socket.join(data);
+        console.log(`User with socket ID ${socket.id} joins ${boardId}`);
     });
 
     socket.on("leaveBoard", (_) => {
@@ -22,9 +23,9 @@ io.on('connection', (socket) => {
     socket.on("removeFromBoard", (data) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
-        // socket.leave(boardId);
-        // boardIdMap.delete(socket.id);
-        socket.to(boardId).emit("removedFromBoard", data);
+        socket.leave(boardId);
+        boardIdMap.delete(socket.id);
+        console.log(`User with socket ID ${socket.id} get removed ${boardId}`);
     });
 
     socket.on("updateBoardTitle", (data) => {
@@ -100,9 +101,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on("disconnect", () => {
-        // console.log('user disconnected');
-        // boardIdMap.delete(socket.id);
-
         const boardId = boardIdMap.get(socket.id);
         if (boardId) {
             socket.leave(boardId);

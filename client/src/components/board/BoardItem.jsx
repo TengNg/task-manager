@@ -5,6 +5,8 @@ const BoardItem = ({ item, handleOpenBoard }) => {
 
     const openBoard = () => {
         handleOpenBoard(_id);
+
+        // update last viewed timestamp here
     }
 
     return (

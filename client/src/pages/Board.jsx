@@ -8,8 +8,6 @@ import InvitationForm from "../components/invitation/InvitationForm";
 import Avatar from "../components/avatar/Avatar";
 import BoardMenu from "../components/board/BoardMenu";
 import ChatBox from "../components/chat/ChatBox";
-import useLocalStorage from "../hooks/useLocalStorage";
-import LOCAL_STORAGE_KEYS from "../data/localStorageKeys";
 
 const Board = () => {
     const {
@@ -21,8 +19,6 @@ const Board = () => {
         isRemoved,
         socket
     } = useBoardState();
-
-    const [_, setRecentBoards] = useLocalStorage(LOCAL_STORAGE_KEYS.recentlyViewedBoards, []);
 
     const [openInvitationForm, setOpenInvitationForm] = useState(false);
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
@@ -67,8 +63,6 @@ const Board = () => {
             setBoardLinks(response2.data);
             setChats(response3.data.messages);
 
-            setRecentBoards(response.data.board);
-
             setIsDataLoaded(true);
         }
 
@@ -102,20 +96,6 @@ const Board = () => {
                 break;
         }
     };
-
-    const handleSaveBoard = async () => {
-        // try {
-        //     setLoading(true);
-        //     await axiosPrivate.put(`/boards/${boardState.board._id}`, JSON.stringify(boardState.board));
-        //     await axiosPrivate.put("/lists", JSON.stringify({ lists: boardState.lists }));
-        //     await axiosPrivate.put("/lists/cards", JSON.stringify({ lists: boardState.lists }));
-        //     setLoading(false);
-        // } catch (err) {
-        //     console.log(err);
-        //     setLoading(false);
-        //     navigate("/boards");
-        // }
-    }
 
     const confirmBoardTitle = async (value) => {
         if (value === "") {

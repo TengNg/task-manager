@@ -7,11 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import BoardForm from "../components/board/BoardForm";
 import { useNavigate } from "react-router-dom";
-import useLocalStorage from "../hooks/useLocalStorage";
-import LOCAL_STORAGE_KEYS from "../data/localStorageKeys";
 
 const Boards = () => {
-    const [recentBoards, _] = useLocalStorage(LOCAL_STORAGE_KEYS.recentlyViewedBoards, {});
     const [boards, setBoards] = useState([]);
 
     const [openBoardForm, setOpenBoardForm] = useState(false);
@@ -100,19 +97,18 @@ const Boards = () => {
                 </div>
             </div>
 
-            {
-                Object.keys(recentBoards).length > 0 &&
-                <div>
-                    <div className="flex flex-col flex-wrap gap-2 px-8 pt-3 pb-8 mx-8 mt-8 box--style justify-start items-start w-fit box--style border-[2px] shadow-gray-500 border-gray-500">
-                        <p className="text-gray-500 text-[1.1rem] font-semibold">last viewed</p>
-                        <BoardItem
-                            item={recentBoards}
-                            handleOpenBoard={handleOpenBoard}
-                        />
-                    </div>
-                </div>
-            }
-
+            {/* { */}
+            {/*     Object.keys(recentBoards).length > 0 && */}
+            {/*     <div> */}
+            {/*         <div className="flex flex-col flex-wrap gap-2 px-8 pt-3 pb-8 mx-8 mt-8 box--style justify-start items-start w-fit box--style border-[2px] shadow-gray-500 border-gray-500"> */}
+            {/*             <p className="text-gray-500 text-[1.1rem] font-semibold">last viewed</p> */}
+            {/*             <BoardItem */}
+            {/*                 item={recentBoards} */}
+            {/*                 handleOpenBoard={handleOpenBoard} */}
+            {/*             /> */}
+            {/*         </div> */}
+            {/*     </div> */}
+            {/* } */}
 
         </section>
     )

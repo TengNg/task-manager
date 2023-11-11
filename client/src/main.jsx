@@ -9,14 +9,14 @@ import { AppContextProvider } from './context/AppContext.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <AuthContextProvider>
-        <BoardStateContextProvider>
-            <AppContextProvider>
+        <AppContextProvider>
+            <BoardStateContextProvider>
                 <BrowserRouter>
                     <React.StrictMode>
                         <App />
                     </React.StrictMode>
                 </BrowserRouter>
-            </AppContextProvider>
-        </BoardStateContextProvider>
+            </BoardStateContextProvider>
+        </AppContextProvider>
     </AuthContextProvider>
 )

@@ -25,6 +25,12 @@ const boardSchema = new mongoose.Schema({
         default: Date.now,
     },
 
+    lastViewed: {
+        type: Date,
+        required: true,
+        default: Date.now,
+    },
+
     // labels: [{
     //     type: mongoose.Schema.Types.ObjectId,
     //     ref: 'Label',

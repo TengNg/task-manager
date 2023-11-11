@@ -46,8 +46,7 @@ const InvitationForm = ({ setOpen }) => {
         try {
             setLoading(true);
             const receiverName = usernameInputRef.current.value.trim();
-            const response = await axiosPrivate.post(`/invitations`, JSON.stringify({ boardId: boardState.board._id, receiverName }));
-            console.log(response.data);
+            await axiosPrivate.post(`/invitations`, JSON.stringify({ boardId: boardState.board._id, receiverName }));
             setUsername("");
             setLoading(false);
         } catch (err) {

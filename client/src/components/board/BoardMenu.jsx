@@ -5,19 +5,14 @@ import useAuth from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import useBoardState from "../../hooks/useBoardState";
 import { useNavigate } from "react-router-dom";
-import useLocalStorage from "../../hooks/useLocalStorage";
-import LOCAL_STORAGE_KEYS from "../../data/localStorageKeys";
 
 const BoardMenu = ({ setOpen }) => {
     const { auth } = useAuth();
     const {
         boardState,
-        setBoardDescription,
         removeMemberFromBoard,
         socket,
     } = useBoardState();
-
-    const [_, setRecentBoards] = useLocalStorage(LOCAL_STORAGE_KEYS.recentlyViewedBoards, {});
 
     const [showDescription, setShowDescription] = useState(false);
 
@@ -52,7 +47,6 @@ const BoardMenu = ({ setOpen }) => {
         if (e.target.value.trim() === boardState.board.description) return;
         try {
             await axiosPrivate.put(`/boards/${boardState.board._id}/new-description`, JSON.stringify({ description: e.target.value.trim() }));
-            setBoardDescription(e.target.value.trim());
             setRecentBoards(prev => {
                 return {
                     ...prev,
