@@ -17,8 +17,7 @@ const HighlightPicker = ({ card }) => {
 
         try {
             setCardHighlight(card._id, card.listId, value);
-            const response = await axiosPrivate.put(`/cards/${card._id}/new-highlight`, { highlight: value });
-            console.log(response);
+            await axiosPrivate.put(`/cards/${card._id}/new-highlight`, { highlight: value });
 
             socket.emit("updateCardHighlight", { id: card._id, listId: card.listId, highlight: value });
         } catch (err) {

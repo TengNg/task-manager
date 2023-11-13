@@ -47,14 +47,14 @@ const Card = ({ index, card }) => {
     };
 
     function getStyle(style, snapshot) {
-        // if (!snapshot.isDropAnimating) {
-        //     return style;
-        // }
+        if (!snapshot.isDropAnimating) {
+            return style;
+        }
         return {
             ...style,
             boxShadow: `${card.highlight == null ? '0 3px 0 0 #4b5563' : `0 3px 0 0 ${card.highlight}`}`,
             borderColor: `${card.highlight == null ? '#4b5563' : `${card.highlight}`}`,
-            // transitionDuration: `0.001s`,
+            transitionDuration: `0.001s`, // i don't want the animation
         };
     }
 
