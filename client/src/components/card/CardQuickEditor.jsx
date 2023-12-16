@@ -12,6 +12,7 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, ha
     const axiosPrivate = useAxiosPrivate();
 
     const [initialTitle, setInitialTitle] = useState(card.title);
+    const [openHighlightPicker, setOpenHighlightPicker] = useState(false);
 
     const textAreaRef = useRef();
 
@@ -80,6 +81,10 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, ha
         setOpen(false);
     };
 
+    const handleToggleHighlightPicker = () => {
+        setOpenHighlightPicker(prev => !prev);
+    };
+
     return (
         <>
 
@@ -102,22 +107,26 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, ha
                     <textarea
                         ref={textAreaRef}
                         className="text-[0.8rem] h-full bg-gray-50 border-[2px] py-4 px-4 text-gray-600 border-black shadow-[0_3px_0_0] shadow-black leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50"
-                        style={{ boxShadow: `${card.highlight == null ? '0 3px 0 0 black' : `0 3px 0 0 ${card.highlight}`}`, borderColor: `${card.highlight == null ? 'black' : `${card.highlight}`}` }}
+                        style={{ boxShadow: `${card.highlight == null ? '0 3px 0 0 #4b5563' : `0 3px 0 0 ${card.highlight}`}`, borderColor: `${card.highlight == null ? '#4b5563' : `${card.highlight}`}` }}
                         placeholder='Title for this card'
                         onChange={handleTextAreaChanged}
                         onKeyDown={handleTextAreaOnEnter}
                         value={initialTitle}
                     />
                     <div className="flex flex-col gap-2 absolute top-0 -right-1 translate-x-[100%] justify-start items-start w-[200px]">
-                        <button
-                            onClick={() => handleOpenCardDetail()}
-                            className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-800 px-3 py-1 flex--center opacity-80">Open Card</button>
+                        {openHighlightPicker && <HighlightPicker card={card} />}
 
                         <button
-                            className="hover:ms-1 transition-all text-[0.75rem] relative text-white bg-gray-800 px-3 py-1 flex--center opacity-80 z-30"
+                            onClick={() => handleOpenCardDetail()}
+                            className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-800 px-3 py-1 flex--center opacity-80">
+                            Open Card
+                        </button>
+
+                        <button
+                            onClick={() => handleToggleHighlightPicker()}
+                            className={`${openHighlightPicker ? 'bg-gray-600' : 'bg-gray-800'} hover:ms-1 transition-all text-[0.75rem] text-white px-3 py-1 flex--center opacity-80 z-30`}
                         >
                             Change highlight
-                            <HighlightPicker card={card}/>
                         </button>
 
                         <button
@@ -130,12 +139,14 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, ha
                         <button
                             onClick={() => setOpen(false)}
                             className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-800 px-3 py-1 flex--center opacity-80 z-0"
-                        >Close</button>
+                        >
+                            Close
+                        </button>
                     </div>
                 </div>
                 <button
                     onClick={handleSaveButtonOnClick}
-                    className="button--style--dark bg-gray-700 text-[0.8rem] font-semibold">
+                    className="text-[0.75rem] text-white hover:bg-gray-700 bg-gray-800 px-4 py-1 flex--center opacity-80 z-0">
                     Save
                 </button>
             </div>

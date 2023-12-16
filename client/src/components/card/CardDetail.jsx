@@ -33,9 +33,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard }) => {
         }
 
         try {
-            const response = await axiosPrivate.put(`/cards/${card._id}/new-description`, JSON.stringify({ description: e.target.value.trim() }));
-            console.log(response);
-
+            await axiosPrivate.put(`/cards/${card._id}/new-description`, JSON.stringify({ description: e.target.value.trim() }));
             setCardDescription(card._id, card.listId, e.target.value.trim());
 
             socket.emit("updateCardDescription", { id: card._id, listId: card.listId, description: e.target.value.trim() });
@@ -55,9 +53,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard }) => {
         }
 
         try {
-            const response = await axiosPrivate.put(`/cards/${card._id}/new-title`, JSON.stringify({ title: e.target.value.trim() }));
-            console.log(response);
-
+            await axiosPrivate.put(`/cards/${card._id}/new-title`, JSON.stringify({ title: e.target.value.trim() }));
             setCardTitle(card._id, card.listId, e.target.value.trim());
 
             socket.emit("updateCardTitle", { id: card._id, listId: card.listId, title: e.target.value.trim() });
@@ -67,8 +63,10 @@ const CardDetail = ({ setOpen, card, handleDeleteCard }) => {
     };
 
     const deleteCard = () => {
-        handleDeleteCard();
-        setOpen(false);
+        if (confirm('Are you want to delete this card ?')) {
+            handleDeleteCard();
+            setOpen(false);
+        }
     }
 
     return (
@@ -90,7 +88,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard }) => {
                 <div className="flex justify-start items start">
                     <div className="flex flex-col flex-1">
                         <TextArea
-                            className="break-words box-border p-1 h-[2rem] w-[90%] text-gray-600 bg-gray-200 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-blue-600 focus:bg-gray-100"
+                            className="break-words box-border p-1 h-[2rem] w-[98%] text-gray-600 bg-gray-200 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-blue-600 focus:bg-gray-100"
                             onKeyDown={(e) => {
                                 if (e.key == 'Enter') {
                                     e.target.blur();
@@ -132,29 +130,37 @@ const CardDetail = ({ setOpen, card, handleDeleteCard }) => {
                             <div className="flex flex-col items-start gap-2">
                                 <TextArea
                                     className="border-[2px] shadow-[0_2px_0_0] border-black shadow-black break-words box-border text-[0.9rem] py-2 px-3 w-[90%] text-gray-600 bg-gray-100 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-none"
-                                    onBlur={(e) => confirmDescription(e)}
+                                    onBlur={(e) => {
+                                        if (e.target.value === "") {
+                                            setOpenDescriptionComposer(false);
+                                            return;
+                                        }
+                                        confirmDescription(e)
+                                    }}
                                     placeholder={"Add more description..."}
                                     initialValue={card.description}
                                     minHeight={'100px'}
                                 />
-                                <button
-                                    onClick={(e) => e.target.blur()}
-                                    className="button--style--dark py-1 px-3 text-[0.8rem]">Save</button>
                             </div>
                         }
 
                     </div>
 
                     <div className="relative flex flex-col gap-3">
-                        <button
-                            onClick={() => setOpenHighlightPicker(prev => !prev)}
-                            className="card--detail--button px-2 py-2 font-semibold">Change highlight</button>
+                        <div>
+                            <button
+                                onClick={() => setOpenHighlightPicker(prev => !prev)}
+                                className={`card--detail--button px-2 py-2 font-semibold ${openHighlightPicker && 'bg-gray-600 shadow-black text-white'}`}
+                            >Change highlight</button>
+                        </div>
 
-                        <button
-                            onClick={() => deleteCard()}
-                            className="card--detail--button px-2 py-2 font-semibold">Delete card</button>
+                        <div>
+                            <button
+                                onClick={() => deleteCard()}
+                                className="card--detail--button px-2 py-2 font-semibold">Delete card</button>
+                        </div>
 
-                        { openHighlightPicker && <HighlightPicker card={card} /> }
+                        {openHighlightPicker && <HighlightPicker card={card} />}
                     </div>
                 </div>
 

@@ -77,7 +77,7 @@ const InvitationForm = ({ setOpen }) => {
                 className="fixed box-border top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-500 opacity-40 z-50 cursor-auto">
             </div>
 
-            <div className="fixed box--style flex flex-col items-start py-3 px-10 top-[5rem] right-0 left-[50%] -translate-x-[50%] min-w-[700px] h-[300px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
+            <div className="fixed box--style flex flex-col items-start py-3 px-10 top-[5rem] right-0 left-[50%] -translate-x-[50%] w-fit min-w-[400px] h-[300px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
                 <Loading loading={loading} />
 
                 <button
@@ -87,19 +87,19 @@ const InvitationForm = ({ setOpen }) => {
                     <FontAwesomeIcon icon={faXmark} size='xl' />
                 </button>
 
-                <p className="mt-2 mb-4 font-semibold text-[1.2rem] text-gray-700">Invite people this board</p>
+                <p className="mt-2 mb-4 font-normal text-[1rem] text-gray-700">Invite people this board</p>
 
                 <div className="w-full flex items-center gap-2">
                     <input
                         ref={usernameInputRef}
-                        className={`w-[50%] p-2 overflow-hidden whitespace-nowrap text-ellipsis border-[3px] bg-gray-100 border-black text-black py-1 font-bold select-none font-mono focus:outline-none`}
+                        className={`h-full p-2 overflow-hidden whitespace-nowrap text-ellipsis border-[3px] bg-gray-100 border-gray-600 text-gray-600 font-bold select-none font-mono focus:outline-none`}
                         placeholder="username"
                         onChange={(e) => setUsername(e.target.value)}
                         value={username}
                     />
                     <button
                         onClick={() => handleSendInvitation()}
-                        className="button--style">Invite</button>
+                        className="button--style h-full">+ invite</button>
                 </div>
 
                 <p className="text-center h-3 text-red-700 text-[0.75rem] font-semibold">{errMsg}</p>

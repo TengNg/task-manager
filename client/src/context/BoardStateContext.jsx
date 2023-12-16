@@ -68,10 +68,6 @@ export const BoardStateContextProvider = ({ children }) => {
             socket.on("receiveMessage", (data) => {
                 setChats(prev => [...prev, data]);
             });
-
-            // socket.on("getBoardWithUpdatedTitle", (data) => {
-            //     setBoardTitle(data.title);
-            // });
         }
     }, []);
 

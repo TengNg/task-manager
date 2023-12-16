@@ -5,6 +5,7 @@ import useAuth from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import useBoardState from "../../hooks/useBoardState";
 import { useNavigate } from "react-router-dom";
+import dateFormatter from "../../utils/dateFormatter";
 
 const BoardMenu = ({ setOpen }) => {
     const { auth } = useAuth();
@@ -34,12 +35,14 @@ const BoardMenu = ({ setOpen }) => {
     };
 
     const handleCloseBoard = async () => {
-        try {
-            await axiosPrivate.delete(`/boards/${boardState.board._id}`);
-            socket.emit('removeFromBoard');
-            window.location.reload();
-        } catch (err) {
-            console.log(err);
+        if (confirm('This will delete this board permanently. Are you sure ?')) {
+            try {
+                await axiosPrivate.delete(`/boards/${boardState.board._id}`);
+                socket.emit('removeFromBoard');
+                window.location.reload();
+            } catch (err) {
+                console.log(err);
+            }
         }
     };
 
@@ -47,12 +50,6 @@ const BoardMenu = ({ setOpen }) => {
         if (e.target.value.trim() === boardState.board.description) return;
         try {
             await axiosPrivate.put(`/boards/${boardState.board._id}/new-description`, JSON.stringify({ description: e.target.value.trim() }));
-            setRecentBoards(prev => {
-                return {
-                    ...prev,
-                    description: e.target.value.trim()
-                }
-            });
             socket.emit("updateBoardDescription", e.target.value.trim());
         } catch (err) {
             console.log(err);
@@ -61,7 +58,7 @@ const BoardMenu = ({ setOpen }) => {
 
     return (
         <div
-            className='absolute bottom-0 right-0 overflow-x-hidden flex flex-col min-w-[300px] min-h-[200px] box--style shadow-gray-600 border-[2px] border-gray-600 px-3 py-4 select-none gap-2 bg-gray-100 translate-y-[108%]'
+            className='cursor-auto absolute bottom-0 right-0 overflow-x-hidden flex flex-col min-w-[300px] min-h-[200px] box--style shadow-gray-600 border-[2px] border-gray-600 px-3 py-4 select-none gap-2 bg-gray-100 translate-y-[108%]'
         >
             <button
                 onClick={() => setOpen(false)}
@@ -113,13 +110,18 @@ const BoardMenu = ({ setOpen }) => {
                     <FontAwesomeIcon icon={faXmark} size='lg' />
                 </button>
 
-                <div className="font-bold text-gray-600 mt-1 mb-3 flex--center">Board Info</div>
+                <div className="font-bold text-gray-600 my-3 border-b-gray-400 flex--center">Information</div>
 
-                <p className="text-start"> Owner: {auth.username} </p>
-                <p className="text-start"> Description: </p>
+                <p className="font-normal text-start text-[0.7rem]">created by: <span class='font-medium'>{auth.username}</span></p>
+                <p className="font-normal text-[0.7rem] text-start">created at: {dateFormatter(boardState.board.createdAt)}</p>
+
+                <br />
+
+                <p className="font-medium text-start text-[0.7rem]">Description: </p>
+
                 <textarea
-                    className="border-black shadow-[0_3px_0_0] h-[80px] overflow-auto border-[2px] px-3 py-2 shadow-black bg-gray-100 w-full focus:outline-none font-semibold text-gray-600 leading-normal"
-                    placeholder="Write a description for this board"
+                    className="border-gray-600 resize-none shadow-[0_3px_0_0] h-[80px] overflow-auto border-[2px] px-3 py-2 shadow-gray-600 bg-gray-100 w-full focus:outline-none font-semibold text-gray-600 leading-normal"
+                    placeholder="Write a short description..."
                     onBlur={handleUpdateDescription}
                     defaultValue={boardState.board.description}
                 />

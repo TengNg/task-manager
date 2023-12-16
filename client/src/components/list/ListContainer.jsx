@@ -126,7 +126,7 @@ const ListContainer = () => {
                             listContainerRef.current = element
                         }}
                         ignoreContainerClipping={true}
-                        className='flex w-fit min-h-[90%] h-[90%] items-start justify-start border-black'
+                        className='flex min-h-[90%] h-[90%] items-start justify-start border-black'
                     >
                         {boardState.lists.map((list, index) => (
                             <List
