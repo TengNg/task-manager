@@ -7,6 +7,7 @@ import InvitationForm from "../components/invitation/InvitationForm";
 import Avatar from "../components/avatar/Avatar";
 import BoardMenu from "../components/board/BoardMenu";
 import ChatBox from "../components/chat/ChatBox";
+import CopyBoardForm from "../components/board/CopyBoardForm";
 
 const Board = () => {
     const {
@@ -22,6 +23,7 @@ const Board = () => {
     const [openInvitationForm, setOpenInvitationForm] = useState(false);
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
     const [openChatBox, setOpenChatBox] = useState(false);
+    const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
 
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -145,6 +147,14 @@ const Board = () => {
                 />
             }
 
+            {
+                openCopyBoardForm
+                && <CopyBoardForm
+                    open={openCopyBoardForm}
+                    setOpen={setOpenCopyBoardForm}
+                />
+            }
+
             <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4 mt-[5rem] min-w-[100vw]">
                 {/* <Loading loanding={loading} /> */}
 
@@ -192,6 +202,7 @@ const Board = () => {
                                 <BoardMenu
                                     setOpen={setOpenBoardMenu}
                                     board={boardState.board}
+                                    setOpenCopyBoardForm={setOpenCopyBoardForm}
                                 />
                             }
                         </div>
