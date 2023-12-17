@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -65,8 +67,12 @@
 
     .card--detail--button {
         @apply bg-gray-100 border-[2px] border-black shadow-[0_3px_0_0] w-fit text-[0.8rem] px-3 py-4 cursor-pointer
-
     }
+}
+
+body,
+html {
+  font-family: 'Fira Code', sans-serif;
 }
 
 body {

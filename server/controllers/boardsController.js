@@ -149,6 +149,13 @@ const closeBoard = async (req, res) => {
     res.status(200).json({ msg: 'board closed' });
 };
 
+const updateLastViewdTimeStamp = async (req, res) => {
+    const { id } = req.params;
+    const { lastViewed } = req.body;
+    const newBoard = await Board.findOneAndUpdate({ _id: id }, { lastViewed }, { new: true });
+    return res.status(200).json({ msg: 'board updated', newBoard });
+};
+
 module.exports = {
     getBoards,
     createBoard,
@@ -158,4 +165,5 @@ module.exports = {
     updateDescription,
     removeMemberFromBoard,
     closeBoard,
+    updateLastViewdTimeStamp,
 };

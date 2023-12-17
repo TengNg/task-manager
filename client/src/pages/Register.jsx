@@ -105,7 +105,7 @@ export default function Register() {
                     <label htmlFor="password" >Confirm Password</label>
                     <input
                         className='border-[3px] border-black p-1 font-semibold select-none'
-                        type="confirmed-password"
+                        type="password"
                         id="confirmed-password"
                         ref={confirmedPasswordInputEl}
                         onChange={(e) => setConfirmedPassword(e.target.value)}

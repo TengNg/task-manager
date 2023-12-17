@@ -50,7 +50,6 @@ const UserAccount = () => {
     const handleLogout = async () => {
         try {
             await axiosPrivate.get('/logout/');
-            localStorage.clear();
             setAuth({});
             navigate("/login");
         } catch (err) {

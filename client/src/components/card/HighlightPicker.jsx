@@ -17,8 +17,7 @@ const HighlightPicker = ({ card }) => {
 
         try {
             setCardHighlight(card._id, card.listId, value);
-            const response = await axiosPrivate.put(`/cards/${card._id}/new-highlight`, { highlight: value });
-            console.log(response);
+            await axiosPrivate.put(`/cards/${card._id}/new-highlight`, { highlight: value });
 
             socket.emit("updateCardHighlight", { id: card._id, listId: card.listId, highlight: value });
         } catch (err) {
@@ -27,9 +26,9 @@ const HighlightPicker = ({ card }) => {
     };
 
     return (
-        <div
-            className="absolute top-0 left-0 w-[200px] translate-x-[60%] flex flex-col gap-1"
-        >
+        <div className="absolute -top-5 left-0 w-[200px] translate-x-[100%] flex flex-col gap-1 cursor-pointer">
+            <div className='text-[0.75rem] text-center text-white'>Change card highlight</div>
+
             {
                 Object.keys(highlightColors).map((item, index) => {
                     return <div

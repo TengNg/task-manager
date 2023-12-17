@@ -37,7 +37,7 @@ const List = ({ index, list, cards }) => {
             await axiosPrivate.put(`/lists/${list._id}/new-title`, JSON.stringify({ title: textAreaRef.current.value }));
             setInitialListData(textAreaRef.current.value);
             socket.emit("updateListTitle", { listId: list._id, title: textAreaRef.current.value });
-        } catch(err) {
+        } catch (err) {
             console.log(err);
         }
     };
@@ -75,12 +75,14 @@ const List = ({ index, list, cards }) => {
     };
 
     const handleDeleteList = async () => {
-        try {
-            deleteList(list._id)
-            socket.emit("deleteList", list._id);
-            await axiosPrivate.delete(`/lists/${list._id}`);
-        } catch (err) {
-            console.log(err);
+        if (confirm('Are you want to delete this list ?')) {
+            try {
+                deleteList(list._id)
+                socket.emit("deleteList", list._id);
+                await axiosPrivate.delete(`/lists/${list._id}`);
+            } catch (err) {
+                console.log(err);
+            }
         }
     };
 

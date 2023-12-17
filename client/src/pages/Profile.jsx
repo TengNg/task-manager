@@ -73,7 +73,6 @@ const Profile = () => {
             }
 
             await axiosPrivate.get('/logout/');
-            localStorage.clear();
             setAuth({});
         } catch (err) {
             console.log(err);
@@ -96,7 +95,6 @@ const Profile = () => {
             setLoading(false);
             closeChangePasswordOption();
             // await axiosPrivate.get('/logout/');
-            // localStorage.clear();
             // setAuth({});
         } catch (err) {
             console.log(err);
