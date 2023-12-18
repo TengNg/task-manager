@@ -4,12 +4,24 @@ import dateFormatter from '../utils/dateFormatter';
 import Avatar from '../components/avatar/Avatar';
 import { useNavigate } from 'react-router-dom';
 import useAppContext from '../hooks/useAppContext';
+import { useEffect } from 'react';
 
 const Activities = () => {
     const { invitations, setInvitations } = useAppContext();
     const axiosPrivate = useAxiosPrivate();
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const getInvitations = async () => {
+            const response = await axiosPrivate.get("/invitations");
+            setInvitations(response.data.invitations);
+        };
+
+        getInvitations().catch(err => {
+            console.log(err);
+        });
+    }, [invitations]);
 
     const handleAcceptInvitation = async (invitationId) => {
         try {
