@@ -14,7 +14,6 @@ const Board = () => {
         boardState,
         setBoardState,
         setBoardTitle,
-        setBoardLinks,
         setChats,
         isRemoved,
         socket
@@ -55,13 +54,11 @@ const Board = () => {
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
 
         const getBoardData = async () => {
-            const response = await axiosPrivate.get(`/boards/${boardId}`);
-            const response2 = await axiosPrivate.get(`/boards`);
-            const response3 = await axiosPrivate.get(`/chats/b/${boardId}`);
-            setBoardState(response.data);
-            setTitle(response.data.board.title);
-            setBoardLinks(response2.data);
-            setChats(response3.data.messages);
+            const boardsResponse = await axiosPrivate.get(`/boards/${boardId}`);
+            const chatsResponse = await axiosPrivate.get(`/chats/b/${boardId}`);
+            setBoardState(boardsResponse.data);
+            setTitle(boardsResponse.data.board.title);
+            setChats(chatsResponse.data.messages);
 
             setIsDataLoaded(true);
         }

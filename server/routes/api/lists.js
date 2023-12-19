@@ -4,7 +4,6 @@ const router = express.Router();
 const {
     addList,
     updateLists,
-    updateListsCards,
     updateTitle,
     deleteList,
     reorder,
@@ -13,9 +12,6 @@ const {
 router.route("/")
     .put(updateLists)
     .post(addList)
-
-router.route("/cards")
-    .put(updateListsCards)
 
 router.route("/:id")
     .delete(deleteList);

@@ -107,7 +107,7 @@ const InvitationForm = ({ setOpen }) => {
 
                 <p className="text-center h-3 text-red-700 text-[0.65rem] font-semibold mb-1">{errMsg}</p>
 
-                <div className="flex flex-col gap-3 w-full max-w-[400px] overflow-scroll border-[1px] border-t-gray-600 pt-4">
+                <div className="flex flex-col gap-3 w-full max-w-[400px] overflow-auto border-[1px] border-t-gray-600 pt-4">
                     <div className="flex gap-1">
                         <Avatar
                             username={boardState.board.createdBy.username}
