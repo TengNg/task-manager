@@ -6,7 +6,6 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import useBoardState from "../../hooks/useBoardState";
 import { useNavigate } from "react-router-dom";
 import dateFormatter from "../../utils/dateFormatter";
-import CopyBoardForm from "./CopyBoardForm";
 
 const BoardMenu = ({ setOpen, setOpenCopyBoardForm }) => {
     const { auth } = useAuth();
@@ -75,7 +74,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm }) => {
                 <button
                     onClick={() => setOpenCopyBoardForm(true)}
                     className="button--style--dark text-[0.75rem] font-bold text-gray-200"
-                >Copy board (WIP)</button>
+                >Copy board</button>
 
                 <button
                     className="button--style--dark text-[0.75rem] font-bold text-gray-200"
