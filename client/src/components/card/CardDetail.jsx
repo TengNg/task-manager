@@ -130,6 +130,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard }) => {
                             <div className="flex flex-col items-start gap-2">
                                 <TextArea
                                     className="border-[2px] shadow-[0_2px_0_0] border-black shadow-black break-words box-border text-[0.9rem] py-2 px-3 w-[90%] text-gray-600 bg-gray-100 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-none"
+                                    autoFocus={true}
                                     onBlur={(e) => {
                                         if (e.target.value === "") {
                                             setOpenDescriptionComposer(false);

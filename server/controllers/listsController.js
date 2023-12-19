@@ -29,18 +29,6 @@ const updateLists = async (req, res) => {
     res.status(200).json({ message: 'all lists updated' });
 };
 
-const updateListsCards = async (req, res) => {
-    const { lists } = req.body;
-    lists.map((list, _) => {
-        const newCards = list.cards;
-        newCards.map(async ({ _id, listId, title }, index) => {
-            await Card.findOneAndUpdate({ _id: _id }, { order: index, title, listId });
-        });
-    });
-
-    res.status(200).json({ message: 'all lists updated' });
-};
-
 const reorder = async (req, res) => {
     const { id } = req.params;
     const { rank } = req.body;
@@ -65,7 +53,6 @@ const deleteList = async (req, res) => {
 module.exports = {
     addList,
     updateLists,
-    updateListsCards,
     updateTitle,
     deleteList,
     reorder,

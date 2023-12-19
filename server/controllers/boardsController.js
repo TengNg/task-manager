@@ -156,6 +156,56 @@ const updateLastViewdTimeStamp = async (req, res) => {
     return res.status(200).json({ msg: 'board updated', newBoard });
 };
 
+const copyBoard = async (req, res) => {
+    const { id } = req.params;
+    const { title, description } = req.body;
+    const { username } = req.user
+
+    const foundUser = await getUser(username);
+    if (!foundUser) return res.status(403).json({ msg: "user not found" });
+
+    const newBoardId = new mongoose.Types.ObjectId();
+    const foundBoard = await Board.findById(id);
+    const lists = await List.find({ boardId: foundBoard.id });
+
+    const newBoard = new Board({
+        _id: newBoardId,
+        title: title || foundBoard.title,
+        description: description || foundBoard.description,
+        createdBy: foundUser._id
+    });
+
+    await newBoard.save();
+
+    for (const list of lists) {
+        const newListId = new mongoose.Types.ObjectId();
+        const { _id, title, order } = list;
+        const newList = new List({
+            _id: newListId,
+            title,
+            order,
+            boardId: newBoardId,
+        });
+
+        await newList.save();
+
+        const cards = await Card.find({ listId: _id });
+        for (const card of cards) {
+            const { title, description, order } = card;
+            const newCard = new Card({
+                title,
+                description,
+                order,
+                listId: newListId
+            });
+
+            await newCard.save();
+        }
+    }
+
+    return res.status(200).json({ msg: 'board copied' });
+};
+
 module.exports = {
     getBoards,
     createBoard,
@@ -166,4 +216,5 @@ module.exports = {
     removeMemberFromBoard,
     closeBoard,
     updateLastViewdTimeStamp,
+    copyBoard,
 };

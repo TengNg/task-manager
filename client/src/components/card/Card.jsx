@@ -93,7 +93,7 @@ const Card = ({ index, card }) => {
                         }}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className={`w-full border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_3px_0_0] shadow-gray-600 bg-gray-50 relative hover:cursor-pointer`}
+                        className={`w-full group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_3px_0_0] shadow-gray-600 bg-gray-50 relative hover:cursor-pointer`}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >
@@ -107,8 +107,8 @@ const Card = ({ index, card }) => {
 
                         <button
                             onClick={handleOpenQuickEditor}
-                            className="absolute right-1 top-0 text-transparent hover:text-gray-400 mb-auto text-[1.2rem]">
-                            <FontAwesomeIcon icon={faPenToSquare} />
+                            className="absolute right-1 top-1 text-transparent hover:bg-gray-200 group-hover:text-gray-500 transition-all w-[25px] h-[25px] d-flex justify-center items-center rounded-md">
+                            <FontAwesomeIcon icon={faPenToSquare} size='sm' />
                         </button>
                     </div>
                 )}

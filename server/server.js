@@ -2,7 +2,6 @@ require('dotenv').config();
 
 const express = require("express");
 const mongoose = require("mongoose");
-const http = require("http");
 const cors = require("cors");
 
 const authenticateToken = require("./middlewares/authenticateToken.js");
@@ -15,8 +14,10 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 mongoose.set("strictQuery", true);
-mongoose.connect(process.env.DB_CONNECTION)
-// .then(() => console.log('connected')).catch((err) => console.log(err));
+mongoose
+    .connect(process.env.DB_CONNECTION)
+    .then(() => console.log('connected'))
+    .catch((err) => console.log(err));
 
 app.use(credentials);
 app.use(cors({
@@ -28,7 +29,6 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Routes ==========
 app.get("/", (_, res) => {
     res.json({ msg: "home page" });
 });
@@ -40,7 +40,6 @@ app.use("/logout", require("./routes/logout"));
 app.use("/refresh", require("./routes/refresh"));
 app.use("/check-cookies", require("./routes/checkCookies"));
 
-
 app.use(authenticateToken);
 app.use("/boards", require("./routes/api/boards"));
 app.use("/lists", require("./routes/api/lists"));
@@ -48,8 +47,6 @@ app.use("/cards", require("./routes/api/cards"));
 app.use("/invitations", require("./routes/api/invitations"));
 app.use("/chats", require("./routes/api/chats"));
 app.use("/account/edit", require("./routes/api/account"));
-
-// =================
 
 app.use(errorHandler);
 
