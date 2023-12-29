@@ -7,13 +7,13 @@ import InvitationForm from "../components/invitation/InvitationForm";
 import Avatar from "../components/avatar/Avatar";
 import BoardMenu from "../components/board/BoardMenu";
 import ChatBox from "../components/chat/ChatBox";
+import CopyBoardForm from "../components/board/CopyBoardForm";
 
 const Board = () => {
     const {
         boardState,
         setBoardState,
         setBoardTitle,
-        setBoardLinks,
         setChats,
         isRemoved,
         socket
@@ -22,6 +22,7 @@ const Board = () => {
     const [openInvitationForm, setOpenInvitationForm] = useState(false);
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
     const [openChatBox, setOpenChatBox] = useState(false);
+    const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
 
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -53,13 +54,11 @@ const Board = () => {
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
 
         const getBoardData = async () => {
-            const response = await axiosPrivate.get(`/boards/${boardId}`);
-            const response2 = await axiosPrivate.get(`/boards`);
-            const response3 = await axiosPrivate.get(`/chats/b/${boardId}`);
-            setBoardState(response.data);
-            setTitle(response.data.board.title);
-            setBoardLinks(response2.data);
-            setChats(response3.data.messages);
+            const boardsResponse = await axiosPrivate.get(`/boards/${boardId}`);
+            const chatsResponse = await axiosPrivate.get(`/chats/b/${boardId}`);
+            setBoardState(boardsResponse.data);
+            setTitle(boardsResponse.data.board.title);
+            setChats(chatsResponse.data.messages);
 
             setIsDataLoaded(true);
         }
@@ -145,6 +144,14 @@ const Board = () => {
                 />
             }
 
+            {
+                openCopyBoardForm
+                && <CopyBoardForm
+                    open={openCopyBoardForm}
+                    setOpen={setOpenCopyBoardForm}
+                />
+            }
+
             <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4 mt-[5rem] min-w-[100vw]">
                 {/* <Loading loanding={loading} /> */}
 
@@ -192,6 +199,7 @@ const Board = () => {
                                 <BoardMenu
                                     setOpen={setOpenBoardMenu}
                                     board={boardState.board}
+                                    setOpenCopyBoardForm={setOpenCopyBoardForm}
                                 />
                             }
                         </div>

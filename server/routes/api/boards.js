@@ -10,6 +10,7 @@ const {
     updateDescription,
     removeMemberFromBoard,
     closeBoard,
+    copyBoard,
 } = require('../../controllers/boardsController');
 
 router.route("/")
@@ -29,5 +30,8 @@ router.route("/:id/new-title")
 
 router.route("/:id/new-description")
     .put(updateDescription)
+
+router.route("/copy/:id")
+    .post(copyBoard)
 
 module.exports = router;

@@ -7,7 +7,7 @@ import useBoardState from "../../hooks/useBoardState";
 import { useNavigate } from "react-router-dom";
 import dateFormatter from "../../utils/dateFormatter";
 
-const BoardMenu = ({ setOpen }) => {
+const BoardMenu = ({ setOpen, setOpenCopyBoardForm }) => {
     const { auth } = useAuth();
     const {
         boardState,
@@ -19,9 +19,6 @@ const BoardMenu = ({ setOpen }) => {
 
     const axiosPrivate = useAxiosPrivate();
     const navigate = useNavigate();
-
-    const handleCopyBoard = async (e) => {
-    };
 
     const handleLeaveBoard = async () => {
         try {
@@ -57,52 +54,10 @@ const BoardMenu = ({ setOpen }) => {
     };
 
     return (
-        <div
-            className='cursor-auto absolute bottom-0 right-0 overflow-x-hidden flex flex-col min-w-[300px] min-h-[200px] box--style shadow-gray-600 border-[2px] border-gray-600 px-3 py-4 select-none gap-2 bg-gray-100 translate-y-[108%]'
-        >
-            <button
-                onClick={() => setOpen(false)}
-                className="absolute top-1 right-2 text-gray-600"
+        <>
+            <div
+                className='cursor-auto absolute bottom-0 right-0 overflow-x-hidden flex flex-col min-w-[300px] min-h-[200px] box--style shadow-gray-600 border-[2px] border-gray-600 px-3 py-4 select-none gap-2 bg-gray-100 translate-y-[108%]'
             >
-                <FontAwesomeIcon icon={faXmark} size='lg' />
-            </button>
-
-            <div className="font-bold text-gray-600 flex-1 flex--center">Menu</div>
-
-            <button
-                onClick={() => setShowDescription(true)}
-                className="button--style--dark text-[0.75rem] font-bold text-gray-200">About</button>
-
-            <button
-                className="button--style--dark text-[0.75rem] font-bold text-gray-200"
-            >Copy board (WIP)</button>
-
-            <button
-                className="button--style--dark text-[0.75rem] font-bold text-gray-200"
-            >Archived Items (WIP)</button>
-
-            {
-                boardState.board.createdBy.username === auth.username
-                    ?
-                    <button
-                        onClick={() => handleCloseBoard()}
-                        className="button--style--dark text-[0.75rem] font-bold text-gray-200"
-                    >Close board</button>
-                    : <button
-                        onClick={() => handleLeaveBoard()}
-                        className="button--style--dark text-[0.75rem] font-bold text-gray-200"
-                    >Leave board</button>
-            }
-
-            <div className={`absolute w-full h-fit min-h-full bg-gray-50 top-0 right-0 flex flex-col px-5 transition-all ${showDescription === true ? 'translate-x-0' : '-translate-x-[100%]'}`}>
-
-                <button
-                    onClick={() => setShowDescription(false)}
-                    className="absolute top-1 left-3 text-gray-600"
-                >
-                    <FontAwesomeIcon icon={faAngleLeft} size='lg' />
-                </button>
-
                 <button
                     onClick={() => setOpen(false)}
                     className="absolute top-1 right-2 text-gray-600"
@@ -110,25 +65,66 @@ const BoardMenu = ({ setOpen }) => {
                     <FontAwesomeIcon icon={faXmark} size='lg' />
                 </button>
 
-                <div className="font-bold text-gray-600 my-3 border-b-gray-400 flex--center">Information</div>
+                <div className="font-bold text-gray-600 flex-1 flex--center">Menu</div>
 
-                <p className="font-normal text-start text-[0.7rem]">created by: <span class='font-medium'>{auth.username}</span></p>
-                <p className="font-normal text-[0.7rem] text-start">created at: {dateFormatter(boardState.board.createdAt)}</p>
+                <button
+                    onClick={() => setShowDescription(true)}
+                    className="button--style--dark text-[0.75rem] font-bold text-gray-200">About</button>
 
-                <br />
+                <button
+                    onClick={() => setOpenCopyBoardForm(true)}
+                    className="button--style--dark text-[0.75rem] font-bold text-gray-200"
+                >Copy board</button>
 
-                <p className="font-medium text-start text-[0.7rem]">Description: </p>
+                <button
+                    className="button--style--dark text-[0.75rem] font-bold text-gray-200"
+                >Archived Items (WIP)</button>
 
-                <textarea
-                    className="border-gray-600 resize-none shadow-[0_3px_0_0] h-[80px] overflow-auto border-[2px] px-3 py-2 shadow-gray-600 bg-gray-100 w-full focus:outline-none font-semibold text-gray-600 leading-normal"
-                    placeholder="Write a short description..."
-                    onBlur={handleUpdateDescription}
-                    defaultValue={boardState.board.description}
-                />
+                {
+                    boardState.board.createdBy.username === auth.username
+                        ?
+                        <button
+                            onClick={() => handleCloseBoard()}
+                            className="button--style--dark text-[0.75rem] font-bold text-gray-200"
+                        >Close board</button>
+                        : <button
+                            onClick={() => handleLeaveBoard()}
+                            className="button--style--dark text-[0.75rem] font-bold text-gray-200"
+                        >Leave board</button>
+                }
+
+                <div className={`absolute w-full h-fit min-h-full bg-gray-50 pb-4 top-0 right-0 flex flex-col px-5 transition-all ${showDescription === true ? 'translate-x-0' : '-translate-x-[100%]'}`}>
+
+                    <button
+                        onClick={() => setShowDescription(false)}
+                        className="absolute top-1 left-2 text-gray-600"
+                    >
+                        <FontAwesomeIcon icon={faAngleLeft} size='lg' />
+                    </button>
+
+                    <button
+                        onClick={() => setOpen(false)}
+                        className="absolute top-1 right-2 text-gray-600"
+                    >
+                        <FontAwesomeIcon icon={faXmark} size='lg' />
+                    </button>
+
+                    <div className="font-bold text-gray-600 my-3 border-b-gray-400 flex--center">Information</div>
+
+                    <p className="font-normal text-start text-[0.75rem]">created by: <span className='font-medium underline'>{auth.username}</span></p>
+                    <p className="font-normal text-[0.75rem] text-start">created at: {dateFormatter(boardState.board.createdAt)}</p>
+
+                    <textarea
+                        className="border-gray-600 mt-4 shadow-[0_3px_0_0] h-[80px] overflow-auto border-[2px] px-3 py-2 shadow-gray-600 bg-gray-100 w-full focus:outline-none font-semibold text-gray-600 leading-normal"
+                        placeholder="Write a short description..."
+                        onBlur={handleUpdateDescription}
+                        defaultValue={boardState.board.description}
+                    />
+
+                </div>
 
             </div>
-
-        </div>
+        </>
     )
 }
 

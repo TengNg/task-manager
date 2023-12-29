@@ -3,13 +3,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const SIZE = {
+    'xsm': 'w-[20px] h-[20px]',
     'sm': 'w-[30px] h-[30px]',
     'md': 'w-[40px] h-[40px]',
     'lg': 'w-[50px] h-[50px]',
     'xl': 'w-[60px] h-[60px]',
+    'xxl': 'w-[70px] h-[70px]',
 };
 
-const Avatar = ({ username, profileImage, size = 'sm', isAdmin = false }) => {
+const Avatar = ({ username, profileImage, size = 'sm', isAdmin = false, clickable = true }) => {
     const [collapse, setCollapse] = useState(true);
 
     const userProfileImageRef = useRef();
@@ -41,9 +43,9 @@ const Avatar = ({ username, profileImage, size = 'sm', isAdmin = false }) => {
     return (
         <div className="flex--center h-fit flex-col justify-start gap-2 relative">
             <div
-                onClick={() => setCollapse(collapse => !collapse)}
+                onClick={() => clickable && setCollapse(collapse => !collapse)}
                 ref={userProfileImageRef}
-                className={`relative bg-blue-500 text-white flex--center text-[0.8rem] rounded-full bg-center bg-cover overflow-hidden cursor-pointer ${SIZE[size]}`}>
+                className={`relative bg-blue-500 text-white flex--center text-[0.8rem] rounded-full bg-center bg-cover overflow-hidden ${clickable && 'cursor-pointer'} ${SIZE[size]}`}>
                 {
                     !profileImage
                         ? <div className="font-bold flex--center select-none">{username.charAt(0).toUpperCase()}</div>
