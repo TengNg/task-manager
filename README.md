@@ -8,7 +8,15 @@ Trello-like task-manager web application built with MERN stack and Socket.io (co
 
 ---
 
+> Many features and ideas are currently in progress
+
+![WIP](./media/screenshot2.png)
+
+---
+
 ### Quickstart
+
+> Run in local
 
 1. Clone this repo
 2. Create database in mongodb (with your_database_name)
