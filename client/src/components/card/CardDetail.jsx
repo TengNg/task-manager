@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import TextArea from "../ui/TextArea";
 import useBoardState from "../../hooks/useBoardState";
 
@@ -76,7 +76,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard }) => {
                 className="fixed box-border top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-500 opacity-40 z-50 cursor-auto">
             </div>
 
-            <div className="box--style flex p-3 pb-6 flex-col absolute top-[5rem] right-0 left-[50%] -translate-x-[50%] min-w-[700px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
+            <div className="fixed box--style flex p-3 pb-6 flex-col top-[5rem] right-0 left-[50%] -translate-x-[50%] min-w-[700px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
                 {
                     card.highlight != null &&
                     <div

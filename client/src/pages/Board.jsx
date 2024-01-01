@@ -8,6 +8,7 @@ import Avatar from "../components/avatar/Avatar";
 import BoardMenu from "../components/board/BoardMenu";
 import ChatBox from "../components/chat/ChatBox";
 import CopyBoardForm from "../components/board/CopyBoardForm";
+import FloatingChat from "../components/chat/FloatingChat";
 
 const Board = () => {
     const {
@@ -23,6 +24,7 @@ const Board = () => {
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
     const [openChatBox, setOpenChatBox] = useState(false);
     const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
+    const [openFloatingChat, setOpenFloatingChat] = useState(false);
 
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -58,7 +60,7 @@ const Board = () => {
             const chatsResponse = await axiosPrivate.get(`/chats/b/${boardId}`);
             setBoardState(boardsResponse.data);
             setTitle(boardsResponse.data.board.title);
-            setChats(chatsResponse.data.messages);
+            setChats(chatsResponse.data.messages.reverse());
 
             setIsDataLoaded(true);
         }
@@ -133,6 +135,7 @@ const Board = () => {
                 openChatBox &&
                 <ChatBox
                     setOpen={setOpenChatBox}
+                    setOpenFloat={setOpenFloatingChat}
                 />
             }
 
@@ -149,6 +152,15 @@ const Board = () => {
                 && <CopyBoardForm
                     open={openCopyBoardForm}
                     setOpen={setOpenCopyBoardForm}
+                />
+            }
+
+            {
+                openFloatingChat
+                && <FloatingChat
+                    open={openFloatingChat}
+                    setOpen={setOpenFloatingChat}
+                    setOpenChatBox={setOpenChatBox}
                 />
             }
 
@@ -188,6 +200,7 @@ const Board = () => {
                             onClick={(e) => {
                                 if (e.target === e.currentTarget) {
                                     setOpenBoardMenu(prev => !prev);
+
                                 }
                             }}
                             className={`relative flex--center cursor-pointer select-none h-full border-gray-600 w-[80px] shadow-gray-600 px-4 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold

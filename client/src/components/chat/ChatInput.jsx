@@ -31,8 +31,6 @@ const ChatInput = ({ sendMessage }) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             send(e);
-        } else if (e.key === 'Enter' && e.shiftKey) {
-            setMessage(message + '\n');
         }
     };
 

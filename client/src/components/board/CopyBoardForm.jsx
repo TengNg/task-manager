@@ -5,7 +5,7 @@ import useBoardState from '../../hooks/useBoardState';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import Loading from '../ui/Loading';
 
-const CopyBoardForm = ({ setOpen }) => {
+const CopyBoardForm = ({ setOpen, setOpenFloat  }) => {
     const { boardState } = useBoardState();
 
     const nameInputEl = useRef();
@@ -24,6 +24,10 @@ const CopyBoardForm = ({ setOpen }) => {
             await axiosPrivate.post(`/boards/copy/${boardState.board._id}`, JSON.stringify({ title: title, desciption }));
             setLoading(false);
         }
+    };
+
+    const handleOpenFloat = () => {
+        setOpenFloat(true);
     };
 
     return (
