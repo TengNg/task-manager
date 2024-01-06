@@ -59,14 +59,14 @@ const ChatBox = ({ setOpen, setOpenFloat }) => {
                 }
                 <button
                     onClick={handleOpenFloat}
-                    className="text-gray-600"
+                    className="text-gray-600 hover:text-blue-400 transition-all"
                 >
                     <FontAwesomeIcon icon={faExpand} size='lg'/>
                 </button>
 
                 <button
                     onClick={() => setOpen(false)}
-                    className="text-gray-600"
+                    className="text-gray-600 hover:text-red-400 transition-all"
                 >
                     <FontAwesomeIcon icon={faXmark} size='lg' />
                 </button>

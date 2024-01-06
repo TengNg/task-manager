@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; import { faCaretLeft, faArrowLeftLong } from '@fortawesome/free-solid-svg-icons';
 
-const ChatInput = ({ sendMessage }) => {
+const ChatInput = ({ sendMessage, withSentButton = false }) => {
     const [message, setMessage] = useState("");
     const textAreaRef = useRef();
 
@@ -34,10 +35,17 @@ const ChatInput = ({ sendMessage }) => {
         }
     };
 
+    const handleSentButtonOnClick = (e) => {
+        e.preventDefault();
+        if (message) {
+            send(message);
+        }
+    };
+
     return (
         <form className="flex w-full px-1 py-2 gap-1 bg-gray-200 justify-start items-start">
             <textarea
-                className="text-[0.75rem] bg-gray-100 h-[2rem] max-h-[100px] border rounded-md border-gray-400 leading-normal overflow-y-auto resize-none w-full py-2 px-3 font-medium placeholder-gray-500 focus:outline-none focus:bg-white"
+                className="text-[0.75rem] bg-gray-100 h-[2rem] max-h-[100px] border border-gray-400 leading-normal overflow-y-auto resize-none w-full py-2 px-3 font-medium placeholder-gray-500 focus:outline-none focus:bg-white"
                 placeholder='Write something...'
                 ref={textAreaRef}
                 value={message}
@@ -47,6 +55,15 @@ const ChatInput = ({ sendMessage }) => {
             >
             </textarea>
 
+            {
+                withSentButton &&
+                <button
+                    className="d-flex justify-center items-center text-gray-500 border-[1px] border-gray-500 h-full px-3 hover:text-white hover:bg-gray-500 transition-all"
+                    onClick={(e) => handleSentButtonOnClick(e)}
+                >
+                    <FontAwesomeIcon icon={faArrowLeftLong} size='sm' />
+                </button>
+            }
         </form>
     )
 }

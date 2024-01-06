@@ -46,7 +46,7 @@
     }
 
     .button--style {
-        @apply border-gray-600 border-[3px] px-3 py-1 text-gray-600 box-border font-semibold
+        @apply border-gray-600 border-[2px] px-3 py-1 text-gray-600 box-border font-semibold
     }
 
     .button--style--dark {
