@@ -9,6 +9,7 @@ import BoardMenu from "../components/board/BoardMenu";
 import ChatBox from "../components/chat/ChatBox";
 import CopyBoardForm from "../components/board/CopyBoardForm";
 import FloatingChat from "../components/chat/FloatingChat";
+import Loading from "../components/ui/Loading";
 
 const Board = () => {
     const {
@@ -28,6 +29,7 @@ const Board = () => {
 
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
+    const [loadingMsg, setLoadingMsg] = useState('Loading...');
 
     const axiosPrivate = useAxiosPrivate();
 
@@ -65,8 +67,7 @@ const Board = () => {
             setIsDataLoaded(true);
         }
 
-        getBoardData().catch(err => {
-            console.log(err);
+        getBoardData().catch(_ => {
             setIsDataLoaded(false);
             navigate("/notfound");
         });
@@ -96,6 +97,20 @@ const Board = () => {
         }
     };
 
+    const handleOpenBoardMenu = (e) => {
+        if (e.target === e.currentTarget) {
+            setOpenBoardMenu(prev => !prev);
+        }
+    };
+
+    const handleOpenInvitationForm = () => {
+        setOpenInvitationForm(true)
+    };
+
+    const handleOpenChatBox = () => {
+        setOpenChatBox(prev => !prev)
+    };
+
     const confirmBoardTitle = async (value) => {
         if (value === "") {
             setBoardTitle(title);
@@ -104,12 +119,14 @@ const Board = () => {
 
         try {
             const response = await axiosPrivate.put(`/boards/${boardState.board._id}/new-title`, JSON.stringify({ title: value }));
+
             setTitle(response.data.newBoard.title);
             setBoardTitle(response.data.newBoard.title);
 
             socket.emit("updateBoardTitle", value);
         } catch (err) {
-            console.log(err);
+            setIsDataLoaded(false);
+            setLoadingMsg("\"Failed to update board title\". Oops, there is something wrong, please reload the page");
         }
     };
 
@@ -125,8 +142,8 @@ const Board = () => {
         confirmBoardTitle(e.target.value.trim());
     }
 
-    if (isDataLoaded === false) {
-        return <div className="font-bold mx-auto text-center mt-20 text-gray-600">Loading...</div>
+    if (!isDataLoaded) {
+        return <Loading loading={true} displayText={loadingMsg} />
     }
 
     return (
@@ -165,9 +182,7 @@ const Board = () => {
             }
 
             <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4 mt-[5rem] min-w-[100vw]">
-                {/* <Loading loanding={loading} /> */}
-
-                <div className="sticky inset-0 left-4 flex w-[100vw] z-10">
+                <div className="fixed flex w-full z-10">
                     <div className="flex-1 max-w-[70vw] justify-start">
                         <input
                             className={`flex-1 overflow-hidden whitespace-nowrap text-ellipsis border-b-[3px] bg-gray-100 border-black text-black py-1 font-bold select-none font-mono mb-2 focus:outline-none`}
@@ -185,42 +200,37 @@ const Board = () => {
 
                     <div className="absolute right-8 -top-2 flex h-full gap-2">
                         <div
-                            onClick={() => setOpenChatBox(prev => !prev)}
+                            onClick={handleOpenChatBox}
                             className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
-                                    ${openChatBox ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
-                        >Chats</div>
+                                       ${openChatBox ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
+                        >
+                            Chats
+                        </div>
 
                         <div
-                            onClick={() => setOpenInvitationForm(true)}
+                            onClick={handleOpenInvitationForm}
                             className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
-                                    ${openInvitationForm ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
-                        >Invite</div>
+                                       ${openInvitationForm ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
+                        >
+                            Invite
+                        </div>
 
                         <div
-                            onClick={(e) => {
-                                if (e.target === e.currentTarget) {
-                                    setOpenBoardMenu(prev => !prev);
-
-                                }
-                            }}
-                            className={`relative flex--center cursor-pointer select-none h-full border-gray-600 w-[80px] shadow-gray-600 px-4 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold
-                                    ${openBoardMenu ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
+                            onClick={handleOpenBoardMenu}
+                            className={`relative flex--center cursor-pointer select-none h-full border-gray-600 w-[80px] shadow-gray-600 px-4 bg-sky-100 border-[3px] text-[0.75rem] text-gray-600 font-bold ${openBoardMenu ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                         >
                             Options
-                            {
-                                openBoardMenu &&
-                                <BoardMenu
-                                    setOpen={setOpenBoardMenu}
-                                    board={boardState.board}
-                                    setOpenCopyBoardForm={setOpenCopyBoardForm}
-                                />
-                            }
+                            {openBoardMenu && <BoardMenu
+                                setOpen={setOpenBoardMenu}
+                                board={boardState.board}
+                                setOpenCopyBoardForm={setOpenCopyBoardForm}
+                            />}
                         </div>
 
                     </div>
-
                 </div>
 
+                {/* All lists and cards */}
                 <ListContainer />
 
                 <div className="fixed top-[1rem] left-[1rem] flex items-center gap-1 w-fit min-w-[200px] z-[21]">
@@ -231,21 +241,18 @@ const Board = () => {
                         isAdmin={true}
                     />
 
-                    {
-                        boardState.board.members.map((user, index) => {
-                            return <Avatar
-                                key={index}
-                                username={user.username}
-                                profileImage={user.profileImage}
-                                size="md"
-                            />
-                        })
-                    }
+                    {boardState.board.members.map((user, index) => {
+                        return <Avatar
+                            key={index}
+                            username={user.username}
+                            profileImage={user.profileImage}
+                            size="md"
+                        />
+                    })}
 
                 </div>
 
             </div>
-
         </>
     )
 }

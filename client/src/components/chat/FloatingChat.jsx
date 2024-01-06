@@ -60,7 +60,7 @@ export default function FloatingChat({ setOpen, setOpenChatBox }) {
                 <div className="flex justify-between items-center border-[1px] border-b-black pb-2">
                     <div>Chats</div>
 
-                    <div className='d-flex justify-center items-center'>
+                    <div className='flex justify-center items-center'>
                         <button
                             onClick={handleCloseFloatAndOpenChatBox}
                             className="text-[0.75rem] py-1 text-gray-500 hover:text-blue-400 transition-all">

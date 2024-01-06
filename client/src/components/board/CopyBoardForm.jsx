@@ -68,7 +68,7 @@ const CopyBoardForm = ({ setOpen, setOpenFloat  }) => {
                         value={desciption}
                     />
 
-                    <div className='d-flex flex-row ms-auto'>
+                    <div className='flex flex-row ms-auto'>
                         <button
                             onClick={() => handleCreate()}
                             className="button--style py-2 text-[0.75rem] border-[2px] hover:bg-gray-600 hover:text-white transition-all">

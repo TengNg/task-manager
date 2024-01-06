@@ -58,7 +58,7 @@ const ChatInput = ({ sendMessage, withSentButton = false }) => {
             {
                 withSentButton &&
                 <button
-                    className="d-flex justify-center items-center text-gray-500 border-[1px] border-gray-500 h-full px-3 hover:text-white hover:bg-gray-500 transition-all"
+                    className="flex justify-center items-center text-gray-500 border-[1px] border-gray-500 h-full px-3 hover:text-white hover:bg-gray-500 transition-all"
                     onClick={(e) => handleSentButtonOnClick(e)}
                 >
                     <FontAwesomeIcon icon={faArrowLeftLong} size='sm' />
