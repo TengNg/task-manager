@@ -2,7 +2,7 @@ import { useState, forwardRef } from "react"
 import { axiosPrivate } from "../../api/axios";
 import { useNavigate } from "react-router-dom";
 
-const BoardForm = forwardRef(({ nBoards }, ref) => {
+const BoardForm = forwardRef((_, ref) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
 
@@ -18,23 +18,22 @@ const BoardForm = forwardRef(({ nBoards }, ref) => {
         <>
             <div
                 ref={ref}
-                className={`absolute board--style border-[2px] border-gray-600 px-4 py-2 w-fit flex flex-col gap-3 bg-gray-100 z-20 top-0
-                            ${nBoards > 0 ? 'left-0 -translate-x-[230px]' : 'right-0 translate-x-[230px]'}`}
+                className='absolute board--style cursor-auto border-[2px] border-gray-600 py-2 px-4 w-[280px] flex flex-col gap-3 bg-gray-100 z-20 top-0'
             >
                 <p className="text-[0.8rem] font-semibold">Create Board</p>
 
                 <input
-                    className='border-[2px] border-gray-400 text-gray-600 p-1 font-semibold rounded-md text-[0.8rem] px-4'
+                    className='border-[2px] border-gray-400 text-gray-600 py-2 font-semibold rounded-md text-[0.8rem] px-4'
                     type="text"
                     autoComplete="off"
-                    placeholder="Board title is required"
+                    placeholder="Title (required)"
                     value={title}
                     onChange={e => setTitle(e.target.value)}
                     required
                 />
 
                 <input
-                    className='border-[2px] border-gray-400 text-gray-600 p-1 font-semibold rounded-md text-[0.8rem] px-4'
+                    className='border-[2px] border-gray-400 text-gray-600 py-2 font-semibold rounded-md text-[0.8rem] px-4'
                     type="text"
                     autoComplete="off"
                     placeholder="Description (optional)"

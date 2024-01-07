@@ -8,7 +8,24 @@ import useBoardState from "../../hooks/useBoardState";
 import CardComposer from "../card/CardComposer";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
+import { SortableContext, useSortable, horizontalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
+
 const List = ({ index, list, cards }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+    } = useSortable({ id: list._id });
+
+    const style = {
+        transition,
+        transform: CSS.Transform.toString(transform),
+    };
+
     const {
         setListTitle,
         deleteList,
@@ -87,97 +104,73 @@ const List = ({ index, list, cards }) => {
     };
 
     return (
-        <Draggable key={list._id} draggableId={list._id} index={index}>
-            {(provided, snapshot) => (
+        <div>
+            <div
+                style={style}
+                ref={setNodeRef}
+                {...attributes}
+                {...listeners}
+                className={`flex flex-col justify-start bg-gray-100 w-[280px] min-w-[280px] h-fit max-h-full min-h-auto border-[2px] select-none py-2 px-3 cursor-pointer me-4 box--style border-gray-600 shadow-gray-600`}
+            >
                 <div
-                    {...provided.draggableProps}
-                    ref={provided.innerRef}
-                    className={`flex flex-col justify-start bg-gray-100 w-[280px] min-w-[280px] h-fit max-h-full min-h-auto border-[2px] select-none py-2 px-3 cursor-pointer me-4 box--style border-gray-600 shadow-gray-600
-                                ${snapshot.isDragging && 'opacity-80 bg-teal-100'} `}
-                >
+                    className="relative w-full bg-inherit">
                     <div
-                        {...provided.dragHandleProps}
-                        className="relative w-full bg-inherit">
-                        <div
-                            ref={titleRef}
-                            className="w-full font-semibold text-gray-600 break-words whitespace-pre-line"
-                            onMouseUp={handleMouseUp}
-                        >
-                            <p>{list.title}</p>
-                        </div>
-
-                        <p className="absolute -top-2 right-4 text-[0.7rem]">{list.cards.length || ''}</p>
-                        <button
-                            onClick={handleDeleteList}
-                            className="absolute -top-3 -right-2 text-gray-500 hover:text-pink-500 transition-all">
-                            <FontAwesomeIcon icon={faDeleteLeft} />
-                        </button>
-                        {/* <p className="absolute -top-2 right-3 text-[0.7rem]">rank: {list.order}</p> */}
-
-                        <textarea
-                            className="hidden bg-gray-100 h-fit w-full focus:outline-none font-semibold text-gray-600 leading-normal overflow-y-hidden resize-none"
-                            value={list.title}
-                            ref={textAreaRef}
-                            onFocus={handleTextAreaOnFocus}
-                            onChange={handleTextAreaChanged}
-                            onBlur={handleTitleInputBlur}
-                            onKeyDown={handleTextAreaOnEnter}
-                        />
-
-                        <div className="mx-auto h-[1.5px] mt-1 w-[100%] bg-gray-500"></div>
+                        ref={titleRef}
+                        className="w-full font-semibold text-gray-600 break-words whitespace-pre-line"
+                        onMouseUp={handleMouseUp}
+                    >
+                        <p>{list.title}</p>
                     </div>
 
-                    <div className="max-h-full overflow-y-auto">
-                        <Droppable droppableId={list._id} type="CARD">
-                            {(provided) => (
-                                <div
-                                    {...provided.droppableProps}
-                                    ref={provided.innerRef}
-                                    ignoreContainerClipping={true}
-                                >
-                                    <div className="flex flex-col pb-1 items-start justify-start h-full">
-                                        {cards.map((card, index) => {
-                                            return <Card
-                                                key={card._id}
-                                                card={card}
-                                                index={index}
-                                            />
-                                        })}
-                                        {provided.placeholder}
-                                    </div>
-                                </div>
-                            )}
-                        </Droppable>
+                    <p className="absolute -top-2 right-4 text-[0.7rem]">{list.cards.length || ''}</p>
+                    <button
+                        onClick={handleDeleteList}
+                        className="absolute -top-3 -right-2 text-gray-500 hover:text-pink-500 transition-all">
+                        <FontAwesomeIcon icon={faDeleteLeft} />
+                    </button>
+                    {/* <p className="absolute -top-2 right-3 text-[0.7rem]">rank: {list.order}</p> */}
 
-                        {
-                            openCardComposer === true &&
-                            <CardComposer
-                                list={list}
-                                open={openCardComposer}
-                                setOpen={setOpenCardComposer}
-                            />
-                        }
+                    <textarea
+                        className="hidden bg-gray-100 h-fit w-full focus:outline-none font-semibold text-gray-600 leading-normal overflow-y-hidden resize-none"
+                        value={list.title}
+                        ref={textAreaRef}
+                        onFocus={handleTextAreaOnFocus}
+                        onChange={handleTextAreaChanged}
+                        onBlur={handleTitleInputBlur}
+                        onKeyDown={handleTextAreaOnEnter}
+                    />
 
-                    </div>
-
-                    {
-                        openCardComposer === false &&
-                        <button
-                            className="flex gap-2 group text-gray-400 w-full mt-2 p-2 text-[0.8rem] hover:bg-gray-300 transition-all font-semibold text-start"
-                            onClick={() => setOpenCardComposer(true)}
-                        >
-                            <span>
-                                <FontAwesomeIcon className="group-hover:rotate-180 transition duration-300" icon={faPlus} />
-                            </span>
-                            <span>
-                                Add a card
-                            </span>
-                        </button>
-                    }
-
+                    <div className="mx-auto h-[1.5px] mt-1 w-[100%] bg-gray-500"></div>
                 </div>
-            )}
-        </Draggable>
+
+                <div className="max-h-full overflow-y-auto">
+                    {
+                        openCardComposer === true &&
+                        <CardComposer
+                            list={list}
+                            open={openCardComposer}
+                            setOpen={setOpenCardComposer}
+                        />
+                    }
+                </div>
+
+                {
+                    openCardComposer === false &&
+                    <button
+                        className="flex gap-2 group text-gray-400 w-full mt-2 p-2 text-[0.8rem] hover:bg-gray-300 transition-all font-semibold text-start"
+                        onClick={() => setOpenCardComposer(true)}
+                    >
+                        <span>
+                            <FontAwesomeIcon className="group-hover:rotate-180 transition duration-300" icon={faPlus} />
+                        </span>
+                        <span>
+                            Add a card
+                        </span>
+                    </button>
+                }
+
+            </div>
+        </div>
     )
 }
 

@@ -77,7 +77,7 @@ const Boards = () => {
                         <div
                             onClick={() => setOpenBoardForm(open => !open)}
                             ref={createBoardButtonRef}
-                            className="h-full w-full border-[2px] border-gray-400 board--style shadow-gray-400 p-3 px-4 rounded-md select-none bg-gray-200 cursor-pointer"
+                            className="board--style board--hover h-full w-full border-[2px] border-gray-400 board--style shadow-gray-400 p-3 px-4 select-none bg-gray-200 cursor-pointer"
                         >
                             <div className="flex items-center gap-2 text-gray-400">
                                 <FontAwesomeIcon icon={faPlus} />
@@ -96,19 +96,6 @@ const Boards = () => {
 
                 </div>
             </div>
-
-            {/* { */}
-            {/*     Object.keys(recentBoards).length > 0 && */}
-            {/*     <div> */}
-            {/*         <div className="flex flex-col flex-wrap gap-2 px-8 pt-3 pb-8 mx-8 mt-8 box--style justify-start items-start w-fit box--style border-[2px] shadow-gray-500 border-gray-500"> */}
-            {/*             <p className="text-gray-500 text-[1.1rem] font-semibold">last viewed</p> */}
-            {/*             <BoardItem */}
-            {/*                 item={recentBoards} */}
-            {/*                 handleOpenBoard={handleOpenBoard} */}
-            {/*             /> */}
-            {/*         </div> */}
-            {/*     </div> */}
-            {/* } */}
 
         </section>
     )
