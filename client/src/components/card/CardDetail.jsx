@@ -33,8 +33,14 @@ const CardDetail = ({ setOpen, card, handleDeleteCard }) => {
         }
 
         try {
-            await axiosPrivate.put(`/cards/${card._id}/new-description`, JSON.stringify({ description: e.target.value.trim() }));
-            setCardDescription(card._id, card.listId, e.target.value.trim());
+            if (!e.target.value) {
+                await axiosPrivate.put(`/cards/${card._id}/new-description`, JSON.stringify({ description: '' }));
+                setOpenDescriptionComposer(false);
+                setCardDescription(card._id, card.listId, "");
+            } else {
+                await axiosPrivate.put(`/cards/${card._id}/new-description`, JSON.stringify({ description: e.target.value.trim() }));
+                setCardDescription(card._id, card.listId, e.target.value.trim());
+            }
 
             socket.emit("updateCardDescription", { id: card._id, listId: card.listId, description: e.target.value.trim() });
         } catch (err) {
@@ -116,7 +122,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard }) => {
                         {
                             (card.description.trim() === "" && openDescriptionComposer === false) &&
                             <div
-                                className="bg-gray-100 border-[2px] border-black shadow-[0_3px_0_0] w-fit text-[0.8rem] px-3 py-4 cursor-pointer font-semibold"
+                                className="bg-gray-100 border-[2px] text-gray-600 border-gray-600 shadow-[0_3px_0_0] w-fit text-[0.8rem] px-3 py-4 cursor-pointer font-semibold"
                                 onClick={() => {
                                     setOpenDescriptionComposer(true);
                                 }}
@@ -132,10 +138,6 @@ const CardDetail = ({ setOpen, card, handleDeleteCard }) => {
                                     className="border-[2px] shadow-[0_2px_0_0] border-black shadow-black break-words box-border text-[0.9rem] py-2 px-3 w-[90%] text-gray-600 bg-gray-100 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-none"
                                     autoFocus={true}
                                     onBlur={(e) => {
-                                        if (e.target.value === "") {
-                                            setOpenDescriptionComposer(false);
-                                            return;
-                                        }
                                         confirmDescription(e)
                                     }}
                                     placeholder={"Add more description..."}
@@ -151,14 +153,14 @@ const CardDetail = ({ setOpen, card, handleDeleteCard }) => {
                         <div>
                             <button
                                 onClick={() => setOpenHighlightPicker(prev => !prev)}
-                                className={`card--detail--button px-2 py-2 font-semibold ${openHighlightPicker && 'bg-gray-600 shadow-black text-white'}`}
+                                className={`border-2 border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white transition-all text-[0.75rem]  px-2 py-2 font-semibold ${openHighlightPicker && 'bg-gray-500 shadow-black text-white'}`}
                             >Change highlight</button>
                         </div>
 
                         <div>
                             <button
                                 onClick={() => deleteCard()}
-                                className="card--detail--button px-2 py-2 font-semibold">Delete card</button>
+                                className="border-2 border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white text-[0.75rem] px-2 py-2 font-semibold">Delete card</button>
                         </div>
 
                         {openHighlightPicker && <HighlightPicker card={card} />}

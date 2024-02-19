@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faExpand } from '@fortawesome/free-solid-svg-icons';
 import Chat from './Chat';
@@ -16,6 +16,8 @@ const ChatBox = ({ setOpen, setOpenFloat }) => {
         socket,
     } = useBoardState();
 
+    const [loading, setLoading] = useState(false);
+
     const { auth } = useAuth();
 
     const messageEndRef = useRef();
@@ -30,13 +32,17 @@ const ChatBox = ({ setOpen, setOpenFloat }) => {
         try {
             const response = await axiosPrivate.post(`/chats/b/${boardState.board._id}`, JSON.stringify({ content: value }));
             const newMessage = response.data.chat;
+            setLoading(true);
             setChats(prev => {
                 return [...prev, { ...newMessage, sentBy: { ...newMessage.sentBy, username: auth.username } }];
             });
             socket.emit("sendMessage", { ...newMessage, sentBy: { ...newMessage.sentBy, username: auth.username } });
+            setLoading(false);
         } catch (err) {
-            // can put error message with current content
-            console.log(err);
+            setChats(prev => {
+                return [...prev, { content: value, error: true, sentBy: auth }];
+            });
+            setLoading(false);
         }
     };
 
@@ -45,12 +51,15 @@ const ChatBox = ({ setOpen, setOpenFloat }) => {
         setOpenFloat(true);
     };
 
-    const handleClearMessages = () => {
-    };
-
     return (
-        <div className="fixed flex flex-col border-[2px] border-black right-1 bottom-0 bg-white w-[300px] h-[400px] overflow-auto z-10">
-            {/* <Loading loading={true} position={'absolute'} /> */}
+        <div className="fixed flex flex-col border-[2px] border-black right-1 bottom-1 bg-white w-[300px] h-[400px] overflow-auto z-10">
+            <Loading
+                loading={loading}
+                position={'absolute'}
+                displayText={'Sending message...'}
+                fontSize={'0.75rem'}
+            />
+
             <div className='relative flex items-center gap-3 border-b-2 border-black bg-white px-2 py-1'>
                 <p className='flex-1 font-semibold text-gray-600'>Chats</p>
                 {

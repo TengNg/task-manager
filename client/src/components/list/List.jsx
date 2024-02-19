@@ -3,22 +3,28 @@ import { Draggable } from "react-beautiful-dnd"
 import { StrictModeDroppable as Droppable } from '../../helpers/StrictModeDroppable';
 import Card from "../card/Card";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTrashCan, faDeleteLeft } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faEllipsis, faAnglesRight } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from "../../hooks/useBoardState";
 import CardComposer from "../card/CardComposer";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import ListMenu from "./ListMenu";
+import { lexorank } from "../../utils/class/Lexorank";
 
 const List = ({ index, list, cards }) => {
     const {
+        boardState,
+        setBoardState,
         setListTitle,
         deleteList,
         socket,
     } = useBoardState();
 
+    const openListMenuButtonRef = useRef();
     const axiosPrivate = useAxiosPrivate();
 
     const [initialListData, setInitialListData] = useState(list.title);
     const [openCardComposer, setOpenCardComposer] = useState(false);
+    const [openListMenu, setOpenListMenu] = useState(false);
 
     const textAreaRef = useRef(null);
     const titleRef = useRef(null);
@@ -52,7 +58,6 @@ const List = ({ index, list, cards }) => {
 
     const handleTextAreaChanged = () => {
         const textarea = textAreaRef.current;
-        // setText(textarea.value);
         textarea.style.height = '24px';
         textarea.style.height = `${textarea.scrollHeight}px`;
         setListTitle(list._id, textAreaRef.current.value);
@@ -77,104 +82,161 @@ const List = ({ index, list, cards }) => {
     const handleDeleteList = async () => {
         if (confirm('Are you want to delete this list ?')) {
             try {
+                await axiosPrivate.delete(`/lists/${list._id}`);
                 deleteList(list._id)
                 socket.emit("deleteList", list._id);
-                await axiosPrivate.delete(`/lists/${list._id}`);
             } catch (err) {
-                console.log(err);
+                alert('Failed to delete list');
             }
+        }
+    };
+
+    const handleCopyList = async (id) => {
+        const lists = boardState.lists;
+        const tempLists = [...boardState.lists];
+
+        try {
+            const currentIndex = lists.indexOf(lists.find(el => el._id == id));
+            const nextElement = index < lists.length - 1 ? lists[index + 1] : null;
+
+            const [rank, ok] = lexorank.insert(lists[currentIndex]?.order, nextElement?.order);
+
+            if (!ok) return;
+
+            const response = await axiosPrivate.post(`/lists/copy/${id}`, JSON.stringify({ rank }));
+            const newList = response.data.list;
+            const newCards = response.data.cards;
+            newList.cards = newCards;
+
+            lists.splice(index + 1, 0, newList);
+
+            setBoardState(prev => {
+                return { ...prev, lists };
+            });
+
+            socket.emit("updateLists", lists);
+        } catch (err) {
+            setBoardState(prev => {
+                return { ...prev, lists: tempLists };
+            });
         }
     };
 
     return (
         <Draggable key={list._id} draggableId={list._id} index={index}>
-            {(provided, snapshot) => (
+            {(provided, _) => (
                 <div
                     {...provided.draggableProps}
                     ref={provided.innerRef}
-                    className={`flex flex-col justify-start bg-gray-100 w-[280px] min-w-[280px] h-fit max-h-full min-h-auto border-[2px] select-none py-2 px-3 cursor-pointer me-4 box--style border-gray-600 shadow-gray-600
-                                ${snapshot.isDragging && 'opacity-80 bg-teal-100'} `}
+                    className='me-4'
                 >
                     <div
                         {...provided.dragHandleProps}
-                        className="relative w-full bg-inherit">
-                        <div
-                            ref={titleRef}
-                            className="w-full font-semibold text-gray-600 break-words whitespace-pre-line"
-                            onMouseUp={handleMouseUp}
-                        >
-                            <p>{list.title}</p>
-                        </div>
-
-                        <p className="absolute -top-2 right-4 text-[0.7rem]">{list.cards.length || ''}</p>
+                        className='flex mb-1 gap-2 relative'>
                         <button
-                            onClick={handleDeleteList}
-                            className="absolute -top-3 -right-2 text-gray-500 hover:text-pink-500 transition-all">
-                            <FontAwesomeIcon icon={faDeleteLeft} />
+                            ref={openListMenuButtonRef}
+                            className={`border-[2px] border-gray-600 px-2 text-gray-600 flex justify-center items-center ${!openListMenu ? 'bg-gray-100' : 'bg-gray-600 text-white' }`}
+                            onClick={() => {
+                                setOpenListMenu(open => !open);
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faEllipsis} size='sm' />
                         </button>
-                        {/* <p className="absolute -top-2 right-3 text-[0.7rem]">rank: {list.order}</p> */}
-
-                        <textarea
-                            className="hidden bg-gray-100 h-fit w-full focus:outline-none font-semibold text-gray-600 leading-normal overflow-y-hidden resize-none"
-                            value={list.title}
-                            ref={textAreaRef}
-                            onFocus={handleTextAreaOnFocus}
-                            onChange={handleTextAreaChanged}
-                            onBlur={handleTitleInputBlur}
-                            onKeyDown={handleTextAreaOnEnter}
-                        />
-
-                        <div className="mx-auto h-[1.5px] mt-1 w-[100%] bg-gray-500"></div>
-                    </div>
-
-                    <div className="max-h-full overflow-y-auto">
-                        <Droppable droppableId={list._id} type="CARD">
-                            {(provided) => (
-                                <div
-                                    {...provided.droppableProps}
-                                    ref={provided.innerRef}
-                                    ignoreContainerClipping={true}
-                                >
-                                    <div className="flex flex-col pb-1 items-start justify-start h-full">
-                                        {cards.map((card, index) => {
-                                            return <Card
-                                                key={card._id}
-                                                card={card}
-                                                index={index}
-                                            />
-                                        })}
-                                        {provided.placeholder}
-                                    </div>
-                                </div>
-                            )}
-                        </Droppable>
 
                         {
-                            openCardComposer === true &&
-                            <CardComposer
+                            (list.cards && list.cards.length > 0) &&
+                            <div className='text-gray-500 text-[0.65rem] font-medium flex items-center gap-1'>
+                                <FontAwesomeIcon icon={faAnglesRight} size='sm' />
+                                <span>{list.cards.length}</span>
+                            </div>
+                        }
+
+                        {
+                            openListMenu &&
+                            <ListMenu
                                 list={list}
-                                open={openCardComposer}
-                                setOpen={setOpenCardComposer}
+                                open={openListMenu}
+                                setOpen={setOpenListMenu}
+                                handleDelete={handleDeleteList}
+                                handleCopy={handleCopyList}
                             />
+                        }
+                    </div>
+
+                    <div className="flex flex-col justify-start bg-gray-100 w-[280px] min-w-[280px] h-fit max-h-[62vh] min-h-auto border-[2px] select-none py-2 px-3 cursor-pointer box--style border-gray-600 shadow-gray-600">
+                        <div
+                            {...provided.dragHandleProps}
+                            className="relative w-full bg-inherit">
+                            <div
+                                ref={titleRef}
+                                className="w-full font-semibold text-gray-600 break-words whitespace-pre-line"
+                                onMouseUp={handleMouseUp}
+                            >
+                                <p>{list.title}</p>
+                            </div>
+
+                            <textarea
+                                className="hidden bg-gray-100 h-fit w-full focus:outline-none font-semibold text-gray-600 leading-normal overflow-y-hidden resize-none"
+                                value={list.title}
+                                ref={textAreaRef}
+                                onFocus={handleTextAreaOnFocus}
+                                onChange={handleTextAreaChanged}
+                                onBlur={handleTitleInputBlur}
+                                onKeyDown={handleTextAreaOnEnter}
+                            />
+
+                            <div className="mx-auto h-[1.5px] mt-1 w-[100%] bg-gray-500"></div>
+                        </div>
+
+                        <div className="max-h-full overflow-y-auto">
+                            <Droppable droppableId={list._id} type="CARD">
+                                {(provided) => (
+                                    <div
+                                        {...provided.droppableProps}
+                                        ref={provided.innerRef}
+                                        ignoreContainerClipping={true}
+                                    >
+                                        <div className="flex flex-col pb-1 items-start justify-start h-full">
+                                            {cards.map((card, index) => {
+                                                return <Card
+                                                    key={card._id}
+                                                    card={card}
+                                                    index={index}
+                                                />
+                                            })}
+                                            {provided.placeholder}
+                                        </div>
+                                    </div>
+                                )}
+                            </Droppable>
+
+                            {
+                                openCardComposer === true &&
+                                <CardComposer
+                                    list={list}
+                                    open={openCardComposer}
+                                    setOpen={setOpenCardComposer}
+                                />
+                            }
+
+                        </div>
+
+                        {
+                            openCardComposer === false &&
+                            <button
+                                className="flex gap-2 group text-gray-400 w-full mt-2 p-2 text-[0.8rem] hover:bg-gray-300 transition-all font-semibold text-start"
+                                onClick={() => setOpenCardComposer(true)}
+                            >
+                                <span>
+                                    <FontAwesomeIcon className="group-hover:rotate-180 transition duration-300" icon={faPlus} />
+                                </span>
+                                <span>
+                                    Add card
+                                </span>
+                            </button>
                         }
 
                     </div>
-
-                    {
-                        openCardComposer === false &&
-                        <button
-                            className="flex gap-2 group text-gray-400 w-full mt-2 p-2 text-[0.8rem] hover:bg-gray-300 transition-all font-semibold text-start"
-                            onClick={() => setOpenCardComposer(true)}
-                        >
-                            <span>
-                                <FontAwesomeIcon className="group-hover:rotate-180 transition duration-300" icon={faPlus} />
-                            </span>
-                            <span>
-                                Add a card
-                            </span>
-                        </button>
-                    }
-
                 </div>
             )}
         </Draggable>

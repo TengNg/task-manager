@@ -191,11 +191,12 @@ const copyBoard = async (req, res) => {
 
         const cards = await Card.find({ listId: _id });
         for (const card of cards) {
-            const { title, description, order } = card;
+            const { title, description, order, highlight } = card;
             const newCard = new Card({
                 title,
                 description,
                 order,
+                highlight,
                 listId: newListId
             });
 

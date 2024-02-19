@@ -5,6 +5,7 @@ const BoardStateContext = createContext({});
 
 export const BoardStateContextProvider = ({ children }) => {
     const [boardState, setBoardState] = useState({});
+    const [pendingInvitations, setPendingInvitations] = useState(0);
     const [chats, setChats] = useState([]);
     const [isRemoved, setIsRemoved] = useState(false);
 
@@ -206,6 +207,9 @@ export const BoardStateContextProvider = ({ children }) => {
 
                 addListToBoard,
                 addCardToList,
+
+                pendingInvitations,
+                setPendingInvitations,
 
                 removeMemberFromBoard,
 

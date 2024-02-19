@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { StrictModeDroppable as Droppable } from '../../helpers/StrictModeDroppable';
 import List from './List';
@@ -45,7 +45,11 @@ const ListContainer = () => {
             let prevRank = newLists[destIndex - 1]?.order;
             let nextRank = newLists[destIndex + 1]?.order;
 
-            let [rank, _] = lexorank.insert(prevRank, nextRank);
+            let [rank, ok] = lexorank.insert(prevRank, nextRank);
+
+            // failed to reorder
+            if (!ok) return;
+
             const removedId = removed._id;
 
             removed.order = rank;
@@ -60,58 +64,71 @@ const ListContainer = () => {
                 setBoardState(prev => {
                     return { ...prev, lists: tempLists };
                 });
-                console.log(err);
             }
+
+            return;
+        }
+
+        // type CARD ============================================================================================
+
+        let currentLists = null;
+
+        try {
+            currentLists = JSON.parse(JSON.stringify(boardState.lists)); // deep copy
+        } catch (err) {
+            setBoardState(prev => {
+                return { ...prev, lists: tempLists };
+            });
+            return;
+        }
+
+        const fromList = currentLists.find(list => list._id === source.droppableId);
+        const toList = currentLists.find(list => list._id === destination.droppableId);
+
+        // dragging outside
+        if (!fromList || !toList) return;
+
+        // dragging to the same location
+        if (fromList._id === toList._id && source.index === destination.index) return;
+
+        const fromListCards = fromList.cards;
+        const toListCards = toList.cards;
+
+        // get dragged card
+        const [removed] = fromListCards.splice(source.index, 1);
+        const removedId = removed._id;
+
+        let prevRank = '';
+        let nextRank = '';
+
+        if (fromList._id === toList._id) {
+            fromListCards.splice(destination.index, 0, removed);
+            prevRank = fromListCards[destIndex - 1]?.order;
+            nextRank = fromListCards[destIndex + 1]?.order;
         } else {
-            const currentLists = JSON.parse(JSON.stringify(boardState.lists)); // deep copy
-            const fromList = currentLists.find(list => list._id === source.droppableId);
-            const toList = currentLists.find(list => list._id === destination.droppableId);
+            toListCards.splice(destination.index, 0, removed);
+            removed.listId = destination.droppableId;
+            prevRank = toListCards[destIndex - 1]?.order;
+            nextRank = toListCards[destIndex + 1]?.order;
+        }
 
-            // dragging outside
-            if (!fromList || !toList) return;
+        let [rank, ok] = lexorank.insert(prevRank, nextRank);
 
-            // dragging to the same location
-            if (fromList._id === toList._id && source.index === destination.index) return;
+        // failed to reorder
+        if (!ok) return;
 
-            const fromListCards = fromList.cards;
-            const toListCards = toList.cards;
+        removed.order = rank;
 
-            // get dragged card
-            const [removed] = fromListCards.splice(source.index, 1);
-            const removedId = removed._id;
-
-            let rank = '';
-
-            if (fromList._id === toList._id) {
-                fromListCards.splice(destination.index, 0, removed);
-
-                let prevRank = fromListCards[destIndex - 1]?.order;
-                let nextRank = fromListCards[destIndex + 1]?.order;
-                rank = lexorank.insert(prevRank, nextRank)[0];
-                removed.order = rank;
-
-            } else {
-                toListCards.splice(destination.index, 0, removed);
-                removed.listId = destination.droppableId;
-
-                let prevRank = toListCards[destIndex - 1]?.order;
-                let nextRank = toListCards[destIndex + 1]?.order;
-                rank = lexorank.insert(prevRank, nextRank)[0];
-                removed.order = rank;
-            }
-
-            try {
-                setBoardState(prev => {
-                    return { ...prev, lists: currentLists };
-                });
-                await axiosPrivate.put(`/cards/${removedId}/reorder`, JSON.stringify({ rank, listId: removed.listId }));
-                socket.emit("updateLists", currentLists);
-            } catch (err) {
-                setBoardState(prev => {
-                    return { ...prev, lists: tempLists };
-                });
-                console.log(err);
-            }
+        try {
+            setBoardState(prev => {
+                return { ...prev, lists: currentLists };
+            });
+            await axiosPrivate.put(`/cards/${removedId}/reorder`, JSON.stringify({ rank, listId: removed.listId }));
+            socket.emit("updateLists", currentLists);
+        } catch (err) {
+            setBoardState(prev => {
+                return { ...prev, lists: tempLists };
+            });
         }
     };
 
@@ -126,7 +143,7 @@ const ListContainer = () => {
                             listContainerRef.current = element
                         }}
                         ignoreContainerClipping={true}
-                        className='flex min-h-[90%] h-[90%] items-start justify-start border-black'
+                        className='flex h-[90%] items-start justify-start border-black mt-14'
                     >
                         {boardState.lists.map((list, index) => (
                             <List

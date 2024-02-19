@@ -6,7 +6,7 @@ import Avatar from "../avatar/Avatar";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import Loading from "../ui/Loading";
-import { useNavigate } from "react-router-dom";
+import Member from "./Member";
 
 const InvitationForm = ({ setOpen }) => {
     const { auth } = useAuth();
@@ -20,6 +20,7 @@ const InvitationForm = ({ setOpen }) => {
 
     const [username, setUsername] = useState("");
     const [errMsg, setErrMsg] = useState("");
+    const [successMsg, setSuccessMsg] = useState("");
     const [loading, setLoading] = useState(false);
 
     const usernameInputRef = useRef();
@@ -43,14 +44,20 @@ const InvitationForm = ({ setOpen }) => {
             return;
         }
 
+        if (usernameInputRef.current.value.trim() === auth.username ||
+            usernameInputRef.current.value.trim() === boardState.board.createdBy.username) {
+            setErrMsg("Can't sent invitation");
+            return;
+        }
+
         try {
             setLoading(true);
             const receiverName = usernameInputRef.current.value.trim();
             await axiosPrivate.post(`/invitations`, JSON.stringify({ boardId: boardState.board._id, receiverName }));
             setUsername("");
             setLoading(false);
+            setSuccessMsg("Invitation sent");
         } catch (err) {
-            console.log(err);
             setLoading(false);
             setErrMsg(err.response.data.msg);
         }
@@ -63,10 +70,11 @@ const InvitationForm = ({ setOpen }) => {
             removeMemberFromBoard(memberId);
             setLoading(false);
             socket.emit('removeFromBoard');
+            setSuccessMsg("Member removed from board");
         } catch (err) {
-            console.log(err);
             setLoading(false);
             setErrMsg(err.response.data.toString());
+            setErrMsg("Failed to remove member from board");
         }
     };
 
@@ -77,19 +85,20 @@ const InvitationForm = ({ setOpen }) => {
                 className="fixed box-border top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-500 opacity-40 z-50 cursor-auto">
             </div>
 
-            <div className="fixed box--style flex flex-col items-start pt-3 pb-6 px-8 top-[5rem] right-0 left-[50%] -translate-x-[50%] w-fit min-w-[400px] max-h-[500px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
+            <div className="fixed box--style flex flex-col gap-4 items-start p-3 top-[5rem] right-0 left-[50%] -translate-x-[50%] w-fit min-w-[400px] max-h-[500px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
                 <Loading loading={loading} />
 
-                <button
-                    className="absolute top-2 right-3 text-gray-600"
-                    onClick={() => setOpen(false)}
-                >
-                    <FontAwesomeIcon icon={faXmark} size='xl' />
-                </button>
+                <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
+                    <p className="font-normal text-[1rem] text-gray-700">Invite people this board</p>
+                    <button
+                        className="text-gray-600 flex justify-center items-center"
+                        onClick={() => setOpen(false)}
+                    >
+                        <FontAwesomeIcon icon={faXmark} size='xl' />
+                    </button>
+                </div>
 
-                <p className="mt-2 mb-4 font-normal text-[1rem] text-gray-700">Invite people this board</p>
-
-                <div className="w-full flex flex-wrap items-center gap-3 pb-1">
+                <div className="w-full relative flex flex-col justify-center gap-4 px-4 py-2">
                     <input
                         ref={usernameInputRef}
                         className={`p-3 w-full overflow-hidden shadow-[0_3px_0_0] shadow-gray-600 text-[0.75rem] whitespace-nowrap text-ellipsis border-[2px] bg-gray-100 border-gray-600 text-gray-600 font-bold select-none font-mono focus:outline-none`}
@@ -103,11 +112,12 @@ const InvitationForm = ({ setOpen }) => {
                     >
                         + invite
                     </button>
+
+                    {errMsg && <p className="absolute top-0 left-8 text-center h-3 text-red-700 text-[0.65rem] font-semibold">{errMsg}</p>}
+                    {successMsg && <p className="absolute top-0 left-8 text-center h-3 text-blue-700 text-[0.65rem] font-semibold">{successMsg}</p>}
                 </div>
 
-                <p className="text-center h-3 text-red-700 text-[0.65rem] font-semibold mb-1">{errMsg}</p>
-
-                <div className="flex flex-col gap-3 w-full max-w-[400px] overflow-auto border-[1px] border-t-gray-600 pt-4">
+                <div className="flex flex-col gap-3 w-full max-w-[400px] overflow-auto border-[1px] border-t-gray-600 p-4">
                     <div className="flex gap-1">
                         <Avatar
                             username={boardState.board.createdBy.username}
@@ -124,34 +134,16 @@ const InvitationForm = ({ setOpen }) => {
 
                     {
                         boardState.board.members.map((user, _) => {
-                            return <>
-                                <div key={user._id} className="flex gap-1">
-                                    <div className="flex gap-1 flex-1">
-                                        <Avatar
-                                            username={user.username}
-                                            profileImage={user.profileImage}
-                                            size="md"
-                                            clickable={false}
-                                        />
-                                        <div className="flex flex-col justify-center">
-                                            <p className="text-[0.65rem] text-gray-800 font-semibold">{user.username} {auth?.username === user.username && '(you)'}</p>
-                                            <p className="text-[0.65rem] text-gray-800">Member</p>
-                                        </div>
-                                    </div>
-                                    {
-                                        boardState.board.createdBy.username === auth.username
-                                        && <button
-                                            onClick={() => handleRemoveMemberFromBoard(user._id)}
-                                            className="text-[0.65rem] button--style border-[2px] hover:bg-gray-600 hover:text-white transition-all">
-                                            Remove from board
-                                        </button>}
-                                </div>
-                            </>
+                            return <Member
+                                key={user._id}
+                                handleRemoveMemberFromBoard={handleRemoveMemberFromBoard}
+                                boardState={boardState}
+                                user={user}
+                                auth={auth}
+                            />
                         })
                     }
                 </div>
-
-
             </div>
         </>
     )

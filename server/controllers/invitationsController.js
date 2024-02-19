@@ -38,6 +38,8 @@ const sendInvitation = async (req, res) => {
     const receiver = await getUser(receiverName);
     if (!receiver) return res.status(404).json({ msg: "Username is not found" });
 
+    if (username === receiverName) return res.status(409).json({ msg: "Cannot send invitation" });
+
     const board = await Board.findById(boardId);
     if (board.members.indexOf(receiver._id) !== -1) return res.status(409).json({ msg: "User is already in this board" });
 

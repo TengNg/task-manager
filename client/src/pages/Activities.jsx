@@ -1,13 +1,15 @@
+import { useState } from 'react';
+import useBoardState from '../hooks/useBoardState';
 import Title from '../components/ui/Title';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import dateFormatter from '../utils/dateFormatter';
 import Avatar from '../components/avatar/Avatar';
 import { useNavigate } from 'react-router-dom';
-import useAppContext from '../hooks/useAppContext';
 import { useEffect } from 'react';
 
 const Activities = () => {
-    const { invitations, setInvitations } = useAppContext();
+    const { setPendingInvitations } = useBoardState();
+    const [invitations, setInvitations] = useState([]);
     const axiosPrivate = useAxiosPrivate();
 
     const navigate = useNavigate();
@@ -16,12 +18,13 @@ const Activities = () => {
         const getInvitations = async () => {
             const response = await axiosPrivate.get("/invitations");
             setInvitations(response.data.invitations);
+            setPendingInvitations(response.data.invitations.filter(item => item.status === 'pending'));
         };
 
         getInvitations().catch(err => {
             console.log(err);
         });
-    }, [invitations]);
+    }, []);
 
     const handleAcceptInvitation = async (invitationId) => {
         try {
@@ -40,8 +43,10 @@ const Activities = () => {
             setInvitations(prev => {
                 return prev.map(item => item._id === invitationId ? { ...item, status: 'rejected' } : item);
             });
+
+            setPendingInvitations(prev => prev - 1)
         } catch (err) {
-            console.log(err);
+            alert('Failed to accept invitation');
         }
     };
 
@@ -51,15 +56,17 @@ const Activities = () => {
             setInvitations(prev => {
                 return prev.filter(item => item._id !== invitationId);
             });
+
+            setPendingInvitations(prev => prev - 1)
         } catch (err) {
-            console.log(err);
+            alert('Failed to reject invitation');
         }
     };
 
     return (
         <section className='w-full mt-8 '>
             <Title titleName="activities" />
-            <div className='box--style border-[2px] border-gray-600 shadow-gray-600 min-h-[300px] min-w-[500px] w-[800px] mx-auto p-10 bg-gray-100 flex flex-col gap-3'>
+            <div className='box--style border-[2px] border-gray-600 shadow-gray-600 min-h-[300px] min-w-[500px] w-[800px] mx-auto p-10 bg-gray-100 flex flex-col gap-4'>
                 {invitations &&
                     invitations.length === 0
                     ? <p className='w-full text-center mx-auto mt-[4rem] text-gray-600 select-none font-semibold'>Nothing to show here :(</p>
@@ -81,11 +88,20 @@ const Activities = () => {
                                     {/*     <div className="font-bold flex--center select-none">{sender.username.charAt(0).toUpperCase()}</div> */}
                                     {/* </div> */}
                                     <div className='flex flex-col justify-start'>
-                                        <p>
-                                            <span className='max-w-[200px] font-bold overflow-hidden whitespace-nowrap text-ellipsis'>{sender.username}</span>
-                                            <span>{" "}</span>
-                                            <span>sends you a board invitation</span>
-                                        </p>
+                                        <div class='flex items-center gap-3'>
+                                            <div>
+                                                <span className='max-w-[200px] font-bold overflow-hidden whitespace-nowrap text-ellipsis'>{sender.username}</span>
+                                                <span>{" "}</span>
+                                                <span>sends you a board invitation</span>
+                                            </div>
+
+                                            {
+                                                status != 'pending' &&
+                                                <span className={`text-[0.65rem] ${status == 'acceped' ? 'text-blue-700' : 'text-red-700'}`}>
+                                                    {status}
+                                                </span>
+                                            }
+                                        </div>
                                         <p className='text-[0.75rem]'>{dateFormatter(createdAt)}</p>
                                     </div>
                                 </div>
@@ -105,13 +121,9 @@ const Activities = () => {
                                                 e.stopPropagation();
                                                 handleRemoveInvitation(_id)
                                             }}
-                                            className='button--style--rounded px-3 py-2 border-black text-black bg-gray-200'>Remove</button>
+                                            className='button--style--rounded px-3 py-2 border-black text-[0.8rem] text-black bg-gray-200'>Remove</button>
 
                                 }
-
-                                {/* status === 'accepted' */}
-                                {/*     ? <p className='text-blue-700 font-semibold'>Accepted</p> */}
-                                {/*     : <p className='text-red-700 font-semibold'>Rejected</p> */}
 
                             </div>
                         })}

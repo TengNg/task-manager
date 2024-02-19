@@ -19,18 +19,22 @@ const MESSAGE_PADDING = {
     },
 };
 
-const Chat = ({ chat, avatar = null, withSeparator = false, withRightArrow = false, padding = { x: MESSAGE_PADDING.x.sm, y: MESSAGE_PADDING.y.sm  } }) => {
-    const { content, sentBy, createdAt } = chat;
+const Chat = ({ chat, avatar = null, withSeparator = false, withRightArrow = false, padding = { x: MESSAGE_PADDING.x.sm, y: MESSAGE_PADDING.y.sm } }) => {
+    const { content, sentBy, createdAt, error } = chat;
 
     return (
-        <div className={`w-full h-fit flex justify-start items-start gap-2 ${withSeparator && 'border-b-[1px] border-gray-300 pb-2'}`}>
-            { avatar && <Avatar bgColor={avatar.bgColor} username={avatar.username} size={avatar.size} /> }
+        <div className={`w-full h-fit flex justify-start items-start px-1 gap-2 ${withSeparator && 'border-b-[1px] border-gray-300 pb-2'}`}>
+            {avatar && <Avatar bgColor={avatar.bgColor} username={avatar.username} size={avatar.size} />}
             <div className="flex flex-col w-full">
 
                 <div className='flex w-full justify-start items-start'>
                     <div className='flex w-full gap-2 justify-between flex-wrap'>
                         <p className="text-[0.75rem] font-bold text-gray-600">{sentBy?.username}</p>
-                        <p className="text-[0.65rem] text-gray-600">{dateFormatter(createdAt)}</p>
+                        {
+                            !error
+                                ? <p className="text-[0.65rem] text-gray-600">{dateFormatter(createdAt)}</p>
+                                : <p className="text-[0.65rem] text-red-600">Failed to send this message</p>
+                        }
                     </div>
                 </div>
 

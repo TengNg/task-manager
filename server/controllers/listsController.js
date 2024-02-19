@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const List = require('../models/List.js');
 const Card = require('../models/Card.js');
 
@@ -50,10 +51,56 @@ const deleteList = async (req, res) => {
     res.status(200).json({ message: 'list deleted' });
 };
 
+const copyList = async (req, res) => {
+    const { id } = req.params;
+    const { rank } = req.body;
+
+    const foundList = await List.findById(id);
+
+    if (!foundList) {
+        return res.status(403).json({ msg: "List not found" });
+    }
+
+    const { title, boardId } = foundList;
+    const newListId = new mongoose.Types.ObjectId();
+
+    const newList = new List({
+        _id: newListId,
+        title: title + ' (copied)',
+        order: rank,
+        boardId,
+    });
+
+    try {
+        const list = await newList.save();
+
+        const copiedCards = await Card.find({ listId: id });
+        for (const card of copiedCards) {
+            const { title, description, order, highlight } = card;
+            const newCard = new Card({
+                title,
+                description,
+                order,
+                highlight,
+                listId: list._id
+            });
+
+            await newCard.save();
+        }
+
+        const cards = await Card.find({ listId: list._id }).sort({ order: 'asc' });
+
+        res.status(200).json({ list, cards, message: 'list copied' });
+    } catch (err) {
+        console.error("Error saving document:", err);
+    }
+};
+
 module.exports = {
     addList,
     updateLists,
     updateTitle,
     deleteList,
+    copyList,
     reorder,
-}
+};

@@ -78,7 +78,7 @@ const AddList = () => {
     return (
         <div
             ref={containerRef}
-            className='box--style--sm overflow-hidden bg-gray-200 w-[250px] min-w-[250px] border-[2px] min-h-[3rem] select-none cursor-pointer me-3 border-gray-500 shadow-gray-500 text-[0.8rem] text-gray-500 font-semibold'>
+            className='box--style--sm overflow-hidden bg-gray-200 w-[250px] min-w-[250px] border-[2px] min-h-[3rem] select-none cursor-pointer me-3 border-gray-500 shadow-gray-500 text-[0.8rem] text-gray-500 font-semibold mt-5'>
             {
                 open === false &&
                 <button
@@ -93,13 +93,13 @@ const AddList = () => {
             }
 
             <div
-                className={`flex-col flex py-2 px-2 min-w-[200px] h-[fit] gap-3 transition-all ${open ? 'mt-0' : 'h-[2rem] -mt-[100%] duration-300'}`}
+                className={`flex-col flex py-2 px-2 min-w-[200px] h-[fit] gap-3 -mt-[100%] ${open && 'mt-0'}`}
             >
                 <input
-                    className='border-[2px] border-gray-400 text-gray-500 p-1 font-semibold rounded-md text-[0.85rem] px-2 focus:outline-none'
+                    className='border-[2px] border-gray-400 text-gray-500 font-semibold text-[0.75rem] p-2 focus:outline-none'
                     type="text"
                     autoComplete="off"
-                    placeholder="Your list title"
+                    placeholder="List title goes here..."
                     value={listTitle}
                     ref={titleInputRef}
                     onChange={handleInputChange}

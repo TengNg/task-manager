@@ -5,7 +5,7 @@ import useBoardState from '../../hooks/useBoardState';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import Loading from '../ui/Loading';
 
-const CopyBoardForm = ({ setOpen, setOpenFloat  }) => {
+const CopyBoardForm = ({ setOpen }) => {
     const { boardState } = useBoardState();
 
     const nameInputEl = useRef();
@@ -26,10 +26,6 @@ const CopyBoardForm = ({ setOpen, setOpenFloat  }) => {
         }
     };
 
-    const handleOpenFloat = () => {
-        setOpenFloat(true);
-    };
-
     return (
         <>
             <div
@@ -42,17 +38,18 @@ const CopyBoardForm = ({ setOpen, setOpenFloat  }) => {
                 loading={loading}
             />
 
-            <div className="fixed box--style flex flex-col items-start py-3 px-8 top-[5rem] right-0 left-[50%] -translate-x-[50%] w-fit min-w-[400px] h-[300px] min-h-[300px] border-black border-[2px] z-40 cursor-auto bg-gray-200">
-                <button
-                    className="absolute top-2 right-3 text-gray-600"
-                    onClick={() => handleClose(false)}
-                >
-                    <FontAwesomeIcon icon={faXmark} size='xl' />
-                </button>
+            <div className="fixed box--style flex flex-col items-start py-3 px-3 top-[5rem] right-0 left-[50%] -translate-x-[50%] w-fit min-w-[400px] h-[300px] min-h-[300px] border-black border-[2px] z-40 cursor-auto bg-gray-200">
+                <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3 mb-5'>
+                    <p className="font-normal text-[1rem] text-gray-700">Copy this board</p>
+                    <button
+                        className="text-gray-600 flex justify-center items-center"
+                        onClick={handleClose}
+                    >
+                        <FontAwesomeIcon icon={faXmark} size='xl' />
+                    </button>
+                </div>
 
-                <p className="mt-2 mb-4 font-normal text-[1rem] text-gray-700">Copy this board</p>
-
-                <div className="w-full flex flex-col items-start justify-start gap-4">
+                <div className="w-full flex flex-col items-start justify-start gap-4 px-6">
                     <input
                         ref={nameInputEl}
                         className={`p-3 text-[0.75rem] w-full shadow-[0_3px_0_0] overflow-hidden whitespace-nowrap text-ellipsis border-[2px] bg-gray-100 border-gray-600 text-gray-600 font-semibold select-none focus:outline-none`}
@@ -68,18 +65,11 @@ const CopyBoardForm = ({ setOpen, setOpenFloat  }) => {
                         value={desciption}
                     />
 
-                    <div className='d-flex flex-row ms-auto'>
-                        <button
-                            onClick={() => handleCreate()}
-                            className="button--style py-2 text-[0.75rem] border-[2px] hover:bg-gray-600 hover:text-white transition-all">
-                            + create
-                        </button>
-                        <button
-                            onClick={() => handleClose()}
-                            className="button--style py-2 ms-2 text-[0.75rem] border-[2px] hover:bg-gray-600 hover:text-white transition-all">
-                            cancel
-                        </button>
-                    </div>
+                    <button
+                        onClick={() => handleCreate()}
+                        className="button--style w-[100%] mt-1 py-2 text-[0.75rem] border-[2px] hover:bg-gray-600 hover:text-white transition-all">
+                        + create
+                    </button>
                 </div>
 
             </div>

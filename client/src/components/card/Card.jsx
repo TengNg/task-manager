@@ -42,16 +42,15 @@ const Card = ({ index, card }) => {
             deleteCard(card.listId, card._id);
             socket.emit('deleteCard', { listId: card.listId, cardId: card._id });
         } catch (err) {
-            console.log(err);
+            alert('Failed to delete card');
         }
     };
 
-    function getStyle(style, _) {
+    const getStyle = (style, _) => {
         return {
             ...style,
             boxShadow: `${card.highlight == null ? '0 3px 0 0 #4b5563' : `0 3px 0 0 ${card.highlight}`}`,
             borderColor: `${card.highlight == null ? '#4b5563' : `${card.highlight}`}`,
-            // transition: `0.001s`, // i don't want the animation
         };
     }
 
