@@ -63,7 +63,7 @@ const UserAccount = () => {
     };
 
     return (
-        <div className="absolute top-4 right-4 flex--center h-fit flex-col justify-start gap-2">
+        <div className="fixed top-4 right-4 flex--center h-fit flex-col justify-start gap-2 z-30">
             <div
                 onClick={() => setCollapse(collapse => !collapse)}
                 ref={userProfileImageRef}

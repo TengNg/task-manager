@@ -3,7 +3,7 @@ import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HighlightPicker from "./HighlightPicker";
 
-const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, handleDeleteCard }) => {
+const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, handleDeleteCard, handleCopyCard }) => {
     const {
         setCardTitle,
         socket,
@@ -87,14 +87,13 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, ha
 
     return (
         <>
-
             <div
                 onClick={handleClose}
                 className="fixed top-0 left-0 text-gray-700 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-400 opacity-60 z-20 cursor-auto">
             </div>
 
             <div
-                className="absolute z-50"
+                className="absolute z-30"
                 style={{
                     top: `${attribute.top}px`,
                     left: `${attribute.left}px`,
@@ -119,34 +118,40 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, ha
                         <button
                             onClick={() => handleOpenCardDetail()}
                             className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-800 px-3 py-1 flex--center opacity-80">
-                            Open Card
+                            open card
                         </button>
 
                         <button
                             onClick={() => handleToggleHighlightPicker()}
                             className={`${openHighlightPicker ? 'bg-gray-600' : 'bg-gray-800'} hover:ms-1 transition-all text-[0.75rem] text-white px-3 py-1 flex--center opacity-80 z-30`}
                         >
-                            Change highlight
+                            change highlight
+                        </button>
+
+                        <button
+                            onClick={() => handleCopyCard()}
+                            className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-800 px-3 py-1 flex--center opacity-80">
+                            create a copy
                         </button>
 
                         <button
                             onClick={() => deleteCard()}
                             className="hover:ms-1 transition-all text-[0.75rem] relative text-white bg-gray-800 px-3 py-1 flex--center opacity-80 z-30"
                         >
-                            Delete card
+                            delete card
                         </button>
 
                         <button
                             onClick={() => setOpen(false)}
                             className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-800 px-3 py-1 flex--center opacity-80 z-0"
                         >
-                            Close
+                            close
                         </button>
                     </div>
                 </div>
                 <button
                     onClick={handleSaveButtonOnClick}
-                    className="text-[0.75rem] text-white hover:bg-gray-700 bg-gray-800 px-4 py-1 flex--center opacity-80 z-0">
+                    className="text-[0.75rem] text-white hover:bg-gray-700 bg-gray-800 px-4 py-2 flex--center opacity-80 z-0">
                     Save
                 </button>
             </div>

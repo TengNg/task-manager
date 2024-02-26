@@ -9,9 +9,11 @@ import BoardMenu from "../components/board/BoardMenu";
 import ChatBox from "../components/chat/ChatBox";
 import CopyBoardForm from "../components/board/CopyBoardForm";
 import FloatingChat from "../components/chat/FloatingChat";
+import MoveListForm from "../components/list/MoveListForm";
 
 const Board = () => {
     const {
+        openMoveListForm,
         boardState,
         setBoardState,
         setBoardTitle,
@@ -73,10 +75,6 @@ const Board = () => {
     }, [pathname]);
 
     const handleKeyPress = (e) => {
-        if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
-            e.preventDefault();
-        }
-
         const isInputField = e.target.tagName.toLowerCase() === 'input';
         const isTextAreaField = e.target.tagName.toLowerCase() === 'textarea';
 
@@ -94,12 +92,6 @@ const Board = () => {
                 break;
             case 'd':
                 window.scrollBy({ left: 400, top: 0, behavior: 'smooth' });
-                break;
-            case 'ArrowRight':
-                window.scrollBy({ left: 400, top: 0, behavior: 'smooth' });
-                break;
-            case 'ArrowLeft':
-                window.scrollBy({ left: -400, top: 0, behavior: 'smooth' });
                 break;
             case 'C':
                 setOpenChatBox(prev => !prev);
@@ -145,6 +137,11 @@ const Board = () => {
     return (
         <>
             {
+                openMoveListForm &&
+                <MoveListForm />
+            }
+
+            {
                 openChatBox &&
                 <ChatBox
                     setOpen={setOpenChatBox}
@@ -177,12 +174,13 @@ const Board = () => {
                 />
             }
 
-            <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4 mt-[5rem]">
+            <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4">
                 {/* <Loading loanding={loading} /> */}
 
                 <div className="fixed flex w-[100vw] z-20">
                     <div className="flex-1 max-w-[70vw] justify-start">
                         <input
+                            maxLength={80}
                             className={`flex-1 overflow-hidden whitespace-nowrap text-ellipsis border-b-[3px] bg-gray-100 border-black text-black py-1 font-bold select-none font-mono mb-2 focus:outline-none`}
                             style={{
                                 width: `${boardState.board.title.length}ch`,
@@ -240,7 +238,7 @@ const Board = () => {
 
                 <ListContainer />
 
-                <div className="fixed top-[1rem] left-[1rem] flex items-center gap-1 w-fit min-w-[200px] z-[21]">
+                <div className="fixed top-[1rem] left-[1rem] flex items-center gap-1 w-fit min-w-[200px] z-[30]">
                     <Avatar
                         username={boardState.board.createdBy.username}
                         profileImage={boardState.board.createdBy.profileImage}

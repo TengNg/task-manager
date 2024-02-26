@@ -43,14 +43,9 @@ const CardComposer = ({ list, open, setOpen }) => {
     const handleAddCard = async () => {
         if (!text || text.trim() === "") return;
 
-        const currentList = boardState.lists.find(list => list._id === list._id);
+        const currentList = [...boardState.lists].find(el => el._id === list._id);
 
-        let prevOrder = '';
-        if (currentList.cards.length > 0) {
-            prevOrder = currentList.cards[currentList.cards.length - 1].order;
-        }
-
-        const [rank, _] = lexorank.insert(prevOrder);
+        const [rank, _] = lexorank.insert(currentList.cards[currentList.cards.length - 1]?.order);
 
         const cardData = {
             listId: list._id,
@@ -68,7 +63,7 @@ const CardComposer = ({ list, open, setOpen }) => {
             textAreaRef.current.focus();
             composerRef.current.scrollIntoView({ block: 'end' });
         } catch (err) {
-            console.log(err);
+            alert('Failed to add new card');
         }
     };
 

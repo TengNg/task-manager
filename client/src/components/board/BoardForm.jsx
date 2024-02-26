@@ -14,20 +14,27 @@ const BoardForm = forwardRef(({ nBoards }, ref) => {
         navigate(`/b/${response.data.newBoard._id}`);
     };
 
+    const handleInputOnEnter = async (e) => {
+        if (e.key == 'Enter') {
+            handleCreateBoard()
+        }
+    };
+
     return (
         <>
             <div
                 ref={ref}
-                className={`absolute board--style border-[2px] border-gray-600 px-4 py-2 w-[280px] flex flex-col gap-3 bg-gray-100 z-20 top-0
-                            ${nBoards > 0 ? 'left-0 -translate-x-[230px]' : 'right-0 translate-x-[230px]'}`}
+                className="absolute board--style border-[2px] border-gray-600 shadow-gray-600 px-4 pb-3 pt-2 w-[250px] flex flex-col gap-3 bg-gray-100 z-20 top-0"
             >
-                <p className="text-[0.75rem] font-medium">Create Board</p>
+                <p className="text-[0.75rem] text-gray-600 font-medium">Create Board</p>
 
                 <input
+                    autoFocus={true}
+                    onKeyDown={handleInputOnEnter}
                     className='border-[2px] border-gray-400 text-gray-600 p-1 font-semibold text-[0.8rem] px-4'
                     type="text"
                     autoComplete="off"
-                    placeholder="Board title is required"
+                    placeholder="Title (required)"
                     value={title}
                     onChange={e => setTitle(e.target.value)}
                     required
@@ -35,6 +42,7 @@ const BoardForm = forwardRef(({ nBoards }, ref) => {
 
                 <input
                     className='border-[2px] border-gray-400 text-gray-600 p-1 font-semibold text-[0.8rem] px-4'
+                    onKeyDown={handleInputOnEnter}
                     type="text"
                     autoComplete="off"
                     placeholder="Description (optional)"

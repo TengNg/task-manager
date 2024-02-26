@@ -1,6 +1,20 @@
 const mongoose = require('mongoose');
 const List = require('../models/List.js');
 const Card = require('../models/Card.js');
+const Board = require('../models/Board.js');
+const { lexorank } = require('../lib/lexorank.js');
+
+const getListCount = async (req, res) => {
+    const { boardId } = req.params;
+
+    const foundBoard = await Board.findById(boardId);
+    if (!foundBoard) {
+        return res.status(403).json({ msg: 'board not found' });
+    }
+
+    const count = await List.countDocuments({ boardId });
+    return res.status(200).json({ count });
+};
 
 const addList = async (req, res) => {
     const { title, order, boardId } = req.body;
@@ -96,11 +110,41 @@ const copyList = async (req, res) => {
     }
 };
 
+const moveList = async (req, res) => {
+    const { id, boardId, index } = req.params;
+
+    const foundList = await List.findById(id);
+    if (!foundList) {
+        return res.status(403).json({ msg: "List not found" });
+    }
+
+    const foundBoard = await Board.findById(boardId);
+    if (!foundBoard) {
+        return res.status(403).json({ msg: "Board not found" });
+    }
+
+    const sortedLists = await List.find({ boardId }).sort({ order: 'asc' });
+    const [newOrder, ok] = lexorank.insert(sortedLists[index - 1]?.order, sortedLists[index]?.order);
+
+    if (!ok) {
+        return res.status(403).send('Bad Request');
+    }
+
+    const newList = await List.findByIdAndUpdate(id, { boardId, order: newOrder }, { new: true });
+
+    await Card.updateMany({ listId: id }, { boardId });
+    const newCards = await Card.find({ listId: id, boardId }).sort({ order: 'asc' });
+
+    return res.status(200).json({ list: newList, cards: newCards });
+};
+
 module.exports = {
+    getListCount,
     addList,
     updateLists,
     updateTitle,
     deleteList,
     copyList,
     reorder,
+    moveList,
 };

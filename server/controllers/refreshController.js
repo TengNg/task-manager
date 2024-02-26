@@ -9,7 +9,7 @@ const handleRefresh = async (req, res) => {
 
     const foundUser = await User.findOne({ refreshToken });
 
-    if (!foundUser) return res.status(403).json({ msg: "user not found" }); // Forbidden
+    if (!foundUser) return res.status(500).json({ msg: "user not found" });
 
     jwt.verify(
         refreshToken,

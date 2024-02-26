@@ -9,10 +9,30 @@ export const BoardStateContextProvider = ({ children }) => {
     const [chats, setChats] = useState([]);
     const [isRemoved, setIsRemoved] = useState(false);
 
+    const [openMoveListForm, setOpenMoveListForm] = useState(false);
+
+    const [listToMove, setListToMove] = useState();
+
     useEffect(() => {
         if (socket) {
             socket.on("removedFromBoard", (_) => {
                 setIsRemoved(true);
+            });
+
+            socket.on("getBoardWithMovedListAdded", (data) => {
+                const { list, cards, index } = data;
+
+                setBoardState(prev => {
+                    const newLists = [...prev.lists]
+                    newLists.splice(index, 0, { ...list, cards });
+                    return { ...prev, lists: newLists }
+                });
+            });
+
+            socket.on("getBoardWithUpdatedLists", (data) => {
+                setBoardState(prev => {
+                    return { ...prev, lists: data }
+                });
             });
 
             socket.on("getBoardWithUpdatedLists", (data) => {
@@ -44,6 +64,10 @@ export const BoardStateContextProvider = ({ children }) => {
 
             socket.on("newCard", (data) => {
                 addCardToList(data.listId, data);
+            });
+
+            socket.on("copyCard", (data) => {
+                addCopiedCard(data.cards, data.card, data.index);
             });
 
             socket.on("deletedCard", (data) => {
@@ -154,6 +178,17 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
+    const addCopiedCard = (cards, card, index) => {
+        setBoardState(prev => {
+            const newCards = [...cards];
+            newCards.splice(index + 1, 0, card);
+            return {
+                ...prev,
+                lists: prev.lists.map(list => list._id === card.listId ? { ...list, cards: newCards } : list)
+            };
+        });
+    };
+
     const deleteCard = (listId, cardId) => {
         setBoardState(prev => {
             return {
@@ -207,6 +242,7 @@ export const BoardStateContextProvider = ({ children }) => {
 
                 addListToBoard,
                 addCardToList,
+                addCopiedCard,
 
                 pendingInvitations,
                 setPendingInvitations,
@@ -220,6 +256,12 @@ export const BoardStateContextProvider = ({ children }) => {
                 setIsRemoved,
 
                 socket,
+
+                openMoveListForm,
+                setOpenMoveListForm,
+
+                listToMove,
+                setListToMove,
             }}
         >
             {children}

@@ -2,6 +2,7 @@ const { Server } = require('socket.io');
 const io = new Server({ cors: "http://localhost:5173" });
 
 const boardIdMap = new Map();
+const userIdMap = new Map();
 
 io.on('connection', (socket) => {
     socket.on("joinBoard", (data) => {
@@ -46,6 +47,11 @@ io.on('connection', (socket) => {
         socket.to(boardId).emit("getBoardWithUpdatedLists", data);
     });
 
+    socket.on("addMovedListToBoard", (data) => {
+        const { boardId, list, cards, index } = data;
+        socket.to(boardId).emit("getBoardWithMovedListAdded", { list, cards, index });
+    });
+
     socket.on("addList", (data) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
@@ -68,6 +74,12 @@ io.on('connection', (socket) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
         socket.to(boardId).emit("deletedCard", data);
+    });
+
+    socket.on("copyCard", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("copyCard", data);
     });
 
     socket.on("updateListTitle", (data) => {

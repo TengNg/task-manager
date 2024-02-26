@@ -1,4 +1,6 @@
 const Card = require('../models/Card.js');
+const List = require('../models/List.js');
+const mongoose = require('mongoose');
 
 const addCard = async (req, res) => {
     const { title, description = "", order, listId } = req.body;
@@ -51,7 +53,6 @@ const updateHighlight = async (req, res) => {
 
 const deleteCard = async (req, res) => {
     const { id } = req.params;
-    console.log(id);
     const removed = await Card.findByIdAndRemove(id);
 
     if (!removed) {
@@ -59,7 +60,37 @@ const deleteCard = async (req, res) => {
     }
 
     res.status(200).json({ message: 'Card removed successfully' });
+};
 
+const copyCard = async (req, res) => {
+    const { id } = req.params;
+    const { rank } = req.body;
+
+    const foundCard = await Card.findById(id);
+
+    if (!foundCard) {
+        return res.status(404).json({ error: 'Card not found' });
+    }
+
+    const {
+        title,
+        description,
+        listId,
+        highlight
+    } = foundCard;
+
+    const newCard = new Card({
+        _id: new mongoose.Types.ObjectId(),
+        order: rank,
+        title: title + " (copied)",
+        description,
+        listId,
+        highlight,
+    });
+
+    newCard.save();
+
+    res.status(200).json({ msg: 'Card copied successfully', newCard });
 };
 
 module.exports = {
@@ -70,4 +101,5 @@ module.exports = {
     updateHighlight,
     deleteCard,
     reorder,
+    copyCard,
 }

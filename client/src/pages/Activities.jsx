@@ -32,6 +32,8 @@ const Activities = () => {
             setInvitations(prev => {
                 return prev.map(item => item._id === invitationId ? { ...item, status: 'accepted' } : item);
             });
+
+            setPendingInvitations(prev => prev - 1)
         } catch (err) {
             console.log(err);
         }
@@ -88,7 +90,7 @@ const Activities = () => {
                                     {/*     <div className="font-bold flex--center select-none">{sender.username.charAt(0).toUpperCase()}</div> */}
                                     {/* </div> */}
                                     <div className='flex flex-col justify-start'>
-                                        <div class='flex items-center gap-3'>
+                                        <div className='flex items-center gap-3'>
                                             <div>
                                                 <span className='max-w-[200px] font-bold overflow-hidden whitespace-nowrap text-ellipsis'>{sender.username}</span>
                                                 <span>{" "}</span>
@@ -97,7 +99,7 @@ const Activities = () => {
 
                                             {
                                                 status != 'pending' &&
-                                                <span className={`text-[0.65rem] ${status == 'acceped' ? 'text-blue-700' : 'text-red-700'}`}>
+                                                <span className={`text-[0.65rem] ${status == 'accepted' ? 'text-blue-700' : 'text-red-700'}`}>
                                                     {status}
                                                 </span>
                                             }

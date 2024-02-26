@@ -8,7 +8,12 @@ const {
     deleteList,
     copyList,
     reorder,
+    moveList,
+    getListCount,
 } = require('../../controllers/listsController');
+
+router.route("/b/:boardId/count")
+    .get(getListCount);
 
 router.route("/")
     .put(updateLists)
@@ -25,5 +30,8 @@ router.route("/:id/new-title")
 
 router.route("/copy/:id")
     .post(copyList)
+
+router.route("/move/:id/b/:boardId/i/:index")
+    .post(moveList)
 
 module.exports = router;

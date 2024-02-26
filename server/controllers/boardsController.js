@@ -23,7 +23,12 @@ const getBoards = async (req, res) => {
         ]
     });
 
-    return res.json(boards);
+    let recentlyViewedBoard = undefined;
+    if (foundUser.recentlyViewedBoardId) {
+        recentlyViewedBoard = await Board.findById(foundUser.recentlyViewedBoardId);
+    }
+
+    return res.json({ boards, recentlyViewedBoard });
 };
 
 const getBoard = async (req, res) => {
@@ -51,7 +56,16 @@ const getBoard = async (req, res) => {
             select: 'username profileImage createdAt'
         });
 
+
     if (!board) return res.status(404).json({ msg: "board not found" });
+
+    // set recently viewed board
+    if (foundUser.recentlyViewedBoardId !== board._id) {
+        board.lastViewed = Date.now();
+        foundUser.recentlyViewedBoardId = board._id;
+        foundUser.save();
+        board.save();
+    }
 
     const lists = await List.find({ boardId: id }).sort({ order: 'asc' });
 

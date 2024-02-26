@@ -6,6 +6,7 @@ import CardQuickEditor from "./CardQuickEditor";
 import CardDetail from './CardDetail';
 import { axiosPrivate } from '../../api/axios';
 import useBoardState from '../../hooks/useBoardState';
+import { lexorank } from "../../utils/class/Lexorank";
 
 const Card = ({ index, card }) => {
     const [openQuickEditor, setOpenQuickEditor] = useState(false);
@@ -15,6 +16,8 @@ const Card = ({ index, card }) => {
     const {
         deleteCard,
         socket,
+        boardState,
+        addCopiedCard,
     } = useBoardState();
 
     const cardRef = useRef();
@@ -46,6 +49,28 @@ const Card = ({ index, card }) => {
         }
     };
 
+    const handleCopyCard = async () => {
+        try {
+            const currentList = boardState.lists.find(list => list._id == card.listId);
+            const cards = currentList.cards;
+
+            const currentIndex = cards.indexOf(card);
+            const [rank, ok] = lexorank.insert(cards[currentIndex]?.order, cards[currentIndex + 1]?.order);
+
+            if (!ok) return;
+
+            const response = await axiosPrivate.post(`/cards/${card._id}/copy`, JSON.stringify({ rank }));
+            const { newCard } = response.data;
+
+            addCopiedCard(cards, newCard, currentIndex);
+
+            socket.emit("copyCard", { cards, card: newCard, index: currentIndex });
+        } catch (err) {
+            console.log(err);
+            alert('Failed to create a copy of this card');
+        }
+    };
+
     const getStyle = (style, _) => {
         return {
             ...style,
@@ -63,6 +88,7 @@ const Card = ({ index, card }) => {
                     open={openCardDetail}
                     setOpen={setOpenCardDetail}
                     handleDeleteCard={handleDeleteCard}
+                    handleCopyCard={handleCopyCard}
                 />
             }
 
@@ -76,6 +102,7 @@ const Card = ({ index, card }) => {
                     openCardDetail={openCardDetail}
                     setOpenCardDetail={setOpenCardDetail}
                     handleDeleteCard={handleDeleteCard}
+                    handleCopyCard={handleCopyCard}
                 />
             }
 
@@ -92,6 +119,7 @@ const Card = ({ index, card }) => {
                         }}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
+                        tabIndex={index + 1}
                         className={`w-full group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_3px_0_0] shadow-gray-600 bg-gray-50 relative hover:cursor-pointer`}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}

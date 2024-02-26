@@ -75,14 +75,20 @@ html {
   font-family: 'Fira Code', sans-serif;
 }
 
-body {
-    background-color: rgb(245, 245, 245);
-}
-
 label {
     margin-top: 0.5rem;
     font-weight: bold;
     font-size: 0.8rem;
+}
+
+body {
+    height: 100vh;
+    background: rgb(245, 245, 245);
+    overflow-y: auto;
+}
+
+#root {
+    height: 100%;
 }
 
 a {
@@ -90,20 +96,8 @@ a {
     color: inherit;
     text-decoration: inherit;
 }
-/**/
-/* a:hover { */
-/*     color: #535bf2; */
-/* } */
 
 h1 {
     font-size: 3.5rem;
 }
-
-/* body { */
-/*     margin: 0; */
-/*     display: flex; */
-/*     place-items: center; */
-/*     min-width: 320px; */
-/*     min-height: 100vh; */
-/* } */
 

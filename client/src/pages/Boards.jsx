@@ -7,9 +7,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import BoardForm from "../components/board/BoardForm";
 import { useNavigate } from "react-router-dom";
+import dateFormatter from "../utils/dateFormatter";
 
 const Boards = () => {
     const [boards, setBoards] = useState([]);
+    const [recentlyViewedBoard, setRecentlyViewedBoard] = useState();
 
     const [openBoardForm, setOpenBoardForm] = useState(false);
     const axiosPrivate = useAxiosPrivate();
@@ -22,7 +24,9 @@ const Boards = () => {
     useEffect(() => {
         const getBoards = async () => {
             const response = await axiosPrivate.get(`/boards`);
-            setBoards(response.data);
+            const { boards, recentlyViewedBoard } = response.data;
+            setBoards(boards);
+            setRecentlyViewedBoard(recentlyViewedBoard);
         };
         getBoards().catch(console.error);
     }, []);
@@ -50,6 +54,8 @@ const Boards = () => {
     }, [openBoardForm])
 
     const handleOpenBoard = (boardId) => {
+        // set recently viewed board here
+
         navigate(`/b/${boardId}`);
     }
 
@@ -97,18 +103,19 @@ const Boards = () => {
                 </div>
             </div>
 
-            {/* { */}
-            {/*     Object.keys(recentBoards).length > 0 && */}
-            {/*     <div> */}
-            {/*         <div className="flex flex-col flex-wrap gap-2 px-8 pt-3 pb-8 mx-8 mt-8 box--style justify-start items-start w-fit box--style border-[2px] shadow-gray-500 border-gray-500"> */}
-            {/*             <p className="text-gray-500 text-[1.1rem] font-semibold">last viewed</p> */}
-            {/*             <BoardItem */}
-            {/*                 item={recentBoards} */}
-            {/*                 handleOpenBoard={handleOpenBoard} */}
-            {/*             /> */}
-            {/*         </div> */}
-            {/*     </div> */}
-            {/* } */}
+            {
+                recentlyViewedBoard &&
+                <div>
+                    <div className="flex flex-col flex-wrap gap-1 px-8 pt-3 pb-8 mx-8 mt-8 box--style justify-start items-start w-fit box--style border-[2px] shadow-gray-500 border-gray-500">
+                        <p className="text-gray-600 text-[0.75rem] ms-1 font-semibold">recently viewed board</p>
+                        <p className="text-gray-600 text-[0.65rem] ms-1 mb-3"> at {dateFormatter(recentlyViewedBoard.lastViewed)}</p>
+                        <BoardItem
+                            item={recentlyViewedBoard}
+                            handleOpenBoard={handleOpenBoard}
+                        />
+                    </div>
+                </div>
+            }
 
         </section>
     )

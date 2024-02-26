@@ -78,6 +78,16 @@ const InvitationForm = ({ setOpen }) => {
         }
     };
 
+    const handleInputOnEnter = (e) => {
+        if (!e.target.value) {
+            return;
+        }
+
+        if (e.key == 'Enter') {
+            handleSendInvitation();
+        }
+    };
+
     return (
         <>
             <div
@@ -104,6 +114,7 @@ const InvitationForm = ({ setOpen }) => {
                         className={`p-3 w-full overflow-hidden shadow-[0_3px_0_0] shadow-gray-600 text-[0.75rem] whitespace-nowrap text-ellipsis border-[2px] bg-gray-100 border-gray-600 text-gray-600 font-bold select-none font-mono focus:outline-none`}
                         placeholder="Enter username..."
                         onChange={(e) => setUsername(e.target.value)}
+                        onKeyDown={handleInputOnEnter}
                         value={username}
                     />
                     <button
@@ -113,8 +124,8 @@ const InvitationForm = ({ setOpen }) => {
                         + invite
                     </button>
 
-                    {errMsg && <p className="absolute top-0 left-8 text-center h-3 text-red-700 text-[0.65rem] font-semibold">{errMsg}</p>}
-                    {successMsg && <p className="absolute top-0 left-8 text-center h-3 text-blue-700 text-[0.65rem] font-semibold">{successMsg}</p>}
+                    {errMsg && <p className="absolute -top-2 left-4 text-center h-3 text-red-700 text-[0.65rem] font-semibold">{errMsg}</p>}
+                    {successMsg && <p className="absolute -top-2 left-4 text-center h-3 text-blue-700 text-[0.65rem] font-semibold">{successMsg}</p>}
                 </div>
 
                 <div className="flex flex-col gap-3 w-full max-w-[400px] overflow-auto border-[1px] border-t-gray-600 p-4">
