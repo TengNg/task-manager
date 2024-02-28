@@ -8,7 +8,7 @@ import { axiosPrivate } from '../../api/axios';
 import useBoardState from '../../hooks/useBoardState';
 import { lexorank } from "../../utils/class/Lexorank";
 
-const Card = ({ index, card }) => {
+const Card = ({ index, listIndex, card }) => {
     const [openQuickEditor, setOpenQuickEditor] = useState(false);
     const [openCardDetail, setOpenCardDetail] = useState(false);
     const [cardAttribute, setCardAttribute] = useState({});
@@ -119,8 +119,19 @@ const Card = ({ index, card }) => {
                         }}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        tabIndex={index + 1}
-                        className={`w-full group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_3px_0_0] shadow-gray-600 bg-gray-50 relative hover:cursor-pointer`}
+                        tabIndex={listIndex + 1}
+                        onKeyDown={(e) => {
+                            if (e.key == 'Enter') {
+                                handleOpenCardDetail();
+                                return;
+                            };
+                            if (e.key == 'q') {
+                                e.preventDefault(); // need this to not set the textarea value when open CardQuickEditor
+                                handleOpenQuickEditor(e);
+                                return;
+                            };
+                        }}
+                        className={`w-full group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_3px_0_0] shadow-gray-600 bg-gray-50 relative hover:cursor-pointer focus:bg-sky-100 focus:outline-sky-50 focus:border-pink-900`}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >

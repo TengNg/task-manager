@@ -23,6 +23,20 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, ha
         }
     }, [open]);
 
+    useEffect(() => {
+        window.addEventListener('keydown', handleCloseOnEscape);
+
+        return () => {
+            window.removeEventListener('keydown', handleCloseOnEscape);
+        };
+    }, []);
+
+    const handleCloseOnEscape = (e) => {
+        if (e.key == 'Escape') {
+            setOpen(false);
+        }
+    };
+
     const handleClose = (e) => {
         if (e.target === e.currentTarget) {
             setInitialTitle(textAreaRef.current.value);

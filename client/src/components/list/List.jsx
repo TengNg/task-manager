@@ -197,11 +197,12 @@ const List = ({ index, list, cards }) => {
                                         ignoreContainerClipping={true}
                                     >
                                         <div className="flex flex-col pb-1 items-start justify-start h-full">
-                                            {cards.map((card, index) => {
+                                            {cards.map((card, idx) => {
                                                 return <Card
                                                     key={card._id}
                                                     card={card}
-                                                    index={index}
+                                                    index={idx}
+                                                    listIndex={index}
                                                 />
                                             })}
                                             {provided.placeholder}

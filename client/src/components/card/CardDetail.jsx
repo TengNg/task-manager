@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import TextArea from "../ui/TextArea";
 import useBoardState from "../../hooks/useBoardState";
 
@@ -18,6 +18,20 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
     const [openDescriptionComposer, setOpenDescriptionComposer] = useState(false);
     const [openHighlightPicker, setOpenHighlightPicker] = useState(false);
     const axiosPrivate = useAxiosPrivate();
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleCloseOnEscape);
+
+        return () => {
+            window.removeEventListener('keydown', handleCloseOnEscape);
+        };
+    }, []);
+
+    const handleCloseOnEscape = (e) => {
+        if (e.key == 'Escape') {
+            setOpen(false);
+        }
+    };
 
     const listTitle = useCallback(() => {
         return boardState.lists.find(list => list._id == card.listId).title

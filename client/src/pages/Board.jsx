@@ -75,6 +75,10 @@ const Board = () => {
     }, [pathname]);
 
     const handleKeyPress = (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault();
+        }
+
         const isInputField = e.target.tagName.toLowerCase() === 'input';
         const isTextAreaField = e.target.tagName.toLowerCase() === 'textarea';
 
@@ -177,7 +181,7 @@ const Board = () => {
             <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4">
                 {/* <Loading loanding={loading} /> */}
 
-                <div className="fixed flex w-[100vw] z-20">
+                <div className="fixed flex justify-between w-[100vw] z-20">
                     <div className="flex-1 max-w-[70vw] justify-start">
                         <input
                             maxLength={80}
