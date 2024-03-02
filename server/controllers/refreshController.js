@@ -7,7 +7,7 @@ const handleRefresh = async (req, res) => {
     if (!cookies?.token) return res.status(401).json({ msg: "error" });
     const refreshToken = cookies.token;
 
-    const foundUser = await User.findOne({ refreshToken });
+    const foundUser = await User.findOne({ refreshToken }).select('-password -refreshToken');
 
     if (!foundUser) return res.status(500).json({ msg: "user not found" });
 
@@ -23,7 +23,7 @@ const handleRefresh = async (req, res) => {
                 process.env.ACCESS_TOKEN,
                 { expiresIn: '600s' }
             );
-            res.json({ accessToken })
+            res.json({ user: foundUser, accessToken })
         }
     );
 }

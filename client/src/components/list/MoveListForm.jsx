@@ -86,7 +86,7 @@ const MoveListForm = () => {
 
                 <div className='text-black text-[0.75rem] px-2 absolute right-4 bottom-4'>
                     a copy of this list will be moved to selected board
-                    {boards.length === 0 && <p class='mt-2'>(currently have no board to move)</p>}
+                    {boards.length === 0 && <p className='mt-2'>(currently have no board to move)</p>}
                 </div>
             </div>
 

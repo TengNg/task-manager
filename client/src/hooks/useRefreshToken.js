@@ -6,14 +6,14 @@ const useRefreshToken = () => {
 
     const refresh = async () => {
         const response = await axiosPrivate.get('/refresh');
-        const { accessToken } = response.data;
+        const { user, accessToken } = response.data;
 
         if (!accessToken) {
             return null;
         }
 
         setAuth(prev => {
-            return { ...prev, accessToken: response.data.accessToken }
+            return { ...prev, user, accessToken: response.data.accessToken }
         });
         return response.data.accessToken;
     }

@@ -10,6 +10,12 @@ import ChatBox from "../components/chat/ChatBox";
 import CopyBoardForm from "../components/board/CopyBoardForm";
 import FloatingChat from "../components/chat/FloatingChat";
 import MoveListForm from "../components/list/MoveListForm";
+import PinnedBoards from "../components/board/PinnedBoards";
+import useAuth from "../hooks/useAuth";
+import useKeyBinds from "../hooks/useKeyBinds";
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faThumbtack } from '@fortawesome/free-solid-svg-icons';
 
 const Board = () => {
     const {
@@ -22,11 +28,23 @@ const Board = () => {
         socket
     } = useBoardState();
 
+    const {
+        auth,
+        setAuth
+    } = useAuth();
+
+    const {
+        openPinnedBoards,
+        setOpenPinnedBoards
+    } = useKeyBinds();
+
     const [openInvitationForm, setOpenInvitationForm] = useState(false);
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
     const [openChatBox, setOpenChatBox] = useState(false);
     const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
     const [openFloatingChat, setOpenFloatingChat] = useState(false);
+    const [pinned, setPinned] = useState(false);
+    const [sentChatLoading, setSentChatLoading] = useState(false);
 
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -35,18 +53,6 @@ const Board = () => {
 
     const { boardId } = useParams();
     const navigate = useNavigate();
-    const location = useLocation();
-    const { pathname } = location;
-
-    useEffect(() => {
-        socket.emit("joinBoard", boardId);
-
-        window.addEventListener('keydown', handleKeyPress);
-
-        return () => {
-            window.removeEventListener('keydown', handleKeyPress);
-        };
-    }, []);
 
     useEffect(() => {
         if (isRemoved) {
@@ -55,6 +61,13 @@ const Board = () => {
     }, [isRemoved])
 
     useEffect(() => {
+        setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
+    }, [auth]);
+
+    useEffect(() => {
+        socket.emit("joinBoard", boardId);
+        window.addEventListener('keydown', handleKeyPress);
+
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
 
         const getBoardData = async () => {
@@ -70,9 +83,13 @@ const Board = () => {
         getBoardData().catch(err => {
             console.log(err);
             setIsDataLoaded(false);
-            navigate("/notfound");
+            navigate("/login");
         });
-    }, [pathname]);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, []);
 
     const handleKeyPress = (e) => {
         if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
@@ -105,7 +122,7 @@ const Board = () => {
         }
     };
 
-    const confirmBoardTitle = async (value) => {
+    const handleConfirmBoardTitle = async (value) => {
         if (value === "") {
             setBoardTitle(title);
             return;
@@ -124,15 +141,46 @@ const Board = () => {
 
     const handleBoardTitleInputOnKeyDown = (e) => {
         if (e.key == 'Enter' && !e.shiftKey) {
-            confirmBoardTitle(e.target.value.trim());
+            handleConfirmBoardTitle(e.target.value.trim());
             e.target.blur();
         }
-
     };
 
     const handleBoardTitleInputOnBlur = async (e) => {
-        confirmBoardTitle(e.target.value.trim());
+        handleConfirmBoardTitle(e.target.value.trim());
     }
+
+    const handlePinBoard = async () => {
+        try {
+            const response = await axiosPrivate.put(`/boards/${boardState.board._id}/pinned/u/${auth?.user?.username}`);
+            const result = response.data?.result?.pinnedBoardIdCollection?.hasOwnProperty(boardId);
+            setPinned(result);
+            setAuth(prev => {
+                return { ...prev, user: { ...prev.user, pinnedBoardIdCollection: response?.data?.result?.pinnedBoardIdCollection } }
+            });
+        } catch (err) {
+            console.log(err);
+            alert('Failed to pin board');
+        }
+    };
+
+    const handleSendMessage = async (value) => {
+        try {
+            const response = await axiosPrivate.post(`/chats/b/${boardState.board._id}`, JSON.stringify({ content: value }));
+            const newMessage = response.data.chat;
+            setSentChatLoading(true);
+            setChats(prev => {
+                return [...prev, { ...newMessage, sentBy: { ...newMessage.sentBy, username: auth?.user?.username } }];
+            });
+            socket.emit("sendMessage", { ...newMessage, sentBy: { ...newMessage.sentBy, username: auth?.user?.username } });
+            setSentChatLoading(false);
+        } catch (err) {
+            setChats(prev => {
+                return [...prev, { content: value, error: true, sentBy: auth }];
+            });
+            setSentChatLoading(false);
+        }
+    };
 
     if (isDataLoaded === false) {
         return <div className="font-bold mx-auto text-center mt-20 text-gray-600">Loading...</div>
@@ -141,16 +189,17 @@ const Board = () => {
     return (
         <>
             {
-                openMoveListForm &&
-                <MoveListForm />
+                openPinnedBoards &&
+                <PinnedBoards
+                    open={openPinnedBoards}
+                    setOpen={setOpenPinnedBoards}
+                    setPinned={setPinned}
+                />
             }
 
             {
-                openChatBox &&
-                <ChatBox
-                    setOpen={setOpenChatBox}
-                    setOpenFloat={setOpenFloatingChat}
-                />
+                openMoveListForm &&
+                <MoveListForm />
             }
 
             {
@@ -162,19 +211,31 @@ const Board = () => {
             }
 
             {
-                openCopyBoardForm
-                && <CopyBoardForm
+                openCopyBoardForm &&
+                <CopyBoardForm
                     open={openCopyBoardForm}
                     setOpen={setOpenCopyBoardForm}
                 />
             }
 
             {
-                openFloatingChat
-                && <FloatingChat
+                openChatBox &&
+                <ChatBox
+                    setOpen={setOpenChatBox}
+                    setOpenFloat={setOpenFloatingChat}
+                    sendMessage={handleSendMessage}
+                    loading={sentChatLoading}
+                />
+            }
+
+            {
+                openFloatingChat &&
+                <FloatingChat
                     open={openFloatingChat}
                     setOpen={setOpenFloatingChat}
                     setOpenChatBox={setOpenChatBox}
+                    sendMessage={handleSendMessage}
+                    loading={sentChatLoading}
                 />
             }
 
@@ -263,6 +324,20 @@ const Board = () => {
 
                 </div>
 
+                <button
+                    onClick={handlePinBoard}
+                    className={`fixed left-4 w-[100px] ${pinned ? 'bottom-5 text-gray-100 shadow-[0_1px_0_0]' : 'bottom-6 mt-2 shadow-gray-600 shadow-[0_4px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-4 py-2 text-[0.65rem] font-medium`}
+                >
+                    {pinned ?
+                        <div className='flex justify-center items-center gap-2'>
+                            <FontAwesomeIcon icon={faThumbtack} />
+                            <span>pinned</span>
+                        </div>
+                        : <div className='flex justify-center items-center gap-1'>
+                            <span>pin</span>
+                        </div>
+                    }
+                </button>
             </div>
 
         </>

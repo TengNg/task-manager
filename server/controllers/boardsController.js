@@ -221,6 +221,53 @@ const copyBoard = async (req, res) => {
     return res.status(200).json({ msg: 'board copied' });
 };
 
+const togglePinBoard = async (req, res) => {
+    const { username, id } = req.params;
+
+    const foundBoard = await Board.findById(id);
+    const foundUser = await getUser(username);
+
+    if (!foundUser) return res.status(403).json({ msg: "user not found" });
+    if (!foundBoard) return res.status(403).json({ msg: "board not found" });
+
+    if (foundUser.pinnedBoardIdCollection && foundUser.pinnedBoardIdCollection.has(id)) {
+        const result = await User.findOneAndUpdate(
+            { username },
+            { $unset: { [`pinnedBoardIdCollection.${id}`]: 1 } },
+            { new: true }
+        ).select('pinnedBoardIdCollection');
+        return res.status(200).json({ result });
+    } else {
+        const result = await User.findOneAndUpdate(
+            { username },
+            { $set: { [`pinnedBoardIdCollection.${id}`]: { title: foundBoard?.title } } },
+            { new: true, upsert: true }
+        ).select('pinnedBoardIdCollection');
+        return res.status(200).json({ result });
+    }
+};
+
+const deletePinnedBoard = async (req, res) => {
+    const { username, id } = req.params;
+
+    const foundBoard = await Board.findById(id);
+    const foundUser = await getUser(username);
+
+    if (!foundUser) return res.status(403).json({ msg: "user not found" });
+    if (!foundBoard) return res.status(403).json({ msg: "board not found" });
+
+    if (foundUser.pinnedBoardIdCollection && foundUser.pinnedBoardIdCollection.has(id)) {
+        const result = await User.findOneAndUpdate(
+            { username },
+            { $unset: { [`pinnedBoardIdCollection.${id}`]: 1 } },
+            { new: true }
+        ).select('pinnedBoardIdCollection');
+        return res.status(200).json({ result });
+    }
+
+    return res.status(404).json({ msg: 'pinned board not found' });
+};
+
 module.exports = {
     getBoards,
     createBoard,
@@ -232,4 +279,6 @@ module.exports = {
     closeBoard,
     updateLastViewdTimeStamp,
     copyBoard,
+    togglePinBoard,
+    deletePinnedBoard,
 };

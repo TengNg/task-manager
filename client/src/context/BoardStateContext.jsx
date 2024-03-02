@@ -8,7 +8,6 @@ export const BoardStateContextProvider = ({ children }) => {
     const [pendingInvitations, setPendingInvitations] = useState(0);
     const [chats, setChats] = useState([]);
     const [isRemoved, setIsRemoved] = useState(false);
-
     const [openMoveListForm, setOpenMoveListForm] = useState(false);
 
     const [listToMove, setListToMove] = useState();

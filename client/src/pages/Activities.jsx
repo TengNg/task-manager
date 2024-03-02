@@ -23,6 +23,7 @@ const Activities = () => {
 
         getInvitations().catch(err => {
             console.log(err);
+            navigate('/login');
         });
     }, []);
 

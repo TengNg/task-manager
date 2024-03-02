@@ -85,6 +85,7 @@ const ListContainer = () => {
         const fromList = currentLists.find(list => list._id === source.droppableId);
         const toList = currentLists.find(list => list._id === destination.droppableId);
 
+
         // dragging outside
         if (!fromList || !toList) return;
 
@@ -153,6 +154,7 @@ const ListContainer = () => {
                                 cards={list?.cards || []}
                             />
                         ))}
+
                         {provided.placeholder}
 
                         <AddList />

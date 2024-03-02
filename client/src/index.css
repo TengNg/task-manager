@@ -34,11 +34,11 @@
     }
 
     .board--style {
-        @apply shadow-[0px_6px_0_0] rounded-md cursor-pointer
+        @apply shadow-[0px_6px_0_0] cursor-pointer
     }
 
     .board--style--sm {
-        @apply shadow-[0px_4px_0_0] rounded-sm cursor-pointer
+        @apply shadow-[0px_4px_0_0] cursor-pointer
     }
 
     .board--hover {
@@ -58,11 +58,11 @@
     }
 
     .anchor--style {
-        @apply hover:text-white hover:bg-gray-400 flex justify-center items-center p-2 rounded-md transition-all text-gray-600
+        @apply hover:text-white hover:bg-gray-400 flex justify-center items-center p-2 transition-all text-gray-600
     }
 
     .anchor--style--selected {
-        @apply hover:text-white text-white bg-gray-500 flex justify-center items-center p-2 rounded-md
+        @apply hover:text-white text-white bg-gray-500 flex justify-center items-center p-2
     }
 
     .card--detail--button {
@@ -101,3 +101,7 @@ h1 {
     font-size: 3.5rem;
 }
 
+.top-left-auto {
+    top: auto !important;
+    left: auto !important;
+}

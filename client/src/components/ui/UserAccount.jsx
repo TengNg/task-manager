@@ -15,16 +15,6 @@ const UserAccount = () => {
     const userInfoRef = useRef();
 
     useEffect(() => {
-        const getData = async () => {
-            const response = await axiosPrivate.get("/home");
-            setAuth(response.data.user);
-        }
-        getData().catch(_ => {
-            navigate("/login", { replace: true });
-        });
-    }, []);
-
-    useEffect(() => {
         const closeUserInfoBox = (event) => {
             if (
                 userInfoRef.current
@@ -62,17 +52,15 @@ const UserAccount = () => {
         navigate(`/u/${auth.username}`);
     };
 
+
     return (
         <div className="fixed top-4 right-4 flex--center h-fit flex-col justify-start gap-2 z-30">
             <div
                 onClick={() => setCollapse(collapse => !collapse)}
                 ref={userProfileImageRef}
-                className='bg-blue-500 text-white flex--center ms-auto text-[0.8rem] w-[40px] h-[40px] rounded-full bg-center bg-cover overflow-hidden cursor-pointer'>
-                {
-                    auth?.profileImage === null
-                        ? <div className="font-bold flex--center select-none">{auth?.username.charAt(0).toUpperCase()}</div>
-                        : <img className="flex--center h-[100%] w-[100%]" />
-                }
+                className='bg-blue-500 text-white flex--center ms-auto text-[0.8rem] w-[40px] h-[40px] rounded-full bg-center bg-cover overflow-hidden cursor-pointer'
+            >
+                <div className="font-bold flex--center select-none">{auth?.user?.username?.charAt(0).toUpperCase()}</div>
             </div>
 
             {
@@ -81,25 +69,28 @@ const UserAccount = () => {
                     ref={userInfoRef}
                     className='relative flex flex-col box--style shadow-gray-600 border-[2px] border-gray-600 p-3 select-none gap-4 bg-gray-100'
                 >
-                    <button
-                        className="absolute top-0 right-1 text-[0.8rem] text-gray-600"
-                        onClick={() => setCollapse(true)}
-                    >
-                        <FontAwesomeIcon icon={faXmark} />
-                    </button>
+                    {
+                        Object.keys(auth).length > 0 ? <>
+                            <button
+                                className="absolute top-0 right-1 text-[0.8rem] text-gray-600"
+                                onClick={() => setCollapse(true)}
+                            >
+                                <FontAwesomeIcon icon={faXmark} />
+                            </button>
+                            <div className="font-bold text-gray-400">Account</div>
 
-                    <div className="font-bold text-gray-400">Account</div>
+                            <div className='select-none font-semibold text-[0.8rem] max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis text-gray-700'>
+                                Username: {auth?.user?.username}
+                            </div>
 
-                    <div className='select-none font-semibold text-[0.8rem] max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis text-gray-700'>
-                        Username: {auth?.username}
-                    </div>
-
-                    <button
-                            onClick={handleOpenProfile}
-                            className="button--style text-[0.75rem] font-bold">Edit account</button>
-                    <button
-                        onClick={handleLogout}
-                        className="button--style--dark text-[0.75rem] font-bold text-gray-200">Log out</button>
+                            <button
+                                onClick={handleOpenProfile}
+                                className="button--style text-[0.75rem] font-bold">Edit account</button>
+                            <button
+                                onClick={handleLogout}
+                                className="button--style--dark text-[0.75rem] font-bold text-gray-200">Log out</button>
+                        </> : <button onClick={() => navigate('/login')} className="button--style--dark w-[150px] text-[0.75rem] font-bold text-gray-200">Login</button>
+                    }
                 </div>
             }
 

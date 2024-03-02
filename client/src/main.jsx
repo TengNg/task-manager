@@ -7,13 +7,13 @@ import { AuthContextProvider } from './context/AuthContext.jsx'
 import { BoardStateContextProvider } from './context/BoardStateContext.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <AuthContextProvider>
-        <BoardStateContextProvider>
-            <BrowserRouter>
-                <React.StrictMode>
+    <React.StrictMode>
+        <AuthContextProvider>
+            <BoardStateContextProvider>
+                <BrowserRouter>
                     <App />
-                </React.StrictMode>
-            </BrowserRouter>
-        </BoardStateContextProvider>
-    </AuthContextProvider>
+                </BrowserRouter>
+            </BoardStateContextProvider>
+        </AuthContextProvider>
+    </React.StrictMode>
 )

@@ -11,7 +11,7 @@ const NavBar = () => {
         <>
             <section className='w-full h-[5rem] flex--center z-30'>
                 <UserAccount />
-                <nav className="fixed h-[3rem] top-4 mx-auto border-gray-700 border-[2px] bg-gray-100 rounded-lg px-4 z-30">
+                <nav className="fixed h-[3rem] top-4 mx-auto border-gray-700 border-[2px] bg-gray-100 px-4 z-30">
                     <ul className="w-[100%] h-[100%] flex justify-around items-center gap-5">
                         <li>
                             <NavLink to="/" className={({ isActive }) => isActive ? 'anchor--style--selected' : 'anchor--style'} >

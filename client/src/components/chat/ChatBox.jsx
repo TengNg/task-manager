@@ -1,50 +1,25 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faExpand } from '@fortawesome/free-solid-svg-icons';
 import Chat from './Chat';
 import ChatInput from './ChatInput';
 import useBoardState from '../../hooks/useBoardState';
-import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useAuth from '../../hooks/useAuth';
 import Loading from '../ui/Loading';
 
-const ChatBox = ({ setOpen, setOpenFloat }) => {
+const ChatBox = ({ setOpen, setOpenFloat, sendMessage, loading }) => {
     const {
         boardState,
         chats,
-        setChats,
-        socket,
     } = useBoardState();
-
-    const [loading, setLoading] = useState(false);
 
     const { auth } = useAuth();
 
     const messageEndRef = useRef();
 
-    const axiosPrivate = useAxiosPrivate();
-
     useEffect(() => {
         messageEndRef.current.scrollIntoView({ block: 'end' });
     }, [chats.length])
-
-    const handleSendMessage = async (value) => {
-        try {
-            const response = await axiosPrivate.post(`/chats/b/${boardState.board._id}`, JSON.stringify({ content: value }));
-            const newMessage = response.data.chat;
-            setLoading(true);
-            setChats(prev => {
-                return [...prev, { ...newMessage, sentBy: { ...newMessage.sentBy, username: auth.username } }];
-            });
-            socket.emit("sendMessage", { ...newMessage, sentBy: { ...newMessage.sentBy, username: auth.username } });
-            setLoading(false);
-        } catch (err) {
-            setChats(prev => {
-                return [...prev, { content: value, error: true, sentBy: auth }];
-            });
-            setLoading(false);
-        }
-    };
 
     const handleOpenFloat = () => {
         setOpen(false);
@@ -93,10 +68,11 @@ const ChatBox = ({ setOpen, setOpenFloat }) => {
                 <div style={{ float: "left", clear: "both" }} ref={messageEndRef}></div>
             </div>
 
-            <ChatInput
-                sendMessage={handleSendMessage}
-            />
-
+            <div className='bg-gray-200 px-2'>
+                <ChatInput
+                    sendMessage={sendMessage}
+                />
+            </div>
         </div>
     )
 }

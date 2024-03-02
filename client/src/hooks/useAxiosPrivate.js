@@ -2,10 +2,12 @@ import { axiosPrivate } from "../api/axios";
 import { useEffect } from "react";
 import useRefreshToken from "./useRefreshToken";
 import useAuth from "./useAuth";
+import { useNavigate } from "react-router-dom";
 
 const useAxiosPrivate = () => {
     const refresh = useRefreshToken();
     const { auth } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const requestIntercept = axiosPrivate.interceptors.request.use(
@@ -29,6 +31,7 @@ const useAxiosPrivate = () => {
                 } else if (error?.response.status === 500) {
                     // log out & clear cookies in case of something went wrong
                     await axiosPrivate.get('/logout');
+                    navigate('/login');
                 }
 
                 return Promise.reject(error);

@@ -10,7 +10,7 @@ const getMessages = async (req, res) => {
 
     const messages = await Chat
         .find({ boardId })
-        .sort({ createdAt: 1 })
+        .sort({ createdAt: 'desc' })
         .populate({
             path: 'sentBy',
             field: 'username'

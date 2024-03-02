@@ -1,29 +1,18 @@
 import React from 'react'
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import useBoardState from '../../hooks/useBoardState';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faCompress } from '@fortawesome/free-solid-svg-icons';
 import Chat from './Chat';
 import ChatInput from './ChatInput';
 import Loading from '../ui/Loading';
-import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-import useAuth from '../../hooks/useAuth';
 
-export default function FloatingChat({ setOpen, setOpenChatBox }) {
+export default function FloatingChat({ setOpen, setOpenChatBox, sendMessage, loading }) {
     const {
-        boardState,
         chats,
-        setChats,
-        socket,
     } = useBoardState();
 
-    const [loading, setLoading] = useState(false);
-
     const messageEndRef = useRef();
-
-    const { auth } = useAuth();
-
-    const axiosPrivate = useAxiosPrivate();
 
     useEffect(() => {
         messageEndRef.current.scrollIntoView({ block: 'end' });
@@ -36,24 +25,6 @@ export default function FloatingChat({ setOpen, setOpenChatBox }) {
     const handleCloseFloatAndOpenChatBox = () => {
         setOpen(false);
         setOpenChatBox(true);
-    };
-
-    const handleSendMessage = async (value) => {
-        try {
-            const response = await axiosPrivate.post(`/chats/b/${boardState.board._id}`, JSON.stringify({ content: value }));
-            const newMessage = response.data.chat;
-            setLoading(true);
-            setChats(prev => {
-                return [...prev, { ...newMessage, sentBy: { ...newMessage.sentBy, username: auth.username } }];
-            });
-            socket.emit("sendMessage", { ...newMessage, sentBy: { ...newMessage.sentBy, username: auth.username } });
-            setLoading(false);
-        } catch (err) {
-            setChats(prev => {
-                return [...prev, { content: value, error: true, sentBy: auth }];
-            });
-            setLoading(false);
-        }
     };
 
     return (
@@ -108,7 +79,7 @@ export default function FloatingChat({ setOpen, setOpenChatBox }) {
 
                 <ChatInput
                     withSentButton={true}
-                    sendMessage={handleSendMessage}
+                    sendMessage={sendMessage}
                 />
             </div>
         </>
