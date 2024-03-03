@@ -65,16 +65,6 @@ const Boards = () => {
         };
     }, [openBoardForm])
 
-    useEffect(() => {
-        if (!openPinnedBoards) {
-            const boards = auth?.user?.pinnedBoardIdCollection;
-            console.log(boards);
-        }
-    }, [openPinnedBoards]);
-
-    const handleSavePinnedBoardsOnClose = () => {
-    };
-
     const handleOpenBoard = (boardId) => {
         navigate(`/b/${boardId}`);
     }

@@ -93,6 +93,9 @@ export const BoardStateContextProvider = ({ children }) => {
                 setChats(prev => [...prev, data]);
             });
         }
+        return () => {
+            socket.off();
+        };
     }, []);
 
     const setBoardTitle = (value) => {

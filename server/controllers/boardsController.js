@@ -268,6 +268,22 @@ const deletePinnedBoard = async (req, res) => {
     return res.status(404).json({ msg: 'pinned board not found' });
 };
 
+const updatePinnedBoardsCollection = async (req, res) => {
+    const { username } = req.params;
+    const { pinnedBoardIdCollection } = req.body;
+
+    const foundUser = await getUser(username);
+    if (!foundUser) return res.status(403).json({ msg: "user not found" });
+
+    const result = await User.findOneAndUpdate(
+        { username },
+        { pinnedBoardIdCollection },
+        { new: true }
+    ).select('pinnedBoardIdCollection');
+
+    return res.status(200).json({ result });
+};
+
 module.exports = {
     getBoards,
     createBoard,
@@ -281,4 +297,5 @@ module.exports = {
     copyBoard,
     togglePinBoard,
     deletePinnedBoard,
+    updatePinnedBoardsCollection,
 };

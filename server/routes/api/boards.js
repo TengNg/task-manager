@@ -13,6 +13,7 @@ const {
     copyBoard,
     togglePinBoard,
     deletePinnedBoard,
+    updatePinnedBoardsCollection,
 } = require('../../controllers/boardsController');
 
 router.route("/")
@@ -39,5 +40,8 @@ router.route("/copy/:id")
 router.route("/:id/pinned/u/:username")
     .put(togglePinBoard)
     .delete(deletePinnedBoard)
+
+router.route("/pinned/u/:username")
+    .put(updatePinnedBoardsCollection)
 
 module.exports = router;

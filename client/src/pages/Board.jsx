@@ -11,6 +11,7 @@ import CopyBoardForm from "../components/board/CopyBoardForm";
 import FloatingChat from "../components/chat/FloatingChat";
 import MoveListForm from "../components/list/MoveListForm";
 import PinnedBoards from "../components/board/PinnedBoards";
+import Loading from "../components/ui/Loading";
 import useAuth from "../hooks/useAuth";
 import useKeyBinds from "../hooks/useKeyBinds";
 
@@ -35,14 +36,16 @@ const Board = () => {
 
     const {
         openPinnedBoards,
-        setOpenPinnedBoards
+        setOpenPinnedBoards,
+        openChatBox,
+        setOpenChatBox,
+        openFloatingChat,
+        setOpenFloatingChat,
     } = useKeyBinds();
 
     const [openInvitationForm, setOpenInvitationForm] = useState(false);
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
-    const [openChatBox, setOpenChatBox] = useState(false);
     const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
-    const [openFloatingChat, setOpenFloatingChat] = useState(false);
     const [pinned, setPinned] = useState(false);
     const [sentChatLoading, setSentChatLoading] = useState(false);
 
@@ -53,6 +56,8 @@ const Board = () => {
 
     const { boardId } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const { pathname } = location;
 
     useEffect(() => {
         if (isRemoved) {
@@ -70,13 +75,14 @@ const Board = () => {
 
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
 
+        setIsDataLoaded(false);
+
         const getBoardData = async () => {
             const boardsResponse = await axiosPrivate.get(`/boards/${boardId}`);
             const chatsResponse = await axiosPrivate.get(`/chats/b/${boardId}`);
             setBoardState(boardsResponse.data);
             setTitle(boardsResponse.data.board.title);
             setChats(chatsResponse.data.messages.reverse());
-
             setIsDataLoaded(true);
         }
 
@@ -89,7 +95,7 @@ const Board = () => {
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, []);
+    }, [pathname]);
 
     const handleKeyPress = (e) => {
         if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
@@ -113,9 +119,6 @@ const Board = () => {
                 break;
             case 'd':
                 window.scrollBy({ left: 400, top: 0, behavior: 'smooth' });
-                break;
-            case 'C':
-                setOpenChatBox(prev => !prev);
                 break;
             default:
                 break;
@@ -240,8 +243,6 @@ const Board = () => {
             }
 
             <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4">
-                {/* <Loading loanding={loading} /> */}
-
                 <div className="fixed flex justify-between w-[100vw] z-20">
                     <div className="flex-1 max-w-[70vw] justify-start">
                         <input
@@ -264,7 +265,7 @@ const Board = () => {
                         <div
                             onClick={() => setOpenChatBox(prev => !prev)}
                             className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
-                                    ${openChatBox ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
+                                    ${(openChatBox || openFloatingChat) ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                         >Chats</div>
 
                         <div

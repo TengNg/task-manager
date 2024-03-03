@@ -174,7 +174,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
                         <div>
                             <button
                                 onClick={() => handleCopyCard()}
-                                className={`border-2 w-full border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white transition-all text-[0.75rem]  px-2 py-2 font-semibold ${openHighlightPicker && 'bg-gray-500 shadow-black text-white'}`}
+                                className={`border-2 w-full border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white transition-all text-[0.75rem]  px-2 py-2 font-semibold`}
                             >Copy card</button>
                         </div>
 

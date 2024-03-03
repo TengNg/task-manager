@@ -91,8 +91,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm }) => {
 
                 {
                     boardState.board.createdBy.username === auth.username
-                        ?
-                        <button
+                        ? <button
                             onClick={() => handleCloseBoard()}
                             className="button--style--dark text-[0.75rem] font-bold text-gray-200"
                         >close board</button>

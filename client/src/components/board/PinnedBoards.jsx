@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
 import useAuth from '../../hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +12,7 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
     const { auth, setAuth } = useAuth();
 
     const [pinnedBoards, setPinnedBoards] = useState([]);
+    const [saved, setSaved] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
@@ -58,6 +59,8 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
         setAuth(prev => {
             return { ...prev, user: { ...prev.user, pinnedBoardIdCollection: newObj } }
         });
+
+        setSaved(false);
     }
 
     const handleOpenBoard = (boardId) => {
@@ -86,6 +89,22 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
         }
     };
 
+    const handleSavePinnedBoards = async () => {
+        if (saved) return;
+
+        try {
+            setLoading(true);
+            const boards = auth?.user?.pinnedBoardIdCollection;
+            await axiosPrivate.put(`/boards/pinned/u/${auth?.user?.username}`, JSON.stringify({ pinnedBoardIdCollection: boards }));
+            setLoading(false);
+            setSaved(true);
+        } catch (err) {
+            console.log(err);
+            setLoading(false);
+            alert('Failed to save');
+        }
+    }
+
     return <>
         <div
             onClick={handleClose}
@@ -101,7 +120,17 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
             />
 
             <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
-                <p className="font-normal text-[1rem] text-gray-700">All pinned boards</p>
+                <div className='flex items-center gap-2'>
+                    <span className="font-normal text-[0.85rem] text-gray-700">pinned boards</span>
+                    <button
+                        onClick={handleSavePinnedBoards}
+                        className={`button--style--sm text-[0.85rem] w-[20px] h-[20px] hover:bg-gray-300 rounded ${saved ? 'text-blue-600' : 'text-gray-600'}`}
+                    >
+                        <FontAwesomeIcon icon={faFloppyDisk} />
+                    </button>
+                    { saved && <span class='text-[0.65rem] text-blue-600'>saved!</span> }
+                </div>
+
                 <button
                     className="text-gray-600 flex justify-center items-center"
                     onClick={() => setOpen(false)}
