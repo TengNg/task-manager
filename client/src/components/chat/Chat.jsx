@@ -2,6 +2,7 @@ import dateFormatter from "../../utils/dateFormatter";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import Avatar from "../avatar/Avatar";
+import useAuth from "../../hooks/useAuth";
 
 const MESSAGE_PADDING = {
     x: {
@@ -19,7 +20,22 @@ const MESSAGE_PADDING = {
     },
 };
 
-const Chat = ({ chat, avatar = null, withSeparator = false, withRightArrow = false, padding = { x: MESSAGE_PADDING.x.sm, y: MESSAGE_PADDING.y.sm } }) => {
+const Chat = ({
+    chat,
+    avatar = null,
+    withSeparator = false,
+    withRightArrow = false,
+    highlightOwnMessages = false,
+    padding = {
+        x: MESSAGE_PADDING.x.sm,
+        y: MESSAGE_PADDING.y.sm
+    },
+    identifier = {
+        username: false,
+        avatarColor: false,
+    },
+}) => {
+    const { auth } = useAuth();
     const { content, sentBy, createdAt, error } = chat;
 
     return (
@@ -38,7 +54,7 @@ const Chat = ({ chat, avatar = null, withSeparator = false, withRightArrow = fal
                     </div>
                 </div>
 
-                <div className={`max-w-full w-fit flex justify-center items-center bg-gray-200 rounded-md ${padding.x} ${padding.y}`}>
+                <div className={`max-w-full w-fit flex justify-center items-center ${highlightOwnMessages && chat.sentBy.username === auth?.user?.username ? 'bg-blue-100' : 'bg-gray-200'} rounded-md ${padding.x} ${padding.y}`}>
                     {
                         withRightArrow &&
                         <div className='me-3 mb-auto'>

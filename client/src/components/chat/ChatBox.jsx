@@ -56,12 +56,13 @@ const ChatBox = ({ setOpen, setOpenFloat, sendMessage, loading }) => {
                 </button>
             </div>
 
-            <div className='relative flex-1 w-full border-red-100 flex flex-col gap-3 overflow-y-auto p-2'>
+            <div className='relative flex-1 w-full border-red-100 flex flex-col gap-3 overflow-y-auto p-1'>
                 {
                     chats.map((item, index) => {
                         return <Chat
                             key={index}
                             chat={item}
+                            highlightOwnMessages={true}
                         />
                     })
                 }

@@ -16,7 +16,14 @@ const AVATAR_BG_COLORS = {
     'gray': 'bg-gray-400',
 }
 
-const Avatar = ({ username, profileImage, size = 'sm', bgColor = 'blue', isAdmin = false, clickable = true }) => {
+const Avatar = ({
+    username,
+    profileImage,
+    size = 'sm',
+    bgColor = 'blue',
+    isAdmin = false,
+    clickable = true
+}) => {
     const [collapse, setCollapse] = useState(true);
 
     const userProfileImageRef = useRef();
