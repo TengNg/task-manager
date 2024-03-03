@@ -34,8 +34,34 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
         setOpen(false);
     };
 
-    const handleOnDragEnd = (e) => {
-        console.log('dragged');
+    const handleOnDragEnd = (result) => {
+        const { destination, source } = result;
+        if (!destination) return;
+
+        const { index: destIndex } = destination;
+        const { index: srcIndex } = source
+
+        const newPinnedBoards = [...pinnedBoards];
+        const [removed] = newPinnedBoards.splice(srcIndex, 1);
+
+        if (destIndex === srcIndex) return;
+
+        newPinnedBoards.splice(destIndex, 0, removed);
+        setPinnedBoards(newPinnedBoards);
+
+        const newObj = newPinnedBoards.reduce((obj, board) => {
+            const [boardId, boardTitle] = board;
+            obj[boardId] = { title: boardTitle };
+            return obj;
+        }, {});
+
+        setAuth(prev => {
+            return { ...prev, user: { ...prev.user, pinnedBoardIdCollection: newObj } }
+        });
+    }
+
+    const handleOpenBoard = (boardId) => {
+        navigate(`/b/${boardId}`);
     };
 
     const handleDeletePinnedBoard = async (e, boardId) => {
@@ -58,10 +84,6 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
             alert('Failed to removed this board');
             setLoading(false);
         }
-    };
-
-    const handleOpenBoard = (boardId) => {
-        navigate(`/b/${boardId}`);
     };
 
     return <>

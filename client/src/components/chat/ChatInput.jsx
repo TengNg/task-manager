@@ -35,7 +35,7 @@ const ChatInput = ({ sendMessage, withSentButton = false }) => {
         }
     };
 
-    const handleSentButtonOnClick = (e) => {
+    const handleSentButtonOnClick = () => {
         if (message) {
             send(message);
         }
@@ -57,8 +57,8 @@ const ChatInput = ({ sendMessage, withSentButton = false }) => {
             {
                 withSentButton &&
                 <button
-                    className="d-flex justify-center items-center text-gray-500 border-[1px] border-gray-500 h-full px-3 hover:text-white hover:bg-gray-500 transition-all"
-                    onClick={(e) => handleSentButtonOnClick(e)}
+                    className="d-flex justify-center items-center text-gray-500 border-[2px] border-gray-500 h-[38px] px-3 hover:text-white hover:bg-gray-500 transition-all"
+                    onClick={handleSentButtonOnClick}
                 >
                     <FontAwesomeIcon icon={faArrowLeftLong} size='sm' />
                 </button>

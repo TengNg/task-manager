@@ -163,20 +163,20 @@ const List = ({ index, list, cards }) => {
                         }
                     </div>
 
-                    <div className="flex flex-col justify-start bg-gray-100 w-[280px] min-w-[280px] h-fit max-h-[62vh] min-h-auto border-[2px] select-none py-2 px-3 cursor-pointer box--style border-gray-600 shadow-gray-600">
+                    <div className="flex flex-col justify-start bg-gray-100 w-[280px] min-w-[280px] h-fit max-h-[62vh] min-h-auto border-[2px] select-none py-2 cursor-pointer box--style border-gray-600 shadow-gray-600">
                         <div
                             {...provided.dragHandleProps}
                             className="relative w-full bg-inherit">
                             <div
                                 ref={titleRef}
-                                className="w-full font-semibold text-gray-600 break-words whitespace-pre-line"
+                                className="w-full font-semibold text-gray-600 break-words whitespace-pre-line px-3"
                                 onMouseUp={handleMouseUp}
                             >
                                 <p>{list.title}</p>
                             </div>
 
                             <textarea
-                                className="hidden bg-gray-100 h-fit w-full focus:outline-none font-semibold text-gray-600 leading-normal overflow-y-hidden resize-none"
+                                className="hidden bg-gray-100 h-fit w-full focus:outline-none font-semibold px-3 text-gray-600 leading-normal overflow-y-hidden resize-none"
                                 value={list.title}
                                 ref={textAreaRef}
                                 onFocus={handleTextAreaOnFocus}
@@ -185,10 +185,10 @@ const List = ({ index, list, cards }) => {
                                 onKeyDown={handleTextAreaOnEnter}
                             />
 
-                            <div className="mx-auto h-[1.5px] mt-1 w-[100%] bg-gray-500"></div>
+                            <div className="mx-auto h-[1.5px] mt-1 w-[253px] bg-gray-500"></div>
                         </div>
 
-                        <div className="max-h-full overflow-y-auto">
+                        <div className="max-h-full overflow-y-auto px-3">
                             <Droppable droppableId={list._id} type="CARD">
                                 {(provided) => (
                                     <div
@@ -225,7 +225,7 @@ const List = ({ index, list, cards }) => {
                         {
                             openCardComposer === false &&
                             <button
-                                className="flex gap-2 group text-gray-400 w-full mt-2 p-2 text-[0.8rem] hover:bg-gray-300 transition-all font-semibold text-start"
+                                className="flex gap-2 group text-gray-400 mt-2 mx-3 p-2 text-[0.8rem] hover:bg-gray-300 transition-all font-semibold text-start"
                                 onClick={() => setOpenCardComposer(true)}
                             >
                                 <span>

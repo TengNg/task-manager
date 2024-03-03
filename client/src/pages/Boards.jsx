@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import dateFormatter from "../utils/dateFormatter";
 import PinnedBoards from "../components/board/PinnedBoards";
 import useKeyBinds from "../hooks/useKeyBinds";
+import useAuth from "../hooks/useAuth";
 
 const Boards = () => {
     const [boards, setBoards] = useState([]);
@@ -16,6 +17,8 @@ const Boards = () => {
 
     const [openBoardForm, setOpenBoardForm] = useState(false);
     const axiosPrivate = useAxiosPrivate();
+
+    const { auth } = useAuth();
 
     const {
         openPinnedBoards,
@@ -61,6 +64,16 @@ const Boards = () => {
             document.removeEventListener('click', closeBoxOutside);
         };
     }, [openBoardForm])
+
+    useEffect(() => {
+        if (!openPinnedBoards) {
+            const boards = auth?.user?.pinnedBoardIdCollection;
+            console.log(boards);
+        }
+    }, [openPinnedBoards]);
+
+    const handleSavePinnedBoardsOnClose = () => {
+    };
 
     const handleOpenBoard = (boardId) => {
         navigate(`/b/${boardId}`);
