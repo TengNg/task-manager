@@ -65,6 +65,7 @@ const MoveListForm = () => {
                 return { ...prev, lists: prev.lists.filter(list => list._id != listToMove._id) };
             });
 
+            socket.emit("deleteList", list._id);
             socket.emit("addMovedListToBoard", { boardId: selectedBoardId, list, cards, index: selectedIndex });
 
             setOpenMoveListForm(false);

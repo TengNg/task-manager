@@ -57,8 +57,8 @@ export const BoardStateContextProvider = ({ children }) => {
                 addListToBoard(newList);
             });
 
-            socket.on("deletedList", (data) => {
-                deleteList(data);
+            socket.on("deletedList", (listId) => {
+                deleteList(listId);
             });
 
             socket.on("newCard", (data) => {
