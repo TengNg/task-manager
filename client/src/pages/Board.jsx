@@ -40,9 +40,10 @@ const Board = () => {
         setOpenChatBox,
         openFloatingChat,
         setOpenFloatingChat,
+        openInvitationForm,
+        setOpenInvitationForm,
     } = useKeyBinds();
 
-    const [openInvitationForm, setOpenInvitationForm] = useState(false);
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
     const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
     const [pinned, setPinned] = useState(false);
@@ -64,20 +65,12 @@ const Board = () => {
         }
     }, [isRemoved])
 
-
-    useEffect(() => {
-        if (auth && auth?.user && auth?.user?.pinnedBoardIdCollection) {
-            setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
-        }
-
-        if (auth && auth?.user && auth?.user?.username) {
-            socket.emit("joinBoard", { boardId, username: auth?.user?.username });
-        }
-    }, [auth?.user?.username, auth?.user?.pinnedBoardIdCollection, isRemoved]);
-
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
         window.addEventListener('keydown', handleKeyPress);
+
+        socket.emit("joinBoard", { boardId, username: auth?.user?.username });
+        setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
 
         setIsDataLoaded(false);
 
@@ -91,12 +84,9 @@ const Board = () => {
         }
 
         getBoardData().catch(err => {
+            console.log(err);
             setIsDataLoaded(false);
             navigate("/notfound");
-            // if (err.status === 404) {
-            // } else {
-            //     navigate("/login");
-            // }
         });
 
         return () => {

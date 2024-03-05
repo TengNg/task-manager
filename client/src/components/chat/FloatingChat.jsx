@@ -77,7 +77,7 @@ export default function FloatingChat({ setOpen, setOpenChatBox, sendMessage, loa
                     <div style={{ float: "left", clear: "both" }} ref={messageEndRef}></div>
                 </div>
 
-                <div class='px-3'>
+                <div className='px-3'>
                     <ChatInput
                         withSentButton={true}
                         sendMessage={sendMessage}

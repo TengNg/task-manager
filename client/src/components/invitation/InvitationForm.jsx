@@ -26,6 +26,10 @@ const InvitationForm = ({ setOpen }) => {
     const usernameInputRef = useRef();
 
     useEffect(() => {
+        usernameInputRef.current.focus();
+    }, [])
+
+    useEffect(() => {
         let id = null;
         if (errMsg !== "") {
             id = setTimeout(() => {
@@ -138,8 +142,8 @@ const InvitationForm = ({ setOpen }) => {
                         />
 
                         <div className="flex flex-col justify-center">
-                            <p className="text-[0.65rem] text-gray-800 font-semibold">{boardState.board.createdBy.username} {auth?.username === boardState.board.createdBy.username && '(you)'}</p>
-                            <p className="text-[0.65rem] text-gray-800">Owner</p>
+                            <p className="text-[0.65rem] text-gray-800 font-semibold">{boardState.board.createdBy.username} {auth?.user?.username === boardState.board.createdBy.username && '(you)'}</p>
+                            <p className="text-[0.65rem] text-gray-800">owner</p>
                         </div>
                     </div>
 

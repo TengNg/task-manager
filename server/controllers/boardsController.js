@@ -123,6 +123,31 @@ const updateDescription = async (req, res) => {
     return res.status(200).json({ msg: 'board updated', newBoard });
 };
 
+const leaveBoard = async (req, res) => {
+    const { username } = req.user;
+    const { id } = req.params;
+
+    const board = await Board.findById(id);
+    if (!board) {
+        return res.status(404).json({ error: 'Board not found' });
+    }
+
+    const user = await getUser(username);
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    const indexOfMember = board.members.indexOf(user._id);
+    if (indexOfMember !== -1) {
+        board.members.splice(indexOfMember, 1);
+        await board.save();
+    } else {
+        return res.status(404).json({ error: 'Member not found in the board' });
+    }
+
+    res.status(200).json({ msg: 'Member removed from the board successfully' });
+};
+
 const removeMemberFromBoard = async (req, res) => {
     const { username } = req.user;
     const { id, memberName } = req.params;
@@ -273,15 +298,29 @@ const deletePinnedBoard = async (req, res) => {
 };
 
 const updatePinnedBoardsCollection = async (req, res) => {
-    const { username } = req.params;
-    const { pinnedBoardIdCollection } = req.body;
+    const { username } = req.user;
 
     const foundUser = await getUser(username);
     if (!foundUser) return res.status(403).json({ msg: "user not found" });
 
     const result = await User.findOneAndUpdate(
         { username },
-        { pinnedBoardIdCollection },
+        { $unset: { ['pinnedBoardIdCollection']: 1 } },
+        { new: true }
+    ).select('pinnedBoardIdCollection');
+
+    return res.status(200).json({ result });
+};
+
+const cleanPinnedBoardsCollection = async (req, res) => {
+    const { username } = req.user;
+
+    const foundUser = await getUser(username);
+    if (!foundUser) return res.status(403).json({ msg: "user not found" });
+
+    const result = await User.findOneAndUpdate(
+        { username },
+        { pinnedBoardIdCollection: {} },
         { new: true }
     ).select('pinnedBoardIdCollection');
 
@@ -295,6 +334,7 @@ module.exports = {
     updateBoard,
     updateTitle,
     updateDescription,
+    leaveBoard,
     removeMemberFromBoard,
     closeBoard,
     updateLastViewdTimeStamp,
@@ -302,4 +342,5 @@ module.exports = {
     togglePinBoard,
     deletePinnedBoard,
     updatePinnedBoardsCollection,
+    cleanPinnedBoardsCollection,
 };

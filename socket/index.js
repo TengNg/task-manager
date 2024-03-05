@@ -9,8 +9,8 @@ io.on('connection', (socket) => {
         const { boardId, username } = data;
         boardIdMap.set(socket.id, boardId);
         usernameMap[socket.id] = username;
-        console.log(usernameMap);
         socket.join(boardId);
+        console.log(`User with socket ID ${socket.id} joins board with id ${boardId}`);
     });
 
     socket.on("leaveBoard", (_) => {

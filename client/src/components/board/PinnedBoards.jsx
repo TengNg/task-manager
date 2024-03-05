@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark, faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faFloppyDisk, faBroom } from '@fortawesome/free-solid-svg-icons';
 import useAuth from '../../hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +13,7 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
 
     const [pinnedBoards, setPinnedBoards] = useState([]);
     const [saved, setSaved] = useState(false);
+    const [cleaned, setCleaned] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
@@ -29,7 +30,7 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
 
             setPinnedBoards(entries);
         }
-    }, [auth]);
+    }, [auth?.user?.pinnedBoardIdCollection]);
 
     const handleClose = () => {
         setOpen(false);
@@ -90,7 +91,7 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
     };
 
     const handleSavePinnedBoards = async () => {
-        if (saved) return;
+        if (saved || cleaned) return;
 
         try {
             setLoading(true);
@@ -104,6 +105,26 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
             alert('Failed to save');
         }
     }
+
+    const handleCleanPinnedBoards = async () => {
+        if (cleaned) return;
+
+        try {
+            setLoading(true);
+            const res = await axiosPrivate.put(`/boards/pinned/clean`);
+            console.log(res);
+            setAuth(prev => {
+                return { ...prev, user: { ...prev.user, pinnedBoardIdCollection: {} } }
+            });
+
+            setLoading(false);
+            setCleaned(true);
+        } catch (err) {
+            console.log(err);
+            setLoading(false);
+            alert('Failed to clean');
+        }
+    };
 
     return <>
         <div
@@ -122,13 +143,25 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
             <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
                 <div className='flex items-center gap-2'>
                     <span className="font-normal text-[0.85rem] text-gray-700">pinned boards</span>
-                    <button
-                        onClick={handleSavePinnedBoards}
-                        className={`button--style--sm text-[0.85rem] w-[20px] h-[20px] hover:bg-gray-300 rounded ${saved ? 'text-blue-600' : 'text-gray-600'}`}
-                    >
-                        <FontAwesomeIcon icon={faFloppyDisk} />
-                    </button>
-                    { saved && <span class='text-[0.65rem] text-blue-600'>saved!</span> }
+                    <div>
+                        <button
+                            onClick={handleSavePinnedBoards}
+                            className={`button--style--sm text-[0.85rem] w-[20px] h-[20px] hover:bg-gray-300 rounded ${saved ? 'text-blue-600' : 'text-gray-600'}`}
+                        >
+                            <FontAwesomeIcon icon={faFloppyDisk} />
+                        </button>
+                        {saved && <span className='text-[0.65rem] text-blue-600'>saved!</span>}
+                    </div>
+
+                    {
+                        pinnedBoards.length > 0
+                        && <button
+                            onClick={handleCleanPinnedBoards}
+                            className={`button--style--sm text-[0.75rem] px-1 underline hover:bg-pink-200 rounded ${cleaned ? 'text-blue-600' : 'text-pink-600'}`}
+                        >
+                            {cleaned ? 'cleaned!' : 'clean'}
+                        </button>
+                    }
                 </div>
 
                 <button

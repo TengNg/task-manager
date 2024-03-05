@@ -8,12 +8,14 @@ const {
     updateBoard,
     updateTitle,
     updateDescription,
+    leaveBoard,
     removeMemberFromBoard,
     closeBoard,
     copyBoard,
     togglePinBoard,
     deletePinnedBoard,
     updatePinnedBoardsCollection,
+    cleanPinnedBoardsCollection,
 } = require('../../controllers/boardsController');
 
 router.route("/")
@@ -24,6 +26,9 @@ router.route("/:id")
     .get(getBoard)
     .put(updateBoard)
     .delete(closeBoard)
+
+router.route("/:id/members/leave")
+    .put(leaveBoard)
 
 router.route("/:id/members/:memberName")
     .put(removeMemberFromBoard)
@@ -43,5 +48,8 @@ router.route("/:id/pinned")
 
 router.route("/pinned/save")
     .put(updatePinnedBoardsCollection)
+
+router.route("/pinned/clean")
+    .put(cleanPinnedBoardsCollection)
 
 module.exports = router;
