@@ -18,9 +18,9 @@ const Member = ({ auth, user, boardState, handleRemoveMemberFromBoard }) => {
                 </div>
             </div>
             {
-                boardState.board.createdBy.username === auth.username &&
+                boardState.board.createdBy.username === auth?.user?.username &&
                 <button
-                    onClick={() => handleRemoveMemberFromBoard(user._id)}
+                    onClick={() => handleRemoveMemberFromBoard(user.username)}
                     className='text-gray-400 me-2'
                 >
                     <FontAwesomeIcon icon={faXmark} size='lg' />

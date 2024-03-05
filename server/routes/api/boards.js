@@ -25,7 +25,7 @@ router.route("/:id")
     .put(updateBoard)
     .delete(closeBoard)
 
-router.route("/:id/members/:memberId")
+router.route("/:id/members/:memberName")
     .put(removeMemberFromBoard)
 
 router.route("/:id/new-title")
@@ -37,11 +37,11 @@ router.route("/:id/new-description")
 router.route("/copy/:id")
     .post(copyBoard)
 
-router.route("/:id/pinned/u/:username")
+router.route("/:id/pinned")
     .put(togglePinBoard)
     .delete(deletePinnedBoard)
 
-router.route("/pinned/u/:username")
+router.route("/pinned/save")
     .put(updatePinnedBoardsCollection)
 
 module.exports = router;

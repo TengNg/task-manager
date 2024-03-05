@@ -63,13 +63,13 @@ const InvitationForm = ({ setOpen }) => {
         }
     };
 
-    const handleRemoveMemberFromBoard = async (memberId) => {
+    const handleRemoveMemberFromBoard = async (memberName) => {
         try {
             setLoading(true);
-            await axiosPrivate.put(`/boards/${boardState.board._id}/members/${memberId}`);
-            removeMemberFromBoard(memberId);
+            await axiosPrivate.put(`/boards/${boardState.board._id}/members/${memberName}`);
+            removeMemberFromBoard(memberName);
+            socket.emit('kickMember', memberName);
             setLoading(false);
-            socket.emit('removeFromBoard');
             setSuccessMsg("Member removed from board");
         } catch (err) {
             setLoading(false);

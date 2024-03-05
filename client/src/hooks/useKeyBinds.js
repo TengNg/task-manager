@@ -55,7 +55,7 @@ const useKeyBinds = () => {
                 if (
                     !isNaN(numberPressed)
                     && numberPressed >= 1
-                    && numberPressed <= boardIds.length - 1
+                    && numberPressed <= boardIds.length
                     && boardIds[numberPressed - 1]
                 ) {
                     navigate(`/b/${boardIds[numberPressed - 1]}`);

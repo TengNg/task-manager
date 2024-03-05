@@ -11,6 +11,7 @@ import Activities from './pages/Activities'
 import Profile from './pages/Profile'
 import NotFound from './pages/NotFound'
 import TodoList from './pages/TodoList'
+import PersistLogin from './components/auth/PersistLogin'
 // import Missing from './pages/Missing'
 
 const noNavPaths = ["/login", "/register"];
@@ -22,21 +23,24 @@ function App() {
         <>
             {!noNavPaths.includes(pathname) && <NavBar />}
             <Routes>
-                {/* <Route path="/" element={ */}
-                {/*     <RequireAuth> */}
-                {/*         <Home /> */}
-                {/*     </RequireAuth> */}
-                {/* } /> */}
-
-                <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/b/:boardId/" element={<Board />} />
-                <Route path="/boards" element={<Boards />} />
-                <Route path="/todo-list" element={<TodoList />} />
-                <Route path="/activities" element={<Activities />} />
-                <Route path="/u/:username" element={<Profile />} />
-                <Route path="*" element={<NotFound />} />
+
+                <Route element={<PersistLogin />}>
+                    {/* <Route path="/" element={ */}
+                    {/*     <RequireAuth> */}
+                    {/*         <Home /> */}
+                    {/*     </RequireAuth> */}
+                    {/* } /> */}
+
+                    <Route path="/" element={<Home />} />
+                    <Route path="/b/:boardId/" element={<Board />} />
+                    <Route path="/boards" element={<Boards />} />
+                    <Route path="/todo-list" element={<TodoList />} />
+                    <Route path="/activities" element={<Activities />} />
+                    <Route path="/u/:username" element={<Profile />} />
+                    <Route path="*" element={<NotFound />} />
+                </Route>
             </Routes>
         </>
     )

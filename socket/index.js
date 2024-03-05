@@ -2,31 +2,47 @@ const { Server } = require('socket.io');
 const io = new Server({ cors: "http://localhost:5173" });
 
 const boardIdMap = new Map();
-const userIdMap = new Map();
+const usernameMap = {};
 
 io.on('connection', (socket) => {
     socket.on("joinBoard", (data) => {
-        boardIdMap.set(socket.id, data);
-        const boardId = boardIdMap.get(socket.id);
-        socket.join(data);
-        console.log(`User with socket ID ${socket.id} joins ${boardId}`);
+        const { boardId, username } = data;
+        boardIdMap.set(socket.id, boardId);
+        usernameMap[socket.id] = username;
+        console.log(usernameMap);
+        socket.join(boardId);
     });
 
     socket.on("leaveBoard", (_) => {
         const boardId = boardIdMap.get(socket.id);
         if (boardId) {
             socket.leave(boardId);
+            usernameMap.delete(socket.id);
             boardIdMap.delete(socket.id);
-            console.log(`User with socket ID ${socket.id} left board ${boardId}`);
         }
     });
 
-    socket.on("removeFromBoard", (data) => {
+    socket.on("kickMember", (memberName) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
-        socket.leave(boardId);
+        const userSocketId = Object.entries(usernameMap).find(([_, val]) => val === memberName)[0];
+        socket.to(userSocketId).emit("memberKicked");
+    });
+
+    socket.on("closeBoard", (_) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
         boardIdMap.delete(socket.id);
-        console.log(`User with socket ID ${socket.id} get removed ${boardId}`);
+        socket.leave(boardId);
+        socket.to(boardId).emit("boardClosed");
+    });
+
+    socket.on("closeBoard", (_) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        boardIdMap.delete(socket.id);
+        socket.leave(boardId);
+        socket.to(boardId).emit("boardClosed");
     });
 
     socket.on("updateBoardTitle", (data) => {
@@ -117,6 +133,7 @@ io.on('connection', (socket) => {
         if (boardId) {
             socket.leave(boardId);
             boardIdMap.delete(socket.id);
+            delete usernameMap[socket.id];
             console.log(`User with socket ID ${socket.id} disconnected from board ${boardId}`);
         } else {
             console.log(`User with socket ID ${socket.id} disconnected without joining a board`);

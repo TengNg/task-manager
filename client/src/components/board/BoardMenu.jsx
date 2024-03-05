@@ -28,8 +28,8 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm }) => {
 
     const handleLeaveBoard = async () => {
         try {
-            await axiosPrivate.put(`/boards/${boardState.board._id}/members/${auth._id}/`);
-            removeMemberFromBoard(auth._id);
+            await axiosPrivate.put(`/boards/${boardState.board._id}/members/${auth.user._id}/`);
+            removeMemberFromBoard(auth.user._id);
             navigate("/boards");
         } catch (err) {
             console.log(err);
@@ -41,7 +41,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm }) => {
         if (confirm('This will delete this board permanently. Are you sure ?')) {
             try {
                 await axiosPrivate.delete(`/boards/${boardState.board._id}`);
-                socket.emit('removeFromBoard');
+                socket.emit('closeBoard');
                 window.location.reload();
             } catch (err) {
                 console.log(err);
@@ -90,7 +90,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm }) => {
                 >archived items (WIP)</button>
 
                 {
-                    boardState.board.createdBy.username === auth.username
+                    boardState.board.createdBy.username === auth?.user?.username
                         ? <button
                             onClick={() => handleCloseBoard()}
                             className="button--style--dark text-[0.75rem] font-bold text-gray-200"

@@ -125,19 +125,24 @@ const updateDescription = async (req, res) => {
 
 const removeMemberFromBoard = async (req, res) => {
     const { username } = req.user;
-    const { id, memberId } = req.params;
+    const { id, memberName } = req.params;
 
     const board = await Board.findById(id);
     if (!board) {
         return res.status(404).json({ error: 'Board not found' });
     }
 
-    // const foundUser = await getUser(username);
-    // if (board.createdBy.toString() !== foundUser._id.toString()) {
-    //     return res.status(401).json({ error: 'Unauthorized' });
-    // }
+    const user = await getUser(username);
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
 
-    const indexOfMember = board.members.indexOf(memberId);
+    const foundMember = await getUser(memberName);
+    if (board.createdBy.toString() === foundMember._id.toString()) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const indexOfMember = board.members.indexOf(foundMember._id);
     if (indexOfMember !== -1) {
         board.members.splice(indexOfMember, 1);
         await board.save();
@@ -222,7 +227,8 @@ const copyBoard = async (req, res) => {
 };
 
 const togglePinBoard = async (req, res) => {
-    const { username, id } = req.params;
+    const { username } = req.user;
+    const { id } = req.params;
 
     const foundBoard = await Board.findById(id);
     const foundUser = await getUser(username);
@@ -248,13 +254,11 @@ const togglePinBoard = async (req, res) => {
 };
 
 const deletePinnedBoard = async (req, res) => {
-    const { username, id } = req.params;
+    const { username } = req.user;
+    const { id } = req.params;
 
-    const foundBoard = await Board.findById(id);
     const foundUser = await getUser(username);
-
     if (!foundUser) return res.status(403).json({ msg: "user not found" });
-    if (!foundBoard) return res.status(403).json({ msg: "board not found" });
 
     if (foundUser.pinnedBoardIdCollection && foundUser.pinnedBoardIdCollection.has(id)) {
         const result = await User.findOneAndUpdate(

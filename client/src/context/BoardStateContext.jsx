@@ -14,8 +14,12 @@ export const BoardStateContextProvider = ({ children }) => {
 
     useEffect(() => {
         if (socket) {
-            socket.on("removedFromBoard", (_) => {
+            socket.on("boardClosed", (_) => {
                 setIsRemoved(true);
+            });
+
+            socket.on("memberKicked", (_) => {
+                window.location.reload();
             });
 
             socket.on("getBoardWithMovedListAdded", (data) => {
@@ -94,6 +98,7 @@ export const BoardStateContextProvider = ({ children }) => {
             });
         }
         return () => {
+            // socket.off('receiveMessage');
             socket.off();
         };
     }, []);
@@ -214,13 +219,13 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
-    const removeMemberFromBoard = (memberId) => {
+    const removeMemberFromBoard = (memberName) => {
         setBoardState(prev => {
             return {
                 ...prev,
                 board: {
                     ...prev.board,
-                    members: prev.board.members.filter(member => member._id !== memberId)
+                    members: prev.board.members.filter(member => member.username !== memberName)
                 }
             };
         });

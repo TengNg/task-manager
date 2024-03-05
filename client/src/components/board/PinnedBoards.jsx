@@ -72,7 +72,7 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
         try {
             setLoading(true);
 
-            const response = await axiosPrivate.delete(`/boards/${boardId}/pinned/u/${auth?.user?.username}`);
+            const response = await axiosPrivate.delete(`/boards/${boardId}/pinned`);
             setAuth(prev => {
                 return { ...prev, user: { ...prev.user, pinnedBoardIdCollection: response?.data?.result?.pinnedBoardIdCollection } }
             });
@@ -95,7 +95,7 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
         try {
             setLoading(true);
             const boards = auth?.user?.pinnedBoardIdCollection;
-            await axiosPrivate.put(`/boards/pinned/u/${auth?.user?.username}`, JSON.stringify({ pinnedBoardIdCollection: boards }));
+            await axiosPrivate.put(`/boards/pinned/save`, JSON.stringify({ pinnedBoardIdCollection: boards }));
             setLoading(false);
             setSaved(true);
         } catch (err) {

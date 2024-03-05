@@ -11,7 +11,6 @@ import CopyBoardForm from "../components/board/CopyBoardForm";
 import FloatingChat from "../components/chat/FloatingChat";
 import MoveListForm from "../components/list/MoveListForm";
 import PinnedBoards from "../components/board/PinnedBoards";
-import Loading from "../components/ui/Loading";
 import useAuth from "../hooks/useAuth";
 import useKeyBinds from "../hooks/useKeyBinds";
 
@@ -61,19 +60,24 @@ const Board = () => {
 
     useEffect(() => {
         if (isRemoved) {
-            window.location.reload();
+            navigate('/notfound');
         }
     }, [isRemoved])
 
-    useEffect(() => {
-        setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
-    }, [auth]);
 
     useEffect(() => {
-        socket.emit("joinBoard", boardId);
-        window.addEventListener('keydown', handleKeyPress);
+        if (auth && auth?.user && auth?.user?.pinnedBoardIdCollection) {
+            setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
+        }
 
+        if (auth && auth?.user && auth?.user?.username) {
+            socket.emit("joinBoard", { boardId, username: auth?.user?.username });
+        }
+    }, [auth?.user?.username, auth?.user?.pinnedBoardIdCollection, isRemoved]);
+
+    useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        window.addEventListener('keydown', handleKeyPress);
 
         setIsDataLoaded(false);
 
@@ -87,9 +91,12 @@ const Board = () => {
         }
 
         getBoardData().catch(err => {
-            console.log(err);
             setIsDataLoaded(false);
-            navigate("/login");
+            navigate("/notfound");
+            // if (err.status === 404) {
+            // } else {
+            //     navigate("/login");
+            // }
         });
 
         return () => {
@@ -155,7 +162,9 @@ const Board = () => {
 
     const handlePinBoard = async () => {
         try {
-            const response = await axiosPrivate.put(`/boards/${boardState.board._id}/pinned/u/${auth?.user?.username}`);
+            const response = await axiosPrivate.put(`/boards/${boardState.board._id}/pinned/`);
+            console.log(response);
+
             const result = response.data?.result?.pinnedBoardIdCollection?.hasOwnProperty(boardId);
             setPinned(result);
             setAuth(prev => {
