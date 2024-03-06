@@ -142,7 +142,7 @@ const leaveBoard = async (req, res) => {
         board.members.splice(indexOfMember, 1);
         await board.save();
     } else {
-        return res.status(404).json({ error: 'Member not found in the board' });
+        return res.status(404).json({ error: 'Member not found' });
     }
 
     res.status(200).json({ msg: 'Member removed from the board successfully' });

@@ -6,9 +6,16 @@ import dateFormatter from '../utils/dateFormatter';
 import Avatar from '../components/avatar/Avatar';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import useAuth from '../hooks/useAuth';
 
 const Activities = () => {
-    const { setPendingInvitations } = useBoardState();
+    const {
+        socket,
+        setPendingInvitations
+    } = useBoardState();
+
+    const { auth } = useAuth();
+
     const [invitations, setInvitations] = useState([]);
     const axiosPrivate = useAxiosPrivate();
 
@@ -29,10 +36,14 @@ const Activities = () => {
 
     const handleAcceptInvitation = async (invitationId) => {
         try {
-            await axiosPrivate.put(`/invitations/${invitationId}/accept`, JSON.stringify({ id: invitationId }));
+            const response = await axiosPrivate.put(`/invitations/${invitationId}/accept`, JSON.stringify({ id: invitationId }));
+            const boardId = response.data.invitation.boardId;
+
             setInvitations(prev => {
                 return prev.map(item => item._id === invitationId ? { ...item, status: 'accepted' } : item);
             });
+
+            socket.emit('acceptInvitation', { username: auth?.user?.username, boardId, profileImage: auth?.user?.profileImage });
 
             setPendingInvitations(prev => prev - 1)
         } catch (err) {

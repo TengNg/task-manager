@@ -153,8 +153,6 @@ const Board = () => {
     const handlePinBoard = async () => {
         try {
             const response = await axiosPrivate.put(`/boards/${boardState.board._id}/pinned/`);
-            console.log(response);
-
             const result = response.data?.result?.pinnedBoardIdCollection?.hasOwnProperty(boardId);
             setPinned(result);
             setAuth(prev => {

@@ -20,7 +20,6 @@ const InvitationForm = ({ setOpen }) => {
 
     const [username, setUsername] = useState("");
     const [errMsg, setErrMsg] = useState("");
-    const [successMsg, setSuccessMsg] = useState("");
     const [loading, setLoading] = useState(false);
 
     const usernameInputRef = useRef();
@@ -60,10 +59,9 @@ const InvitationForm = ({ setOpen }) => {
             await axiosPrivate.post(`/invitations`, JSON.stringify({ boardId: boardState.board._id, receiverName }));
             setUsername("");
             setLoading(false);
-            setSuccessMsg("Invitation sent");
         } catch (err) {
             setLoading(false);
-            setErrMsg(err.response.data.msg);
+            setErrMsg(err?.response?.data?.msg || 'Failed to send invitation');
         }
     };
 
@@ -74,11 +72,9 @@ const InvitationForm = ({ setOpen }) => {
             removeMemberFromBoard(memberName);
             socket.emit('kickMember', memberName);
             setLoading(false);
-            setSuccessMsg("Member removed from board");
         } catch (err) {
             setLoading(false);
-            setErrMsg(err.response.data.toString());
-            setErrMsg("Failed to remove member from board");
+            setErrMsg(err?.response?.data?.error || 'Failed to remove member');
         }
     };
 
@@ -129,7 +125,6 @@ const InvitationForm = ({ setOpen }) => {
                     </button>
 
                     {errMsg && <p className="absolute -top-2 left-4 text-center h-3 text-red-700 text-[0.65rem] font-semibold">{errMsg}</p>}
-                    {successMsg && <p className="absolute -top-2 left-4 text-center h-3 text-blue-700 text-[0.65rem] font-semibold">{successMsg}</p>}
                 </div>
 
                 <div className="flex flex-col gap-3 w-full max-w-[400px] overflow-auto border-[1px] border-t-gray-600 p-4">

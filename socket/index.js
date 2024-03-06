@@ -22,19 +22,21 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on("acceptInvitation", (data) => {
+        const { boardId, username, profileImage } = data;
+        if (!boardId) return;
+        socket.to(boardId).emit("invitationAccepted", { username, profileImage });
+    });
+
     socket.on("kickMember", (memberName) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
-        const userSocketId = Object.entries(usernameMap).find(([_, val]) => val === memberName)[0];
-        socket.to(userSocketId).emit("memberKicked");
-    });
 
-    socket.on("closeBoard", (_) => {
-        const boardId = boardIdMap.get(socket.id);
-        if (!boardId) return;
-        boardIdMap.delete(socket.id);
-        socket.leave(boardId);
-        socket.to(boardId).emit("boardClosed");
+        const userEntry = Object.entries(usernameMap).find(([_userId, username]) => username === memberName);
+        if (!userEntry) return;
+
+        const userSocketId = userEntry[0];
+        socket.to(userSocketId).emit("memberKicked");
     });
 
     socket.on("closeBoard", (_) => {
