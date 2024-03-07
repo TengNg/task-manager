@@ -95,10 +95,6 @@ const Board = () => {
     }, [pathname]);
 
     const handleKeyPress = (e) => {
-        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-            e.preventDefault();
-        }
-
         const isInputField = e.target.tagName.toLowerCase() === 'input';
         const isTextAreaField = e.target.tagName.toLowerCase() === 'textarea';
 
@@ -243,12 +239,12 @@ const Board = () => {
                 <div className="fixed flex justify-between w-[100vw] z-20">
                     <div className="flex-1 max-w-[70vw] justify-start">
                         <input
-                            maxLength={80}
-                            className={`flex-1 overflow-hidden whitespace-nowrap text-ellipsis border-b-[3px] bg-gray-100 border-black text-black py-1 font-bold select-none font-mono mb-2 focus:outline-none`}
+                            maxLength={70}
+                            className={`flex-1 overflow-hidden text-gray-700 whitespace-nowrap text-ellipsis border-b-[3px] bg-gray-100 border-gray-700 py-1 font-bold select-none font-mono mb-2 focus:outline-none`}
                             style={{
                                 width: `${boardState.board.title.length}ch`,
                                 minWidth: '1ch',
-                                maxWidth: '100%',
+                                maxWidth: '280px',
                             }}
                             onKeyDown={(e) => handleBoardTitleInputOnKeyDown(e)}
                             onFocus={(e) => e.target.select()}

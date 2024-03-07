@@ -27,12 +27,6 @@ function App() {
                 <Route path="/register" element={<Register />} />
 
                 <Route element={<PersistLogin />}>
-                    {/* <Route path="/" element={ */}
-                    {/*     <RequireAuth> */}
-                    {/*         <Home /> */}
-                    {/*     </RequireAuth> */}
-                    {/* } /> */}
-
                     <Route path="/" element={<Home />} />
                     <Route path="/b/:boardId/" element={<Board />} />
                     <Route path="/boards" element={<Boards />} />

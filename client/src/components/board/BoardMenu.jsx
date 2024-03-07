@@ -42,7 +42,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm }) => {
             try {
                 await axiosPrivate.delete(`/boards/${boardState.board._id}`);
                 socket.emit('closeBoard');
-                window.location.reload();
+                navigate('/notfound');
             } catch (err) {
                 console.log(err);
             }
