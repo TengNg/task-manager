@@ -41,7 +41,19 @@ const sendMessage = async (req, res) => {
 };
 
 const clearMessages = async (req, res) => {
-    const { boardId } = req.body;
+    const { username } = req.user;
+    const { boardId } = req.params;
+
+    const foundUser = await User.findOne({ username });
+    if (!foundUser) return res.status(403).json({ msg: "cannot send message, user not found" });
+
+    const foundBoard = await Board.findById(boardId);
+    if (!foundBoard) return res.status(403).json({ msg: "cannot send message, board not found" });
+
+    if (foundBoard.createdBy.toString() !== foundUser._id.toString()) {
+        return res.status(401).json({ msg: 'Not authorize' });
+    }
+
     await Chat.deleteMany({ boardId });
     res.status(200).json({ msg: "messages deleted" });
 };

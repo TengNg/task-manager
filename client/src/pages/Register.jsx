@@ -115,7 +115,7 @@ export default function Register() {
                     />
 
                     <div className='h-[1rem] w-[100%] my-1 flex--center'>
-                        {success === false && <p className='text-xs text-red-700 top-[1rem] right-[1rem] font-bold select-none'>{errMsg}</p>}
+                        {success === false && <p className='text-[0.65rem] text-red-700 top-[1rem] right-[1rem] font-bold select-none'>{errMsg}</p>}
                     </div>
 
                     <button className='button--style--dark'>Sign up</button>

@@ -178,6 +178,15 @@ const Board = () => {
         }
     };
 
+    const handleClearChatMessages = async () => {
+        try {
+            const response = await axiosPrivate.delete(`/chats/b/${boardState.board._id}`);
+            console.log(response.data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     if (isDataLoaded === false) {
         return <div className="font-bold mx-auto text-center mt-20 text-gray-600">Loading...</div>
     }
@@ -221,6 +230,7 @@ const Board = () => {
                     setOpenFloat={setOpenFloatingChat}
                     sendMessage={handleSendMessage}
                     loading={sentChatLoading}
+                    clearMessages={handleClearChatMessages}
                 />
             }
 
@@ -232,6 +242,7 @@ const Board = () => {
                     setOpenChatBox={setOpenChatBox}
                     sendMessage={handleSendMessage}
                     loading={sentChatLoading}
+                    clearMessages={handleClearChatMessages}
                 />
             }
 

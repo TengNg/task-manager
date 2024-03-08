@@ -191,7 +191,7 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
                                                 ref={provided2.innerRef}
                                                 key={boardId}
                                                 index={index}
-                                                className='relative top-left-auto mb-3 board--style--sm bg-gray-50 text-[0.75rem] flex-1 border-[2px] border-gray-600 shadow-gray-600 p-3'
+                                                className='relative max-w-[300px] overflow-hidden whitespace-nowrap text-ellipsis top-left-auto mb-3 board--style--sm bg-gray-50 text-[0.75rem] flex-1 border-[2px] border-gray-600 shadow-gray-600 p-3'
                                                 onClick={() => handleOpenBoard(boardId)}
                                             >
                                                 {boardTitle}
