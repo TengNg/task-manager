@@ -182,8 +182,12 @@ const Board = () => {
 
     const handleClearChatMessages = async () => {
         try {
-            const response = await axiosPrivate.delete(`/chats/b/${boardState.board._id}`);
-            console.log(response.data);
+            if (confirm('All chat messages will be clear, are you sure ?')) {
+                setSentChatLoading(true);
+                await axiosPrivate.delete(`/chats/b/${boardState.board._id}`);
+                setChats([]);
+                setSentChatLoading(false);
+            }
         } catch (err) {
             console.log(err);
         }

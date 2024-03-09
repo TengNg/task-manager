@@ -35,7 +35,6 @@ const useKeyBinds = () => {
 
                 if (key === 'l') {
                     setOpenAddList(prev => !prev);
-                    console.log('something')
                     return;
                 }
 
