@@ -23,9 +23,16 @@ const getBoards = async (req, res) => {
         ]
     });
 
+    if (!foundUser.recentlyViewedBoardId) return res.json({ boards });
+
+    const foundBoard = await Board.findById(foundUser.recentlyViewedBoardId);
+    if (!foundUser.recentlyViewedBoardId) return res.json({ boards });
+
     let recentlyViewedBoard = undefined;
-    if (foundUser.recentlyViewedBoardId) {
-        recentlyViewedBoard = await Board.findById(foundUser.recentlyViewedBoardId);
+    const indexOfMember = foundBoard.members.indexOf(foundUser._id);
+    const isOwner = foundBoard.createdBy.toString() === foundUser._id.toString();
+    if (indexOfMember !== -1 || isOwner) {
+        recentlyViewedBoard = foundBoard;
     }
 
     return res.json({ boards, recentlyViewedBoard });
