@@ -26,7 +26,7 @@ const getBoards = async (req, res) => {
     if (!foundUser.recentlyViewedBoardId) return res.json({ boards });
 
     const foundBoard = await Board.findById(foundUser.recentlyViewedBoardId);
-    if (!foundUser.recentlyViewedBoardId) return res.json({ boards });
+    if (!foundBoard) return res.json({ boards });
 
     let recentlyViewedBoard = undefined;
     const indexOfMember = foundBoard.members.indexOf(foundUser._id);

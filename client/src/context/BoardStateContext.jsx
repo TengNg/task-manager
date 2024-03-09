@@ -19,7 +19,12 @@ export const BoardStateContextProvider = ({ children }) => {
             });
 
             socket.on("memberKicked", (_) => {
-                navigate('/notfound');
+                window.location.reload();
+            });
+
+            socket.on("memberLeaved", (data) => {
+                const { username } = data;
+                removeMemberFromBoard(username);
             });
 
             socket.on("invitationAccepted", (data) => {

@@ -13,13 +13,11 @@ io.on('connection', (socket) => {
         console.log(`User with socket ID ${socket.id} joins board with id ${boardId}`);
     });
 
-    socket.on("leaveBoard", (_) => {
+    socket.on("leaveBoard", (data) => {
         const boardId = boardIdMap.get(socket.id);
-        if (boardId) {
-            socket.leave(boardId);
-            usernameMap.delete(socket.id);
-            boardIdMap.delete(socket.id);
-        }
+        if (!boardId) return;
+        const { username } = data;
+        socket.to(boardId).emit("memberLeaved", { username });
     });
 
     socket.on("acceptInvitation", (data) => {

@@ -30,6 +30,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm }) => {
         try {
             await axiosPrivate.put(`/boards/${boardState.board._id}/members/leave`);
             removeMemberFromBoard(auth?.user?.username);
+            socket.emit("leaveBoard", { username: auth?.user?.username });
             navigate("/boards");
         } catch (err) {
             console.log(err);
