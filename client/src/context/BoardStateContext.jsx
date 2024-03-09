@@ -22,6 +22,16 @@ export const BoardStateContextProvider = ({ children }) => {
                 window.location.reload();
             });
 
+            socket.on("memberLeaved", (data) => {
+                const { username } = data;
+                removeMemberFromBoard(username);
+            });
+
+            socket.on("invitationAccepted", (data) => {
+                const { username, profileImage: _ } = data;
+                addMemberToBoard({ username });
+            });
+
             socket.on("getBoardWithMovedListAdded", (data) => {
                 const { list, cards, index } = data;
 
@@ -231,6 +241,18 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
+    const addMemberToBoard = (member) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                board: {
+                    ...prev.board,
+                    members: [...prev.board.members, { username: member.username, profileImage: member.profileImage }]
+                }
+            };
+        });
+    };
+
     return (
         <BoardStateContext.Provider
             value={{
@@ -255,6 +277,7 @@ export const BoardStateContextProvider = ({ children }) => {
                 setPendingInvitations,
 
                 removeMemberFromBoard,
+                addMemberToBoard,
 
                 setChats,
                 chats,

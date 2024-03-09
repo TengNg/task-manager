@@ -1,6 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const SIZE = {
     'xsm': 'w-[20px] h-[20px]',
@@ -60,7 +58,7 @@ const Avatar = ({
                 className={`relative ${AVATAR_BG_COLORS[bgColor]} text-white flex--center text-[0.8rem] rounded-full bg-center bg-cover overflow-hidden ${clickable && 'cursor-pointer'} ${SIZE[size]}`}>
                 {
                     !profileImage
-                        ? <div className="font-bold flex--center select-none">{username.charAt(0).toUpperCase()}</div>
+                        ? <div className="font-bold flex--center select-none">{username?.charAt(0)?.toUpperCase()}</div>
                         : <img className="flex--center h-[100%] w-[100%]" />
                 }
 
@@ -77,26 +75,19 @@ const Avatar = ({
                     className='box--style--sm absolute flex flex-col border-[2px] border-black p-3 pe-8 select-none gap-4 bg-gray-100 left-1 -bottom-1 translate-y-[100%] z-30'
                     onBlur={() => setCollapse(true)}
                 >
-
-                    <button
-                        className="absolute top-0 right-1 text-[0.8rem] text-gray-600"
-                        onClick={() => setCollapse(true)}
-                    >
-                        <FontAwesomeIcon icon={faXmark} />
-                    </button>
-
-                    <div className="flex gap-1">
+                    <div className="flex gap-2 items-center">
                         <div
-                            className={`bg-blue-500 text-white flex--center w-[40px] h-[40px] rounded-full bg-center bg-cover overflow-hidden cursor-pointer`}>
+                            className={`bg-blue-500 text-white flex--center w-[45px] h-[45px] rounded-full bg-center bg-cover overflow-hidden cursor-pointer`}>
                             {
                                 !profileImage
-                                    ? <div className="font-bold flex--center select-none">{username.charAt(0).toUpperCase()}</div>
+                                    ? <div className="font-bold flex--center select-none">{username?.charAt(0)?.toUpperCase()}</div>
                                     : <img className="flex--center h-[100%] w-[100%]" />
                             }
                         </div>
 
-                        <div className='select-none font-semibold max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis'>
-                            <p className='font-bold'>@{username}</p>
+                        <div className='select-none text-gray-700 max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis'>
+                            <p className='text-[0.85rem] font-semibold'>@{username}</p>
+                            <p className='text-[0.65rem]'>{!isAdmin ? 'member' : 'owner'}</p>
                         </div>
                     </div>
 

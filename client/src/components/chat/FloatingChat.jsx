@@ -6,11 +6,17 @@ import { faXmark, faCompress } from '@fortawesome/free-solid-svg-icons';
 import Chat from './Chat';
 import ChatInput from './ChatInput';
 import Loading from '../ui/Loading';
+import useAuth from '../../hooks/useAuth';
 
-export default function FloatingChat({ setOpen, setOpenChatBox, sendMessage, loading }) {
+export default function FloatingChat({ setOpen, setOpenChatBox, sendMessage, loading, clearMessages }) {
     const {
         chats,
+        boardState,
     } = useBoardState();
+
+    const {
+        auth
+    } = useAuth();
 
     const messageEndRef = useRef();
 
@@ -25,6 +31,10 @@ export default function FloatingChat({ setOpen, setOpenChatBox, sendMessage, loa
     const handleCloseFloatAndOpenChatBox = () => {
         setOpen(false);
         setOpenChatBox(true);
+    };
+
+    const handleClearMessages = () => {
+        clearMessages();
     };
 
     return (
@@ -47,6 +57,12 @@ export default function FloatingChat({ setOpen, setOpenChatBox, sendMessage, loa
                     <div>Chats</div>
 
                     <div className='d-flex justify-center items-center'>
+                        {
+                            auth.user?.username === boardState.board.createdBy.username &&
+                            <button
+                                onClick={handleClearMessages}
+                                className='me-6 text-[0.75rem] border-[2px] border-rose-400 text-rose-400 px-2 font-semibold'>Clear</button>
+                        }
                         <button
                             onClick={handleCloseFloatAndOpenChatBox}
                             className="text-[0.75rem] py-1 text-gray-500 hover:text-blue-400 transition-all">
@@ -77,7 +93,7 @@ export default function FloatingChat({ setOpen, setOpenChatBox, sendMessage, loa
                     <div style={{ float: "left", clear: "both" }} ref={messageEndRef}></div>
                 </div>
 
-                <div class='px-3'>
+                <div className='px-3'>
                     <ChatInput
                         withSentButton={true}
                         sendMessage={sendMessage}

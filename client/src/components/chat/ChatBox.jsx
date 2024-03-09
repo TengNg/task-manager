@@ -7,7 +7,7 @@ import useBoardState from '../../hooks/useBoardState';
 import useAuth from '../../hooks/useAuth';
 import Loading from '../ui/Loading';
 
-const ChatBox = ({ setOpen, setOpenFloat, sendMessage, loading }) => {
+const ChatBox = ({ setOpen, setOpenFloat, sendMessage, clearMessages, loading }) => {
     const {
         boardState,
         chats,
@@ -26,6 +26,10 @@ const ChatBox = ({ setOpen, setOpenFloat, sendMessage, loading }) => {
         setOpenFloat(true);
     };
 
+    const handleClearMessages = () => {
+        clearMessages();
+    };
+
     return (
         <div className="fixed flex flex-col border-[2px] border-black right-1 bottom-1 bg-white w-[300px] h-[400px] overflow-auto z-10">
             <Loading
@@ -35,17 +39,21 @@ const ChatBox = ({ setOpen, setOpenFloat, sendMessage, loading }) => {
                 fontSize={'0.75rem'}
             />
 
-            <div className='relative flex items-center gap-3 border-b-2 border-black bg-white px-2 py-1'>
+            <div className='relative flex items-center gap-3 border-b-2 border-black bg-white px-3 py-2'>
                 <p className='flex-1 font-semibold text-gray-600'>Chats</p>
+
                 {
-                    auth.username === boardState.board.createdBy.username &&
-                    <button className='text-[0.75rem] border-[2px] border-rose-400 text-rose-400 px-2 font-semibold'>Clear</button>
+                    auth.user?.username === boardState.board.createdBy.username &&
+                    <button
+                        onClick={handleClearMessages}
+                        className='text-[0.65rem] border-[2px] border-rose-400 text-rose-400 px-2 me-3 font-semibold'>Clear</button>
                 }
+
                 <button
                     onClick={handleOpenFloat}
                     className="text-gray-600 hover:text-blue-400 transition-all"
                 >
-                    <FontAwesomeIcon icon={faExpand} size='lg'/>
+                    <FontAwesomeIcon icon={faExpand} size='lg' />
                 </button>
 
                 <button

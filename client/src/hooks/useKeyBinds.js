@@ -9,40 +9,72 @@ const useKeyBinds = () => {
     const [openPinnedBoards, setOpenPinnedBoards] = useState(false);
     const [openChatBox, setOpenChatBox] = useState(false);
     const [openFloatingChat, setOpenFloatingChat] = useState(false);
+    const [openInvitationForm, setOpenInvitationForm] = useState(false);
+    const [openAddList, setOpenAddList] = useState(false);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
-            if (event.ctrlKey && event.key === ';') {
-                setOpenChatBox(prev => !prev);
-                return;
+            const key = event.key;
+
+            if (event.ctrlKey) {
+                if (key === 'e'
+                    || key === 'x'
+                    || key === 'm'
+                    || key === 'i'
+                    || key === 'l'
+                    || key === 's') {
+                    event.preventDefault();
+                }
             }
 
-            if (event.key === 'x' && openChatBox) {
-                setOpenChatBox(false);
-                setOpenFloatingChat(true);
-                return;
-            }
+            if (event.ctrlKey) {
+                if (key === 'i') {
+                    setOpenInvitationForm(prev => !prev);
+                    return;
+                }
 
-            if (event.key === 'm' && openFloatingChat) {
-                setOpenFloatingChat(false);
-                setOpenChatBox(true);
-                return;
-            }
+                if (key === 'l') {
+                    setOpenAddList(prev => !prev);
+                    return;
+                }
 
-            if (event.ctrlKey && event.key === 'e') {
-                setOpenPinnedBoards(prev => !prev);
-                return;
-            }
+                if (key === ';') {
+                    setOpenChatBox(prev => !prev);
+                    return;
+                }
 
-            if (openFloatingChat) {
-                if (event.key === 'Escape') {
+                if (key === 'x' && openChatBox) {
+                    setOpenChatBox(false);
+                    setOpenFloatingChat(true);
+                    return;
+                }
+
+                if (key === 'm' && openFloatingChat) {
                     setOpenFloatingChat(false);
                     setOpenChatBox(true);
                     return;
                 }
+
+                if (key === 'e') {
+                    setOpenPinnedBoards(prev => !prev);
+                    return;
+                }
+
+                if (key === 'e') {
+                    setOpenPinnedBoards(prev => !prev);
+                    return;
+                }
             }
 
-            if (openPinnedBoards && event.key === 'Escape') {
+            if (key === 'Escape') {
+                setOpenFloatingChat(false);
+                setOpenChatBox(false);
+                setOpenPinnedBoards(false);
+                setOpenInvitationForm(false);
+                return;
+            }
+
+            if (openPinnedBoards && key === 'Escape') {
                 setOpenPinnedBoards(false);
                 return;
             }
@@ -88,6 +120,10 @@ const useKeyBinds = () => {
         setOpenChatBox,
         openFloatingChat,
         setOpenFloatingChat,
+        openInvitationForm,
+        setOpenInvitationForm,
+        openAddList,
+        setOpenAddList,
     };
 }
 

@@ -1,5 +1,5 @@
 const { Server } = require('socket.io');
-const io = new Server({ cors: "http://localhost:5173" });
+const io = new Server({ cors: "*" });
 
 const boardIdMap = new Map();
 const usernameMap = {};
@@ -9,32 +9,32 @@ io.on('connection', (socket) => {
         const { boardId, username } = data;
         boardIdMap.set(socket.id, boardId);
         usernameMap[socket.id] = username;
-        console.log(usernameMap);
         socket.join(boardId);
+        console.log(`User with socket ID ${socket.id} joins board with id ${boardId}`);
     });
 
-    socket.on("leaveBoard", (_) => {
+    socket.on("leaveBoard", (data) => {
         const boardId = boardIdMap.get(socket.id);
-        if (boardId) {
-            socket.leave(boardId);
-            usernameMap.delete(socket.id);
-            boardIdMap.delete(socket.id);
-        }
+        if (!boardId) return;
+        const { username } = data;
+        socket.to(boardId).emit("memberLeaved", { username });
+    });
+
+    socket.on("acceptInvitation", (data) => {
+        const { boardId, username, profileImage } = data;
+        if (!boardId) return;
+        socket.to(boardId).emit("invitationAccepted", { username, profileImage });
     });
 
     socket.on("kickMember", (memberName) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
-        const userSocketId = Object.entries(usernameMap).find(([_, val]) => val === memberName)[0];
-        socket.to(userSocketId).emit("memberKicked");
-    });
 
-    socket.on("closeBoard", (_) => {
-        const boardId = boardIdMap.get(socket.id);
-        if (!boardId) return;
-        boardIdMap.delete(socket.id);
-        socket.leave(boardId);
-        socket.to(boardId).emit("boardClosed");
+        const userEntry = Object.entries(usernameMap).find(([_userId, username]) => username === memberName);
+        if (!userEntry) return;
+
+        const userSocketId = userEntry[0];
+        socket.to(userSocketId).emit("memberKicked");
     });
 
     socket.on("closeBoard", (_) => {

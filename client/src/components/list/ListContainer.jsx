@@ -7,7 +7,7 @@ import AddList from './AddList';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { lexorank } from '../../utils/class/Lexorank';
 
-const ListContainer = () => {
+const ListContainer = ({ openAddList, setOpenAddList }) => {
     const {
         boardState,
         setBoardState,
@@ -157,7 +157,10 @@ const ListContainer = () => {
 
                         {provided.placeholder}
 
-                        <AddList />
+                        <AddList
+                            open={openAddList}
+                            setOpen={setOpenAddList}
+                        />
                     </div>
                 )}
             </Droppable>

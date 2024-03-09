@@ -40,9 +40,12 @@ const Board = () => {
         setOpenChatBox,
         openFloatingChat,
         setOpenFloatingChat,
+        openInvitationForm,
+        setOpenInvitationForm,
+        openAddList,
+        setOpenAddList,
     } = useKeyBinds();
 
-    const [openInvitationForm, setOpenInvitationForm] = useState(false);
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
     const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
     const [pinned, setPinned] = useState(false);
@@ -64,20 +67,12 @@ const Board = () => {
         }
     }, [isRemoved])
 
-
-    useEffect(() => {
-        if (auth && auth?.user && auth?.user?.pinnedBoardIdCollection) {
-            setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
-        }
-
-        if (auth && auth?.user && auth?.user?.username) {
-            socket.emit("joinBoard", { boardId, username: auth?.user?.username });
-        }
-    }, [auth?.user?.username, auth?.user?.pinnedBoardIdCollection, isRemoved]);
-
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
         window.addEventListener('keydown', handleKeyPress);
+
+        socket.emit("joinBoard", { boardId, username: auth?.user?.username });
+        setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
 
         setIsDataLoaded(false);
 
@@ -91,12 +86,9 @@ const Board = () => {
         }
 
         getBoardData().catch(err => {
+            console.log(err);
             setIsDataLoaded(false);
             navigate("/notfound");
-            // if (err.status === 404) {
-            // } else {
-            //     navigate("/login");
-            // }
         });
 
         return () => {
@@ -105,10 +97,6 @@ const Board = () => {
     }, [pathname]);
 
     const handleKeyPress = (e) => {
-        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-            e.preventDefault();
-        }
-
         const isInputField = e.target.tagName.toLowerCase() === 'input';
         const isTextAreaField = e.target.tagName.toLowerCase() === 'textarea';
 
@@ -163,8 +151,6 @@ const Board = () => {
     const handlePinBoard = async () => {
         try {
             const response = await axiosPrivate.put(`/boards/${boardState.board._id}/pinned/`);
-            console.log(response);
-
             const result = response.data?.result?.pinnedBoardIdCollection?.hasOwnProperty(boardId);
             setPinned(result);
             setAuth(prev => {
@@ -191,6 +177,19 @@ const Board = () => {
                 return [...prev, { content: value, error: true, sentBy: auth }];
             });
             setSentChatLoading(false);
+        }
+    };
+
+    const handleClearChatMessages = async () => {
+        try {
+            if (confirm('All chat messages will be clear, are you sure ?')) {
+                setSentChatLoading(true);
+                await axiosPrivate.delete(`/chats/b/${boardState.board._id}`);
+                setChats([]);
+                setSentChatLoading(false);
+            }
+        } catch (err) {
+            console.log(err);
         }
     };
 
@@ -237,6 +236,7 @@ const Board = () => {
                     setOpenFloat={setOpenFloatingChat}
                     sendMessage={handleSendMessage}
                     loading={sentChatLoading}
+                    clearMessages={handleClearChatMessages}
                 />
             }
 
@@ -248,6 +248,7 @@ const Board = () => {
                     setOpenChatBox={setOpenChatBox}
                     sendMessage={handleSendMessage}
                     loading={sentChatLoading}
+                    clearMessages={handleClearChatMessages}
                 />
             }
 
@@ -255,12 +256,12 @@ const Board = () => {
                 <div className="fixed flex justify-between w-[100vw] z-20">
                     <div className="flex-1 max-w-[70vw] justify-start">
                         <input
-                            maxLength={80}
-                            className={`flex-1 overflow-hidden whitespace-nowrap text-ellipsis border-b-[3px] bg-gray-100 border-black text-black py-1 font-bold select-none font-mono mb-2 focus:outline-none`}
+                            maxLength={70}
+                            className={`flex-1 overflow-hidden text-gray-700 whitespace-nowrap text-ellipsis border-b-[3px] bg-gray-100 border-gray-700 py-1 font-bold select-none font-mono mb-2 focus:outline-none`}
                             style={{
                                 width: `${boardState.board.title.length}ch`,
                                 minWidth: '1ch',
-                                maxWidth: '100%',
+                                maxWidth: '280px',
                             }}
                             onKeyDown={(e) => handleBoardTitleInputOnKeyDown(e)}
                             onFocus={(e) => e.target.select()}
@@ -311,7 +312,10 @@ const Board = () => {
 
                 </div>
 
-                <ListContainer />
+                <ListContainer
+                    openAddList={openAddList}
+                    setOpenAddList={setOpenAddList}
+                />
 
                 <div className="fixed top-[1rem] left-[1rem] flex items-center gap-1 w-fit min-w-[200px] z-[30]">
                     <Avatar
