@@ -10,6 +10,7 @@ const useKeyBinds = () => {
     const [openChatBox, setOpenChatBox] = useState(false);
     const [openFloatingChat, setOpenFloatingChat] = useState(false);
     const [openInvitationForm, setOpenInvitationForm] = useState(false);
+    const [openAddList, setOpenAddList] = useState(false);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -20,6 +21,7 @@ const useKeyBinds = () => {
                     || key === 'x'
                     || key === 'm'
                     || key === 'i'
+                    || key === 'l'
                     || key === 's') {
                     event.preventDefault();
                 }
@@ -28,6 +30,12 @@ const useKeyBinds = () => {
             if (event.ctrlKey) {
                 if (key === 'i') {
                     setOpenInvitationForm(prev => !prev);
+                    return;
+                }
+
+                if (key === 'l') {
+                    setOpenAddList(prev => !prev);
+                    console.log('something')
                     return;
                 }
 
@@ -115,6 +123,8 @@ const useKeyBinds = () => {
         setOpenFloatingChat,
         openInvitationForm,
         setOpenInvitationForm,
+        openAddList,
+        setOpenAddList,
     };
 }
 

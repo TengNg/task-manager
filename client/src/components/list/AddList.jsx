@@ -5,8 +5,7 @@ import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { lexorank } from '../../utils/class/Lexorank';
 
-const AddList = () => {
-    const [open, setOpen] = useState(false);
+const AddList = ({ open, setOpen }) => {
     const [listTitle, setListTitle] = useState("");
     const titleInputRef = useRef();
     const containerRef = useRef();

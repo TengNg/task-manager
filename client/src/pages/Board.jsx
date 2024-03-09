@@ -42,6 +42,8 @@ const Board = () => {
         setOpenFloatingChat,
         openInvitationForm,
         setOpenInvitationForm,
+        openAddList,
+        setOpenAddList,
     } = useKeyBinds();
 
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
@@ -306,7 +308,10 @@ const Board = () => {
 
                 </div>
 
-                <ListContainer />
+                <ListContainer
+                    openAddList={openAddList}
+                    setOpenAddList={setOpenAddList}
+                />
 
                 <div className="fixed top-[1rem] left-[1rem] flex items-center gap-1 w-fit min-w-[200px] z-[30]">
                     <Avatar
