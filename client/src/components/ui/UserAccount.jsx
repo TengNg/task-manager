@@ -49,7 +49,7 @@ const UserAccount = () => {
     };
 
     const handleOpenProfile = () => {
-        navigate(`/u/${auth.username}`);
+        navigate(`/u/${auth?.user?.username}`);
     };
 
 
@@ -79,7 +79,7 @@ const UserAccount = () => {
                             </button>
                             <div className="font-bold text-gray-400">Account</div>
 
-                            <div className='select-none font-semibold text-[0.8rem] max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis text-gray-700'>
+                            <div className='select-none font-semibold text-[0.75rem] max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis text-gray-700'>
                                 Username: {auth?.user?.username}
                             </div>
 

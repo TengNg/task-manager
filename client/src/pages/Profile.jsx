@@ -26,6 +26,17 @@ const Profile = () => {
     const usernameInputRef = useRef(null);
 
     useEffect(() => {
+        if (auth?.user?.username === undefined) {
+            navigate('/login');
+        } else if (username != auth?.user?.username) {
+            navigate('/notfound');
+        } else {
+            usernameInputRef.current.focus();
+            usernameInputRef.current.value = auth.user.username;
+        }
+    }, []);
+
+    useEffect(() => {
         let id = null;
         if (msg.content != "") {
             id = setTimeout(() => {
@@ -44,14 +55,22 @@ const Profile = () => {
 
     const checkPassword = () => {
         if (confirmedPassword === "" || newPassword === "" || password === "") {
+            setMsg({ error: true, content: 'Please fill all required fields' });
             return false;
         }
 
+        if (!newPassword)  {
+            setMsg({ error: true, content: 'Please provide new password' });
+            return false;
+        }
+
+        if (newPassword === password) {
+            setMsg({ error: true, content: 'New password is the same as current password' });
+            return false;
+        };
+
         if (confirmedPassword !== newPassword) {
-            setMsg({
-                error: true,
-                content: "Confirmed password is not matched"
-            });
+            setMsg({ error: true, content: "Confirmed password is not matched" });
             return false;
         }
 
@@ -60,46 +79,67 @@ const Profile = () => {
 
     const handleSaveProfile = async (e) => {
         e.preventDefault();
-        if (usernameInputRef.current.value.trim() === "" || usernameInputRef.current.value.trim() === auth.username) return;
+        if (usernameInputRef.current.value.trim() === "" || usernameInputRef.current.value.trim() === auth?.user?.username) return;
         try {
             setLoading(true);
             await axiosPrivate.put(`/account/edit/new-username`, JSON.stringify({ newUsername: usernameInputRef.current.value.trim() }));
-
-            if (changePassword || checkPassword) {
-                await axiosPrivate.put(`/account/edit/new-password`, JSON.stringify({
-                    currentPassword: password,
-                    newPassword: newPassword,
-                }));
-            }
-
+            setLoading(false);
             await axiosPrivate.get('/logout/');
             setAuth({});
-        } catch (err) {
-            console.log(err);
-            setAuth({});
             navigate('/login');
+        } catch (err) {
+            if (err.response.status === 409) {
+                setMsg({
+                    error: true,
+                    content: err?.response?.data?.msg,
+                });
+                setLoading(false);
+            } else {
+                console.log(err);
+                setAuth({});
+                navigate('/login');
+            }
         }
     };
 
     const handleCheckPassword = async (e) => {
         e.preventDefault();
-        if (!checkPassword) return;
+        const ok = checkPassword();
+        if (!ok) return;
 
         try {
             setLoading(true);
-            await axiosPrivate.put(`/account/edit/new-password`, JSON.stringify({
+
+            const response = await axiosPrivate.put(`/account/edit/new-password`, JSON.stringify({
                 currentPassword: password,
                 newPassword: newPassword,
             }));
+
+            if (response?.data?.notice === "PLEASE_PROVIDE_NEW_PASSWORD") {
+                setMsg({ error: true, content: 'Please provide new password' });
+                setLoading(false);
+                return;
+            }
+
+            if (response?.data?.notice === "PASSWORD_NOT_CHANGED") {
+                setMsg({ error: true, content: 'New password is the same as current password' });
+                setLoading(false);
+                return;
+            }
+
             setMsg({ error: false, content: "Password updated" });
-            setLoading(false);
             closeChangePasswordOption();
-            // await axiosPrivate.get('/logout/');
-            // setAuth({});
+            setLoading(false);
+
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await axiosPrivate.get('/logout/');
+            setAuth({});
+            navigate('/login');
         } catch (err) {
+            const errMsg = err?.response?.status === 400 ? "Current password is incorrect" : "Can't change password"
             console.log(err);
             setLoading(false);
-            setMsg({ error: true, content: "Can't change password, please check" });
+            setMsg({ error: true, content: errMsg });
             // setAuth({});
             // navigate('/login');
         }
@@ -108,7 +148,7 @@ const Profile = () => {
     return (
         <div className='mx-auto div--style flex flex-col justify-between mt-7 min-h-[200px] w-[400px] min-w-[400px] px-6 py-2 bg-gray-50 relative box--style border-gray-700 border-[2px] shadow-gray-700'>
             <Loading loading={loading} position={'absolute'} />
-            <form id='userInfoForm' className='w-[100%] flex flex-col px-6 py-3 h-fit gap-1'>
+            <form id='userInfoForm' className='w-[100%] flex flex-col px-6 h-fit gap-3'>
                 <p className={`absolute top-0 right-1 text-[0.75rem] font-semibold ${msg.error ? 'text-red-600' : 'text-green-500'}`}>{msg.content}</p>
                 <label htmlFor="username" className='label--style'>Username:</label>
                 <input
@@ -121,8 +161,15 @@ const Profile = () => {
                     required
                 />
 
+                <button
+                    type='submit'
+                    form='userInfoForm'
+                    onClick={handleSaveProfile}
+                    className='text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 transition-all w-[100%]'
+                >update username</button>
+
                 {changePassword &&
-                    <div className="flex flex-col div--style w-[100%] mt-4 relative py-8 border-[2px] border-gray-700 px-4">
+                    <div className="flex flex-col div--style w-[100%] relative py-8 border-[2px] border-gray-700 px-4">
                         <button
                             className="absolute top-2 right-2 button--style text-[0.75rem] font-bold"
                             onClick={closeChangePasswordOption}
@@ -131,7 +178,7 @@ const Profile = () => {
                         <label htmlFor="password" className='label--style'>Current Password:</label>
                         <input
                             className='border-[2px] border-black p-1 font-bold'
-                            type="text"
+                            type="password"
                             id="password"
                             autoComplete="off"
                             value={password}
@@ -142,7 +189,7 @@ const Profile = () => {
                         <label htmlFor="newPassword" className='label--style'>New Password:</label>
                         <input
                             className='border-[2px] border-black p-1 font-bold'
-                            type="text"
+                            type="password"
                             id="newPassword"
                             autoComplete="off"
                             value={newPassword}
@@ -153,7 +200,7 @@ const Profile = () => {
                         <label htmlFor="confirmedPassword" className='label--style mt-4'>Confirm New Password:</label>
                         <input
                             className='border-[2px] border-black p-1 font-bold'
-                            type="text"
+                            type="password"
                             id="confirmedPassword"
                             autoComplete="off"
                             value={confirmedPassword}
@@ -161,30 +208,25 @@ const Profile = () => {
                             required
                         />
                     </div>
+
                 }
 
-                <div className="flex flex-col gap-4 mt-4">
+                <div className="flex flex-col gap-4">
                     <button
                         onClick={() => setChangePassword(true)}
-                        className={`text-sm text-white p-3 bg-gray-700 font-semibold hover:bg-gray-600 transition-all w-[100%] ${changePassword && 'hidden'}`}
+                        className={`text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 transition-all w-[100%] ${changePassword && 'hidden'}`}
                     >
-                        Change your password
+                        change password
                     </button>
 
                     <button
                         onClick={(e) => handleCheckPassword(e)}
-                        className={`text-sm text-white p-3 bg-gray-700 font-semibold hover:bg-gray-600 transition-all w-[100%] ${!changePassword && 'hidden'}`}
+                        className={`text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 transition-all w-[100%] ${!changePassword && 'hidden'}`}
                     >
-                        Check password
+                        update password
                     </button>
-
-                    <button
-                        type='submit'
-                        form='userInfoForm'
-                        onClick={handleSaveProfile}
-                        className='text-sm text-white p-3 bg-gray-700 font-semibold hover:bg-gray-600 transition-all w-[100%]'
-                    >Save</button>
                 </div>
+
                 <p className='text-[0.75rem]'>
                     Notes: You will be signed out after saved
                 </p>
