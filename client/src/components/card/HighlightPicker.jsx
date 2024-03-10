@@ -42,7 +42,7 @@ const HighlightPicker = ({ card }) => {
             }
 
             <div
-                className={`w-full h-[25px] rounded-md bg-gray-400 flex--center font-bold border-[2px] hover:border-blue-400 text-white text-[0.75rem]`}
+                className={`w-full h-[25px] mt-1 rounded-md bg-transparent flex--center font-bold border-[2px] hover:border-blue-400 hover:text-blue-400 text-white text-[0.75rem]`}
                 onClick={() => handleSetCardHighlight(null)}
             >
                 <FontAwesomeIcon icon={faXmark} />

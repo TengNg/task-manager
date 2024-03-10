@@ -82,7 +82,7 @@ label {
 }
 
 body {
-    height: 95vh;
+    height: 100vh;
     background: rgb(245, 245, 245);
     overflow-y: auto;
 }

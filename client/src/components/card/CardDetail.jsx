@@ -97,14 +97,6 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
             </div>
 
             <div className="fixed box--style flex p-3 pb-6 flex-col top-[5rem] right-0 left-[50%] -translate-x-[50%] min-w-[700px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
-                {
-                    card.highlight != null &&
-                    <div
-                        className="w-full h-[1rem]"
-                        style={{ backgroundColor: `${card.highlight}` }}
-                    ></div>
-                }
-
                 <div className="flex justify-start items start">
                     <div className="flex flex-col flex-1">
                         <TextArea
@@ -128,6 +120,15 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
                         <FontAwesomeIcon icon={faXmark} size='xl' />
                     </button>
                 </div>
+
+                {
+                    card.highlight != null &&
+                    <div
+                        className="w-1/4 mt-2 h-[1rem]"
+                        style={{ backgroundColor: `${card.highlight}` }}
+                    ></div>
+                }
+
 
                 <div className="bg-black h-[1px] w-[100%] my-4"></div>
 
