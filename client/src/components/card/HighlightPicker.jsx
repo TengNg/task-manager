@@ -26,7 +26,7 @@ const HighlightPicker = ({ card }) => {
     };
 
     return (
-        <div className="absolute -top-6 left-0 w-[200px] translate-x-[80%] flex flex-col gap-1 cursor-pointer">
+        <div className="absolute -top-6 left-0 w-[200px] translate-x-[55%] flex flex-col gap-1 cursor-pointer">
             <div className='text-[0.75rem] text-center text-white'>Change card highlight</div>
 
             {

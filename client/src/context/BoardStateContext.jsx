@@ -170,6 +170,18 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
+    const setCardOwner = (cardId, listId, value) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.map(list => list._id === listId ? {
+                    ...list,
+                    cards: list.cards.map(card => card._id === cardId ? { ...card, owner: value } : card)
+                } : list)
+            }
+        });
+    };
+
     const addListToBoard = (list) => {
         setBoardState(prev => {
             return {
@@ -267,6 +279,7 @@ export const BoardStateContextProvider = ({ children }) => {
                 setCardTitle,
                 setCardDescription,
                 setCardHighlight,
+                setCardOwner,
                 deleteCard,
 
                 addListToBoard,

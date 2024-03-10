@@ -1,17 +1,19 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import TextArea from "../ui/TextArea";
 import useBoardState from "../../hooks/useBoardState";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faDroplet, faCopy, faEraser } from '@fortawesome/free-solid-svg-icons';
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HighlightPicker from "./HighlightPicker";
+import CardDetailInfo from "./CardDetailInfo";
 
 const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
     const {
         boardState,
         setCardDescription,
         setCardTitle,
+        setCardOwner,
         socket,
     } = useBoardState();
 
@@ -33,6 +35,18 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
         }
     };
 
+    const handleMemberSelectorOnChange = async (e) => {
+        const memberName = e.target.value;
+
+        try {
+            const response = await axiosPrivate.put(`/cards/${card._id}/member/update`, JSON.stringify({ ownerName: memberName }));
+            const cardOwner = response.data.newCard.owner || "";
+            setCardOwner(card._id, card.listId, cardOwner);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     const listTitle = useCallback(() => {
         return boardState.lists.find(list => list._id == card.listId).title
     });
@@ -42,6 +56,11 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
     };
 
     const confirmDescription = async (e) => {
+        if (!card.description && !e.target.value.trim()) {
+            setOpenDescriptionComposer(false);
+            return;
+        }
+
         if (card.description === e.target.value.trim()) {
             return;
         }
@@ -100,7 +119,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
                 <div className="flex justify-start items start">
                     <div className="flex flex-col flex-1">
                         <TextArea
-                            className="break-words box-border p-1 h-[2rem] w-[98%] text-gray-600 bg-gray-200 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-blue-600 focus:bg-gray-100"
+                            className="break-words box-border p-1 h-[2rem] w-[98%] text-gray-600 bg-gray-200 leading-normal overflow-y-hidden resize-none placeholder-gray-400 focus:outline-blue-600 focus:bg-gray-100"
                             onKeyDown={(e) => {
                                 if (e.key == 'Enter') {
                                     e.target.blur();
@@ -129,7 +148,6 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
                     ></div>
                 }
 
-
                 <div className="bg-black h-[1px] w-[100%] my-4"></div>
 
                 <div className="w-full flex">
@@ -150,7 +168,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
                             (card.description.trim() !== "" || openDescriptionComposer === true) &&
                             <div className="flex flex-col items-start gap-2">
                                 <TextArea
-                                    className="border-[2px] shadow-[0_2px_0_0] border-black shadow-black break-words box-border text-[0.9rem] py-2 px-3 w-[90%] text-gray-600 bg-gray-100 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-none"
+                                    className="border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 max-h-[300px] break-words box-border text-[0.75rem] py-2 px-3 w-[90%] text-gray-600 bg-gray-100 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-none"
                                     autoFocus={true}
                                     onBlur={(e) => {
                                         confirmDescription(e)
@@ -164,30 +182,49 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
 
                     </div>
 
-                    <div className="relative flex flex-col gap-3">
-                        <div>
+                    <div className="flex flex-col gap-3">
+                        <div className="relative">
                             <button
                                 onClick={() => setOpenHighlightPicker(prev => !prev)}
-                                className={`border-2 border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white transition-all text-[0.75rem]  px-2 py-2 font-semibold ${openHighlightPicker && 'bg-gray-500 shadow-black text-white'}`}
-                            >Change highlight</button>
+                                className={`flex w-full justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold ${openHighlightPicker && 'bg-gray-600 shadow-black text-white'}`}
+                            >
+                                <FontAwesomeIcon icon={faDroplet} />
+                            </button>
+                            {openHighlightPicker && <HighlightPicker card={card} />}
                         </div>
 
                         <div>
                             <button
                                 onClick={() => handleCopyCard()}
-                                className={`border-2 w-full border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white transition-all text-[0.75rem]  px-2 py-2 font-semibold`}
-                            >Copy card</button>
+                                className={`flex w-full justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold`}
+                            >
+                                <FontAwesomeIcon icon={faCopy} />
+                                <span>
+                                    copy
+                                </span>
+                            </button>
                         </div>
 
                         <div>
                             <button
                                 onClick={() => deleteCard()}
-                                className="border-2 w-full border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white text-[0.75rem] px-2 py-2 font-semibold">Delete card</button>
+                                className={`flex w-full justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold`}
+                            >
+                                <FontAwesomeIcon icon={faEraser} />
+                                <span>
+                                    delete
+                                </span>
+                            </button>
                         </div>
-
-                        {openHighlightPicker && <HighlightPicker card={card} />}
                     </div>
                 </div>
+
+                <div className="bg-black h-[1px] w-[100%] my-4"></div>
+
+                <CardDetailInfo
+                    card={card}
+                    handleMemberSelectorOnChange={handleMemberSelectorOnChange}
+                />
 
             </div>
         </>

@@ -103,7 +103,7 @@ const MoveListForm = () => {
                             onChange={(e) => {
                                 handleSelectBoardId(e);
                             }}
-                            className={`border-gray-300 text-sm w-full py-2 px-4 text-gray-100 ${boards.length === 0 ? 'bg-gray-500' : 'bg-gray-600'}`}
+                            className={`appearance-none cursor-pointer border-gray-300 text-sm w-full py-2 px-4 text-gray-100 ${boards.length === 0 ? 'bg-gray-500' : 'bg-gray-600'}`}
                         >
                             <option>board:</option>
                             {
@@ -119,7 +119,7 @@ const MoveListForm = () => {
                             onChange={(e) => {
                                 setSelectedIndex(e.target.value);
                             }}
-                            className={`border-gray-300 text-sm w-full py-2 px-4 ${listCount === 0 ? 'bg-gray-500' : 'bg-gray-600'} text-gray-100`}
+                            className={`appearance-none cursor-pointer border-gray-300 text-sm w-full py-2 px-4 ${listCount === 0 ? 'bg-gray-500' : 'bg-gray-600'} text-gray-100`}
                         >
                             {
                                 listCount === 0 ? (
