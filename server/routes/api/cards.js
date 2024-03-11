@@ -10,6 +10,7 @@ const {
     deleteCard,
     reorder,
     copyCard,
+    updateOwner,
 } = require('../../controllers/cardsController');
 
 router.route("/")
@@ -33,5 +34,8 @@ router.route("/:id/new-highlight")
 
 router.route("/:id/copy")
     .post(copyCard)
+
+router.route("/:id/member/update")
+    .put(updateOwner)
 
 module.exports = router;

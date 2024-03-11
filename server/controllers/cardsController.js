@@ -1,4 +1,6 @@
 const Card = require('../models/Card.js');
+const User = require('../models/User.js');
+const Board = require('../models/Board.js');
 const List = require('../models/List.js');
 const mongoose = require('mongoose');
 
@@ -76,7 +78,8 @@ const copyCard = async (req, res) => {
         title,
         description,
         listId,
-        highlight
+        highlight,
+        owner,
     } = foundCard;
 
     const newCard = new Card({
@@ -85,12 +88,39 @@ const copyCard = async (req, res) => {
         title: title + " (copied)",
         description,
         listId,
+        owner,
         highlight,
     });
 
     newCard.save();
 
     res.status(200).json({ msg: 'Card copied successfully', newCard });
+};
+
+const updateOwner = async (req, res) => {
+    const { username } = req.user;
+    const { id } = req.params;
+    const { ownerName } = req.body;
+
+    const foundUser = await User.findOne({ username });
+    if (!foundUser) return res.status(403).json({ msg: "User not found" });
+
+    if (!ownerName) {
+        const result = await Card.findByIdAndUpdate(
+            id, { $set: { owner: null } }, { new: true }
+        );
+
+        return res.status(200).json({ msg: 'Update member successfully', newCard: result });
+    }
+
+    const foundMember = await User.findOne({ username: ownerName });
+    if (!foundMember) return res.status(403).json({ msg: "Member not found" });
+
+    const result = await Card.findByIdAndUpdate(
+        id, { $set: { owner: foundMember.username } }, { new: true }
+    );
+
+    res.status(200).json({ msg: 'Update member successfully', newCard: result });
 };
 
 module.exports = {
@@ -102,4 +132,5 @@ module.exports = {
     deleteCard,
     reorder,
     copyCard,
+    updateOwner,
 }

@@ -22,6 +22,11 @@ const cardSchema = new mongoose.Schema({
         required: true,
     },
 
+    owner: {
+        type: String,
+        default: null,
+    },
+
     createdAt: {
         type: Date,
         required: true,

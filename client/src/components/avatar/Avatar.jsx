@@ -10,7 +10,7 @@ const SIZE = {
 };
 
 const AVATAR_BG_COLORS = {
-    'blue': 'bg-blue-500',
+    'blue': 'bg-teal-500',
     'gray': 'bg-gray-400',
 }
 
@@ -20,7 +20,8 @@ const Avatar = ({
     size = 'sm',
     bgColor = 'blue',
     isAdmin = false,
-    clickable = true
+    clickable = true,
+    withBorder = false,
 }) => {
     const [collapse, setCollapse] = useState(true);
 
@@ -55,7 +56,7 @@ const Avatar = ({
             <div
                 onClick={() => clickable && setCollapse(collapse => !collapse)}
                 ref={userProfileImageRef}
-                className={`relative ${AVATAR_BG_COLORS[bgColor]} text-white flex--center text-[0.8rem] rounded-full bg-center bg-cover overflow-hidden ${clickable && 'cursor-pointer'} ${SIZE[size]}`}>
+                className={`relative ${AVATAR_BG_COLORS[bgColor]} hover:opacity-[0.8] text-white flex--center text-[0.8rem] border-box ${withBorder && 'border-[3px] border-teal-600'} rounded-full bg-center bg-cover overflow-hidden ${clickable && 'cursor-pointer'} ${SIZE[size]}`}>
                 {
                     !profileImage
                         ? <div className="font-bold flex--center select-none">{username?.charAt(0)?.toUpperCase()}</div>

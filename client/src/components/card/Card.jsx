@@ -7,6 +7,7 @@ import CardDetail from './CardDetail';
 import { axiosPrivate } from '../../api/axios';
 import useBoardState from '../../hooks/useBoardState';
 import { lexorank } from "../../utils/class/Lexorank";
+import { highlightColorsRGBA } from "../../data/highlights";
 
 const Card = ({ index, listIndex, card }) => {
     const [openQuickEditor, setOpenQuickEditor] = useState(false);
@@ -131,17 +132,29 @@ const Card = ({ index, listIndex, card }) => {
                                 return;
                             };
                         }}
-                        className={`w-full group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_3px_0_0] shadow-gray-600 bg-gray-50 relative hover:cursor-pointer focus:bg-sky-100 focus:outline-sky-50 focus:border-pink-900`}
+                        className={`w-full rounded-md group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 bg-gray-50 relative hover:cursor-pointer focus:bg-sky-100 focus:outline-sky-50 focus:border-pink-900`}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >
-                        <p className="w-full h-full bg-inherit font-semibold text-gray-600 rounded-sm py-1 px-2 focus:outline-none text-[0.8rem] break-words whitespace-pre-line" >
+                        <p className="w-full h-full bg-inherit font-semibold text-gray-600 rounded-md py-1 px-2 focus:outline-none text-sm break-words whitespace-pre-line" >
                             {card.title}
                         </p>
 
-                        <div className='flex ms-2 text-gray-500 gap-2 mt-1'>
+                        <div className='flex justify-start items-center ms-2 text-gray-500 gap-2 mt-1'>
+                            {
+                                card.owner &&
+                                <div
+                                    className='p-2 bg-gray-200 flex justify-center items-center rounded'
+                                    style={{ backgroundColor: highlightColorsRGBA[`${card.highlight}`] }}
+                                >
+                                    <span className='text-[0.65rem] text-gray-700 font-medium'>
+                                        {card.owner}
+                                    </span>
+                                </div>
+                            }
                             {card.description != "" && <FontAwesomeIcon icon={faAlignLeft} size='xs' />}
                         </div>
+
 
                         <button
                             onClick={handleOpenQuickEditor}
