@@ -1,5 +1,5 @@
 const highlightColors = {
-    roseAlert: "#cb4d68",
+    roseAlert: "#d16179",
     darkBrownAlert: "#a34356",
     yellowAlert: "#e2a703",
     purpleAlert: "#a855f7",
@@ -11,7 +11,7 @@ const highlightColors = {
 };
 
 export const highlightColorsRGBA = {
-    "#bd3755": "rgba(203, 77, 104, 0.15)",
+    "#d16179": "rgba(203, 77, 104, 0.15)",
     "#a34356": "rgba(163, 67, 86, 0.15)",
     "#e2a703": "rgba(226, 167, 3, 0.15)",
     "#a855f7": "rgba(168, 85, 247, 0.15)",

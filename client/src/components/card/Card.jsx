@@ -132,7 +132,7 @@ const Card = ({ index, listIndex, card }) => {
                                 return;
                             };
                         }}
-                        className={`w-full group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_3px_0_0] shadow-gray-600 bg-gray-50 relative hover:cursor-pointer focus:bg-sky-100 focus:outline-sky-50 focus:border-pink-900`}
+                        className={`w-full rounded-md group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 bg-gray-50 relative hover:cursor-pointer focus:bg-sky-100 focus:outline-sky-50 focus:border-pink-900`}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >

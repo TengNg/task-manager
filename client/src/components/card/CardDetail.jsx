@@ -42,6 +42,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
             const response = await axiosPrivate.put(`/cards/${card._id}/member/update`, JSON.stringify({ ownerName: memberName }));
             const cardOwner = response.data.newCard.owner || "";
             setCardOwner(card._id, card.listId, cardOwner);
+            socket.emit("updateCardOwner", { cardId: card._id, listId: card.listId, username: cardOwner });
         } catch (err) {
             console.log(err);
         }

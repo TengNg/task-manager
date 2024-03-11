@@ -197,6 +197,8 @@ const Board = () => {
         return <div className="font-bold mx-auto text-center mt-20 text-gray-600">Loading...</div>
     }
 
+    console.log(boardState);
+
     return (
         <>
             {
@@ -322,6 +324,7 @@ const Board = () => {
                         username={boardState.board.createdBy.username}
                         profileImage={boardState.board.createdBy.profileImage}
                         size="md"
+                        withBorder={boardState.board.createdBy.username === auth?.user?.username}
                         isAdmin={true}
                     />
 
@@ -331,6 +334,7 @@ const Board = () => {
                                 key={index}
                                 username={user.username}
                                 profileImage={user.profileImage}
+                                withBorder={user.username === auth?.user?.username}
                                 size="md"
                             />
                         })

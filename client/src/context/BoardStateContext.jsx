@@ -27,6 +27,11 @@ export const BoardStateContextProvider = ({ children }) => {
                 removeMemberFromBoard(username);
             });
 
+            socket.on("cardOwnerUpdated", (data) => {
+                const { cardId, listId, username } = data;
+                setCardOwner(cardId, listId, username);
+            });
+
             socket.on("invitationAccepted", (data) => {
                 const { username, profileImage: _ } = data;
                 addMemberToBoard({ username });
