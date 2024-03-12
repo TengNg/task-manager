@@ -59,11 +59,6 @@ const useKeyBinds = () => {
                     setOpenPinnedBoards(prev => !prev);
                     return;
                 }
-
-                if (key === 'e') {
-                    setOpenPinnedBoards(prev => !prev);
-                    return;
-                }
             }
 
             if (key === 'Escape') {

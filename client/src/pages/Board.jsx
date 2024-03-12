@@ -74,8 +74,6 @@ const Board = () => {
         socket.emit("joinBoard", { boardId, username: auth?.user?.username });
         setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
 
-        setIsDataLoaded(false);
-
         const getBoardData = async () => {
             const boardsResponse = await axiosPrivate.get(`/boards/${boardId}`);
             const chatsResponse = await axiosPrivate.get(`/chats/b/${boardId}`);
@@ -197,8 +195,6 @@ const Board = () => {
         return <div className="font-bold mx-auto text-center mt-20 text-gray-600">Loading...</div>
     }
 
-    console.log(boardState);
-
     return (
         <>
             {
@@ -231,28 +227,23 @@ const Board = () => {
                 />
             }
 
-            {
-                openChatBox &&
-                <ChatBox
-                    setOpen={setOpenChatBox}
-                    setOpenFloat={setOpenFloatingChat}
-                    sendMessage={handleSendMessage}
-                    loading={sentChatLoading}
-                    clearMessages={handleClearChatMessages}
-                />
-            }
+            <ChatBox
+                open={openChatBox}
+                setOpen={setOpenChatBox}
+                setOpenFloat={setOpenFloatingChat}
+                sendMessage={handleSendMessage}
+                loading={sentChatLoading}
+                clearMessages={handleClearChatMessages}
+            />
 
-            {
-                openFloatingChat &&
-                <FloatingChat
-                    open={openFloatingChat}
-                    setOpen={setOpenFloatingChat}
-                    setOpenChatBox={setOpenChatBox}
-                    sendMessage={handleSendMessage}
-                    loading={sentChatLoading}
-                    clearMessages={handleClearChatMessages}
-                />
-            }
+            <FloatingChat
+                open={openFloatingChat}
+                setOpen={setOpenFloatingChat}
+                setOpenChatBox={setOpenChatBox}
+                sendMessage={handleSendMessage}
+                loading={sentChatLoading}
+                clearMessages={handleClearChatMessages}
+            />
 
             <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4">
                 <div className="fixed flex justify-between w-[100vw] z-20">

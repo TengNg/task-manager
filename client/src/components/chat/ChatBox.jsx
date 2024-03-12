@@ -7,7 +7,7 @@ import useBoardState from '../../hooks/useBoardState';
 import useAuth from '../../hooks/useAuth';
 import Loading from '../ui/Loading';
 
-const ChatBox = ({ setOpen, setOpenFloat, sendMessage, clearMessages, loading }) => {
+const ChatBox = ({ open, setOpen, setOpenFloat, sendMessage, clearMessages, loading }) => {
     const {
         boardState,
         chats,
@@ -31,7 +31,7 @@ const ChatBox = ({ setOpen, setOpenFloat, sendMessage, clearMessages, loading })
     };
 
     return (
-        <div className="fixed flex flex-col border-[2px] border-black right-1 bottom-1 bg-white w-[300px] h-[400px] overflow-auto z-10">
+        <div className={`${open ? 'flex' : 'hidden'} fixed flex-col border-[2px] border-black right-1 bottom-1 bg-white w-[300px] h-[400px] overflow-auto z-10`}>
             <Loading
                 loading={loading}
                 position={'absolute'}

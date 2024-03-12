@@ -8,9 +8,9 @@ const CardDetailInfo = ({ card, handleMemberSelectorOnChange }) => {
     } = useBoardState();
 
     return (
-        <div class='flex flex-col gap-2 text-[0.8rem] text-gray-700 p-6'>
-            <div class='flex flex-start items-center w-fit max-w-[20rem]'>
-                <span class='me-1'>owner: </span>
+        <div className='flex flex-col gap-2 text-[0.8rem] text-gray-700 p-6'>
+            <div className='flex flex-start items-center w-fit max-w-[20rem]'>
+                <span className='me-1'>owner: </span>
                 <select
                     value={card.owner}
                     onChange={(e) => handleMemberSelectorOnChange(e)}
@@ -27,8 +27,8 @@ const CardDetailInfo = ({ card, handleMemberSelectorOnChange }) => {
                 </select>
             </div>
 
-            <div class='text-[0.8rem]'>
-                <span class=''>created: </span>{dateFormatter(card.createdAt)}
+            <div className='text-[0.8rem]'>
+                <span className=''>created: </span>{dateFormatter(card.createdAt)}
             </div>
         </div>
     )
