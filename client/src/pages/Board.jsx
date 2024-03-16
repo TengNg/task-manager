@@ -70,7 +70,6 @@ const Board = () => {
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
     const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
     const [pinned, setPinned] = useState(false);
-    const [sentChatLoading, setSentChatLoading] = useState(false);
 
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -92,7 +91,7 @@ const Board = () => {
             return;
         }
 
-        const focusedCard = boardState.lists[focusedListIndex]?.cards[focusedCardIndex]?._id;
+        const focusedCard = boardState.lists[focusedListIndex]?.cards[focusedCardIndex];
         if (!focusedCard) {
             if (focusedCardIndex < 0) {
                 setFocusedCardIndex(boardState.lists[focusedListIndex]?.cards.length - 1);
@@ -103,7 +102,7 @@ const Board = () => {
             }
         }
 
-        setFocusedCard(focusedCard);
+        setFocusedCard({ id: focusedCard?._id, highlight: true });
     }, [isDataLoaded, focusedListIndex, focusedCardIndex]);
 
     useEffect(() => {
@@ -240,30 +239,38 @@ const Board = () => {
     };
 
     const handleSendMessage = async (value) => {
+        const msgTrackedId = crypto.randomUUID();
+
+        const newMessage = {
+            trackedId: msgTrackedId,
+            content: value,
+            sentBy: { username: auth?.user?.username },
+        };
+
+        setChats(prev => {
+            return [...prev, { ...newMessage }];
+        });
+
         try {
-            const response = await axiosPrivate.post(`/chats/b/${boardState.board._id}`, JSON.stringify({ content: value }));
-            const newMessage = response.data.chat;
-            setSentChatLoading(true);
+            const response = await axiosPrivate.post(`/chats/b/${boardState.board._id}`, JSON.stringify({ content: value, trackedId: newMessage.trackedId }));
+            const chatMsg = response.data.chat;
+            const { trackedId, createdAt } = chatMsg;
             setChats(prev => {
-                return [...prev, { ...newMessage, sentBy: { ...newMessage.sentBy, username: auth?.user?.username } }];
+                return prev.map(chat => chat.trackedId === trackedId ? { ...chat, createdAt: createdAt } : chat);
             });
             socket.emit("sendMessage", { ...newMessage, sentBy: { ...newMessage.sentBy, username: auth?.user?.username } });
-            setSentChatLoading(false);
         } catch (err) {
             setChats(prev => {
-                return [...prev, { content: value, error: true, sentBy: auth }];
+                return prev.map(chat => chat.trackedId === msgTrackedId ? { ...chat, error: true } : chat);
             });
-            setSentChatLoading(false);
         }
     };
 
     const handleClearChatMessages = async () => {
         try {
             if (confirm('All chat messages will be clear, are you sure ?')) {
-                setSentChatLoading(true);
                 await axiosPrivate.delete(`/chats/b/${boardState.board._id}`);
                 setChats([]);
-                setSentChatLoading(false);
             }
         } catch (err) {
             console.log(err);
@@ -333,7 +340,6 @@ const Board = () => {
                 setOpen={setOpenChatBox}
                 setOpenFloat={setOpenFloatingChat}
                 sendMessage={handleSendMessage}
-                loading={sentChatLoading}
                 clearMessages={handleClearChatMessages}
             />
 
@@ -342,7 +348,6 @@ const Board = () => {
                 setOpen={setOpenFloatingChat}
                 setOpenChatBox={setOpenChatBox}
                 sendMessage={handleSendMessage}
-                loading={sentChatLoading}
                 clearMessages={handleClearChatMessages}
             />
 

@@ -48,7 +48,7 @@ const Chat = ({
                         <p className="text-[0.75rem] font-bold text-gray-600">{sentBy?.username}</p>
                         {
                             !error
-                                ? <p className="text-[0.65rem] text-gray-600">{dateFormatter(createdAt)}</p>
+                                ? <p className="text-[0.65rem] text-gray-600">{createdAt ? dateFormatter(createdAt) : 'sending...'}</p>
                                 : <p className="text-[0.65rem] text-red-600">Failed to send this message</p>
                         }
                     </div>

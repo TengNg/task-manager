@@ -21,7 +21,7 @@ const getMessages = async (req, res) => {
 
 const sendMessage = async (req, res) => {
     const { username } = req.user;
-    const { content } = req.body;
+    const { content, trackedId } = req.body;
     const { boardId } = req.params;
 
     const foundBoard = await Board.findById(boardId);
@@ -32,6 +32,7 @@ const sendMessage = async (req, res) => {
 
     const chat = new Chat({
         sentBy: foundUser._id,
+        trackedId,
         boardId,
         content,
     })

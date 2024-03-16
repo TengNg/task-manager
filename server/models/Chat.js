@@ -23,6 +23,11 @@ const chatSchema = new mongoose.Schema({
         required: true,
         default: Date.now,
     },
+
+    trackedId: {
+        type: String,
+        required: true,
+    },
 });
 
 const Chat = mongoose.model('Chat', chatSchema);
