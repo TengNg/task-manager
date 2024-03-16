@@ -6,7 +6,18 @@ import ChatInput from './ChatInput';
 import useBoardState from '../../hooks/useBoardState';
 import useAuth from '../../hooks/useAuth';
 
-const ChatBox = ({ open, setOpen, setOpenFloat, sendMessage, clearMessages }) => {
+const ChatBox = ({
+    open,
+    setOpen,
+    setOpenFloat,
+    sendMessage,
+    clearMessages,
+
+    fetchMessages,
+    isFetchingMore,
+    setIsFetchingMore,
+    allMessagesFetched,
+}) => {
     const {
         boardState,
         chats,
@@ -18,6 +29,12 @@ const ChatBox = ({ open, setOpen, setOpenFloat, sendMessage, clearMessages }) =>
 
     useEffect(() => {
         messageEndRef.current.scrollIntoView({ block: 'end' });
+    }, [open]);
+
+    useEffect(() => {
+        if (!isFetchingMore) {
+            messageEndRef.current.scrollIntoView({ block: 'end' });
+        }
     }, [chats.length])
 
     const handleOpenFloat = () => {
@@ -27,6 +44,14 @@ const ChatBox = ({ open, setOpen, setOpenFloat, sendMessage, clearMessages }) =>
 
     const handleClearMessages = () => {
         clearMessages();
+    };
+
+    const handleLoadMoreOnScroll = (e) => {
+        const { scrollTop } = e.currentTarget;
+        if (scrollTop === 0 && !allMessagesFetched) {
+            setIsFetchingMore(true);
+            fetchMessages();
+        }
     };
 
     return (
@@ -56,7 +81,10 @@ const ChatBox = ({ open, setOpen, setOpenFloat, sendMessage, clearMessages }) =>
                 </button>
             </div>
 
-            <div className='relative flex-1 w-full border-red-100 flex flex-col gap-3 overflow-y-auto p-1'>
+            <div
+                className='relative flex-1 w-full border-red-100 flex flex-col gap-3 overflow-y-auto p-1'
+                onScroll={handleLoadMoreOnScroll}
+            >
                 {
                     chats.map((item, index) => {
                         return <Chat
@@ -69,8 +97,9 @@ const ChatBox = ({ open, setOpen, setOpenFloat, sendMessage, clearMessages }) =>
                 <div style={{ float: "left", clear: "both" }} ref={messageEndRef}></div>
             </div>
 
-            <div className='bg-gray-200 px-2'>
+            <div className='bg-gray-200 px-2 mt-2'>
                 <ChatInput
+                    setIsFetchingMore={setIsFetchingMore}
                     sendMessage={sendMessage}
                 />
             </div>

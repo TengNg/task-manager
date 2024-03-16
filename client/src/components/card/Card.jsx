@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faAlignLeft } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from '../../hooks/useBoardState';
 import { highlightColorsRGBA } from "../../data/highlights";
+import dateFormatter from '../../utils/dateFormatter';
 
 const Card = ({ index, listIndex, card }) => {
     const {
@@ -111,11 +112,15 @@ const Card = ({ index, listIndex, card }) => {
                                     </span>
                                 </div>
                             }
+
                             {card.description != "" && <FontAwesomeIcon icon={faAlignLeft} size='xs' />}
+
                         </div>
 
-                        {(focusedCard?.id === card._id && focusedCard?.highlight) && <FontAwesomeIcon icon={faAlignLeft} size='xs' />}
-
+                        {
+                            (focusedCard?.id === card._id && focusedCard?.highlight)
+                            && <div class='text-[0.65rem] text-gray-700 mt-3 ms-2'>created: {dateFormatter(card.createdAt)}</div>
+                        }
 
                         <button
                             onClick={handleOpenQuickEditor}

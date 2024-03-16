@@ -129,8 +129,14 @@ io.on('connection', (socket) => {
     });
 
     socket.on("sendMessage", (data) => {
+
+        console.log('before: ', data);
+
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
+
+        console.log('after: ', data);
+
         socket.to(boardId).emit("receiveMessage", data);
     });
 

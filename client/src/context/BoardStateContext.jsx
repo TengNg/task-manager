@@ -115,6 +115,7 @@ export const BoardStateContextProvider = ({ children }) => {
             });
 
             socket.on("receiveMessage", (data) => {
+                console.log(data);
                 setChats(prev => [...prev, data]);
             });
         }

@@ -3,7 +3,16 @@ const Board = require("../models/Board");
 const User = require("../models/User");
 
 const getMessages = async (req, res) => {
+    const { username } = req.user;
     const { boardId } = req.params;
+
+    let { perPage, page } = req.query;
+
+    perPage = +perPage || 10;
+    page = +page || 1;
+
+    const foundUser = await User.findOne({ username });
+    if (!foundUser) return res.status(403).json({ msg: "cannot send message, user not found" });
 
     const foundBoard = await Board.findById(boardId);
     if (!foundBoard) return res.status(403).json({ msg: "cannote send message, board not found" });
@@ -11,6 +20,8 @@ const getMessages = async (req, res) => {
     const messages = await Chat
         .find({ boardId })
         .sort({ createdAt: 'desc' })
+        .skip((page - 1) * perPage)
+        .limit(perPage)
         .populate({
             path: 'sentBy',
             field: 'username'
@@ -41,6 +52,17 @@ const sendMessage = async (req, res) => {
     res.status(200).json({ msg: "message is sent", chat });
 };
 
+const deleteMessage = async (req, res) => {
+    const { username } = req.user;
+    const { trackedId } = req.params;
+
+    const foundUser = await User.findOne({ username });
+    if (!foundUser) return res.status(403).json({ msg: "cannot send message, user not found" });
+
+    const deletedMessage = await Chat.findOneAndDelete({ trackedId });
+    res.status(200).json({ msg: "message deleted" });
+};
+
 const clearMessages = async (req, res) => {
     const { username } = req.user;
     const { boardId } = req.params;
@@ -63,4 +85,5 @@ module.exports = {
     sendMessage,
     clearMessages,
     getMessages,
+    deleteMessage
 };

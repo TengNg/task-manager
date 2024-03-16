@@ -17,11 +17,13 @@ const Activities = () => {
     const { auth } = useAuth();
 
     const [invitations, setInvitations] = useState([]);
+    const [loadingInvitations, setLoadingInvitations] = useState(true);
     const axiosPrivate = useAxiosPrivate();
 
     const navigate = useNavigate();
 
     useEffect(() => {
+        setLoadingInvitations(true);
         const getInvitations = async () => {
             const response = await axiosPrivate.get("/invitations");
             setInvitations(response.data.invitations);
@@ -32,6 +34,8 @@ const Activities = () => {
             console.log(err);
             navigate('/login');
         });
+
+        setLoadingInvitations(false);
     }, []);
 
     const handleAcceptInvitation = async (invitationId) => {
@@ -81,8 +85,10 @@ const Activities = () => {
         <section className='w-full mt-8 '>
             <Title titleName="activities" />
             <div className='box--style border-[2px] border-gray-600 shadow-gray-600 min-h-[300px] min-w-[500px] w-[800px] mx-auto p-10 bg-gray-100 flex flex-col gap-4'>
-                {invitations &&
-                    invitations.length === 0
+                {
+                    loadingInvitations
+                    ? <p className='w-full text-center mx-auto mt-[4rem] text-gray-600 select-none font-semibold'>loading invitations...</p>
+                    : invitations && invitations.length === 0
                     ? <p className='w-full text-center mx-auto mt-[4rem] text-gray-600 select-none font-semibold'>Nothing to show here :(</p>
                     : <>
                         {invitations.map((item, index) => {

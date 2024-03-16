@@ -7,7 +7,17 @@ import Chat from './Chat';
 import ChatInput from './ChatInput';
 import useAuth from '../../hooks/useAuth';
 
-export default function FloatingChat({ open, setOpen, setOpenChatBox, sendMessage, clearMessages }) {
+const FloatingChat = ({
+    open,
+    setOpen,
+    sendMessage,
+    clearMessages,
+
+    fetchMessages,
+    isFetchingMore,
+    setIsFetchingMore,
+    allMessagesFetched,
+}) => {
     const {
         chats,
         boardState,
@@ -21,6 +31,12 @@ export default function FloatingChat({ open, setOpen, setOpenChatBox, sendMessag
 
     useEffect(() => {
         messageEndRef.current.scrollIntoView({ block: 'end' });
+    }, [open]);
+
+    useEffect(() => {
+        if (!isFetchingMore) {
+            messageEndRef.current.scrollIntoView({ block: 'end' });
+        }
     }, [chats.length])
 
     const handleClose = () => {
@@ -34,6 +50,14 @@ export default function FloatingChat({ open, setOpen, setOpenChatBox, sendMessag
 
     const handleClearMessages = () => {
         clearMessages();
+    };
+
+    const handleLoadMoreOnScroll = (e) => {
+        const { scrollTop } = e.currentTarget;
+        if (scrollTop === 0 && !allMessagesFetched) {
+            setIsFetchingMore(true);
+            fetchMessages();
+        }
     };
 
     return (
@@ -69,14 +93,15 @@ export default function FloatingChat({ open, setOpen, setOpenChatBox, sendMessag
                     </div>
                 </div>
 
-                <div className='relative flex-1 w-full border-red-100 flex flex-col justify-end gap-3 overflow-auto py-3 px-3'>
+                <div
+                    onScroll={handleLoadMoreOnScroll}
+                    className='relative flex-1 w-full border-red-100 flex flex-col gap-3 overflow-auto py-3 px-3'
+                >
                     {
                         chats.map((item, index) => {
                             return <Chat
-                                avatar={{ bgColor: 'gray', username: item.sentBy.username, size: 'md' }}
                                 padding={{ x: 'none', y: 'none' }}
                                 withSeparator={true}
-                                withRightArrow={true}
                                 key={index}
                                 chat={item}
                             />
@@ -95,3 +120,5 @@ export default function FloatingChat({ open, setOpen, setOpenChatBox, sendMessag
         </>
     )
 }
+
+export default FloatingChat

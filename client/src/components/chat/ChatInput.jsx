@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeftLong } from '@fortawesome/free-solid-svg-icons';
 
-const ChatInput = ({ sendMessage, withSentButton = false }) => {
+const ChatInput = ({ sendMessage, withSentButton = false, setIsFetchingMore }) => {
     const [message, setMessage] = useState("");
     const textAreaRef = useRef();
 
@@ -32,6 +32,10 @@ const ChatInput = ({ sendMessage, withSentButton = false }) => {
             if (e.target.value.trim() === "") return;
             e.preventDefault();
             send(e);
+
+            if (setIsFetchingMore) {
+                setIsFetchingMore(false)
+            }
         }
     };
 

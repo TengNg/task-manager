@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom"
 import ListContainer from "../components/list/ListContainer";
 import useBoardState from "../hooks/useBoardState";
@@ -71,6 +71,13 @@ const Board = () => {
     const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
     const [pinned, setPinned] = useState(false);
 
+    // chat messages ==================================================================================================
+    const shouldFetchMessages = useRef(true);
+    const [chatsPage, setChatsPage] = useState(1);
+    const [chatsPerPage, _] = useState(10);
+    const [isFetchingMoreMessages, setIsFetchingMoreMessages] = useState(undefined);
+    const [allMessagesFetched, setAllMessagesFetched] = useState(false);
+
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
 
@@ -80,6 +87,12 @@ const Board = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { pathname } = location;
+
+    useEffect(() => {
+        if (isRemoved) {
+            navigate('/notfound');
+        }
+    }, [isRemoved])
 
     useEffect(() => {
         if (!isDataLoaded) return;
@@ -106,24 +119,13 @@ const Board = () => {
     }, [isDataLoaded, focusedListIndex, focusedCardIndex]);
 
     useEffect(() => {
-        if (isRemoved) {
-            navigate('/notfound');
-        }
-    }, [isRemoved])
-
-    useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-        window.addEventListener('keydown', handleKeyPress);
-
         socket.emit("joinBoard", { boardId, username: auth?.user?.username });
         setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
 
         const getBoardData = async () => {
             const boardsResponse = await axiosPrivate.get(`/boards/${boardId}`);
-            const chatsResponse = await axiosPrivate.get(`/chats/b/${boardId}`);
             setBoardState(boardsResponse.data);
             setTitle(boardsResponse.data.board.title);
-            setChats(chatsResponse.data.messages.reverse());
             setIsDataLoaded(true);
         }
 
@@ -133,33 +135,36 @@ const Board = () => {
             navigate("/notfound");
         });
 
+        // fetching messages
+        if (shouldFetchMessages.current) {
+            fetchMessages().catch(err => {
+                console.log(err);
+            });
+
+            shouldFetchMessages.current = false;
+        }
+
         return () => {
-            window.removeEventListener('keydown', handleKeyPress);
             socket.emit("disconnectFromBoard");
         };
     }, [pathname]);
 
-    const handleKeyPress = (e) => {
-        const isInputField = e.target.tagName.toLowerCase() === 'input';
-        const isTextAreaField = e.target.tagName.toLowerCase() === 'textarea';
+    const fetchMessages = async () => {
+        setIsFetchingMoreMessages(true);
 
-        if (isInputField || isTextAreaField) return;
+        try {
+            const chatsResponse = await axiosPrivate.get(`/chats/b/${boardId}?perPage=${chatsPerPage}&page=${chatsPage}`);
+            const newMessages = chatsResponse.data.messages.reverse();
 
-        switch (e.key) {
-            case 'A':
-                window.scrollTo({ left: 0, top: 0, behavior: 'smooth' });
-                break;
-            case 'D':
-                window.scrollTo({ left: document.body.scrollWidth, top: 0, behavior: 'smooth' });
-                break;
-            case 'a':
-                window.scrollBy({ left: -400, top: 0, behavior: 'smooth' });
-                break;
-            case 'd':
-                window.scrollBy({ left: 400, top: 0, behavior: 'smooth' });
-                break;
-            default:
-                break;
+            if (newMessages.length === 0) {
+                setAllMessagesFetched(true);
+            } else {
+                setChats(prevMessages => [...newMessages, ...prevMessages]);
+                setChatsPage(prevPage => prevPage + 1);
+            }
+        } catch (err) {
+            console.log(err);
+            setIsFetchingMoreMessages(false);
         }
     };
 
@@ -258,7 +263,7 @@ const Board = () => {
             setChats(prev => {
                 return prev.map(chat => chat.trackedId === trackedId ? { ...chat, createdAt: createdAt } : chat);
             });
-            socket.emit("sendMessage", { ...newMessage, sentBy: { ...newMessage.sentBy, username: auth?.user?.username } });
+            socket.emit("sendMessage", { ...newMessage, createdAt: chatMsg.createdAt, sentBy: { ...newMessage.sentBy, username: auth?.user?.username } });
         } catch (err) {
             setChats(prev => {
                 return prev.map(chat => chat.trackedId === msgTrackedId ? { ...chat, error: true } : chat);
@@ -341,6 +346,12 @@ const Board = () => {
                 setOpenFloat={setOpenFloatingChat}
                 sendMessage={handleSendMessage}
                 clearMessages={handleClearChatMessages}
+
+                isFetchingMore={isFetchingMoreMessages}
+                setIsFetchingMore={setIsFetchingMoreMessages}
+                allMessagesFetched={allMessagesFetched}
+
+                fetchMessages={fetchMessages}
             />
 
             <FloatingChat
@@ -349,6 +360,12 @@ const Board = () => {
                 setOpenChatBox={setOpenChatBox}
                 sendMessage={handleSendMessage}
                 clearMessages={handleClearChatMessages}
+
+                isFetchingMore={isFetchingMoreMessages}
+                setIsFetchingMore={setIsFetchingMoreMessages}
+                allMessagesFetched={allMessagesFetched}
+
+                fetchMessages={fetchMessages}
             />
 
             <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4">
