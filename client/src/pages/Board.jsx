@@ -11,6 +11,10 @@ import CopyBoardForm from "../components/board/CopyBoardForm";
 import FloatingChat from "../components/chat/FloatingChat";
 import MoveListForm from "../components/list/MoveListForm";
 import PinnedBoards from "../components/board/PinnedBoards";
+import CardDetail from "../components/card/CardDetail";
+import CardQuickEditor from "../components/card/CardQuickEditor";
+import { lexorank } from '../utils/class/Lexorank';
+
 import useAuth from "../hooks/useAuth";
 import useKeyBinds from "../hooks/useKeyBinds";
 
@@ -25,6 +29,19 @@ const Board = () => {
         setBoardTitle,
         setChats,
         isRemoved,
+
+        focusedCard,
+        setFocusedCard,
+
+        openCardDetail,
+        setOpenCardDetail,
+
+        openedCardQuickEditor,
+        openedCard,
+
+        addCopiedCard,
+        deleteCard,
+
         socket
     } = useBoardState();
 
@@ -44,6 +61,10 @@ const Board = () => {
         setOpenInvitationForm,
         openAddList,
         setOpenAddList,
+        focusedListIndex,
+        setFocusedListIndex,
+        focusedCardIndex,
+        setFocusedCardIndex,
     } = useKeyBinds();
 
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
@@ -60,6 +81,30 @@ const Board = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { pathname } = location;
+
+    useEffect(() => {
+        if (!isDataLoaded) return;
+
+        const totalList = boardState.lists.length;
+
+        if (focusedListIndex > totalList - 1) {
+            setFocusedListIndex(totalList - 1);
+            return;
+        }
+
+        const focusedCard = boardState.lists[focusedListIndex]?.cards[focusedCardIndex]?._id;
+        if (!focusedCard) {
+            if (focusedCardIndex < 0) {
+                setFocusedCardIndex(boardState.lists[focusedListIndex]?.cards.length - 1);
+            }
+
+            if (focusedCardIndex > boardState.lists[focusedListIndex]?.cards.length - 1) {
+                setFocusedCardIndex(0);
+            }
+        }
+
+        setFocusedCard(focusedCard);
+    }, [isDataLoaded, focusedListIndex, focusedCardIndex]);
 
     useEffect(() => {
         if (isRemoved) {
@@ -91,6 +136,7 @@ const Board = () => {
 
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
+            socket.emit("disconnectFromBoard");
         };
     }, [pathname]);
 
@@ -160,6 +206,39 @@ const Board = () => {
         }
     };
 
+    const handleDeleteCard = async (card) => {
+        try {
+            await axiosPrivate.delete(`/cards/${card._id}`);
+            deleteCard(card.listId, card._id);
+            socket.emit('deleteCard', { listId: card.listId, cardId: card._id });
+        } catch (err) {
+            console.log(err);
+            alert('Failed to delete card');
+        }
+    };
+
+    const handleCopyCard = async (card) => {
+        try {
+            const currentList = boardState.lists.find(list => list._id == card.listId);
+            const cards = currentList.cards;
+
+            const currentIndex = cards.indexOf(card);
+            const [rank, ok] = lexorank.insert(cards[currentIndex]?.order, cards[currentIndex + 1]?.order);
+
+            if (!ok) return;
+
+            const response = await axiosPrivate.post(`/cards/${card._id}/copy`, JSON.stringify({ rank }));
+            const { newCard } = response.data;
+
+            addCopiedCard(cards, newCard, currentIndex);
+
+            socket.emit("copyCard", { cards, card: newCard, index: currentIndex });
+        } catch (err) {
+            console.log(err);
+            alert('Failed to create a copy of this card');
+        }
+    };
+
     const handleSendMessage = async (value) => {
         try {
             const response = await axiosPrivate.post(`/chats/b/${boardState.board._id}`, JSON.stringify({ content: value }));
@@ -224,6 +303,28 @@ const Board = () => {
                 <CopyBoardForm
                     open={openCopyBoardForm}
                     setOpen={setOpenCopyBoardForm}
+                />
+            }
+
+            {
+                openedCardQuickEditor?.open &&
+                <CardQuickEditor
+                    card={openedCardQuickEditor.card}
+                    attribute={openedCardQuickEditor.attribute}
+                    open={openedCardQuickEditor.open}
+                    handleDeleteCard={handleDeleteCard}
+                    handleCopyCard={handleCopyCard}
+                />
+            }
+
+            {
+                openCardDetail &&
+                <CardDetail
+                    card={openedCard}
+                    open={openCardDetail}
+                    setOpen={setOpenCardDetail}
+                    handleDeleteCard={handleDeleteCard}
+                    handleCopyCard={handleCopyCard}
                 />
             }
 

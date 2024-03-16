@@ -1,10 +1,13 @@
 import { useRef, useState, useEffect } from "react";
 import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import HighlightPicker from "./HighlightPicker";
+import QuickEditorHighlightPicker from "./QuickEditorHighlightPicker";
 
-const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, handleDeleteCard, handleCopyCard }) => {
+const CardQuickEditor = ({ open, setOpen, card, attribute, handleCopyCard, handleDeleteCard }) => {
     const {
+        setOpenedCardQuickEditor,
+        setOpenCardDetail,
+        setOpenedCard,
         setCardTitle,
         socket,
     } = useBoardState();
@@ -31,16 +34,22 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, ha
         };
     }, []);
 
+    const close = () => {
+        setOpenedCardQuickEditor(prev => {
+            return { ...prev, open: false }
+        });
+    };
+
     const handleCloseOnEscape = (e) => {
         if (e.key == 'Escape') {
-            setOpen(false);
+            close();
         }
     };
 
     const handleClose = (e) => {
         if (e.target === e.currentTarget) {
             setInitialTitle(textAreaRef.current.value);
-            setOpen(false);
+            close();
         }
     }
 
@@ -76,27 +85,32 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, ha
         if (e.key == 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleSetCardTitle();
-            setOpen(false);
+            close();
         }
     };
 
     const handleSaveButtonOnClick = () => {
         handleSetCardTitle();
-        setOpen(false);
+        close();
     };
 
     const handleOpenCardDetail = () => {
-        setOpen(false);
         setOpenCardDetail(true);
-    };
-
-    const deleteCard = () => {
-        handleDeleteCard();
-        setOpen(false);
+        setOpenedCard(card);
+        close();
     };
 
     const handleToggleHighlightPicker = () => {
         setOpenHighlightPicker(prev => !prev);
+    };
+
+    const deleteCard = () => {
+        handleDeleteCard(card);
+        close();
+    };
+
+    const copyCard = () => {
+        handleCopyCard(card);
     };
 
     return (
@@ -127,7 +141,7 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, ha
                         value={initialTitle}
                     />
                     <div className="flex flex-col gap-2 absolute top-0 -right-1 translate-x-[100%] justify-start items-start w-[200px]">
-                        {openHighlightPicker && <HighlightPicker card={card} />}
+                        {openHighlightPicker && <QuickEditorHighlightPicker card={card} />}
 
                         <button
                             onClick={() => handleOpenCardDetail()}
@@ -143,7 +157,7 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, ha
                         </button>
 
                         <button
-                            onClick={() => handleCopyCard()}
+                            onClick={() => copyCard()}
                             className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-800 px-3 py-1 flex--center opacity-80">
                             create a copy
                         </button>

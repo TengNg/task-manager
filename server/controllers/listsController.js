@@ -80,7 +80,7 @@ const copyList = async (req, res) => {
 
     const newList = new List({
         _id: newListId,
-        title: title + ' (copied)',
+        title,
         order: rank,
         boardId,
     });

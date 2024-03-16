@@ -11,6 +11,7 @@ import CardDetailInfo from "./CardDetailInfo";
 const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
     const {
         boardState,
+        setOpenedCard,
         setCardDescription,
         setCardTitle,
         setCardOwner,
@@ -42,6 +43,11 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
             const response = await axiosPrivate.put(`/cards/${card._id}/member/update`, JSON.stringify({ ownerName: memberName }));
             const cardOwner = response.data.newCard.owner || "";
             setCardOwner(card._id, card.listId, cardOwner);
+
+            setOpenedCard(prev => {
+                return { ...prev, owner: cardOwner };
+            });
+
             socket.emit("updateCardOwner", { cardId: card._id, listId: card.listId, username: cardOwner });
         } catch (err) {
             console.log(err);
@@ -104,9 +110,13 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
 
     const deleteCard = () => {
         if (confirm('Are you want to delete this card ?')) {
-            handleDeleteCard();
+            handleDeleteCard(card);
             setOpen(false);
         }
+    }
+
+    const copyCard = () => {
+        handleCopyCard(card);
     }
 
     return (
@@ -170,7 +180,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
                             <div className="flex flex-col items-start gap-2">
                                 <TextArea
                                     className="border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 max-h-[300px] break-words box-border text-[0.75rem] py-2 px-3 w-[90%] text-gray-600 bg-gray-100 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-none"
-                                    autoFocus={true}
+                                    autoFocus={false}
                                     onBlur={(e) => {
                                         confirmDescription(e)
                                     }}
@@ -196,7 +206,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
 
                         <div>
                             <button
-                                onClick={() => handleCopyCard()}
+                                onClick={copyCard}
                                 className={`flex w-full justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold`}
                             >
                                 <FontAwesomeIcon icon={faCopy} />

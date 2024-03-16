@@ -1,27 +1,25 @@
-import { useState, useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Draggable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faAlignLeft } from '@fortawesome/free-solid-svg-icons';
-import CardQuickEditor from "./CardQuickEditor";
-import CardDetail from './CardDetail';
-import { axiosPrivate } from '../../api/axios';
 import useBoardState from '../../hooks/useBoardState';
-import { lexorank } from "../../utils/class/Lexorank";
 import { highlightColorsRGBA } from "../../data/highlights";
 
 const Card = ({ index, listIndex, card }) => {
-    const [openQuickEditor, setOpenQuickEditor] = useState(false);
-    const [openCardDetail, setOpenCardDetail] = useState(false);
-    const [cardAttribute, setCardAttribute] = useState({});
-
     const {
-        deleteCard,
-        socket,
-        boardState,
-        addCopiedCard,
+        setOpenCardDetail,
+        setOpenedCard,
+        setOpenedCardQuickEditor,
+        focusedCard,
     } = useBoardState();
 
     const cardRef = useRef();
+
+    useEffect(() => {
+        if (focusedCard === card._id) {
+            cardRef.current.focus();
+        }
+    }, [focusedCard]);
 
     const handleOpenQuickEditor = (e) => {
         e.stopPropagation();
@@ -31,45 +29,18 @@ const Card = ({ index, listIndex, card }) => {
             const left = rect.left + window.scrollX;
             const width = rect.width;
             const height = rect.height;
-            setCardAttribute({ top, left, width, height });
+
+            setOpenedCardQuickEditor({
+                open: true,
+                card: card,
+                attribute: { top, left, width, height },
+            })
         }
-        setOpenQuickEditor(true);
     };
 
-    const handleOpenCardDetail = () => {
+    const handleOpenCardDetail = (e) => {
+        setOpenedCard(card);
         setOpenCardDetail(true);
-    };
-
-    const handleDeleteCard = async () => {
-        try {
-            await axiosPrivate.delete(`/cards/${card._id}`);
-            deleteCard(card.listId, card._id);
-            socket.emit('deleteCard', { listId: card.listId, cardId: card._id });
-        } catch (err) {
-            alert('Failed to delete card');
-        }
-    };
-
-    const handleCopyCard = async () => {
-        try {
-            const currentList = boardState.lists.find(list => list._id == card.listId);
-            const cards = currentList.cards;
-
-            const currentIndex = cards.indexOf(card);
-            const [rank, ok] = lexorank.insert(cards[currentIndex]?.order, cards[currentIndex + 1]?.order);
-
-            if (!ok) return;
-
-            const response = await axiosPrivate.post(`/cards/${card._id}/copy`, JSON.stringify({ rank }));
-            const { newCard } = response.data;
-
-            addCopiedCard(cards, newCard, currentIndex);
-
-            socket.emit("copyCard", { cards, card: newCard, index: currentIndex });
-        } catch (err) {
-            console.log(err);
-            alert('Failed to create a copy of this card');
-        }
     };
 
     const getStyle = (style, _) => {
@@ -82,31 +53,6 @@ const Card = ({ index, listIndex, card }) => {
 
     return (
         <>
-            {
-                openCardDetail &&
-                <CardDetail
-                    card={card}
-                    open={openCardDetail}
-                    setOpen={setOpenCardDetail}
-                    handleDeleteCard={handleDeleteCard}
-                    handleCopyCard={handleCopyCard}
-                />
-            }
-
-            {
-                openQuickEditor &&
-                <CardQuickEditor
-                    card={card}
-                    attribute={cardAttribute}
-                    open={openQuickEditor}
-                    setOpen={setOpenQuickEditor}
-                    openCardDetail={openCardDetail}
-                    setOpenCardDetail={setOpenCardDetail}
-                    handleDeleteCard={handleDeleteCard}
-                    handleCopyCard={handleCopyCard}
-                />
-            }
-
             <Draggable
                 key={card._id}
                 draggableId={card._id}
@@ -123,16 +69,12 @@ const Card = ({ index, listIndex, card }) => {
                         tabIndex={listIndex + 1}
                         onKeyDown={(e) => {
                             if (e.key == 'Enter') {
+                                e.preventDefault();
                                 handleOpenCardDetail();
                                 return;
                             };
-                            if (e.key == 'q') {
-                                e.preventDefault(); // need this to not set the textarea value when open CardQuickEditor
-                                handleOpenQuickEditor(e);
-                                return;
-                            };
                         }}
-                        className={`w-full rounded-md group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 bg-gray-50 relative hover:cursor-pointer focus:bg-sky-100 focus:outline-sky-50 focus:border-pink-900`}
+                        className={`${focusedCard === card._id && 'bg-teal-100'} w-full group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 bg-gray-50 relative hover:cursor-pointer`}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >

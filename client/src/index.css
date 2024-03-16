@@ -101,6 +101,10 @@ h1 {
     font-size: 3.5rem;
 }
 
+div:focus {
+    outline: none;
+}
+
 .top-left-auto {
     top: auto !important;
     left: auto !important;

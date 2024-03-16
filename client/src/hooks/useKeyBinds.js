@@ -11,18 +11,26 @@ const useKeyBinds = () => {
     const [openFloatingChat, setOpenFloatingChat] = useState(false);
     const [openInvitationForm, setOpenInvitationForm] = useState(false);
     const [openAddList, setOpenAddList] = useState(false);
+    const [focusedListIndex, setFocusedListIndex] = useState(-1);
+    const [focusedCardIndex, setFocusedCardIndex] = useState(0);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
             const key = event.key;
 
             if (event.ctrlKey) {
-                if (key === 'e'
+                if (
+                    key === 'e'
                     || key === 'x'
                     || key === 'm'
                     || key === 'i'
                     || key === 'l'
-                    || key === 's') {
+                    || key === 's'
+                    || key === 'ArrowLeft'
+                    || key === 'ArrowRight'
+                    || key === 'ArrowUp'
+                    || key === 'ArrowDown'
+                ) {
                     event.preventDefault();
                 }
             }
@@ -57,6 +65,36 @@ const useKeyBinds = () => {
 
                 if (key === 'e') {
                     setOpenPinnedBoards(prev => !prev);
+                    return;
+                }
+
+                if (key === 'ArrowLeft') {
+                    setFocusedListIndex(prev => {
+                        if (prev === 0) return prev;
+                        return prev - 1;
+                    });
+                    return;
+                }
+
+                if (key === 'ArrowRight') {
+                    setFocusedListIndex(prev => {
+                        return prev + 1;
+                    });
+                    return;
+                }
+
+                if (key === 'ArrowUp') {
+                    setFocusedCardIndex(prev => {
+                        if (prev === -1) return prev;
+                        return prev - 1;
+                    });
+                    return;
+                }
+
+                if (key === 'ArrowDown') {
+                    setFocusedCardIndex(prev => {
+                        return prev + 1;
+                    });
                     return;
                 }
             }
@@ -119,6 +157,10 @@ const useKeyBinds = () => {
         setOpenInvitationForm,
         openAddList,
         setOpenAddList,
+        focusedListIndex,
+        setFocusedListIndex,
+        focusedCardIndex,
+        setFocusedCardIndex,
     };
 }
 

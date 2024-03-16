@@ -12,7 +12,7 @@ const CardDetailInfo = ({ card, handleMemberSelectorOnChange }) => {
             <div className='flex flex-start items-center w-fit max-w-[20rem]'>
                 <span className='me-1'>owner: </span>
                 <select
-                    value={card.owner}
+                    value={card.owner || ""}
                     onChange={(e) => handleMemberSelectorOnChange(e)}
                     className={`font-medium cursor-pointer max-w-[10rem] rounded-md px-2 py-1 text-[0.75rem] appearance-none hover:bg-gray-300`}
                     style={{ backgroundColor: highlightColorsRGBA[`${card.highlight}`] }}

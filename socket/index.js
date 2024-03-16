@@ -34,7 +34,7 @@ io.on('connection', (socket) => {
         if (!userEntry) return;
 
         const userSocketId = userEntry[0];
-        socket.to(userSocketId).emit("memberKicked");
+        socket.to(boardId).emit("memberKicked", { userSocketId });
     });
 
     socket.on("closeBoard", (_) => {
@@ -134,6 +134,18 @@ io.on('connection', (socket) => {
         socket.to(boardId).emit("receiveMessage", data);
     });
 
+    socket.on("disconnectFromBoard", () => {
+        const boardId = boardIdMap.get(socket.id);
+        if (boardId) {
+            socket.leave(boardId);
+            boardIdMap.delete(socket.id);
+            delete usernameMap[socket.id];
+            console.log(`#disconnectFromBoard: User with socket ID ${socket.id} disconnected from board ${boardId}`);
+        } else {
+            console.log(`#disconnectFromBoard: User with socket ID ${socket.id} disconnected without joining a board`);
+        }
+    });
+
     socket.on("disconnect", () => {
         const boardId = boardIdMap.get(socket.id);
         if (boardId) {
@@ -144,7 +156,6 @@ io.on('connection', (socket) => {
         } else {
             console.log(`User with socket ID ${socket.id} disconnected without joining a board`);
         }
-
     });
 });
 

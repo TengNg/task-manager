@@ -85,7 +85,7 @@ const copyCard = async (req, res) => {
     const newCard = new Card({
         _id: new mongoose.Types.ObjectId(),
         order: rank,
-        title: title + " (copied)",
+        title,
         description,
         listId,
         owner,

@@ -9,6 +9,11 @@ export const BoardStateContextProvider = ({ children }) => {
     const [chats, setChats] = useState([]);
     const [isRemoved, setIsRemoved] = useState(false);
     const [openMoveListForm, setOpenMoveListForm] = useState(false);
+    const [focusedCard, setFocusedCard] = useState();
+    const [openCardDetail, setOpenCardDetail] = useState(false);
+    const [openedCard, setOpenedCard] = useState(undefined);
+
+    const [openedCardQuickEditor, setOpenedCardQuickEditor] = useState(undefined);
 
     const [listToMove, setListToMove] = useState();
 
@@ -18,8 +23,11 @@ export const BoardStateContextProvider = ({ children }) => {
                 setIsRemoved(true);
             });
 
-            socket.on("memberKicked", (_) => {
-                window.location.reload();
+            socket.on("memberKicked", (data) => {
+                const { userSocketId } = data;
+                if (socket.id === userSocketId) {
+                    window.location.reload();
+                }
             });
 
             socket.on("memberLeaved", (data) => {
@@ -175,6 +183,19 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
+    const setCardDetailHighlight = (highlight) => {
+        setOpenedCard(prev => {
+
+            return { ...prev, highlight }
+        });
+    };
+
+    const setCardQuickEditorHighlight = (highlight) => {
+        setOpenedCardQuickEditor(prev => {
+            return { ...prev, card: { ...prev.card, highlight } }
+        });
+    };
+
     const setCardOwner = (cardId, listId, value) => {
         setBoardState(prev => {
             return {
@@ -303,13 +324,28 @@ export const BoardStateContextProvider = ({ children }) => {
                 isRemoved,
                 setIsRemoved,
 
-                socket,
+                openedCard,
+                setOpenedCard,
+
+                openCardDetail,
+                setOpenCardDetail,
+
+                openedCardQuickEditor,
+                setOpenedCardQuickEditor,
+
+                setCardDetailHighlight,
+                setCardQuickEditorHighlight,
 
                 openMoveListForm,
                 setOpenMoveListForm,
 
                 listToMove,
                 setListToMove,
+
+                focusedCard,
+                setFocusedCard,
+
+                socket,
             }}
         >
             {children}

@@ -89,7 +89,7 @@ const Activities = () => {
                             const { _id, invitedByUserId: sender, createdAt, status, boardId } = item;
                             return <div
                                 key={index}
-                                className={`button--style--rounded border-black flex items-center p-3 py-4 rounded-lg hover:opacity-80 transition-all
+                                className={`button--style--rounded rounded-none border-gray-700 shadow-gray-700 flex items-center p-3 py-4 rounded-lg hover:opacity-80 transition-all
                                                         ${status === "accepted" ? 'bg-blue-200' : status === "rejected" ? 'bg-red-200' : 'bg-gray-50'}`}
                                 onClick={() => status === "accepted" && navigate(`/b/${boardId}`)}
                             >
