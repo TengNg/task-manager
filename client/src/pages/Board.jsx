@@ -72,9 +72,8 @@ const Board = () => {
     const [pinned, setPinned] = useState(false);
 
     // chat messages ==================================================================================================
-    const shouldFetchMessages = useRef(true);
     const [chatsPage, setChatsPage] = useState(1);
-    const [chatsPerPage, _] = useState(10);
+    const [chatsPerPage, setChatsPerPage] = useState(10);
     const [isFetchingMoreMessages, setIsFetchingMoreMessages] = useState(undefined);
     const [allMessagesFetched, setAllMessagesFetched] = useState(false);
 
@@ -122,27 +121,31 @@ const Board = () => {
         socket.emit("joinBoard", { boardId, username: auth?.user?.username });
         setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
 
-        const getBoardData = async () => {
+        setChats([]);
+        setIsDataLoaded(false);
+
+        const fetchData = async () => {
             const boardsResponse = await axiosPrivate.get(`/boards/${boardId}`);
+            const chatsResponse = await axiosPrivate.get(`/chats/b/${boardId}?perPage=10&page=1`);
+            const newMessages = chatsResponse.data.messages.reverse();
+
             setBoardState(boardsResponse.data);
             setTitle(boardsResponse.data.board.title);
+
+            setChats(newMessages);
+            setChatsPage(2);
+
+            setOpenChatBox(false);
+            setOpenFloatingChat(false);
+
             setIsDataLoaded(true);
         }
 
-        getBoardData().catch(err => {
+        fetchData().catch(err => {
             console.log(err);
-            setIsDataLoaded(false);
             navigate("/notfound");
+            setIsDataLoaded(false);
         });
-
-        // fetching messages
-        if (shouldFetchMessages.current) {
-            fetchMessages().catch(err => {
-                console.log(err);
-            });
-
-            shouldFetchMessages.current = false;
-        }
 
         return () => {
             socket.emit("disconnectFromBoard");
@@ -375,6 +378,7 @@ const Board = () => {
                 setIsFetchingMore={setIsFetchingMoreMessages}
                 allMessagesFetched={allMessagesFetched}
 
+                isFetching={isDataLoaded}
                 fetchMessages={fetchMessages}
             />
 
@@ -390,6 +394,7 @@ const Board = () => {
                 setIsFetchingMore={setIsFetchingMoreMessages}
                 allMessagesFetched={allMessagesFetched}
 
+                isFetching={isDataLoaded}
                 fetchMessages={fetchMessages}
             />
 
