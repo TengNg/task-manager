@@ -60,7 +60,7 @@ const deleteMessage = async (req, res) => {
     if (!foundUser) return res.status(403).json({ msg: "cannot send message, user not found" });
 
     const deletedMessage = await Chat.findOneAndDelete({ trackedId });
-    res.status(200).json({ msg: "message deleted" });
+    res.status(200).json({ msg: "message deleted", deletedMessage });
 };
 
 const clearMessages = async (req, res) => {

@@ -115,8 +115,13 @@ export const BoardStateContextProvider = ({ children }) => {
             });
 
             socket.on("receiveMessage", (data) => {
-                console.log(data);
                 setChats(prev => [...prev, data]);
+            });
+
+            socket.on("messageDeleted", (data) => {
+                setChats(prev => {
+                    return prev.filter(chat => chat.trackedId !== data.trackedId);
+                });
             });
         }
         return () => {

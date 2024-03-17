@@ -11,6 +11,7 @@ const FloatingChat = ({
     open,
     setOpen,
     sendMessage,
+    deleteMessage,
     clearMessages,
 
     fetchMessages,
@@ -101,9 +102,11 @@ const FloatingChat = ({
                         chats.map((item, index) => {
                             return <Chat
                                 padding={{ x: 'none', y: 'none' }}
+                                withUserIcon={true}
                                 withSeparator={true}
                                 key={index}
                                 chat={item}
+                                deleteMessage={deleteMessage}
                             />
                         })
                     }

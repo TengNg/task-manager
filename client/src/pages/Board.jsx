@@ -271,6 +271,29 @@ const Board = () => {
         }
     };
 
+    const handleDeleteMessage = async (trackedId) => {
+        try {
+            if (confirm('Remove this message, are you sure?')) {
+                const response = await axiosPrivate.delete(`/chats/b/${boardState.board._id}/chats/${trackedId}`);
+                const deletedMessage = response.data?.deletedMessage;
+
+                if (!deletedMessage) {
+                    alert('Failed to delete this message');
+                    return;
+                }
+
+                setChats(prev => {
+                    return prev.filter(chat => chat.trackedId !== deletedMessage.trackedId);
+                });
+
+                socket.emit('deleteMessage', { trackedId: deletedMessage.trackedId });
+            }
+        } catch (err) {
+            alert('Failed to delete this message');
+            console.log(err);
+        }
+    };
+
     const handleClearChatMessages = async () => {
         try {
             if (confirm('All chat messages will be clear, are you sure ?')) {
@@ -345,6 +368,7 @@ const Board = () => {
                 setOpen={setOpenChatBox}
                 setOpenFloat={setOpenFloatingChat}
                 sendMessage={handleSendMessage}
+                deleteMessage={handleDeleteMessage}
                 clearMessages={handleClearChatMessages}
 
                 isFetchingMore={isFetchingMoreMessages}
@@ -359,6 +383,7 @@ const Board = () => {
                 setOpen={setOpenFloatingChat}
                 setOpenChatBox={setOpenChatBox}
                 sendMessage={handleSendMessage}
+                deleteMessage={handleDeleteMessage}
                 clearMessages={handleClearChatMessages}
 
                 isFetchingMore={isFetchingMoreMessages}

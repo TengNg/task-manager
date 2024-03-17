@@ -129,15 +129,15 @@ io.on('connection', (socket) => {
     });
 
     socket.on("sendMessage", (data) => {
-
-        console.log('before: ', data);
-
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
-
-        console.log('after: ', data);
-
         socket.to(boardId).emit("receiveMessage", data);
+    });
+
+    socket.on("deleteMessage", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("messageDeleted", data);
     });
 
     socket.on("disconnectFromBoard", () => {

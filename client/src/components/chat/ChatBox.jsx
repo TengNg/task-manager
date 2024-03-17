@@ -11,6 +11,7 @@ const ChatBox = ({
     setOpen,
     setOpenFloat,
     sendMessage,
+    deleteMessage,
     clearMessages,
 
     fetchMessages,
@@ -90,6 +91,7 @@ const ChatBox = ({
                         return <Chat
                             key={index}
                             chat={item}
+                            deleteMessage={deleteMessage}
                             highlightOwnMessages={true}
                         />
                     })
