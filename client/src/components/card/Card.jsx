@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faAlignLeft } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from '../../hooks/useBoardState';
 import { highlightColorsRGBA } from "../../data/highlights";
+import dateFormatter from '../../utils/dateFormatter';
 
 const Card = ({ index, listIndex, card }) => {
     const {
@@ -11,13 +12,28 @@ const Card = ({ index, listIndex, card }) => {
         setOpenedCard,
         setOpenedCardQuickEditor,
         focusedCard,
+        setFocusedCard,
     } = useBoardState();
 
     const cardRef = useRef();
 
     useEffect(() => {
-        if (focusedCard === card._id) {
+        if (focusedCard?.id === card._id) {
             cardRef.current.focus();
+
+            const handleClickOutside = (event) => {
+                if (cardRef.current && !cardRef.current.contains(event.target)) {
+                    setFocusedCard(prev => {
+                        return { ...prev, highlight: false }
+                    });
+                }
+            };
+
+            document.addEventListener('mousedown', handleClickOutside);
+
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
         }
     }, [focusedCard]);
 
@@ -60,6 +76,7 @@ const Card = ({ index, listIndex, card }) => {
             >
                 {(provided, snapshot) => (
                     <div
+                        id="card-item"
                         ref={(element) => {
                             provided.innerRef(element)
                             cardRef.current = element;
@@ -74,10 +91,11 @@ const Card = ({ index, listIndex, card }) => {
                                 return;
                             };
                         }}
-                        className={`${focusedCard === card._id && 'bg-teal-100'} w-full group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 bg-gray-50 relative hover:cursor-pointer`}
+                        className={`${(focusedCard?.id === card._id && focusedCard.highlight) ? `bg-teal-100` : 'bg-gray-50'} w-full group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative`}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >
+
                         <p className="w-full h-full bg-inherit font-semibold text-gray-600 rounded-md py-1 px-2 focus:outline-none text-sm break-words whitespace-pre-line" >
                             {card.title}
                         </p>
@@ -94,9 +112,15 @@ const Card = ({ index, listIndex, card }) => {
                                     </span>
                                 </div>
                             }
+
                             {card.description != "" && <FontAwesomeIcon icon={faAlignLeft} size='xs' />}
+
                         </div>
 
+                        {
+                            (focusedCard?.id === card._id && focusedCard?.highlight)
+                            && <div class='text-[0.65rem] text-gray-700 mt-3 ms-2'>created: {dateFormatter(card.createdAt)}</div>
+                        }
 
                         <button
                             onClick={handleOpenQuickEditor}

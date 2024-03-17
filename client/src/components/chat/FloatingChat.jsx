@@ -5,10 +5,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faCompress } from '@fortawesome/free-solid-svg-icons';
 import Chat from './Chat';
 import ChatInput from './ChatInput';
-import Loading from '../ui/Loading';
 import useAuth from '../../hooks/useAuth';
 
-export default function FloatingChat({ open, setOpen, setOpenChatBox, sendMessage, loading, clearMessages }) {
+const FloatingChat = ({
+    open,
+    setOpen,
+    sendMessage,
+    deleteMessage,
+    clearMessages,
+
+    fetchMessages,
+    isFetchingMore,
+    setIsFetchingMore,
+    allMessagesFetched,
+}) => {
     const {
         chats,
         boardState,
@@ -22,6 +32,12 @@ export default function FloatingChat({ open, setOpen, setOpenChatBox, sendMessag
 
     useEffect(() => {
         messageEndRef.current.scrollIntoView({ block: 'end' });
+    }, [open]);
+
+    useEffect(() => {
+        if (!isFetchingMore) {
+            messageEndRef.current.scrollIntoView({ block: 'end' });
+        }
     }, [chats.length])
 
     const handleClose = () => {
@@ -37,6 +53,14 @@ export default function FloatingChat({ open, setOpen, setOpenChatBox, sendMessag
         clearMessages();
     };
 
+    const handleLoadMoreOnScroll = (e) => {
+        const { scrollTop } = e.currentTarget;
+        if (scrollTop === 0 && !allMessagesFetched) {
+            setIsFetchingMore(true);
+            fetchMessages();
+        }
+    };
+
     return (
         <>
             <div
@@ -45,13 +69,6 @@ export default function FloatingChat({ open, setOpen, setOpenChatBox, sendMessag
             </div>
 
             <div className={`fixed ${!open ? 'hidden' : 'block'} box--style flex pt-1 flex-col top-[5rem] right-0 left-[50%] overflow-auto -translate-x-[50%] w-[80%] md:w-[80%] lg:w-[80%] xl:w-[50%] 2xl:w-[50%] h-[75%] border-[2px] border-black z-50 cursor-auto bg-gray-200`}>
-
-                <Loading
-                    loading={loading}
-                    position={'absolute'}
-                    displayText={'Sending message...'}
-                    fontSize={'0.75rem'}
-                />
 
                 <div className="flex justify-between items-center border-[1px] border-b-black pb-2 mx-3">
                     <div>Chats</div>
@@ -77,16 +94,19 @@ export default function FloatingChat({ open, setOpen, setOpenChatBox, sendMessag
                     </div>
                 </div>
 
-                <div className='relative flex-1 w-full border-red-100 flex flex-col gap-3 overflow-auto py-3 px-3'>
+                <div
+                    onScroll={handleLoadMoreOnScroll}
+                    className='relative flex-1 w-full border-red-100 flex flex-col gap-3 overflow-auto py-3 px-3'
+                >
                     {
                         chats.map((item, index) => {
                             return <Chat
-                                avatar={{ bgColor: 'gray', username: item.sentBy.username, size: 'md' }}
                                 padding={{ x: 'none', y: 'none' }}
+                                withUserIcon={true}
                                 withSeparator={true}
-                                withRightArrow={true}
                                 key={index}
                                 chat={item}
+                                deleteMessage={deleteMessage}
                             />
                         })
                     }
@@ -103,3 +123,5 @@ export default function FloatingChat({ open, setOpen, setOpenChatBox, sendMessag
         </>
     )
 }
+
+export default FloatingChat

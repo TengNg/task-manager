@@ -1,8 +1,8 @@
 import dateFormatter from "../../utils/dateFormatter";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import Avatar from "../avatar/Avatar";
 import useAuth from "../../hooks/useAuth";
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark, faCircleUser } from '@fortawesome/free-solid-svg-icons';
 
 const MESSAGE_PADDING = {
     x: {
@@ -22,52 +22,61 @@ const MESSAGE_PADDING = {
 
 const Chat = ({
     chat,
-    avatar = null,
+    deleteMessage,
+    withUserIcon = false,
     withSeparator = false,
-    withRightArrow = false,
     highlightOwnMessages = false,
     padding = {
         x: MESSAGE_PADDING.x.sm,
         y: MESSAGE_PADDING.y.sm
     },
-    identifier = {
-        username: false,
-        avatarColor: false,
-    },
 }) => {
     const { auth } = useAuth();
-    const { content, sentBy, createdAt, error } = chat;
+    const { trackedId, content, sentBy, createdAt, error } = chat;
 
     return (
-        <div className={`w-full h-fit flex justify-start items-start px-1 gap-2 ${withSeparator && 'border-b-[1px] border-gray-300 pb-2'}`}>
-            {avatar && <Avatar bgColor={avatar.bgColor} username={avatar.username} size={avatar.size} />}
+        <div className={`group relative w-full h-fit flex justify-start items-start px-1 gap-2 ${withSeparator && 'border-b-[1px] border-gray-300 pb-2'}`}>
             <div className="flex flex-col w-full">
 
                 <div className='flex w-full justify-start items-start'>
                     <div className='flex w-full gap-2 justify-between flex-wrap'>
-                        <p className="text-[0.75rem] font-bold text-gray-600">{sentBy?.username}</p>
+                        <p
+                            className={`text-[0.75rem] font-bold ${chat.sentBy.username === auth?.user?.username ? 'text-teal-600' : 'text-gray-600'}`}
+                        >
+                            {sentBy?.username}
+
+                            {
+                                withUserIcon &&
+                                chat.sentBy.username === auth?.user?.username &&
+                                <span className="ms-2">
+                                    <FontAwesomeIcon icon={faCircleUser} />
+                                </span>
+                            }
+                        </p>
                         {
                             !error
-                                ? <p className="text-[0.65rem] text-gray-600">{dateFormatter(createdAt)}</p>
+                                ? <p className="text-[0.65rem] text-gray-600">{createdAt ? dateFormatter(createdAt) : 'sending...'}</p>
                                 : <p className="text-[0.65rem] text-red-600">Failed to send this message</p>
                         }
                     </div>
                 </div>
 
-                <div className={`max-w-full w-fit flex justify-center items-center ${highlightOwnMessages && chat.sentBy.username === auth?.user?.username ? 'bg-blue-100' : 'bg-gray-200'} rounded-md ${padding.x} ${padding.y}`}>
-                    {
-                        withRightArrow &&
-                        <div className='me-3 mb-auto'>
-                            <FontAwesomeIcon icon={faArrowRight} size='sm' color="gray" />
-                        </div>
-                    }
-                    <div className="w-full break-words whitespace-pre-line text-[0.75rem] p-0 text-gray-600 font-semibold">
+                <div className={`max-w-[95%] w-fit flex justify-center items-center ${highlightOwnMessages && chat.sentBy.username === auth?.user?.username ? 'bg-teal-50 border-[1px] border-teal-600' : 'bg-gray-200'} rounded-md ${padding.x} ${padding.y}`}>
+                    <div className="w-full break-words whitespace-pre-line text-[0.75rem] p-[0.1rem] text-gray-600 font-semibold border-teal-200">
                         {content}
                     </div>
                 </div>
 
+                {chat.sentBy.username === auth?.user?.username &&
+                    <button
+                        onClick={() => deleteMessage(trackedId)}
+                        className='absolute top-[1.1rem] right-[0.2rem] text-transparent group-hover:text-gray-400'
+                    >
+                        <FontAwesomeIcon icon={faXmark} size='sm' />
+                    </button>}
+
             </div>
-        </div>
+        </div >
     )
 }
 

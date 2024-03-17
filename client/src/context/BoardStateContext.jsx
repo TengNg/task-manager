@@ -12,9 +12,7 @@ export const BoardStateContextProvider = ({ children }) => {
     const [focusedCard, setFocusedCard] = useState();
     const [openCardDetail, setOpenCardDetail] = useState(false);
     const [openedCard, setOpenedCard] = useState(undefined);
-
     const [openedCardQuickEditor, setOpenedCardQuickEditor] = useState(undefined);
-
     const [listToMove, setListToMove] = useState();
 
     useEffect(() => {
@@ -118,6 +116,12 @@ export const BoardStateContextProvider = ({ children }) => {
 
             socket.on("receiveMessage", (data) => {
                 setChats(prev => [...prev, data]);
+            });
+
+            socket.on("messageDeleted", (data) => {
+                setChats(prev => {
+                    return prev.filter(chat => chat.trackedId !== data.trackedId);
+                });
             });
         }
         return () => {

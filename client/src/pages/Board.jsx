@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom"
 import ListContainer from "../components/list/ListContainer";
 import useBoardState from "../hooks/useBoardState";
@@ -70,7 +70,13 @@ const Board = () => {
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
     const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
     const [pinned, setPinned] = useState(false);
-    const [sentChatLoading, setSentChatLoading] = useState(false);
+
+    // chat messages ==================================================================================================
+    const shouldFetchMessages = useRef(true);
+    const [chatsPage, setChatsPage] = useState(1);
+    const [chatsPerPage, _] = useState(10);
+    const [isFetchingMoreMessages, setIsFetchingMoreMessages] = useState(undefined);
+    const [allMessagesFetched, setAllMessagesFetched] = useState(false);
 
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -83,6 +89,12 @@ const Board = () => {
     const { pathname } = location;
 
     useEffect(() => {
+        if (isRemoved) {
+            navigate('/notfound');
+        }
+    }, [isRemoved])
+
+    useEffect(() => {
         if (!isDataLoaded) return;
 
         const totalList = boardState.lists.length;
@@ -92,7 +104,7 @@ const Board = () => {
             return;
         }
 
-        const focusedCard = boardState.lists[focusedListIndex]?.cards[focusedCardIndex]?._id;
+        const focusedCard = boardState.lists[focusedListIndex]?.cards[focusedCardIndex];
         if (!focusedCard) {
             if (focusedCardIndex < 0) {
                 setFocusedCardIndex(boardState.lists[focusedListIndex]?.cards.length - 1);
@@ -103,28 +115,17 @@ const Board = () => {
             }
         }
 
-        setFocusedCard(focusedCard);
+        setFocusedCard({ id: focusedCard?._id, highlight: true });
     }, [isDataLoaded, focusedListIndex, focusedCardIndex]);
 
     useEffect(() => {
-        if (isRemoved) {
-            navigate('/notfound');
-        }
-    }, [isRemoved])
-
-    useEffect(() => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-        window.addEventListener('keydown', handleKeyPress);
-
         socket.emit("joinBoard", { boardId, username: auth?.user?.username });
         setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
 
         const getBoardData = async () => {
             const boardsResponse = await axiosPrivate.get(`/boards/${boardId}`);
-            const chatsResponse = await axiosPrivate.get(`/chats/b/${boardId}`);
             setBoardState(boardsResponse.data);
             setTitle(boardsResponse.data.board.title);
-            setChats(chatsResponse.data.messages.reverse());
             setIsDataLoaded(true);
         }
 
@@ -134,33 +135,36 @@ const Board = () => {
             navigate("/notfound");
         });
 
+        // fetching messages
+        if (shouldFetchMessages.current) {
+            fetchMessages().catch(err => {
+                console.log(err);
+            });
+
+            shouldFetchMessages.current = false;
+        }
+
         return () => {
-            window.removeEventListener('keydown', handleKeyPress);
             socket.emit("disconnectFromBoard");
         };
     }, [pathname]);
 
-    const handleKeyPress = (e) => {
-        const isInputField = e.target.tagName.toLowerCase() === 'input';
-        const isTextAreaField = e.target.tagName.toLowerCase() === 'textarea';
+    const fetchMessages = async () => {
+        setIsFetchingMoreMessages(true);
 
-        if (isInputField || isTextAreaField) return;
+        try {
+            const chatsResponse = await axiosPrivate.get(`/chats/b/${boardId}?perPage=${chatsPerPage}&page=${chatsPage}`);
+            const newMessages = chatsResponse.data.messages.reverse();
 
-        switch (e.key) {
-            case 'A':
-                window.scrollTo({ left: 0, top: 0, behavior: 'smooth' });
-                break;
-            case 'D':
-                window.scrollTo({ left: document.body.scrollWidth, top: 0, behavior: 'smooth' });
-                break;
-            case 'a':
-                window.scrollBy({ left: -400, top: 0, behavior: 'smooth' });
-                break;
-            case 'd':
-                window.scrollBy({ left: 400, top: 0, behavior: 'smooth' });
-                break;
-            default:
-                break;
+            if (newMessages.length === 0) {
+                setAllMessagesFetched(true);
+            } else {
+                setChats(prevMessages => [...newMessages, ...prevMessages]);
+                setChatsPage(prevPage => prevPage + 1);
+            }
+        } catch (err) {
+            console.log(err);
+            setIsFetchingMoreMessages(false);
         }
     };
 
@@ -240,30 +244,61 @@ const Board = () => {
     };
 
     const handleSendMessage = async (value) => {
+        const msgTrackedId = crypto.randomUUID();
+
+        const newMessage = {
+            trackedId: msgTrackedId,
+            content: value,
+            sentBy: { username: auth?.user?.username },
+        };
+
+        setChats(prev => {
+            return [...prev, { ...newMessage }];
+        });
+
         try {
-            const response = await axiosPrivate.post(`/chats/b/${boardState.board._id}`, JSON.stringify({ content: value }));
-            const newMessage = response.data.chat;
-            setSentChatLoading(true);
+            const response = await axiosPrivate.post(`/chats/b/${boardState.board._id}`, JSON.stringify({ content: value, trackedId: newMessage.trackedId }));
+            const chatMsg = response.data.chat;
+            const { trackedId, createdAt } = chatMsg;
             setChats(prev => {
-                return [...prev, { ...newMessage, sentBy: { ...newMessage.sentBy, username: auth?.user?.username } }];
+                return prev.map(chat => chat.trackedId === trackedId ? { ...chat, createdAt: createdAt } : chat);
             });
-            socket.emit("sendMessage", { ...newMessage, sentBy: { ...newMessage.sentBy, username: auth?.user?.username } });
-            setSentChatLoading(false);
+            socket.emit("sendMessage", { ...newMessage, createdAt: chatMsg.createdAt, sentBy: { ...newMessage.sentBy, username: auth?.user?.username } });
         } catch (err) {
             setChats(prev => {
-                return [...prev, { content: value, error: true, sentBy: auth }];
+                return prev.map(chat => chat.trackedId === msgTrackedId ? { ...chat, error: true } : chat);
             });
-            setSentChatLoading(false);
+        }
+    };
+
+    const handleDeleteMessage = async (trackedId) => {
+        try {
+            if (confirm('Remove this message, are you sure?')) {
+                const response = await axiosPrivate.delete(`/chats/b/${boardState.board._id}/chats/${trackedId}`);
+                const deletedMessage = response.data?.deletedMessage;
+
+                if (!deletedMessage) {
+                    alert('Failed to delete this message');
+                    return;
+                }
+
+                setChats(prev => {
+                    return prev.filter(chat => chat.trackedId !== deletedMessage.trackedId);
+                });
+
+                socket.emit('deleteMessage', { trackedId: deletedMessage.trackedId });
+            }
+        } catch (err) {
+            alert('Failed to delete this message');
+            console.log(err);
         }
     };
 
     const handleClearChatMessages = async () => {
         try {
             if (confirm('All chat messages will be clear, are you sure ?')) {
-                setSentChatLoading(true);
                 await axiosPrivate.delete(`/chats/b/${boardState.board._id}`);
                 setChats([]);
-                setSentChatLoading(false);
             }
         } catch (err) {
             console.log(err);
@@ -333,8 +368,14 @@ const Board = () => {
                 setOpen={setOpenChatBox}
                 setOpenFloat={setOpenFloatingChat}
                 sendMessage={handleSendMessage}
-                loading={sentChatLoading}
+                deleteMessage={handleDeleteMessage}
                 clearMessages={handleClearChatMessages}
+
+                isFetchingMore={isFetchingMoreMessages}
+                setIsFetchingMore={setIsFetchingMoreMessages}
+                allMessagesFetched={allMessagesFetched}
+
+                fetchMessages={fetchMessages}
             />
 
             <FloatingChat
@@ -342,8 +383,14 @@ const Board = () => {
                 setOpen={setOpenFloatingChat}
                 setOpenChatBox={setOpenChatBox}
                 sendMessage={handleSendMessage}
-                loading={sentChatLoading}
+                deleteMessage={handleDeleteMessage}
                 clearMessages={handleClearChatMessages}
+
+                isFetchingMore={isFetchingMoreMessages}
+                setIsFetchingMore={setIsFetchingMoreMessages}
+                allMessagesFetched={allMessagesFetched}
+
+                fetchMessages={fetchMessages}
             />
 
             <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4">

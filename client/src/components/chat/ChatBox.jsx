@@ -5,9 +5,20 @@ import Chat from './Chat';
 import ChatInput from './ChatInput';
 import useBoardState from '../../hooks/useBoardState';
 import useAuth from '../../hooks/useAuth';
-import Loading from '../ui/Loading';
 
-const ChatBox = ({ open, setOpen, setOpenFloat, sendMessage, clearMessages, loading }) => {
+const ChatBox = ({
+    open,
+    setOpen,
+    setOpenFloat,
+    sendMessage,
+    deleteMessage,
+    clearMessages,
+
+    fetchMessages,
+    isFetchingMore,
+    setIsFetchingMore,
+    allMessagesFetched,
+}) => {
     const {
         boardState,
         chats,
@@ -19,6 +30,12 @@ const ChatBox = ({ open, setOpen, setOpenFloat, sendMessage, clearMessages, load
 
     useEffect(() => {
         messageEndRef.current.scrollIntoView({ block: 'end' });
+    }, [open]);
+
+    useEffect(() => {
+        if (!isFetchingMore) {
+            messageEndRef.current.scrollIntoView({ block: 'end' });
+        }
     }, [chats.length])
 
     const handleOpenFloat = () => {
@@ -30,15 +47,16 @@ const ChatBox = ({ open, setOpen, setOpenFloat, sendMessage, clearMessages, load
         clearMessages();
     };
 
+    const handleLoadMoreOnScroll = (e) => {
+        const { scrollTop } = e.currentTarget;
+        if (scrollTop === 0 && !allMessagesFetched) {
+            setIsFetchingMore(true);
+            fetchMessages();
+        }
+    };
+
     return (
         <div className={`${open ? 'flex' : 'hidden'} fixed flex-col border-[2px] border-black right-1 bottom-1 bg-white w-[300px] h-[400px] overflow-auto z-10`}>
-            <Loading
-                loading={loading}
-                position={'absolute'}
-                displayText={'Sending message...'}
-                fontSize={'0.75rem'}
-            />
-
             <div className='relative flex items-center gap-3 border-b-2 border-black bg-white px-3 py-2'>
                 <p className='flex-1 font-semibold text-gray-600'>Chats</p>
 
@@ -64,12 +82,16 @@ const ChatBox = ({ open, setOpen, setOpenFloat, sendMessage, clearMessages, load
                 </button>
             </div>
 
-            <div className='relative flex-1 w-full border-red-100 flex flex-col gap-3 overflow-y-auto p-1'>
+            <div
+                className='relative flex-1 w-full border-red-100 flex flex-col gap-3 overflow-y-auto p-1'
+                onScroll={handleLoadMoreOnScroll}
+            >
                 {
                     chats.map((item, index) => {
                         return <Chat
                             key={index}
                             chat={item}
+                            deleteMessage={deleteMessage}
                             highlightOwnMessages={true}
                         />
                     })
@@ -77,8 +99,9 @@ const ChatBox = ({ open, setOpen, setOpenFloat, sendMessage, clearMessages, load
                 <div style={{ float: "left", clear: "both" }} ref={messageEndRef}></div>
             </div>
 
-            <div className='bg-gray-200 px-2'>
+            <div className='bg-gray-200 px-2 mt-2'>
                 <ChatInput
+                    setIsFetchingMore={setIsFetchingMore}
                     sendMessage={sendMessage}
                 />
             </div>
