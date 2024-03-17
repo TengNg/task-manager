@@ -28,12 +28,12 @@ const QuickEditorHighlightPicker = ({ card }) => {
     };
 
     return (
-        <div className="absolute top-0 left-0 w-[150px] translate-x-[100%] flex flex-col gap-1 cursor-pointer">
+        <div className="absolute top-0 left-0 w-[100px] translate-x-[150%] flex flex-col gap-1 cursor-pointer">
             {
                 Object.keys(highlightColors).map((item, index) => {
                     return <div
                         key={index}
-                        className={`box-border w-full h-[25px] rounded-md border-[2px] hover:border-blue-400`}
+                        className={`box-border w-full h-[25px] border-[2px] hover:border-blue-400`}
                         style={{ background: `${highlightColors[item]}` }}
                         onClick={() => handleSetCardHighlight(highlightColors[item])}
                     >
@@ -42,7 +42,7 @@ const QuickEditorHighlightPicker = ({ card }) => {
             }
 
             <div
-                className={`w-full h-[25px] mt-1 rounded-md bg-transparent flex--center font-bold border-[2px] hover:border-blue-400 hover:text-blue-400 text-white text-[0.75rem]`}
+                className={`w-full h-[25px] mt-1 bg-transparent flex--center font-bold border-[2px] hover:border-blue-400 hover:text-blue-400 text-white text-[0.75rem]`}
                 onClick={() => handleSetCardHighlight(null)}
             >
                 <FontAwesomeIcon icon={faXmark} />

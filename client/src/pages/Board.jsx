@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom"
 import ListContainer from "../components/list/ListContainer";
 import useBoardState from "../hooks/useBoardState";
@@ -99,7 +99,7 @@ const Board = () => {
         const totalList = boardState.lists.length;
 
         if (focusedListIndex > totalList - 1) {
-            setFocusedListIndex(totalList - 1);
+            setFocusedListIndex(totalList - 2);
             return;
         }
 

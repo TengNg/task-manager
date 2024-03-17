@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { Draggable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faAlignLeft } from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare, faAlignLeft, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from '../../hooks/useBoardState';
 import { highlightColorsRGBA } from "../../data/highlights";
 import dateFormatter from '../../utils/dateFormatter';
@@ -91,7 +91,7 @@ const Card = ({ index, listIndex, card }) => {
                                 return;
                             };
                         }}
-                        className={`${(focusedCard?.id === card._id && focusedCard.highlight) ? `bg-teal-100` : 'bg-gray-50'} w-full group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative`}
+                        className={`bg-gray-50 w-full group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative`}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >
@@ -114,17 +114,37 @@ const Card = ({ index, listIndex, card }) => {
                             }
 
                             {card.description != "" && <FontAwesomeIcon icon={faAlignLeft} size='xs' />}
-
                         </div>
 
                         {
                             (focusedCard?.id === card._id && focusedCard?.highlight)
-                            && <div class='text-[0.65rem] text-gray-700 mt-3 ms-2'>created: {dateFormatter(card.createdAt)}</div>
+                            && (
+                                <>
+                                    <div className='font-thin text-[0.65rem] text-gray-700 mt-3 ms-[0.6rem]'>created: {dateFormatter(card.createdAt)}</div>
+                                    <div className='text-[0.8rem]' style={{ color: `${card.highlight == null ? '#4b5563' : `${card.highlight}`}` }} >
+                                        <div className='absolute top-0 left-1 rotate-45'>
+                                            <FontAwesomeIcon icon={faAngleLeft} />
+                                        </div>
+
+                                        <div className='absolute top-0 right-1 rotate-[135deg]'>
+                                            <FontAwesomeIcon icon={faAngleLeft} />
+                                        </div>
+
+                                        <div className='absolute bottom-0 left-1 -rotate-45'>
+                                            <FontAwesomeIcon icon={faAngleLeft} />
+                                        </div>
+
+                                        <div className='absolute bottom-0 right-1 -rotate-[135deg]'>
+                                            <FontAwesomeIcon icon={faAngleLeft} />
+                                        </div>
+                                    </div>
+                                </>
+                            )
                         }
 
                         <button
                             onClick={handleOpenQuickEditor}
-                            className="absolute right-1 top-1 text-transparent hover:bg-gray-200 group-hover:text-gray-500 transition-all w-[25px] h-[25px] d-flex justify-center items-center rounded-md">
+                            className="absolute right-2 top-2 text-transparent hover:bg-gray-200 group-hover:text-gray-500 transition-all w-[25px] h-[25px] d-flex justify-center items-center rounded-md">
                             <FontAwesomeIcon icon={faPenToSquare} size='sm' />
                         </button>
                     </div>

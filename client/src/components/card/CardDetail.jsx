@@ -126,7 +126,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
                 className="fixed box-border top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-500 opacity-40 z-50 cursor-auto">
             </div>
 
-            <div className="fixed box--style flex p-3 pb-6 flex-col top-[5rem] right-0 left-[50%] -translate-x-[50%] min-w-[700px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
+            <div className="fixed overflow-y-auto overflow-x-hidden box--style flex p-3 gap-3 flex-col top-[5rem] right-0 left-[50%] -translate-x-[50%] xl:w-[700px] sm:w-[90%] md:w-[75%] min-h-[450px] max-h-[75%] border-black border-[2px] z-50 cursor-auto bg-gray-200">
                 <div className="flex justify-start items start">
                     <div className="flex flex-col flex-1">
                         <TextArea
@@ -154,14 +154,12 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
                 {
                     card.highlight != null &&
                     <div
-                        className="w-1/4 mt-2 h-[1rem]"
+                        className="w-1/4 h-[1rem]"
                         style={{ backgroundColor: `${card.highlight}` }}
                     ></div>
                 }
 
-                <div className="bg-black h-[1px] w-[100%] my-4"></div>
-
-                <div className="w-full flex">
+                <div className="w-full flex border-b-[1px] border-t-[1px] py-4 border-black">
                     <div className="flex-1">
                         {
                             (card.description.trim() === "" && openDescriptionComposer === false) &&
@@ -179,30 +177,36 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
                             (card.description.trim() !== "" || openDescriptionComposer === true) &&
                             <div className="flex flex-col items-start gap-2">
                                 <TextArea
-                                    className="border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 max-h-[300px] break-words box-border text-[0.75rem] py-2 px-3 w-[90%] text-gray-600 bg-gray-100 leading-normal overflow-y-hidden resize-none font-medium placeholder-gray-400 focus:outline-none"
+                                    className="overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 max-h-[400px] break-words box-border text-[0.75rem] py-2 px-3 w-[95%] text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
                                     autoFocus={false}
                                     onBlur={(e) => {
                                         confirmDescription(e)
                                     }}
                                     placeholder={"Add more description..."}
                                     initialValue={card.description}
-                                    minHeight={'100px'}
+                                    minHeight={'125px'}
                                 />
                             </div>
                         }
 
                     </div>
 
-                    <div className="flex flex-col gap-3">
-                        <div className="relative">
-                            <button
-                                onClick={() => setOpenHighlightPicker(prev => !prev)}
-                                className={`flex w-full justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold ${openHighlightPicker && 'bg-gray-600 shadow-black text-white'}`}
-                            >
-                                <FontAwesomeIcon icon={faDroplet} />
-                            </button>
-                            {openHighlightPicker && <HighlightPicker card={card} />}
-                        </div>
+                    <div className="relative flex flex-col gap-3">
+
+                        {
+                            openHighlightPicker &&
+                            <HighlightPicker
+                                setOpen={setOpenHighlightPicker}
+                                card={card}
+                            />
+                        }
+
+                        <button
+                            onClick={() => setOpenHighlightPicker(prev => !prev)}
+                            className={`flex w-full justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold ${openHighlightPicker && 'bg-gray-600 shadow-black text-white'}`}
+                        >
+                            <FontAwesomeIcon icon={faDroplet} />
+                        </button>
 
                         <div>
                             <button
@@ -229,8 +233,6 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
                         </div>
                     </div>
                 </div>
-
-                <div className="bg-black h-[1px] w-[100%] my-4"></div>
 
                 <CardDetailInfo
                     card={card}

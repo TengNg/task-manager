@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import useAuth from "./useAuth";
-import { useNavigate } from "react-router-dom";
 
 const useKeyBinds = () => {
     const { auth } = useAuth();
 
-    const navigate = useNavigate();
     const [openPinnedBoards, setOpenPinnedBoards] = useState(false);
     const [openChatBox, setOpenChatBox] = useState(false);
     const [openFloatingChat, setOpenFloatingChat] = useState(false);
@@ -110,27 +108,6 @@ const useKeyBinds = () => {
             if (openPinnedBoards && key === 'Escape') {
                 setOpenPinnedBoards(false);
                 return;
-            }
-
-            const boards = auth?.user?.pinnedBoardIdCollection || {};
-            const boardIds = Object.keys(boards);
-            const boardCount = boardIds.length;
-            const numberPressed = parseInt(event.key, 10);
-            if (event.ctrlKey && boardCount >= 1) {
-                if (
-                    !isNaN(numberPressed)
-                    && numberPressed >= 1
-                    && numberPressed <= boardIds.length
-                    && boardIds[numberPressed - 1]
-                ) {
-                    navigate(`/b/${boardIds[numberPressed - 1]}`);
-                    return;
-                }
-
-                if (numberPressed === 0) {
-                    navigate(`/b/${boardIds[boardCount - 1]}`);
-                    return;
-                }
             }
         };
 

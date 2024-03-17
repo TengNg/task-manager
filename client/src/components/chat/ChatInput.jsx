@@ -6,25 +6,23 @@ const ChatInput = ({ sendMessage, withSentButton = false, setIsFetchingMore }) =
     const [message, setMessage] = useState("");
     const textAreaRef = useRef();
 
+    useEffect(() => {
+        const textarea = textAreaRef.current;
+        textarea.style.height = '2.35rem';
+        textarea.style.height = `${textarea.scrollHeight}px`;
+    }, []);
+
     const send = () => {
         sendMessage(textAreaRef.current.value.trim());
         setMessage("");
         textAreaRef.current.style.height = '2.35rem';
     };
 
-    useEffect(() => {
-        const textarea = textAreaRef.current;
-        textarea.style.height = '2rem';
-        const littleOffset = 4; // prevent resizing when start typing
-        textarea.style.height = `${textarea.scrollHeight + littleOffset}px`;
-    }, []);
-
     const handleTextAreaChanged = () => {
         const textarea = textAreaRef.current;
         setMessage(textarea.value);
-        const littleOffset = 4;
-        textarea.style.height = '2rem';
-        textarea.style.height = `${textarea.scrollHeight + littleOffset}px`;
+        textarea.style.height = '2.35rem';
+        textarea.style.height = `${textarea.scrollHeight}px`;
     };
 
     const handleKeyDown = (e) => {
@@ -61,7 +59,7 @@ const ChatInput = ({ sendMessage, withSentButton = false, setIsFetchingMore }) =
             {
                 withSentButton &&
                 <button
-                    className="d-flex justify-center items-center text-gray-500 border-[2px] border-gray-500 h-[38px] px-3 hover:text-white hover:bg-gray-500 transition-all"
+                    className="d-flex h-100 justify-center items-center h-[2.35rem] text-gray-500 border-[2px] border-gray-500 px-3 hover:text-white hover:bg-gray-500 transition-all"
                     onClick={handleSentButtonOnClick}
                 >
                     <FontAwesomeIcon icon={faArrowLeftLong} size='sm' />
