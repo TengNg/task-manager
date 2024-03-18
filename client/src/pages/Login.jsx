@@ -26,9 +26,9 @@ export default function Login() {
                 navigate('/boards', { replace: true });
             }
         }
-        isLoggedIn().catch(_ => {
+        isLoggedIn().catch(err => {
+            console.log(err);
             setSuccess(false);
-            usernameInputEl.current.focus();
         });
     }, []);
 

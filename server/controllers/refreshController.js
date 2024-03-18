@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const handleRefresh = async (req, res) => {
     const cookies = req.cookies;
-    if (!cookies?.token) return res.status(401).json({ msg: "error" });
+    if (!cookies?.token) return res.status(401).json({ msg: "currently not logged in" });
     const refreshToken = cookies.token;
 
     const foundUser = await User.findOne({ refreshToken }).select('-password -refreshToken');
