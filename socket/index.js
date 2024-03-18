@@ -140,6 +140,12 @@ io.on('connection', (socket) => {
         socket.to(boardId).emit("messageDeleted", data);
     });
 
+    socket.on("clearMessages", (_) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("messagesCleared");
+    });
+
     socket.on("disconnectFromBoard", () => {
         const boardId = boardIdMap.get(socket.id);
         if (boardId) {

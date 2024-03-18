@@ -123,6 +123,10 @@ export const BoardStateContextProvider = ({ children }) => {
                     return prev.filter(chat => chat.trackedId !== data.trackedId);
                 });
             });
+
+            socket.on("messagesCleared", (_) => {
+                setChats([]);
+            });
         }
         return () => {
             // socket.off('receiveMessage');

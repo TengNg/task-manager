@@ -301,6 +301,7 @@ const Board = () => {
         try {
             if (confirm('All chat messages will be clear, are you sure ?')) {
                 await axiosPrivate.delete(`/chats/b/${boardState.board._id}`);
+                socket.emit('clearMessages');
                 setChats([]);
             }
         } catch (err) {
