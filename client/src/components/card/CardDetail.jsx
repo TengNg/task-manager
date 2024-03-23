@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import TextArea from "../ui/TextArea";
 import useBoardState from "../../hooks/useBoardState";
 
@@ -8,8 +8,9 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HighlightPicker from "./HighlightPicker";
 import CardDetailInfo from "./CardDetailInfo";
 
-const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
+const CardDetail = ({ setOpen, handleDeleteCard, handleCopyCard, handleMoveCardToList }) => {
     const {
+        openedCard: card,
         boardState,
         setOpenedCard,
         setCardDescription,
@@ -20,6 +21,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
 
     const [openDescriptionComposer, setOpenDescriptionComposer] = useState(false);
     const [openHighlightPicker, setOpenHighlightPicker] = useState(false);
+
     const axiosPrivate = useAxiosPrivate();
 
     useEffect(() => {
@@ -54,12 +56,21 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
         }
     };
 
-    const listTitle = useCallback(() => {
-        return boardState.lists.find(list => list._id == card.listId).title
-    });
+    const listSelectOptions = useMemo(() => {
+        return boardState?.lists?.map(list => { return { value: list._id, title: list.title } }) || []
+    }, [boardState?.lists]);
+
+    const listTitle = useMemo(() => {
+        return boardState.lists.find(list => list._id == card.listId)?.title || "[?]";
+    }, [boardState.lists, card.listId]);
 
     const handleClose = () => {
         setOpen(false);
+    };
+
+    const handleMoveCardOnListOptionChanged = (e) => {
+        const newListId = e.target.value;
+        handleMoveCardToList(card, newListId);
     };
 
     const confirmDescription = async (e) => {
@@ -126,7 +137,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
                 className="fixed box-border top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-500 opacity-40 z-50 cursor-auto">
             </div>
 
-            <div className="fixed overflow-y-auto overflow-x-hidden box--style flex p-3 gap-3 flex-col top-[5rem] right-0 left-[50%] -translate-x-[50%] xl:w-[700px] sm:w-[90%] md:w-[75%] min-h-[450px] max-h-[75%] border-black border-[2px] z-50 cursor-auto bg-gray-200">
+            <div className="fixed overflow-y-auto overflow-x-hidden box--style flex p-3 gap-3 flex-col top-[5rem] right-0 left-[50%] -translate-x-[50%] w-[90%] xl:w-[700px] md:w-[75%] min-h-[450px] max-h-[75%] border-black border-[2px] z-50 cursor-auto bg-gray-200">
                 <div className="flex justify-start items start">
                     <div className="flex flex-col flex-1">
                         <TextArea
@@ -141,7 +152,7 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
                             minHeight={'2rem'}
                         />
 
-                        <p className="mx-1 text-[0.75rem]">in list <span className="underline">{listTitle()}</span></p>
+                        <p className="mx-1 text-[0.75rem]">in list <span className="underline">{listTitle}</span></p>
                     </div>
 
                     <button
@@ -234,8 +245,24 @@ const CardDetail = ({ setOpen, card, handleDeleteCard, handleCopyCard }) => {
                     </div>
                 </div>
 
+                <select
+                    className={`appearance-none cursor-pointer border-gray-300 text-[0.75rem] font-bold w-[30%] py-2 px-4 text-gray-100 ${listSelectOptions.length === 0 ? 'bg-gray-400' : 'bg-gray-500'}`}
+                    value={card.listId}
+                    onChange={(e) => {
+                        handleMoveCardOnListOptionChanged(e);
+                    }}
+                >
+                    {
+                        listSelectOptions.map((option, index) => {
+                            const { value, title } = option;
+                            return <option key={index} value={value}>{card.listId == value && '*'} [{title}]</option>
+                        })
+                    }
+                </select>
+
                 <CardDetailInfo
                     card={card}
+                    listSelectOptions={listSelectOptions}
                     handleMemberSelectorOnChange={handleMemberSelectorOnChange}
                 />
 

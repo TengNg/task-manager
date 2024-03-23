@@ -98,6 +98,12 @@ export const BoardStateContextProvider = ({ children }) => {
                 deleteCard(data.listId, data.cardId);
             });
 
+            socket.on("cardMoved", (data) => {
+                const { oldListId, newListId, cardId, newCard } = data;
+                deleteCard(oldListId, cardId);
+                addCardToList(newListId, newCard);
+            });
+
             socket.on("updatedListTitle", (data) => {
                 setListTitle(data.listId, data.title);
             });
@@ -193,8 +199,13 @@ export const BoardStateContextProvider = ({ children }) => {
 
     const setCardDetailHighlight = (highlight) => {
         setOpenedCard(prev => {
-
             return { ...prev, highlight }
+        });
+    };
+
+    const setCardDetailListId = (listId) => {
+        setOpenedCard(prev => {
+            return { ...prev, listId }
         });
     };
 
@@ -263,7 +274,6 @@ export const BoardStateContextProvider = ({ children }) => {
                     } : list)
             };
         });
-
     };
 
     const deleteList = (listId) => {
@@ -342,6 +352,8 @@ export const BoardStateContextProvider = ({ children }) => {
                 setOpenedCardQuickEditor,
 
                 setCardDetailHighlight,
+                setCardDetailListId,
+
                 setCardQuickEditorHighlight,
 
                 openMoveListForm,
