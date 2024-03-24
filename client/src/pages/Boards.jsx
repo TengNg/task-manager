@@ -12,6 +12,7 @@ import useKeyBinds from "../hooks/useKeyBinds";
 import useAuth from "../hooks/useAuth";
 
 const Boards = () => {
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [boards, setBoards] = useState([]);
     const [recentlyViewedBoard, setRecentlyViewedBoard] = useState();
 
@@ -31,16 +32,22 @@ const Boards = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        setIsDataLoaded(false);
+
         const getBoards = async () => {
             const response = await axiosPrivate.get(`/boards`);
             const { boards, recentlyViewedBoard } = response.data;
             setBoards(boards);
             setRecentlyViewedBoard(recentlyViewedBoard);
         };
-        getBoards().catch(err => {
-            console.log(err);
-            navigate('/login');
-        });
+        getBoards()
+            .catch(err => {
+                console.log(err);
+                navigate('/login');
+            })
+            .finally(() => {
+                setIsDataLoaded(true)
+            });
     }, []);
 
     useEffect(() => {
@@ -67,6 +74,10 @@ const Boards = () => {
 
     const handleOpenBoard = (boardId) => {
         navigate(`/b/${boardId}`);
+    }
+
+    if (!isDataLoaded) {
+        return <div className="font-bold mx-auto text-center mt-20 text-gray-600">Getting boards...</div>
     }
 
     return (
