@@ -1,5 +1,5 @@
 import React from 'react'
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import useBoardState from '../../hooks/useBoardState';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faCompress } from '@fortawesome/free-solid-svg-icons';
@@ -30,15 +30,17 @@ const FloatingChat = ({
 
     const messageEndRef = useRef();
 
+    const [scrollToBottom, setScrollToBottom] = useState(false);
+
     useEffect(() => {
         messageEndRef.current.scrollIntoView({ block: 'end' });
     }, [open]);
 
     useEffect(() => {
-        if (!isFetchingMore) {
+        if (scrollToBottom) {
             messageEndRef.current.scrollIntoView({ block: 'end' });
         }
-    }, [chats.length])
+    }, [scrollToBottom]);
 
     const handleClose = () => {
         setOpen(false);
@@ -58,6 +60,7 @@ const FloatingChat = ({
         if (scrollTop === 0 && !allMessagesFetched) {
             setIsFetchingMore(true);
             fetchMessages();
+            setScrollToBottom(false);
         }
     };
 
@@ -117,6 +120,7 @@ const FloatingChat = ({
                     <ChatInput
                         withSentButton={true}
                         sendMessage={sendMessage}
+                        setScrollToBottom={setScrollToBottom}
                     />
                 </div>
             </div>

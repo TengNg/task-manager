@@ -35,7 +35,9 @@ const Board = () => {
 
         openCardDetail,
         setOpenCardDetail,
+        setCardDetailListId,
 
+        addCardToList,
         openedCardQuickEditor,
         openedCard,
 
@@ -165,10 +167,13 @@ const Board = () => {
                 setChats(prevMessages => [...newMessages, ...prevMessages]);
                 setChatsPage(prevPage => prevPage + 1);
             }
+
         } catch (err) {
             console.log(err);
             setIsFetchingMoreMessages(false);
         }
+
+        setIsFetchingMoreMessages(false);
     };
 
     const handleConfirmBoardTitle = async (value) => {
@@ -221,6 +226,35 @@ const Board = () => {
         } catch (err) {
             console.log(err);
             alert('Failed to delete card');
+        }
+    };
+
+    const handleMoveCardToList = async (card, newListId) => {
+        try {
+            const { _id: cardId, listId: oldListId } = card;
+
+            const currentList = boardState.lists.find(list => list._id === newListId);
+            const cards = currentList.cards;
+            const [rank, ok] = lexorank.insert(cards[cards.length - 1]?.order, undefined);
+
+            if (!ok) {
+                throw new Error('Failed to reorder card');
+            }
+
+            const response = await axiosPrivate.put(`/cards/${cardId}/reorder`, JSON.stringify({ rank, listId: newListId }));
+            const { newCard } = response.data;
+
+            // delete card from old list, and add the current card to the new list
+            deleteCard(oldListId, cardId);
+            addCardToList(newListId, newCard);
+
+            // [card details is opened] => update list id
+            setCardDetailListId(newListId);
+
+            socket.emit('moveCard', { oldListId, newListId, cardId, newCard });
+        } catch (err) {
+            console.log(err);
+            alert('Failed to move card');
         }
     };
 
@@ -359,11 +393,11 @@ const Board = () => {
             {
                 openCardDetail &&
                 <CardDetail
-                    card={openedCard}
                     open={openCardDetail}
                     setOpen={setOpenCardDetail}
                     handleDeleteCard={handleDeleteCard}
                     handleCopyCard={handleCopyCard}
+                    handleMoveCardToList={handleMoveCardToList}
                 />
             }
 

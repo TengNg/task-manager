@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faExpand } from '@fortawesome/free-solid-svg-icons';
 import Chat from './Chat';
@@ -28,15 +28,17 @@ const ChatBox = ({
 
     const messageEndRef = useRef();
 
+    const [scrollToBottom, setScrollToBottom] = useState(false);
+
     useEffect(() => {
         messageEndRef.current.scrollIntoView({ block: 'end' });
     }, [open]);
 
     useEffect(() => {
-        if (!isFetchingMore) {
+        if (scrollToBottom) {
             messageEndRef.current.scrollIntoView({ block: 'end' });
         }
-    }, [chats.length])
+    }, [scrollToBottom])
 
     const handleOpenFloat = () => {
         setOpen(false);
@@ -52,6 +54,7 @@ const ChatBox = ({
         if (scrollTop === 0 && !allMessagesFetched) {
             setIsFetchingMore(true);
             fetchMessages();
+            setScrollToBottom(false);
         }
     };
 
@@ -103,6 +106,7 @@ const ChatBox = ({
                 <ChatInput
                     setIsFetchingMore={setIsFetchingMore}
                     sendMessage={sendMessage}
+                    setScrollToBottom={setScrollToBottom}
                 />
             </div>
         </div>

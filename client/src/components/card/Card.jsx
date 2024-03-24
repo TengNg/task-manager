@@ -18,7 +18,7 @@ const Card = ({ index, listIndex, card }) => {
     const cardRef = useRef();
 
     useEffect(() => {
-        if (focusedCard?.id === card._id) {
+        if (focusedCard?.id === card._id && focusedCard?.highlight) {
             cardRef.current.focus();
 
             const handleClickOutside = (event) => {
