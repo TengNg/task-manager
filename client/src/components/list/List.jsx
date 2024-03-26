@@ -16,6 +16,8 @@ const List = ({ index, list, cards }) => {
         setBoardState,
         setListTitle,
         deleteList,
+        theme,
+        debugModeEnabled,
         socket,
     } = useBoardState();
 
@@ -135,7 +137,7 @@ const List = ({ index, list, cards }) => {
                         className='flex mb-1 gap-2 relative'>
                         <button
                             ref={openListMenuButtonRef}
-                            className={`border-[2px] border-gray-600 px-2 text-gray-600 flex justify-center items-center ${!openListMenu ? 'bg-gray-100' : 'bg-gray-600 text-white' }`}
+                            className={`border-[2px] border-gray-600 px-2 text-gray-600 flex justify-center items-center ${!openListMenu ? 'bg-gray-100' : 'bg-gray-600 text-white' } ${theme.itemTheme == 'circle' ? 'rounded' : ''}`}
                             onClick={() => {
                                 setOpenListMenu(open => !open);
                             }}
@@ -152,6 +154,13 @@ const List = ({ index, list, cards }) => {
                         }
 
                         {
+                            debugModeEnabled.enabled &&
+                            <div className='ms-auto me-1 text-gray-500 text-[0.65rem] font-medium flex items-center gap-1'>
+                                rank: <span>{list.order}</span>
+                            </div>
+                        }
+
+                        {
                             openListMenu &&
                             <ListMenu
                                 list={list}
@@ -163,7 +172,7 @@ const List = ({ index, list, cards }) => {
                         }
                     </div>
 
-                    <div className="flex flex-col justify-start bg-gray-100 w-[280px] min-w-[280px] h-fit max-h-[62vh] min-h-auto border-[2px] select-none py-2 cursor-pointer box--style border-gray-600 shadow-gray-600">
+                    <div className={`flex flex-col justify-start bg-gray-100 w-[280px] min-w-[280px] h-fit max-h-[62vh] min-h-auto border-[2px] select-none py-2 cursor-pointer border-gray-600 shadow-gray-600 ${theme.itemTheme == 'circle' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}`}>
                         <div
                             {...provided.dragHandleProps}
                             className="relative w-full bg-inherit">

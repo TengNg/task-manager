@@ -40,7 +40,7 @@ const CopyBoardForm = ({ setOpen }) => {
 
             <div className="fixed box--style flex flex-col items-start py-3 px-3 top-[5rem] right-0 left-[50%] -translate-x-[50%] w-fit min-w-[400px] h-[300px] min-h-[300px] border-black border-[2px] z-40 cursor-auto bg-gray-200">
                 <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3 mb-5'>
-                    <p className="font-normal text-[1rem] text-gray-700">Copy this board</p>
+                    <p className="font-normal text-[1rem] text-gray-700">Create a copy from this board</p>
                     <button
                         className="text-gray-600 flex justify-center items-center"
                         onClick={handleClose}

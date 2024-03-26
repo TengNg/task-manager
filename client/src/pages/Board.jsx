@@ -20,6 +20,7 @@ import useKeyBinds from "../hooks/useKeyBinds";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbtack } from '@fortawesome/free-solid-svg-icons';
+import Configuration from "../components/board/Configuration";
 
 const Board = () => {
     const {
@@ -44,6 +45,12 @@ const Board = () => {
         addCopiedCard,
         deleteCard,
 
+        // for configuration
+        theme,
+        setTheme,
+        debugModeEnabled,
+        setDebugModeEnabled,
+
         socket
     } = useBoardState();
 
@@ -51,6 +58,9 @@ const Board = () => {
         auth,
         setAuth
     } = useAuth();
+
+
+    const axiosPrivate = useAxiosPrivate();
 
     const {
         openPinnedBoards,
@@ -71,6 +81,7 @@ const Board = () => {
 
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
     const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
+    const [openBoardConfiguration, setOpenBoardConfiguration] = useState(false);
     const [pinned, setPinned] = useState(false);
 
     // chat messages ==================================================================================================
@@ -81,8 +92,6 @@ const Board = () => {
 
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
-
-    const axiosPrivate = useAxiosPrivate();
 
     const { boardId } = useParams();
     const navigate = useNavigate();
@@ -343,6 +352,18 @@ const Board = () => {
         }
     };
 
+    const handleChangeTheme = (value) => {
+        setTheme(prev => {
+            return { ...prev, itemTheme: value }
+        });
+    };
+
+    const handleToggleEnableDebugMode = () => {
+        setDebugModeEnabled((prev) => {
+            return { ...prev, enabled: !prev.enabled };
+        });
+    };
+
     if (isDataLoaded === false) {
         return <div className="font-bold mx-auto text-center mt-20 text-gray-600">Loading...</div>
     }
@@ -376,6 +397,18 @@ const Board = () => {
                 <CopyBoardForm
                     open={openCopyBoardForm}
                     setOpen={setOpenCopyBoardForm}
+                />
+            }
+
+            {
+                openBoardConfiguration &&
+                <Configuration
+                    open={openBoardConfiguration}
+                    setOpen={setOpenBoardConfiguration}
+                    theme={theme}
+                    debugModeEnabled={debugModeEnabled}
+                    handleChangeTheme={handleChangeTheme}
+                    handleToggleEnableDebugMode={handleToggleEnableDebugMode}
                 />
             }
 
@@ -485,6 +518,7 @@ const Board = () => {
                                     setOpen={setOpenBoardMenu}
                                     board={boardState.board}
                                     setOpenCopyBoardForm={setOpenCopyBoardForm}
+                                    setOpenBoardConfiguration={setOpenBoardConfiguration}
                                 />
                             }
                         </div>

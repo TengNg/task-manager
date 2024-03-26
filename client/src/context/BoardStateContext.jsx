@@ -1,6 +1,9 @@
 import { createContext, useEffect, useState } from "react";
 import socket from "../services/socket";
 
+import useLocalStorage from "../hooks/useLocalStorage";
+import LOCAL_STORAGE_KEYS from "../data/localStorageKeys";
+
 const BoardStateContext = createContext({});
 
 export const BoardStateContextProvider = ({ children }) => {
@@ -14,6 +17,9 @@ export const BoardStateContextProvider = ({ children }) => {
     const [openedCard, setOpenedCard] = useState(undefined);
     const [openedCardQuickEditor, setOpenedCardQuickEditor] = useState(undefined);
     const [listToMove, setListToMove] = useState();
+
+    const [theme, setTheme] = useLocalStorage(LOCAL_STORAGE_KEYS.BOARD_ITEM_THEME, {});
+    const [debugModeEnabled, setDebugModeEnabled] = useLocalStorage(LOCAL_STORAGE_KEYS.DEBUG_MODE_ENABLED, {});
 
     useEffect(() => {
         if (socket) {
@@ -364,6 +370,9 @@ export const BoardStateContextProvider = ({ children }) => {
 
                 focusedCard,
                 setFocusedCard,
+
+                theme, setTheme,
+                debugModeEnabled, setDebugModeEnabled,
 
                 socket,
             }}
