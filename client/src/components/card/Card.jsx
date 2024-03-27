@@ -93,7 +93,7 @@ const Card = ({ index, listIndex, card }) => {
                                 return;
                             };
                         }}
-                        className={`bg-gray-50 w-full group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative ${theme.itemTheme == 'circle' ? 'rounded' : ''}`}
+                        className={`bg-gray-50 w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative ${theme.itemTheme == 'rounded' ? 'rounded' : ''}`}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >

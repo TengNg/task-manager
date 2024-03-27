@@ -30,14 +30,14 @@ const Configuration = ({ open, setOpen, handleChangeTheme, handleToggleEnableDeb
                         {/* <div className='text-[0.75rem]'>themes:</div> */}
                         <div class='flex flex-col gap-1'>
                             <button
-                                onClick={() => handleChangeTheme('square')}
-                                className={`button--style w-[100%] mt-1 py-2 text-[0.75rem] border-[2px] ${!theme.itemTheme || theme.itemTheme === 'square' ? 'bg-gray-500 text-white' : ''}`}>
-                                square (default)
+                                onClick={() => handleChangeTheme('squared')}
+                                className={`button--style w-[100%] mt-1 py-2 text-[0.75rem] border-[2px] ${!theme.itemTheme || theme.itemTheme === 'squared' ? 'bg-gray-500 text-white' : ''}`}>
+                                squared (default)
                             </button>
                             <button
-                                onClick={() => handleChangeTheme('circle')}
-                                className={`button--style w-[100%] mt-1 py-2 text-[0.75rem] border-[2px] ${theme.itemTheme === 'circle' ? 'bg-gray-500 text-white' : ''}`}>
-                                circle (experimental)
+                                onClick={() => handleChangeTheme('rounded')}
+                                className={`button--style w-[100%] mt-1 py-2 text-[0.75rem] border-[2px] ${theme.itemTheme === 'rounded' ? 'bg-gray-500 text-white' : ''}`}>
+                                rounded (experimental)
                             </button>
                         </div>
                     </div>
