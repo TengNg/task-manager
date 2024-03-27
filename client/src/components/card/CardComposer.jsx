@@ -90,10 +90,10 @@ const CardComposer = ({ list, open, setOpen }) => {
             <div className="flex gap-1">
                 <button
                     onClick={handleAddCard}
-                    className="button--style--dark text-[0.8rem] font-semibold">Add card</button>
+                    className="button--style--dark text-[0.8rem] font-semibold">+</button>
                 <button
                     onClick={() => setOpen(false)}
-                    className="button--style text-[0.8rem] text-gray-500 border-gray-500 font-semibold">Cancel</button>
+                    className="button--style text-[0.8rem] text-gray-500 border-gray-500 font-semibold">x</button>
             </div>
         </div>
     )
