@@ -110,6 +110,16 @@ export const BoardStateContextProvider = ({ children }) => {
                 addCardToList(newListId, newCard);
             });
 
+            socket.on("cardMovedByIndex", (data) => {
+                const { cards, listId } = data;
+                setBoardState(prev => {
+                    return {
+                        ...prev,
+                        lists: prev.lists.map(list => list._id === listId ? { ...list, cards } : list)
+                    };
+                });
+            });
+
             socket.on("updatedListTitle", (data) => {
                 setListTitle(data.listId, data.title);
             });

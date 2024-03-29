@@ -289,6 +289,36 @@ const Board = () => {
         }
     };
 
+    const handleMoveCardByIndex = async (card, insertedIndex) => {
+        try {
+            const currentList = boardState.lists.find(list => list._id == card.listId);
+            const cards = currentList.cards;
+            const currentIndex = cards.findIndex(el => el._id == card._id);
+            const prev = insertedIndex - 1;
+            const next = insertedIndex;
+
+            const [rank, ok] = lexorank.insert(cards[prev]?.order, cards[next]?.order);
+            if (!ok) return;
+
+            const [moved] = cards.splice(currentIndex, 1);
+            moved.order = rank;
+
+            cards.splice(insertedIndex, 0, moved);
+            setBoardState(prev => {
+                return {
+                    ...prev,
+                    lists: prev.lists.map(list => list._id === card.listId ? { ...list, cards } : list)
+                };
+            });
+
+            await axiosPrivate.put(`/cards/${card._id}/reorder`, JSON.stringify({ rank, listId: card.listId }));
+            socket.emit("moveCardByIndex", { cards, listId: card.listId });
+        } catch (err) {
+            console.log(err);
+            alert('Failed to create a copy of this card');
+        }
+    };
+
     const handleSendMessage = async (value) => {
         const msgTrackedId = crypto.randomUUID();
 
@@ -431,6 +461,7 @@ const Board = () => {
                     handleDeleteCard={handleDeleteCard}
                     handleCopyCard={handleCopyCard}
                     handleMoveCardToList={handleMoveCardToList}
+                    handleMoveCardByIndex={handleMoveCardByIndex}
                 />
             }
 

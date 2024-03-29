@@ -28,7 +28,7 @@ const Configuration = ({ open, setOpen, handleChangeTheme, handleToggleEnableDeb
                 <div className="w-full flex flex-col items-start justify-start px-6">
                     <div className='w-full'>
                         {/* <div className='text-[0.75rem]'>themes:</div> */}
-                        <div class='flex flex-col gap-1'>
+                        <div className='flex flex-col gap-1'>
                             <button
                                 onClick={() => handleChangeTheme('squared')}
                                 className={`button--style w-[100%] mt-1 py-2 text-[0.75rem] border-[2px] ${!theme.itemTheme || theme.itemTheme === 'squared' ? 'bg-gray-500 text-white' : ''}`}>
@@ -44,7 +44,7 @@ const Configuration = ({ open, setOpen, handleChangeTheme, handleToggleEnableDeb
 
                     <div className='w-full mt-1'>
                         {/* <div className='text-[0.75rem]'>enable debug mode:</div> */}
-                        <div class='flex flex-col gap-1'>
+                        <div className='flex flex-col gap-1'>
                             <button
                                 onClick={() => handleToggleEnableDebugMode()}
                                 className={`button--style w-[100%] mt-1 py-2 text-[0.75rem] border-[2px] ${debugModeEnabled.enabled ? 'bg-pink-700 text-white' : 'border-pink-700 text-pink-700 '}`}>

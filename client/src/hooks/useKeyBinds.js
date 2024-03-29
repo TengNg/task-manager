@@ -14,6 +14,11 @@ const useKeyBinds = () => {
 
     useEffect(() => {
         const handleKeyDown = (event) => {
+            const isTextFieldFocused = document.querySelector('input:focus, textarea:focus');
+            if (isTextFieldFocused) {
+                return;
+            }
+
             const key = event.key;
 
             if (event.ctrlKey) {
