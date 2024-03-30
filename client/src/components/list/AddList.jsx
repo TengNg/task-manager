@@ -11,6 +11,7 @@ const AddList = ({ open, setOpen }) => {
     const containerRef = useRef();
 
     const {
+        theme,
         boardState,
         addListToBoard,
         socket,
@@ -77,7 +78,7 @@ const AddList = ({ open, setOpen }) => {
     return (
         <div
             ref={containerRef}
-            className='box--style--sm overflow-hidden bg-gray-200 w-[250px] min-w-[250px] border-[2px] min-h-[3rem] select-none cursor-pointer me-3 border-gray-500 shadow-gray-500 text-[0.8rem] text-gray-500 font-semibold mt-5'>
+            className={`board--style--sm overflow-hidden bg-gray-100 w-[250px] min-w-[250px] border-[2px] min-h-[3rem] select-none cursor-pointer me-3 border-gray-500 shadow-gray-500 text-[0.8rem] text-gray-500 font-semibold mt-5 ${theme.itemTheme == 'rounded' ? 'rounded-md' : ''}`}>
             {
                 open === false &&
                 <button
@@ -109,10 +110,10 @@ const AddList = ({ open, setOpen }) => {
                 <div className="flex gap-2">
                     <button
                         onClick={handleAddList}
-                        className="button--style--dark">Add list</button>
+                        className="button--style--dark">+</button>
                     <button
                         onClick={() => setOpen(false)}
-                        className="button--style border-gray-500 border-[2px]">Cancel</button>
+                        className="button--style border-gray-500 border-[2px]">x</button>
                 </div>
             </div>
         </div>

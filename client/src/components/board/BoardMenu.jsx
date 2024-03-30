@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
+import { faAngleLeft, faCopy, faWrench, faGear, faCircleInfo, faCircleXmark, faLightbulb } from '@fortawesome/free-solid-svg-icons';
 import useAuth from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import useBoardState from "../../hooks/useBoardState";
 import { useNavigate } from "react-router-dom";
 import dateFormatter from "../../utils/dateFormatter";
 
-const BoardMenu = ({ setOpen, setOpenCopyBoardForm }) => {
+const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration }) => {
     const { auth } = useAuth();
     const {
         boardState,
@@ -77,29 +77,51 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm }) => {
 
                 <div className="font-medium text-gray-600 flex-1 flex--center border-b-[1px] border-black pb-1 mb-1">actions menu</div>
 
-                <button
-                    onClick={() => setShowDescription(true)}
-                    className="button--style--dark text-[0.75rem] font-bold text-gray-200">information</button>
+                <div className='flex justify-start'>
+                    <button
+                        onClick={() => setShowDescription(true)}
+                        className="button--style--dark ps-20 text-[0.75rem] font-bold text-start text-gray-200 w-full"
+                    >
+                        <FontAwesomeIcon icon={faLightbulb} /> information
+                    </button>
+                </div>
 
-                <button
-                    onClick={() => setOpenCopyBoardForm(true)}
-                    className="button--style--dark text-[0.75rem] font-bold text-gray-200"
-                >+ create a copy</button>
+                <div className='flex justify-start'>
+                    <button
+                        onClick={() => setOpenCopyBoardForm(true)}
+                        className="button--style--dark ps-20 text-[0.75rem] font-bold text-start text-gray-200 w-full"
+                    >
+                        <FontAwesomeIcon icon={faCopy} /> create a copy
+                    </button>
+                </div>
 
-                <button
-                    className="button--style--dark text-[0.75rem] font-bold text-gray-200"
-                >archived items (WIP)</button>
+                <div className='flex justify-start'>
+                    <button
+                        onClick={() => setOpenBoardConfiguration(true)}
+                        className="button--style--dark ps-20 text-[0.75rem] font-bold text-start text-gray-200 w-full"
+                    >
+                        <FontAwesomeIcon icon={faGear} /> configuration
+                    </button>
+                </div>
 
                 {
                     boardState.board.createdBy.username === auth?.user?.username
-                        ? <button
-                            onClick={() => handleCloseBoard()}
-                            className="button--style--dark text-[0.75rem] font-bold text-gray-200"
-                        >close board</button>
-                        : <button
-                            onClick={() => handleLeaveBoard()}
-                            className="button--style--dark text-[0.75rem] font-bold text-gray-200"
-                        >leave board</button>
+                        ? <div className='flex justify-start'>
+                            <button
+                                onClick={() => handleCloseBoard()}
+                                className="button--style--dark ps-20 text-[0.75rem] font-bold text-start text-gray-200 w-full"
+                            >
+                                <FontAwesomeIcon icon={faCircleXmark} /> close board
+                            </button>
+                        </div>
+                        : <div className='flex justify-start'>
+                            <button
+                                onClick={() => handleLeaveBoard()}
+                                className="button--style--dark ps-20 text-[0.75rem] font-bold text-start text-gray-200 w-full"
+                            >
+                                <FontAwesomeIcon icon={faCircleXmark} /> leave board
+                            </button>
+                        </div>
                 }
 
                 <div className={`absolute w-full h-fit min-h-full bg-gray-50 pb-4 top-0 right-0 flex flex-col px-5 transition-all ${showDescription === true ? 'translate-x-0' : '-translate-x-[100%]'}`}>

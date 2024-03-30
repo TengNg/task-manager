@@ -13,6 +13,8 @@ const Card = ({ index, listIndex, card }) => {
         setOpenedCardQuickEditor,
         focusedCard,
         setFocusedCard,
+        theme,
+        debugModeEnabled,
     } = useBoardState();
 
     const cardRef = useRef();
@@ -91,7 +93,7 @@ const Card = ({ index, listIndex, card }) => {
                                 return;
                             };
                         }}
-                        className={`bg-gray-50 w-full group border-[2px] border-gray-600 px-2 py-3 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative`}
+                        className={`bg-gray-50 w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative ${theme.itemTheme == 'rounded' ? 'rounded' : ''}`}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >
@@ -117,10 +119,19 @@ const Card = ({ index, listIndex, card }) => {
                         </div>
 
                         {
+                            ((focusedCard?.id === card._id && focusedCard?.highlight) || debugModeEnabled.enabled) &&
+                            <div className='font-thin text-[0.65rem] text-gray-700 mt-3 ms-[0.6rem]'>created: {dateFormatter(card.createdAt)}</div>
+                        }
+
+                        {
+                            debugModeEnabled.enabled &&
+                                <div className='font-thin text-[0.65rem] text-gray-700 mt-1 ms-[0.6rem]'>rank: {card.order}</div>
+                        }
+
+                        {
                             (focusedCard?.id === card._id && focusedCard?.highlight)
                             && (
                                 <>
-                                    <div className='font-thin text-[0.65rem] text-gray-700 mt-3 ms-[0.6rem]'>created: {dateFormatter(card.createdAt)}</div>
                                     <div className='text-[0.8rem]' style={{ color: `${card.highlight == null ? '#4b5563' : `${card.highlight}`}` }} >
                                         <div className='absolute top-0 left-1 rotate-45'>
                                             <FontAwesomeIcon icon={faAngleLeft} />

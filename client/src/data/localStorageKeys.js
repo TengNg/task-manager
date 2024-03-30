@@ -1,5 +1,6 @@
 const LOCAL_STORAGE_KEYS = {
-    recentlyViewedBoards: 'LOCAL_STORAGE.recently_viewed_boards',
+    BOARD_ITEM_THEME: 'LOCAL_STORAGE.tamago_start.board_theme',
+    DEBUG_MODE_ENABLED: 'LOCAL_STORAGE.tamago_start.debug_mode_enabled',
 };
 
 export default LOCAL_STORAGE_KEYS;
