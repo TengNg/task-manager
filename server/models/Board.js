@@ -6,12 +6,20 @@ const boardSchema = new mongoose.Schema({
         required: true,
     },
 
-    description: String,
+    description: {
+        type: String,
+        default: "",
+    },
 
     members: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     }],
+
+    listCount: {
+        type: Number,
+        default: 0
+    },
 
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
@@ -26,11 +34,6 @@ const boardSchema = new mongoose.Schema({
     },
 
     lastViewed: Date,
-
-    // labels: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Label',
-    // }],
 });
 
 const Board = mongoose.model('Board', boardSchema);

@@ -5,16 +5,17 @@ const List = require('../models/List.js');
 const mongoose = require('mongoose');
 
 const addCard = async (req, res) => {
-    const { title, description = "", order, listId } = req.body;
+    const { title, order, listId } = req.body;
 
     const newCard = new Card({
         title,
-        description,
         order,
         listId
     });
 
     await newCard.save();
+    List.findOneAndUpdate({ _id: listId }, { $inc: { cardCount: 1 } }, { new: true });
+
     return res.status(201).json({ msg: 'new card added', newCard });
 };
 

@@ -17,6 +17,11 @@ const listSchema = new mongoose.Schema({
         required: true,
     },
 
+    cardCount: {
+        type: Number,
+        default: 0,
+    },
+
     createdAt: {
         type: Date,
         required: true,

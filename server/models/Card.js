@@ -8,7 +8,7 @@ const cardSchema = new mongoose.Schema({
 
     description: {
         type: String,
-        default: null,
+        default: "",
     },
 
     order: {
