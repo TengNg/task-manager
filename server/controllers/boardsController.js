@@ -66,6 +66,9 @@ const getBoard = async (req, res) => {
 
     if (!board) return res.status(404).json({ msg: "board not found" });
 
+    const listCount = await List.count({ boardId: id });
+    board.listCount = listCount;
+
     // set recently viewed board
     if (foundUser.recentlyViewedBoardId !== board._id) {
         board.lastViewed = Date.now();

@@ -56,7 +56,7 @@ const updateHighlight = async (req, res) => {
 
 const deleteCard = async (req, res) => {
     const { id } = req.params;
-    const removed = await Card.findByIdAndRemove(id);
+    const removed = await Card.findOneAndDelete({ _id: id });
 
     if (!removed) {
         return res.status(404).json({ error: 'Card not found' });
