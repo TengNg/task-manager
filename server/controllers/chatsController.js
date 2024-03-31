@@ -2,6 +2,16 @@ const Chat = require("../models/Chat");
 const Board = require("../models/Board");
 const User = require("../models/User");
 
+const userByUsername = (username) => {
+    const foundUser = User.findOne({ username }).lean();
+    return foundUser;
+};
+
+const boardById = (boardId) => {
+    const foundBoard = Board.findById(boardId).lean();
+    return foundBoard;
+};
+
 const getMessages = async (req, res) => {
     const { username } = req.user;
     const { boardId } = req.params;
@@ -11,11 +21,11 @@ const getMessages = async (req, res) => {
     perPage = +perPage || 10;
     page = +page || 1;
 
-    const foundUser = await User.findOne({ username });
+    const foundUser = await userByUsername(username);
     if (!foundUser) return res.status(403).json({ msg: "cannot send message, user not found" });
 
-    const foundBoard = await Board.findById(boardId);
-    if (!foundBoard) return res.status(403).json({ msg: "cannote send message, board not found" });
+    const foundBoard = await boardById(boardId);
+    if (!foundBoard) return res.status(403).json({ msg: "cannot send message, board not found" });
 
     const messages = await Chat
         .find({ boardId })
@@ -35,10 +45,10 @@ const sendMessage = async (req, res) => {
     const { content, trackedId } = req.body;
     const { boardId } = req.params;
 
-    const foundBoard = await Board.findById(boardId);
+    const foundBoard = await boardById(boardId);
     if (!foundBoard) return res.status(403).json({ msg: "cannot send message, board not found" });
 
-    const foundUser = await User.findOne({ username });
+    const foundUser = await userByUsername(username);
     if (!foundUser) return res.status(403).json({ msg: "cannot send message, user not found" });
 
     const chat = new Chat({
@@ -56,7 +66,7 @@ const deleteMessage = async (req, res) => {
     const { username } = req.user;
     const { trackedId } = req.params;
 
-    const foundUser = await User.findOne({ username });
+    const foundUser = await userByUsername(username);
     if (!foundUser) return res.status(403).json({ msg: "cannot send message, user not found" });
 
     const deletedMessage = await Chat.findOneAndDelete({ trackedId });
@@ -67,10 +77,10 @@ const clearMessages = async (req, res) => {
     const { username } = req.user;
     const { boardId } = req.params;
 
-    const foundUser = await User.findOne({ username });
+    const foundUser = await userByUsername(username);
     if (!foundUser) return res.status(403).json({ msg: "cannot send message, user not found" });
 
-    const foundBoard = await Board.findById(boardId);
+    const foundBoard = await boardById(boardId);
     if (!foundBoard) return res.status(403).json({ msg: "cannot send message, board not found" });
 
     if (foundBoard.createdBy.toString() !== foundUser._id.toString()) {

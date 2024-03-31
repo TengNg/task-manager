@@ -103,7 +103,7 @@ const updateOwner = async (req, res) => {
     const { id } = req.params;
     const { ownerName } = req.body;
 
-    const foundUser = await User.findOne({ username });
+    const foundUser = await User.findOne({ username }).lean();
     if (!foundUser) return res.status(403).json({ msg: "User not found" });
 
     if (!ownerName) {
@@ -114,7 +114,7 @@ const updateOwner = async (req, res) => {
         return res.status(200).json({ msg: 'Update member successfully', newCard: result });
     }
 
-    const foundMember = await User.findOne({ username: ownerName });
+    const foundMember = await User.findOne({ username: ownerName }).lean();
     if (!foundMember) return res.status(403).json({ msg: "Member not found" });
 
     const result = await Card.findByIdAndUpdate(

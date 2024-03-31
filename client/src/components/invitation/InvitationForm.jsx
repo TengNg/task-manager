@@ -143,9 +143,9 @@ const InvitationForm = ({ setOpen }) => {
                     </div>
 
                     {
-                        boardState.board.members.map((user, _) => {
+                        boardState.board.members.map((user, index) => {
                             return <Member
-                                key={user._id}
+                                key={index}
                                 handleRemoveMemberFromBoard={handleRemoveMemberFromBoard}
                                 boardState={boardState}
                                 user={user}

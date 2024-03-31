@@ -14,6 +14,12 @@ const boardSchema = new mongoose.Schema({
     members: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
+        validate: {
+            validator: function(members) {
+                return members.length <= 5;
+            },
+            message: 'Members array cannot have more than 5 members.'
+        }
     }],
 
     listCount: {

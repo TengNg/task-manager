@@ -3,7 +3,7 @@ const User = require("../models/User");
 const Board = require("../models/Board");
 
 const getUser = (username) => {
-    const foundUser = User.findOne({ username });
+    const foundUser = User.findOne({ username }).lean();
     return foundUser;
 };
 
