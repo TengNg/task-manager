@@ -57,7 +57,7 @@ const Card = ({ index, listIndex, card }) => {
     };
 
     const handleOpenCardDetail = (e) => {
-        setOpenedCard(card);
+        setOpenedCard({ ...card, position: index });
         setOpenCardDetail(true);
     };
 

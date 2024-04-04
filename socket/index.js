@@ -98,16 +98,16 @@ io.on('connection', (socket) => {
         socket.to(boardId).emit("copyCard", data);
     });
 
-    socket.on("copyCard", (data) => {
-        const boardId = boardIdMap.get(socket.id);
-        if (!boardId) return;
-        socket.to(boardId).emit("copyCard", data);
-    });
-
     socket.on("moveCard", (data) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
         socket.to(boardId).emit("cardMoved", data);
+    });
+
+    socket.on("moveCardByIndex", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("cardMovedByIndex", data);
     });
 
     socket.on("updateCardOwner", (data) => {

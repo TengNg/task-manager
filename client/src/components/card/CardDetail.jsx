@@ -8,7 +8,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HighlightPicker from "./HighlightPicker";
 import CardDetailInfo from "./CardDetailInfo";
 
-const CardDetail = ({ setOpen, handleDeleteCard, handleCopyCard, handleMoveCardToList }) => {
+const CardDetail = ({ setOpen, handleDeleteCard, handleCopyCard, handleMoveCardToList, handleMoveCardByIndex }) => {
     const {
         openedCard: card,
         boardState,
@@ -23,13 +23,10 @@ const CardDetail = ({ setOpen, handleDeleteCard, handleCopyCard, handleMoveCardT
     const [openHighlightPicker, setOpenHighlightPicker] = useState(false);
     const [title, setTitle] = useState(card?.title);
     const [description, setDescription] = useState(card?.description);
+    const [cardCount, setCardCount] = useState(0);
+    const [position, setPosition] = useState(0);
 
     const axiosPrivate = useAxiosPrivate();
-
-    useEffect(() => {
-        setTitle(card?.title);
-        setDescription(card?.description);
-    }, [card.title, card.description]);
 
     useEffect(() => {
         window.addEventListener('keydown', handleCloseOnEscape);
@@ -38,6 +35,19 @@ const CardDetail = ({ setOpen, handleDeleteCard, handleCopyCard, handleMoveCardT
             window.removeEventListener('keydown', handleCloseOnEscape);
         };
     }, []);
+
+    useEffect(() => {
+        setTitle(card?.title);
+        setDescription(card?.description);
+    }, [card.title, card.description]);
+
+    useEffect(() => {
+        const cards = boardState?.lists?.find(list => list._id === card.listId)?.cards;
+        const cardCount = cards?.length || 0;
+        const position = cards?.findIndex(el => el._id === card._id) || 0;
+        setCardCount(cardCount);
+        setPosition(position);
+    }, [card]);
 
     const handleCloseOnEscape = (e) => {
         if (e.key == 'Escape') {
@@ -65,11 +75,7 @@ const CardDetail = ({ setOpen, handleDeleteCard, handleCopyCard, handleMoveCardT
 
     const listSelectOptions = useMemo(() => {
         return boardState?.lists?.map(list => { return { value: list._id, title: list.title } }) || []
-    }, [boardState?.lists]);
-
-    const listTitle = useMemo(() => {
-        return boardState.lists.find(list => list._id == card.listId)?.title || "[?]";
-    }, [boardState.lists, card.listId]);
+    });
 
     const handleClose = () => {
         setOpen(false);
@@ -137,6 +143,17 @@ const CardDetail = ({ setOpen, handleDeleteCard, handleCopyCard, handleMoveCardT
         handleCopyCard(card);
     }
 
+    const moveByIndex = (e) => {
+        const insertedIndex = e.target.value;
+
+        if (!insertedIndex) {
+            return;
+        }
+
+        handleMoveCardByIndex(card, insertedIndex);
+        setPosition(insertedIndex);
+    }
+
     return (
         <>
             <div
@@ -145,6 +162,15 @@ const CardDetail = ({ setOpen, handleDeleteCard, handleCopyCard, handleMoveCardT
             </div>
 
             <div className="fixed overflow-y-auto overflow-x-hidden box--style flex p-3 gap-3 flex-col top-[5rem] right-0 left-[50%] -translate-x-[50%] w-[90%] xl:w-[700px] md:w-[75%] min-h-[450px] max-h-[75%] border-black border-[2px] z-50 cursor-auto bg-gray-200">
+
+                {
+                    card.highlight != null &&
+                    <div
+                        className="w-full h-[1.25rem]"
+                        style={{ backgroundColor: `${card.highlight}` }}
+                    ></div>
+                }
+
                 <div className="flex justify-start items start">
                     <div className="flex flex-col flex-1">
                         <TextArea
@@ -160,7 +186,6 @@ const CardDetail = ({ setOpen, handleDeleteCard, handleCopyCard, handleMoveCardT
                             minHeight={'2rem'}
                         />
 
-                        <p className="mx-1 text-[0.75rem]">in list <span className="underline">{listTitle}</span></p>
                     </div>
 
                     <button
@@ -170,13 +195,36 @@ const CardDetail = ({ setOpen, handleDeleteCard, handleCopyCard, handleMoveCardT
                     </button>
                 </div>
 
-                {
-                    card.highlight != null &&
-                    <div
-                        className="w-1/4 h-[1rem]"
-                        style={{ backgroundColor: `${card.highlight}` }}
-                    ></div>
-                }
+                <div className='flex gap-2'>
+                    <select
+                        className={`appearance-none truncate bg-transparent cursor-pointer border-[2px] border-gray-600 text-[0.75rem] font-medium w-[30%] py-2 px-4 text-gray-600 ${listSelectOptions.length === 0 ? 'bg-gray-400' : ''}`}
+                        value={card.listId}
+                        onChange={(e) => {
+                            handleMoveCardOnListOptionChanged(e);
+                        }}
+                    >
+                        {
+                            listSelectOptions.map((option, index) => {
+                                const { value, title } = option;
+                                return <option key={index} value={value}>* {title}</option>
+                            })
+                        }
+                    </select>
+
+                    <select
+                        className={`appearance-none truncate bg-transparent cursor-pointer border-[2px] border-gray-600 text-[0.75rem] font-medium w-fit py-2 px-4 text-gray-600 ${listSelectOptions.length === 0 ? 'bg-gray-400' : ''}`}
+                        value={position}
+                        onChange={(e) => {
+                            moveByIndex(e);
+                        }}
+                    >
+                        {
+                            Array.from(Array(cardCount).keys()).map(count => {
+                                return <option key={count} value={count}>{count + 1}</option>
+                            })
+                        }
+                    </select>
+                </div>
 
                 <div className="w-full flex border-b-[1px] border-t-[1px] py-4 border-black">
                     <div className="flex-1">
@@ -204,7 +252,7 @@ const CardDetail = ({ setOpen, handleDeleteCard, handleCopyCard, handleMoveCardT
                                     placeholder={"Add more description..."}
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
-                                    minHeight={'125px'}
+                                    minHeight={'175px'}
                                 />
                             </div>
                         }
@@ -253,21 +301,6 @@ const CardDetail = ({ setOpen, handleDeleteCard, handleCopyCard, handleMoveCardT
                         </div>
                     </div>
                 </div>
-
-                <select
-                    className={`appearance-none cursor-pointer border-gray-300 text-[0.75rem] font-bold w-[30%] py-2 px-4 text-gray-100 ${listSelectOptions.length === 0 ? 'bg-gray-400' : 'bg-gray-500'}`}
-                    value={card.listId}
-                    onChange={(e) => {
-                        handleMoveCardOnListOptionChanged(e);
-                    }}
-                >
-                    {
-                        listSelectOptions.map((option, index) => {
-                            const { value, title } = option;
-                            return <option key={index} value={value}>{card.listId == value && '*'} [{title}]</option>
-                        })
-                    }
-                </select>
 
                 <CardDetailInfo
                     card={card}

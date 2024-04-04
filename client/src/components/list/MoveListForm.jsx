@@ -36,8 +36,6 @@ const MoveListForm = () => {
     };
 
     const handleSelectBoardId = async (e) => {
-        setListCount(0);
-
         const boardId = e.target.value;
 
         if (!boardId) {
