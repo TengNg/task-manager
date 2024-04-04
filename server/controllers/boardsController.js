@@ -6,7 +6,7 @@ const Card = require("../models/Card");
 const User = require("../models/User");
 
 const getUser = (username) => {
-    const foundUser = User.findOne({ username });
+    const foundUser = User.findOne({ username }).lean();
     return foundUser;
 };
 
@@ -42,7 +42,7 @@ const getBoard = async (req, res) => {
     const { id } = req.params;
     const { username } = req.user;
 
-    const foundUser = await getUser(username);
+    const foundUser = await User.findOne({ username });
     if (!foundUser) return res.status(403).json({ msg: "user not found" });
 
     const board = await Board
@@ -63,8 +63,10 @@ const getBoard = async (req, res) => {
             select: 'username profileImage createdAt'
         });
 
-
     if (!board) return res.status(404).json({ msg: "board not found" });
+
+    const listCount = await List.count({ boardId: id });
+    board.listCount = listCount;
 
     // set recently viewed board
     if (foundUser.recentlyViewedBoardId !== board._id) {

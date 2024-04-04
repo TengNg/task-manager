@@ -5,7 +5,7 @@ const handleRegister = async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) res.status(400).json({ msg: "Username and password are required" });
 
-    const foundUser = await User.findOne({ username })
+    const foundUser = await User.findOne({ username }).lean();
     if (foundUser) return res.status(409).json({ msg: "Username is already exists" }); // Conflict
 
     try {

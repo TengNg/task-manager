@@ -4,7 +4,7 @@ const handleLogout = async (req, res) => {
     if (!cookies?.token) return res.sendStatus(204); // No content
     const refreshToken = cookies.token;
 
-    const foundUser = await User.findOne({ refreshToken });
+    const foundUser = await User.findOne({ refreshToken }).lean();
     if (!foundUser) {
         res.clearCookie('token', { httpOnly: true, sameSite: 'None', secure: true });
         return res.sendStatus(204);

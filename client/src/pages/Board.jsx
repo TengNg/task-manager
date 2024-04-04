@@ -600,6 +600,7 @@ const Board = () => {
                         </div>
                     }
                 </button>
+
             </div>
 
         </>

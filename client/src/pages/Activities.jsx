@@ -52,6 +52,11 @@ const Activities = () => {
             setPendingInvitations(prev => prev - 1)
         } catch (err) {
             console.log(err);
+            if (err?.response?.status === 409) {
+                alert(err?.response?.data?.error);
+            } else {
+                alert('Failed to accept invitation');
+            }
         }
     };
 
