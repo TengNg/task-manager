@@ -17,6 +17,20 @@ const CardComposer = ({ list, open, setOpen }) => {
     const axiosPrivate = useAxiosPrivate();
 
     useEffect(() => {
+        const closeOnEscape = (e) => {
+            if (e.key === 'Escape') {
+                setOpen(false);
+            }
+        };
+
+        window.addEventListener('keydown', closeOnEscape);
+
+        () => {
+            window.removeEventListener('keydown', closeOnEscape);
+        };
+    }, []);
+
+    useEffect(() => {
         if (textAreaRef.current && open === true) {
             textAreaRef.current.focus();
             composerRef.current.scrollIntoView({ block: 'end' });

@@ -61,6 +61,7 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
                 await axiosPrivate.put(`/lists/${removedId}/reorder`, JSON.stringify({ rank }));
                 socket.emit("updateLists", newLists);
             } catch (err) {
+                alert("Failed to reorder list");
                 setBoardState(prev => {
                     return { ...prev, lists: tempLists };
                 });
@@ -71,20 +72,10 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
 
         // type CARD ============================================================================================
 
-        let currentLists = null;
-
-        try {
-            currentLists = JSON.parse(JSON.stringify(boardState.lists)); // deep copy
-        } catch (err) {
-            setBoardState(prev => {
-                return { ...prev, lists: tempLists };
-            });
-            return;
-        }
+        let currentLists = boardState.lists;
 
         const fromList = currentLists.find(list => list._id === source.droppableId);
         const toList = currentLists.find(list => list._id === destination.droppableId);
-
 
         // dragging outside
         if (!fromList || !toList) return;
