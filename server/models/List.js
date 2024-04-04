@@ -35,7 +35,7 @@ listSchema.pre('save', async function(next) {
         const Board = mongoose.model('Board');
         const foundBoard = await Board.findById(this.boardId).lean();
         if (foundBoard && foundBoard.listCount >= MAX_LIST_COUNT) {
-            const error = new Error('Maximum list count reached for this board');
+            const error = new Error(`Maximum list count reached for this board (maximum: ${MAX_LIST_COUNT})`);
             return next(error);
         }
     }

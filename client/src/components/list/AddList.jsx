@@ -49,12 +49,8 @@ const AddList = ({ open, setOpen }) => {
             setListTitle("");
             titleInputRef.current.focus();
         } catch (err) {
-            const errMsg = err?.response?.data?.msg;
-            if (errMsg === "Maximum list count reached for this board") {
-                alert(errMsg);
-            } else {
-                alert("Failed to add new list, please try again");
-            }
+            const errMsg = err?.response?.data?.errMsg || 'Failed to add new list';
+            alert(errMsg);
         }
     };
 

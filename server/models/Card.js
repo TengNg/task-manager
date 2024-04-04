@@ -63,7 +63,7 @@ cardSchema.pre('save', async function(next) {
         const List = mongoose.model('List');
         const foundList = await List.findById(this.listId);
         if (foundList && foundList.cardCount >= MAX_CARD_COUNT) {
-            const error = new Error("Maximum card count reached for this list");
+            const error = new Error(`Maximum card count reached for this list (maximum: ${MAX_CARD_COUNT})`);
             return next(error);
         }
     }

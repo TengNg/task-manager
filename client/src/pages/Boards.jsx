@@ -124,7 +124,6 @@ const Boards = () => {
                             {
                                 openBoardForm &&
                                 <BoardForm
-                                    nBoards={boards.length}
                                     ref={boardFormRef}
                                 />
                             }

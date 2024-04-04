@@ -2,7 +2,7 @@ import { useState, forwardRef } from "react"
 import { axiosPrivate } from "../../api/axios";
 import { useNavigate } from "react-router-dom";
 
-const BoardForm = forwardRef(({ nBoards }, ref) => {
+const BoardForm = forwardRef(({}, ref) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
 
@@ -10,8 +10,13 @@ const BoardForm = forwardRef(({ nBoards }, ref) => {
 
     const handleCreateBoard = async () => {
         if (!title) return;
-        const response = await axiosPrivate.post("/boards", JSON.stringify({ title, description }));
-        navigate(`/b/${response.data.newBoard._id}`);
+        try {
+            const response = await axiosPrivate.post("/boards", JSON.stringify({ title, description }));
+            navigate(`/b/${response.data.newBoard._id}`);
+        } catch (err) {
+            const errMsg = err?.response?.data?.errMsg || 'Failed to create new board';
+            alert(errMsg);
+        }
     };
 
     const handleInputOnEnter = async (e) => {

@@ -63,12 +63,8 @@ const CardComposer = ({ list, open, setOpen }) => {
             textAreaRef.current.focus();
             composerRef.current.scrollIntoView({ block: 'end' });
         } catch (err) {
-            const errMsg = err?.response?.data?.errMsg;
-            if (errMsg === "Maximum card count reached for this list") {
-                alert(errMsg);
-            } else {
-                alert('Failed to add new card');
-            }
+            const errMsg = err?.response?.data?.errMsg || 'Failed to add new card';
+            alert(errMsg);
         }
     };
 
