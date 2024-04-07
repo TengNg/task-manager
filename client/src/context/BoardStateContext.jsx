@@ -23,6 +23,9 @@ export const BoardStateContextProvider = ({ children }) => {
 
     useEffect(() => {
         if (socket) {
+            const url = new URL(location.href);
+            const filter = url.searchParams.get("filter");
+
             socket.on("boardClosed", (_) => {
                 setIsRemoved(true);
             });
@@ -103,11 +106,25 @@ export const BoardStateContextProvider = ({ children }) => {
             });
 
             socket.on("newCard", (data) => {
-                addCardToList(data.listId, data);
+                const card = data;
+
+                if (filter) {
+                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                addCardToList(card.listId, card);
             });
 
             socket.on("copyCard", (data) => {
-                addCopiedCard(data.cards, data.card, data.index);
+                const { card, index } = data;
+
+                if (filter) {
+                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                addCopiedCard(card, index);
             });
 
             socket.on("deletedCard", (data) => {
@@ -115,13 +132,28 @@ export const BoardStateContextProvider = ({ children }) => {
             });
 
             socket.on("cardMoved", (data) => {
-                const { oldListId, newListId, cardId, newCard } = data;
+                const { oldListId, newListId, cardId, newCard: card } = data;
+
+                if (filter) {
+                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
                 deleteCard(oldListId, cardId);
-                addCardToList(newListId, newCard);
+                addCardToList(newListId, card);
             });
 
             socket.on("cardMovedByIndex", (data) => {
-                const { cards, listId } = data;
+                let { cards, listId } = data;
+
+                if (filter) {
+                    cards = cards.map(card => {
+                        const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                        card["hiddenByFilter"] = !includesFilter;
+                        return card;
+                    });
+                }
+
                 setBoardState(prev => {
                     return {
                         ...prev,
@@ -132,6 +164,14 @@ export const BoardStateContextProvider = ({ children }) => {
 
             socket.on("cardMovedToList", (data) => {
                 const { oldListId, newListId, insertedIndex, card } = data;
+
+                const url = new URL(location.href);
+                const filter = url.searchParams.get("filter");
+                if (filter) {
+                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
                 const cardId = card._id;
                 deleteCard(oldListId, cardId);
                 addCardToListByIndex(newListId, card, insertedIndex);
@@ -302,13 +342,19 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
-    const addCopiedCard = (cards, card, index) => {
+    const addCopiedCard = (card, index) => {
         setBoardState(prev => {
-            const newCards = [...cards];
-            newCards.splice(index + 1, 0, card);
             return {
                 ...prev,
-                lists: prev.lists.map(list => list._id === card.listId ? { ...list, cards: newCards } : list)
+                lists: prev.lists.map(list => {
+                    if (list._id === card.listId) {
+                        const cards = [...list.cards];
+                        cards.splice(index + 2, 0, card);
+                        return { ...list, cards };
+                    } else {
+                        return list;
+                    }
+                })
             };
         });
     };

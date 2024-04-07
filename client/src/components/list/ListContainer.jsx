@@ -83,6 +83,7 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
         const fromList = currentLists.find(list => list._id === source.droppableId);
         const toList = currentLists.find(list => list._id === destination.droppableId);
 
+
         // dragging outside
         if (!fromList || !toList) return;
 

@@ -275,9 +275,9 @@ const Board = () => {
             const response = await axiosPrivate.post(`/cards/${card._id}/copy`, JSON.stringify({ rank }));
             const { newCard } = response.data;
 
-            addCopiedCard(cards, newCard, currentIndex);
+            addCopiedCard(newCard, currentIndex);
 
-            socket.emit("copyCard", { cards, card: newCard, index: currentIndex });
+            socket.emit("copyCard", { card: newCard, index: currentIndex });
         } catch (err) {
             console.log(err);
             alert('Failed to create a copy of this card');
