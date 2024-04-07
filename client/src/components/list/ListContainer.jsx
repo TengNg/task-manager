@@ -32,7 +32,7 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
         const { index: destIndex } = destination;
         const { index: srcIndex } = source
 
-        const tempLists = [...boardState.lists]; // need this when failed to reorder
+        // const tempLists = [...boardState.lists]; // need this when failed to reorder
 
         if (type === "LIST") {
             const newLists = [...boardState.lists];
@@ -56,15 +56,21 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
 
             try {
                 setBoardState(prev => {
-                    return { ...prev, lists: newLists };
+                    const newLists = [...prev.lists]
+                    const currentList = newLists.splice(srcIndex, 1)[0];
+                    newLists.splice(destIndex, 0, currentList);
+                    return { ...prev, lists: newLists }
                 });
+
                 await axiosPrivate.put(`/lists/${removedId}/reorder`, JSON.stringify({ rank }));
-                socket.emit("updateLists", newLists);
+                socket.emit("moveList", { listId: removedId, fromIndex: srcIndex, toIndex: destIndex });
             } catch (err) {
                 alert("Failed to reorder list");
-                setBoardState(prev => {
-                    return { ...prev, lists: tempLists };
-                });
+                window.location.reload();
+
+                // setBoardState(prev => {
+                //     return { ...prev, lists: tempLists };
+                // });
             }
 
             return;
@@ -115,12 +121,23 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
             setBoardState(prev => {
                 return { ...prev, lists: currentLists };
             });
-            await axiosPrivate.put(`/cards/${removedId}/reorder`, JSON.stringify({ rank, listId: removed.listId }));
-            socket.emit("updateLists", currentLists);
-        } catch (err) {
-            setBoardState(prev => {
-                return { ...prev, lists: tempLists };
+
+            const response = await axiosPrivate.put(`/cards/${removedId}/reorder`, JSON.stringify({ rank, listId: removed.listId }));
+            const newCard = response.data.newCard;
+
+            socket.emit("moveCardToList", {
+                oldListId: source.droppableId,
+                newListId: newCard.listId,
+                insertedIndex: destIndex,
+                card: newCard
             });
+        } catch (err) {
+            alert("Failed to reorder card");
+            window.location.reload();
+
+            // setBoardState(prev => {
+            //     return { ...prev, lists: tempLists };
+            // });
         }
     };
 

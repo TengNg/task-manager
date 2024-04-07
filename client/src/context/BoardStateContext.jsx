@@ -59,6 +59,16 @@ export const BoardStateContextProvider = ({ children }) => {
                 });
             });
 
+            socket.on("listMoved", (data) => {
+                const { listId: _, fromIndex, toIndex } = data;
+                setBoardState(prev => {
+                    const newLists = [...prev.lists]
+                    const currentList = newLists.splice(fromIndex, 1)[0];
+                    newLists.splice(toIndex, 0, currentList);
+                    return { ...prev, lists: newLists }
+                });
+            });
+
             socket.on("getBoardWithUpdatedLists", (data) => {
                 setBoardState(prev => {
                     return { ...prev, lists: data }
@@ -118,6 +128,13 @@ export const BoardStateContextProvider = ({ children }) => {
                         lists: prev.lists.map(list => list._id === listId ? { ...list, cards } : list)
                     };
                 });
+            });
+
+            socket.on("cardMovedToList", (data) => {
+                const { oldListId, newListId, insertedIndex, card } = data;
+                const cardId = card._id;
+                deleteCard(oldListId, cardId);
+                addCardToListByIndex(newListId, card, insertedIndex);
             });
 
             socket.on("updatedListTitle", (data) => {
@@ -264,6 +281,23 @@ export const BoardStateContextProvider = ({ children }) => {
             return {
                 ...prev,
                 lists: prev.lists.map(list => list._id === listId ? { ...list, cards: [...list.cards, card] } : list)
+            };
+        });
+    };
+
+    const addCardToListByIndex = (listId, card, index) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.map(list => {
+                    if (list._id === listId) {
+                        const cards = [...list.cards];
+                        cards.splice(index, 0, card);
+                        return { ...list, cards };
+                    } else {
+                        return list;
+                    }
+                })
             };
         });
     };

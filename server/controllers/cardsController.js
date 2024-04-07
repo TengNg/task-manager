@@ -14,8 +14,6 @@ const addCard = async (req, res) => {
     });
 
     await newCard.save();
-    List.findOneAndUpdate({ _id: listId }, { $inc: { cardCount: 1 } }, { new: true });
-
     return res.status(201).json({ msg: 'new card added', newCard });
 };
 

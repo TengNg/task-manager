@@ -2,12 +2,15 @@ import { useEffect, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from '../../hooks/useBoardState';
+import { useSearchParams } from 'react-router-dom';
 
 const Filter = ({ open, setOpen }) => {
     const {
         boardState,
         setBoardState,
     } = useBoardState();
+
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const dialog = useRef();
     const cardTitleInput = useRef();
@@ -24,7 +27,7 @@ const Filter = ({ open, setOpen }) => {
                 }
             };
 
-            const handleOnClose = () =>{
+            const handleOnClose = () => {
                 setOpen(false);
             };
 
@@ -39,6 +42,23 @@ const Filter = ({ open, setOpen }) => {
             dialog.current.close();
         }
     }, [open]);
+
+    useEffect(() => {
+        const searchValue = searchParams.get('filter');
+
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.map(list => {
+                    const newCards = [...list.cards].map(card => {
+                        if (!searchValue) return { ...card, hiddenByFilter: false };
+                        return card.title.toLowerCase().includes(searchValue.toLowerCase()) ? { ...card, hiddenByFilter: false } : { ...card, hiddenByFilter: true };
+                    });
+                    return { ...list, cards: newCards };
+                })
+            };
+        });
+    }, [searchParams]);
 
     const handleCloseOnOutsideClick = (e) => {
         if (e.target === dialog.current) {
@@ -56,17 +76,8 @@ const Filter = ({ open, setOpen }) => {
         const searchValue = cardTitleInput.current.value;
         if (!searchValue.trim()) return;
 
-        setBoardState(prev => {
-            return {
-                ...prev,
-                lists: prev.lists.map(list => {
-                    const newCards = [...list.cards].map(card => {
-                        return card.title.toLowerCase().includes(searchValue.toLowerCase()) ? { ...card, hiddenByFilter: false } : { ...card, hiddenByFilter: true };
-                    });
-                    return { ...list, cards: newCards };
-                })
-            };
-        });
+        const params = { filter: searchValue };
+        setSearchParams(params);
     };
 
     return (
@@ -86,20 +97,28 @@ const Filter = ({ open, setOpen }) => {
             </div>
 
             <form onSubmit={handleFilterByCardTitle}>
-                <div className="w-full relative flex flex-col justify-center gap-4 py-2 mt-2">
-                    <div className='flex gap-2'>
+                <div className="w-full relative flex flex-col items-start gap-4 py-2 mt-2">
+                    <div className='w-full flex gap-2'>
                         <input
                             ref={cardTitleInput}
                             className={`p-3 w-full overflow-hidden shadow-[0_3px_0_0] shadow-gray-600 text-[0.75rem] whitespace-nowrap text-ellipsis border-[2px] bg-gray-100 border-gray-600 text-gray-600 font-bold select-none font-mono focus:outline-none`}
                             placeholder="search for cards..."
                         />
-                        <button
-                            type='submit'
-                            className="button--style border-[2px] py-2 text-[0.75rem] transition-all w-[80px] shadow-[0_3px_0_0] shadow-gray-600 bg-gray-100"
-                        >
-                            search
-                        </button>
                     </div>
+
+                    {
+                        searchParams.get('filter') &&
+                        <button
+                            type="button"
+                            className="button--style border-[2px] py-2 text-[0.75rem] transition-all shadow-[0_3px_0_0] shadow-gray-600 bg-gray-100"
+                            onClick={() => {
+                                setSearchParams({})
+                                setOpen(false);
+                            }}
+                        >
+                            clear filter
+                        </button>
+                    }
 
                     {
                         false &&
