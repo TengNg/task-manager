@@ -4,6 +4,7 @@ import useAuth from "./useAuth";
 const useKeyBinds = () => {
     const { auth } = useAuth();
 
+    const [openFilter, setOpenFilter] = useState(false);
     const [openPinnedBoards, setOpenPinnedBoards] = useState(false);
     const [openChatBox, setOpenChatBox] = useState(false);
     const [openFloatingChat, setOpenFloatingChat] = useState(false);
@@ -19,6 +20,8 @@ const useKeyBinds = () => {
                 return;
             }
 
+            const formOpen = openFilter || openPinnedBoards || openChatBox || openFloatingChat || openInvitationForm || openAddList;
+
             const key = event.key;
 
             if (event.ctrlKey) {
@@ -29,6 +32,8 @@ const useKeyBinds = () => {
                     || key === 'i'
                     || key === 'l'
                     || key === 's'
+                    || key === 'h'
+                    || key === 'l'
                     || key === 'ArrowLeft'
                     || key === 'ArrowRight'
                     || key === 'ArrowUp'
@@ -38,7 +43,22 @@ const useKeyBinds = () => {
                 }
             }
 
+            if (key === 'h') {
+                window.scrollBy({ left: -400, top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            if (key === 'l') {
+                window.scrollBy({ left: 400, top: 0, behavior: 'smooth' });
+                return;
+            }
+
             if (event.ctrlKey) {
+                if (key === 'F') {
+                    setOpenFilter(prev => !prev);
+                    return;
+                }
+
                 if (key === 'i') {
                     setOpenInvitationForm(prev => !prev);
                     return;
@@ -71,34 +91,36 @@ const useKeyBinds = () => {
                     return;
                 }
 
-                if (key === 'ArrowLeft') {
-                    setFocusedListIndex(prev => {
-                        if (prev === 0) return prev;
-                        return prev - 1;
-                    });
-                    return;
-                }
+                if (!formOpen) {
+                    if (key === 'ArrowLeft') {
+                        setFocusedListIndex(prev => {
+                            if (prev === 0) return prev;
+                            return prev - 1;
+                        });
+                        return;
+                    }
 
-                if (key === 'ArrowRight') {
-                    setFocusedListIndex(prev => {
-                        return prev + 1;
-                    });
-                    return;
-                }
+                    if (key === 'ArrowRight') {
+                        setFocusedListIndex(prev => {
+                            return prev + 1;
+                        });
+                        return;
+                    }
 
-                if (key === 'ArrowUp') {
-                    setFocusedCardIndex(prev => {
-                        if (prev === -1) return prev;
-                        return prev - 1;
-                    });
-                    return;
-                }
+                    if (key === 'ArrowUp') {
+                        setFocusedCardIndex(prev => {
+                            if (prev === -1) return prev;
+                            return prev - 1;
+                        });
+                        return;
+                    }
 
-                if (key === 'ArrowDown') {
-                    setFocusedCardIndex(prev => {
-                        return prev + 1;
-                    });
-                    return;
+                    if (key === 'ArrowDown') {
+                        setFocusedCardIndex(prev => {
+                            return prev + 1;
+                        });
+                        return;
+                    }
                 }
             }
 
@@ -125,24 +147,28 @@ const useKeyBinds = () => {
         openPinnedBoards,
         openFloatingChat,
         openChatBox,
+        openFilter,
+        openInvitationForm,
+        openAddList,
         auth,
     ]);
 
     return {
-        openPinnedBoards,
-        setOpenPinnedBoards,
-        openChatBox,
-        setOpenChatBox,
-        openFloatingChat,
-        setOpenFloatingChat,
-        openInvitationForm,
-        setOpenInvitationForm,
-        openAddList,
-        setOpenAddList,
-        focusedListIndex,
-        setFocusedListIndex,
-        focusedCardIndex,
-        setFocusedCardIndex,
+        openFilter, setOpenFilter,
+
+        openPinnedBoards, setOpenPinnedBoards,
+
+        openChatBox, setOpenChatBox,
+
+        openFloatingChat, setOpenFloatingChat,
+
+        openInvitationForm, setOpenInvitationForm,
+
+        openAddList, setOpenAddList,
+
+        focusedListIndex, setFocusedListIndex,
+
+        focusedCardIndex, setFocusedCardIndex,
     };
 }
 

@@ -53,6 +53,7 @@ const getBoard = async (req, res) => {
                 { members: foundUser._id },
             ],
         })
+        .lean()
         .sort({ createdAt: -1 })
         .populate({
             path: 'createdBy',
@@ -65,15 +66,11 @@ const getBoard = async (req, res) => {
 
     if (!board) return res.status(404).json({ msg: "board not found" });
 
-    const listCount = await List.count({ boardId: id });
-    board.listCount = listCount;
-
     // set recently viewed board
     if (foundUser.recentlyViewedBoardId !== board._id) {
         board.lastViewed = Date.now();
         foundUser.recentlyViewedBoardId = board._id;
         foundUser.save();
-        board.save();
     }
 
     const lists = await List.find({ boardId: id }).sort({ order: 'asc' });

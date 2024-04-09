@@ -23,6 +23,9 @@ export const BoardStateContextProvider = ({ children }) => {
 
     useEffect(() => {
         if (socket) {
+            const url = new URL(location.href);
+            const filter = url.searchParams.get("filter");
+
             socket.on("boardClosed", (_) => {
                 setIsRemoved(true);
             });
@@ -55,6 +58,16 @@ export const BoardStateContextProvider = ({ children }) => {
                 setBoardState(prev => {
                     const newLists = [...prev.lists]
                     newLists.splice(index, 0, { ...list, cards });
+                    return { ...prev, lists: newLists }
+                });
+            });
+
+            socket.on("listMoved", (data) => {
+                const { listId: _, fromIndex, toIndex } = data;
+                setBoardState(prev => {
+                    const newLists = [...prev.lists]
+                    const currentList = newLists.splice(fromIndex, 1)[0];
+                    newLists.splice(toIndex, 0, currentList);
                     return { ...prev, lists: newLists }
                 });
             });
@@ -93,11 +106,25 @@ export const BoardStateContextProvider = ({ children }) => {
             });
 
             socket.on("newCard", (data) => {
-                addCardToList(data.listId, data);
+                const card = data;
+
+                if (filter) {
+                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                addCardToList(card.listId, card);
             });
 
             socket.on("copyCard", (data) => {
-                addCopiedCard(data.cards, data.card, data.index);
+                const { card, index } = data;
+
+                if (filter) {
+                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                addCopiedCard(card, index);
             });
 
             socket.on("deletedCard", (data) => {
@@ -105,19 +132,49 @@ export const BoardStateContextProvider = ({ children }) => {
             });
 
             socket.on("cardMoved", (data) => {
-                const { oldListId, newListId, cardId, newCard } = data;
+                const { oldListId, newListId, cardId, newCard: card } = data;
+
+                if (filter) {
+                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
                 deleteCard(oldListId, cardId);
-                addCardToList(newListId, newCard);
+                addCardToList(newListId, card);
             });
 
             socket.on("cardMovedByIndex", (data) => {
-                const { cards, listId } = data;
+                let { cards, listId } = data;
+
+                if (filter) {
+                    cards = cards.map(card => {
+                        const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                        card["hiddenByFilter"] = !includesFilter;
+                        return card;
+                    });
+                }
+
                 setBoardState(prev => {
                     return {
                         ...prev,
                         lists: prev.lists.map(list => list._id === listId ? { ...list, cards } : list)
                     };
                 });
+            });
+
+            socket.on("cardMovedToList", (data) => {
+                const { oldListId, newListId, insertedIndex, card } = data;
+
+                const url = new URL(location.href);
+                const filter = url.searchParams.get("filter");
+                if (filter) {
+                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                const cardId = card._id;
+                deleteCard(oldListId, cardId);
+                addCardToListByIndex(newListId, card, insertedIndex);
             });
 
             socket.on("updatedListTitle", (data) => {
@@ -268,13 +325,36 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
-    const addCopiedCard = (cards, card, index) => {
+    const addCardToListByIndex = (listId, card, index) => {
         setBoardState(prev => {
-            const newCards = [...cards];
-            newCards.splice(index + 1, 0, card);
             return {
                 ...prev,
-                lists: prev.lists.map(list => list._id === card.listId ? { ...list, cards: newCards } : list)
+                lists: prev.lists.map(list => {
+                    if (list._id === listId) {
+                        const cards = [...list.cards];
+                        cards.splice(index, 0, card);
+                        return { ...list, cards };
+                    } else {
+                        return list;
+                    }
+                })
+            };
+        });
+    };
+
+    const addCopiedCard = (card, index) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.map(list => {
+                    if (list._id === card.listId) {
+                        const cards = [...list.cards];
+                        cards.splice(index + 2, 0, card);
+                        return { ...list, cards };
+                    } else {
+                        return list;
+                    }
+                })
             };
         });
     };

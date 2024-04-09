@@ -21,6 +21,7 @@ import useKeyBinds from "../hooks/useKeyBinds";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbtack } from '@fortawesome/free-solid-svg-icons';
 import Configuration from "../components/board/Configuration";
+import Filter from "../components/action-menu/Filter";
 
 const Board = () => {
     const {
@@ -63,20 +64,14 @@ const Board = () => {
     const axiosPrivate = useAxiosPrivate();
 
     const {
-        openPinnedBoards,
-        setOpenPinnedBoards,
-        openChatBox,
-        setOpenChatBox,
-        openFloatingChat,
-        setOpenFloatingChat,
-        openInvitationForm,
-        setOpenInvitationForm,
-        openAddList,
-        setOpenAddList,
-        focusedListIndex,
-        setFocusedListIndex,
-        focusedCardIndex,
-        setFocusedCardIndex,
+        openFilter, setOpenFilter,
+        openPinnedBoards, setOpenPinnedBoards,
+        openChatBox, setOpenChatBox,
+        openFloatingChat, setOpenFloatingChat,
+        openInvitationForm, setOpenInvitationForm,
+        openAddList, setOpenAddList,
+        focusedListIndex, setFocusedListIndex,
+        focusedCardIndex, setFocusedCardIndex,
     } = useKeyBinds();
 
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
@@ -86,7 +81,7 @@ const Board = () => {
 
     // chat messages ==================================================================================================
     const [chatsPage, setChatsPage] = useState(1);
-    const [chatsPerPage, setChatsPerPage] = useState(10);
+    const [chatsPerPage, _setChatsPerPage] = useState(10);
     const [isFetchingMoreMessages, setIsFetchingMoreMessages] = useState(undefined);
     const [allMessagesFetched, setAllMessagesFetched] = useState(false);
 
@@ -280,9 +275,9 @@ const Board = () => {
             const response = await axiosPrivate.post(`/cards/${card._id}/copy`, JSON.stringify({ rank }));
             const { newCard } = response.data;
 
-            addCopiedCard(cards, newCard, currentIndex);
+            addCopiedCard(newCard, currentIndex);
 
-            socket.emit("copyCard", { cards, card: newCard, index: currentIndex });
+            socket.emit("copyCard", { card: newCard, index: currentIndex });
         } catch (err) {
             console.log(err);
             alert('Failed to create a copy of this card');
@@ -400,6 +395,11 @@ const Board = () => {
 
     return (
         <>
+            <Filter
+                open={openFilter}
+                setOpen={setOpenFilter}
+            />
+
             {
                 openPinnedBoards &&
                 <PinnedBoards
@@ -522,6 +522,14 @@ const Board = () => {
                             className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
                                     ${(openChatBox || openFloatingChat) ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                         >Chats</div>
+
+                        <div
+                            onClick={() => setOpenFilter(prev => !prev)}
+                            className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                    ${openFilter ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
+                        >Filter
+                        </div>
+
 
                         <div
                             onClick={() => setOpenInvitationForm(true)}

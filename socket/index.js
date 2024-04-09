@@ -63,6 +63,12 @@ io.on('connection', (socket) => {
         socket.to(boardId).emit("getBoardWithUpdatedLists", data);
     });
 
+    socket.on("moveList", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("listMoved", data);
+    });
+
     socket.on("addMovedListToBoard", (data) => {
         const { boardId, list, cards, index } = data;
         socket.to(boardId).emit("getBoardWithMovedListAdded", { list, cards, index });
@@ -108,6 +114,12 @@ io.on('connection', (socket) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
         socket.to(boardId).emit("cardMovedByIndex", data);
+    });
+
+    socket.on("moveCardToList", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("cardMovedToList", data);
     });
 
     socket.on("updateCardOwner", (data) => {
