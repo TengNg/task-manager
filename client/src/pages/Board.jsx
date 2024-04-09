@@ -52,6 +52,9 @@ const Board = () => {
         debugModeEnabled,
         setDebugModeEnabled,
 
+        // for filter indicator
+        hasFilter,
+
         socket
     } = useBoardState();
 
@@ -526,7 +529,7 @@ const Board = () => {
                         <div
                             onClick={() => setOpenFilter(prev => !prev)}
                             className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
-                                    ${openFilter ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
+                                    ${openFilter ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'} ${hasFilter ? 'text-white bg-teal-600' : ''}`}
                         >Filter
                         </div>
 

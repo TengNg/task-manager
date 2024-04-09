@@ -6,14 +6,21 @@ import { useSearchParams } from 'react-router-dom';
 
 const Filter = ({ open, setOpen }) => {
     const {
-        boardState,
         setBoardState,
+        setHasFilter,
     } = useBoardState();
 
     const [searchParams, setSearchParams] = useSearchParams();
-
     const dialog = useRef();
     const cardTitleInput = useRef();
+
+    useEffect(() => {
+        if (searchParams.get('filter')) {
+            setHasFilter(true);
+        } else {
+            setHasFilter(false);
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         if (open) {

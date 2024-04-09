@@ -18,6 +18,7 @@ const List = ({ index, list, cards }) => {
         deleteList,
         theme,
         debugModeEnabled,
+        hasFilter,
         socket,
     } = useBoardState();
 
@@ -137,7 +138,7 @@ const List = ({ index, list, cards }) => {
                         className='flex mb-1 gap-2 relative'>
                         <button
                             ref={openListMenuButtonRef}
-                            className={`border-[2px] border-gray-600 px-2 text-gray-600 flex justify-center items-center ${!openListMenu ? 'bg-gray-100' : 'bg-gray-600 text-white' } ${theme.itemTheme == 'rounded' ? 'rounded-md' : ''}`}
+                            className={`border-[2px] border-gray-600 px-2 text-gray-600 flex justify-center items-center ${!openListMenu ? 'bg-gray-100' : 'bg-gray-600 text-white'} ${theme.itemTheme == 'rounded' ? 'rounded-md' : ''}`}
                             onClick={() => {
                                 setOpenListMenu(open => !open);
                             }}
@@ -150,6 +151,14 @@ const List = ({ index, list, cards }) => {
                             <div className='text-gray-500 text-[0.65rem] font-medium flex items-center gap-1'>
                                 <FontAwesomeIcon icon={faAnglesRight} size='sm' />
                                 <span>{list.cards.length}</span>
+                                {
+                                    hasFilter && (
+                                        <>
+                                            <span>{" "}</span>
+                                            <span>(found: {list.cards.filter(card => !card.hiddenByFilter).length})</span>
+                                        </>
+                                    )
+                                }
                             </div>
                         }
 

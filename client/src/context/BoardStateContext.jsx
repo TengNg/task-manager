@@ -17,6 +17,7 @@ export const BoardStateContextProvider = ({ children }) => {
     const [openedCard, setOpenedCard] = useState(undefined);
     const [openedCardQuickEditor, setOpenedCardQuickEditor] = useState(undefined);
     const [listToMove, setListToMove] = useState();
+    const [hasFilter, setHasFilter] = useState(false);
 
     const [theme, setTheme] = useLocalStorage(LOCAL_STORAGE_KEYS.BOARD_ITEM_THEME, {});
     const [debugModeEnabled, setDebugModeEnabled] = useLocalStorage(LOCAL_STORAGE_KEYS.DEBUG_MODE_ENABLED, {});
@@ -463,6 +464,8 @@ export const BoardStateContextProvider = ({ children }) => {
 
                 theme, setTheme,
                 debugModeEnabled, setDebugModeEnabled,
+
+                hasFilter, setHasFilter,
 
                 socket,
             }}
