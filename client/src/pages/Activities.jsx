@@ -23,20 +23,23 @@ const Activities = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        fetchInvitations();
+    }, []);
+
+    const fetchInvitations = async () => {
         setLoadingInvitations(true);
-        const getInvitations = async () => {
+
+        try {
             const response = await axiosPrivate.get("/invitations");
             setInvitations(response.data.invitations);
             setPendingInvitations(response.data.invitations.filter(item => item.status === 'pending'));
-        };
-
-        getInvitations().catch(err => {
+        } catch (err) {
             console.log(err);
             navigate('/login');
-        });
+        }
 
         setLoadingInvitations(false);
-    }, []);
+    };
 
     const handleAcceptInvitation = async (invitationId) => {
         try {
@@ -92,67 +95,67 @@ const Activities = () => {
             <div className='box--style border-[2px] border-gray-600 shadow-gray-600 min-h-[300px] min-w-[500px] w-[800px] mx-auto p-10 bg-gray-100 flex flex-col gap-4'>
                 {
                     loadingInvitations
-                    ? <p className='w-full text-center mx-auto mt-[4rem] text-gray-600 select-none font-semibold'>loading invitations...</p>
-                    : invitations && invitations.length === 0
-                    ? <p className='w-full text-center mx-auto mt-[4rem] text-gray-600 select-none font-semibold'>Nothing to show here :(</p>
-                    : <>
-                        {invitations.map((item, index) => {
-                            const { _id, invitedByUserId: sender, createdAt, status, boardId } = item;
-                            return <div
-                                key={index}
-                                className={`button--style--rounded rounded-none border-gray-700 shadow-gray-700 flex items-center p-3 py-4 rounded-lg hover:opacity-80 transition-all
+                        ? <p className='w-full text-center mx-auto mt-[4rem] text-gray-600 select-none font-semibold'>loading invitations...</p>
+                        : invitations && invitations.length === 0
+                            ? <p className='w-full text-center mx-auto mt-[4rem] text-gray-600 select-none font-semibold'>Nothing to show here :(</p>
+                            : <>
+                                {invitations.map((item, index) => {
+                                    const { _id, invitedByUserId: sender, createdAt, status, boardId } = item;
+                                    return <div
+                                        key={index}
+                                        className={`button--style--rounded rounded-none border-gray-700 shadow-gray-700 flex items-center p-3 py-4 rounded-lg hover:opacity-80 transition-all
                                                         ${status === "accepted" ? 'bg-blue-200 cursor-pointer' : status === "rejected cursor-pointer" ? 'bg-red-200' : 'bg-gray-50'}`}
-                                onClick={() => status === "accepted" && navigate(`/b/${boardId}`)}
-                            >
-                                <div className='flex flex-1 items-center gap-2'>
-                                    <Avatar
-                                        profileImage={sender.profileImage}
-                                        username={sender.username}
-                                    />
-                                    {/* <div className='bg-blue-500 text-white flex--center text-[0.8rem] w-[40px] h-[40px] rounded-full bg-center bg-cover overflow-hidden cursor-pointer'> */}
-                                    {/*     <div className="font-bold flex--center select-none">{sender.username.charAt(0).toUpperCase()}</div> */}
-                                    {/* </div> */}
-                                    <div className='flex flex-col justify-start'>
-                                        <div className='flex items-center gap-3'>
-                                            <div>
-                                                <span className='max-w-[200px] font-bold overflow-hidden whitespace-nowrap text-ellipsis'>{sender.username}</span>
-                                                <span>{" "}</span>
-                                                <span>sends you a board invitation</span>
+                                        onClick={() => status === "accepted" && navigate(`/b/${boardId}`)}
+                                    >
+                                        <div className='flex flex-1 items-center gap-2'>
+                                            <Avatar
+                                                profileImage={sender.profileImage}
+                                                username={sender.username}
+                                            />
+                                            {/* <div className='bg-blue-500 text-white flex--center text-[0.8rem] w-[40px] h-[40px] rounded-full bg-center bg-cover overflow-hidden cursor-pointer'> */}
+                                            {/*     <div className="font-bold flex--center select-none">{sender.username.charAt(0).toUpperCase()}</div> */}
+                                            {/* </div> */}
+                                            <div className='flex flex-col justify-start'>
+                                                <div className='flex items-center gap-3'>
+                                                    <div>
+                                                        <span className='max-w-[200px] font-bold overflow-hidden whitespace-nowrap text-ellipsis'>{sender.username}</span>
+                                                        <span>{" "}</span>
+                                                        <span>sends you a board invitation</span>
+                                                    </div>
+
+                                                    {
+                                                        status != 'pending' &&
+                                                        <span className={`text-[0.65rem] ${status == 'accepted' ? 'text-blue-700' : 'text-red-700'}`}>
+                                                            {status}
+                                                        </span>
+                                                    }
+                                                </div>
+                                                <p className='text-[0.75rem]'>{dateFormatter(createdAt)}</p>
                                             </div>
-
-                                            {
-                                                status != 'pending' &&
-                                                <span className={`text-[0.65rem] ${status == 'accepted' ? 'text-blue-700' : 'text-red-700'}`}>
-                                                    {status}
-                                                </span>
-                                            }
                                         </div>
-                                        <p className='text-[0.75rem]'>{dateFormatter(createdAt)}</p>
+
+                                        {
+                                            status === 'pending'
+                                                ? <div className='flex gap-2'>
+                                                    <button
+                                                        onClick={() => handleAcceptInvitation(_id)}
+                                                        className='button--style--rounded px-3 py-2 bg-white text-[0.8rem] text-blue-700 border-blue-700'>Accept</button>
+                                                    <button
+                                                        onClick={() => handleRejectInvitation(_id)}
+                                                        className='button--style--rounded px-3 py-2 bg-white text-[0.8rem] text-red-700 border-red-700'>Reject</button>
+                                                </div>
+                                                : <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleRemoveInvitation(_id)
+                                                    }}
+                                                    className='button--style--rounded px-3 py-2 border-black text-[0.8rem] text-black bg-gray-200'>Remove</button>
+
+                                        }
+
                                     </div>
-                                </div>
-
-                                {
-                                    status === 'pending'
-                                        ? <div className='flex gap-2'>
-                                            <button
-                                                onClick={() => handleAcceptInvitation(_id)}
-                                                className='button--style--rounded px-3 py-2 bg-white text-[0.8rem] text-blue-700 border-blue-700'>Accept</button>
-                                            <button
-                                                onClick={() => handleRejectInvitation(_id)}
-                                                className='button--style--rounded px-3 py-2 bg-white text-[0.8rem] text-red-700 border-red-700'>Reject</button>
-                                        </div>
-                                        : <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleRemoveInvitation(_id)
-                                            }}
-                                            className='button--style--rounded px-3 py-2 border-black text-[0.8rem] text-black bg-gray-200'>Remove</button>
-
-                                }
-
-                            </div>
-                        })}
-                    </>
+                                })}
+                            </>
                 }
             </div>
         </section>

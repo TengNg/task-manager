@@ -112,13 +112,14 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
         try {
             setLoading(true);
             const res = await axiosPrivate.put(`/boards/pinned/clean`);
-            console.log(res);
+
             setAuth(prev => {
                 return { ...prev, user: { ...prev.user, pinnedBoardIdCollection: {} } }
             });
 
             setLoading(false);
             setCleaned(true);
+            setPinned(false);
         } catch (err) {
             console.log(err);
             setLoading(false);

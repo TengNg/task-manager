@@ -101,7 +101,7 @@ h1 {
     font-size: 3.5rem;
 }
 
-div:focus {
+div:focus, dialog:focus {
     outline: none;
 }
 

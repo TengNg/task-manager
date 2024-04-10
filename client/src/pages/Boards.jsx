@@ -109,7 +109,7 @@ const Boards = () => {
                             })
                         }
 
-                        <div className="relative w-[200px] min-w-[200px] min-h-[100px] h-[100px]">
+                        <div className="relative w-[250px] h-[125px]">
                             <div
                                 onClick={() => setOpenBoardForm(open => !open)}
                                 ref={createBoardButtonRef}

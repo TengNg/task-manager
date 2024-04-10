@@ -54,7 +54,6 @@ const getBoard = async (req, res) => {
                 { members: foundUser._id },
             ],
         })
-        .lean()
         .sort({ createdAt: -1 })
         .populate({
             path: 'createdBy',
@@ -72,6 +71,7 @@ const getBoard = async (req, res) => {
         board.lastViewed = Date.now();
         foundUser.recentlyViewedBoardId = board._id;
         foundUser.save();
+        board.save();
     }
 
     const lists = await List.find({ boardId: id }).sort({ order: 'asc' });

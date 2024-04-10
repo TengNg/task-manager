@@ -39,6 +39,7 @@ const FloatingChat = ({
     useEffect(() => {
         if (scrollToBottom) {
             messageEndRef.current.scrollIntoView({ block: 'end' });
+            setScrollToBottom(false);
         }
     }, [scrollToBottom]);
 

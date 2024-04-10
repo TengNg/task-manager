@@ -11,6 +11,7 @@ const Filter = ({ open, setOpen }) => {
     } = useBoardState();
 
     const [searchParams, setSearchParams] = useSearchParams();
+
     const dialog = useRef();
     const cardTitleInput = useRef();
 
@@ -81,7 +82,10 @@ const Filter = ({ open, setOpen }) => {
         e.preventDefault();
 
         const searchValue = cardTitleInput.current.value;
-        if (!searchValue.trim()) return;
+        if (!searchValue.trim()) {
+            setSearchParams({});
+            return;
+        };
 
         const params = { filter: searchValue };
         setSearchParams(params);
@@ -90,7 +94,7 @@ const Filter = ({ open, setOpen }) => {
     return (
         <dialog
             ref={dialog}
-            className='z-40 backdrop:bg-black/25 box--style gap-4 items-start p-3 pb-5 h-fit min-w-[400px] max-h-[500px] border-black border-[2px] bg-gray-200'
+            className='z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 pb-5 h-fit min-w-[400px] max-h-[500px] border-black border-[2px] bg-gray-200'
             onClick={handleCloseOnOutsideClick}
         >
             <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>

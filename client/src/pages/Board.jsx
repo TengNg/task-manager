@@ -25,7 +25,6 @@ import Filter from "../components/action-menu/Filter";
 
 const Board = () => {
     const {
-        openMoveListForm,
         boardState,
         setBoardState,
         setBoardTitle,
@@ -112,7 +111,7 @@ const Board = () => {
             return;
         }
 
-        const focusedCard = boardState.lists[focusedListIndex]?.cards[focusedCardIndex];
+        const focusedCard = boardState.lists[focusedListIndex]?.cards.filter(card => !card.hiddenByFilter)[focusedCardIndex];
         if (!focusedCard) {
             if (focusedCardIndex < 0) {
                 setFocusedCardIndex(boardState.lists[focusedListIndex]?.cards.length - 1);
@@ -398,11 +397,6 @@ const Board = () => {
 
     return (
         <>
-            <Filter
-                open={openFilter}
-                setOpen={setOpenFilter}
-            />
-
             {
                 openPinnedBoards &&
                 <PinnedBoards
@@ -413,35 +407,10 @@ const Board = () => {
             }
 
             {
-                openMoveListForm &&
-                <MoveListForm />
-            }
-
-            {
-                openInvitationForm &&
-                <InvitationForm
-                    open={openInvitationForm}
-                    setOpen={setOpenInvitationForm}
-                />
-            }
-
-            {
                 openCopyBoardForm &&
                 <CopyBoardForm
                     open={openCopyBoardForm}
                     setOpen={setOpenCopyBoardForm}
-                />
-            }
-
-            {
-                openBoardConfiguration &&
-                <Configuration
-                    open={openBoardConfiguration}
-                    setOpen={setOpenBoardConfiguration}
-                    theme={theme}
-                    debugModeEnabled={debugModeEnabled}
-                    handleChangeTheme={handleChangeTheme}
-                    handleToggleEnableDebugMode={handleToggleEnableDebugMode}
                 />
             }
 
@@ -457,7 +426,7 @@ const Board = () => {
             }
 
             {
-                openCardDetail &&
+                openedCard &&
                 <CardDetail
                     open={openCardDetail}
                     setOpen={setOpenCardDetail}
@@ -467,6 +436,27 @@ const Board = () => {
                     handleMoveCardByIndex={handleMoveCardByIndex}
                 />
             }
+
+            <MoveListForm />
+
+            <Configuration
+                open={openBoardConfiguration}
+                setOpen={setOpenBoardConfiguration}
+                theme={theme}
+                debugModeEnabled={debugModeEnabled}
+                handleChangeTheme={handleChangeTheme}
+                handleToggleEnableDebugMode={handleToggleEnableDebugMode}
+            />
+
+            <Filter
+                open={openFilter}
+                setOpen={setOpenFilter}
+            />
+
+            <InvitationForm
+                open={openInvitationForm}
+                setOpen={setOpenInvitationForm}
+            />
 
             <ChatBox
                 open={openChatBox}

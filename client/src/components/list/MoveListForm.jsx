@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useParams } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const MoveListForm = () => {
     const [boards, setBoards] = useState([]);
@@ -17,23 +19,54 @@ const MoveListForm = () => {
         setBoardState,
         listToMove,
         setListToMove,
-        setOpenMoveListForm
+        openMoveListForm: open,
+        setOpenMoveListForm: setOpen
     } = useBoardState();
 
     const axiosPrivate = useAxiosPrivate();
 
-    useEffect(() => {
-        const getBoards = async () => {
-            const response = await axiosPrivate.get(`/boards`);
-            const { boards } = response.data;
-            setBoards(boards.filter(el => el._id != boardId));
-        };
-        getBoards().catch(console.error);
-    }, []);
+    const dialog = useRef();
 
-    const close = () => {
-        setOpenMoveListForm(false);
-        setListToMove(undefined);
+    useEffect(() => {
+        if (open) {
+            dialog.current.showModal();
+
+            const handleOnClose = () => {
+                setOpen(false);
+                setListToMove(undefined);
+            };
+
+            if (boards.length === 0) {
+                const getBoards = async () => {
+                    const response = await axiosPrivate.get(`/boards`);
+                    const { boards } = response.data;
+                    setBoards(boards.filter(el => el._id != boardId));
+                };
+
+                getBoards().catch(err => {
+                    console.log(err);
+                    alert(`Failed to get board options`);
+                });
+            }
+
+            dialog.current.addEventListener('close', handleOnClose);
+
+            () => {
+                dialog.current.removeEventListener('close', handleOnClose);
+            };
+        } else {
+            dialog.current.close();
+        }
+    }, [open]);
+
+    const handleCloseOnOutsideClick = (e) => {
+        if (e.target === dialog.current) {
+            dialog.current.close();
+        };
+    };
+
+    const handleClose = () => {
+        dialog.current.close();
     };
 
     const handleSelectBoardId = async (e) => {
@@ -79,20 +112,20 @@ const MoveListForm = () => {
 
     return (
         <>
-            <div
-                onClick={close}
-                className="fixed box-border top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-500 opacity-40 z-50 cursor-auto">
+            <dialog
+                ref={dialog}
+                className='z-40 backdrop:bg-black/15 fixed top-0 right-0 box--style gap-4 items-start p-3 pb-5 h-fit min-w-[400px] max-h-[500px] border-black border-[2px] bg-gray-200'
+                onClick={handleCloseOnOutsideClick}
+            >
 
-
-                <div className='text-black text-[0.75rem] px-2 absolute right-4 bottom-4'>
-                    a copy of this list will be moved to selected board
-                    {boards.length === 0 && <p className='mt-2'>(currently have no board to move)</p>}
-                </div>
-            </div>
-
-            <div className="fixed box--style flex flex-col gap-4 items-start p-3 pb-4 top-[1rem] right-0 left-[50%] -translate-x-[50%] translate-y-[100%] w-fit max-h-[500px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
-                <div className='w-full border-b-[1px] border-black pb-2'>
-                    move this list to
+                <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3 mb-4'>
+                    <p className="font-normal text-[1rem] text-gray-700">move this list to</p>
+                    <button
+                        className="text-gray-600 flex justify-center items-center"
+                        onClick={handleClose}
+                    >
+                        <FontAwesomeIcon icon={faXmark} size='xl' />
+                    </button>
                 </div>
 
                 <div className='flex flex-col gap-3'>
@@ -140,7 +173,7 @@ const MoveListForm = () => {
                     </button>
 
                 </div>
-            </div>
+            </dialog>
         </>
     )
 }
