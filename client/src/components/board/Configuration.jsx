@@ -1,20 +1,47 @@
+import { useState, useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const Configuration = ({ open, setOpen, handleChangeTheme, handleToggleEnableDebugMode, theme, debugModeEnabled }) => {
+    const dialog = useRef();
+
+    useEffect(() => {
+        if (open) {
+            dialog.current.showModal();
+
+            const handleOnClose = () => {
+                setOpen(false);
+            };
+
+            dialog.current.addEventListener('close', handleOnClose);
+
+            () => {
+                dialog.current.removeEventListener('close', handleOnClose);
+            };
+        } else {
+            dialog.current.close();
+        }
+    }, [open]);
+
+
+    const handleCloseOnOutsideClick = (e) => {
+        if (e.target === dialog.current) {
+            dialog.current.close();
+        };
+    };
 
     const handleClose = () => {
-        setOpen(false);
+        dialog.current.close();
     };
 
     return (
         <>
-            <div
-                onClick={handleClose}
-                className="fixed box-border top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-500 opacity-40 z-30 cursor-auto">
-            </div>
 
-            <div className="fixed box--style flex flex-col items-start pt-3 pb-8 px-3 top-[5rem] right-0 left-[50%] -translate-x-[50%] w-fit min-w-[400px] h-fit border-black border-[2px] z-40 cursor-auto bg-gray-200">
+            <dialog
+                ref={dialog}
+                className='z-40 backdrop:bg-black/25 fixed top-0 right-0 box--style gap-4 items-start p-3 pb-5 h-fit min-w-[400px] max-h-[500px] border-black border-[2px] bg-gray-200'
+                onClick={handleCloseOnOutsideClick}
+            >
                 <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3 mb-5'>
                     <p className="font-normal text-[1rem] text-gray-700">Configuration</p>
                     <button
@@ -54,7 +81,7 @@ const Configuration = ({ open, setOpen, handleChangeTheme, handleToggleEnableDeb
                     </div>
 
                 </div>
-            </div>
+            </dialog>
         </>
     )
 }

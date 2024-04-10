@@ -13,6 +13,7 @@ const MoveListForm = () => {
 
     const {
         socket,
+        boardState,
         setBoardState,
         listToMove,
         setListToMove,
@@ -103,7 +104,7 @@ const MoveListForm = () => {
                             }}
                             className={`appearance-none cursor-pointer border-gray-300 text-sm w-full py-2 px-4 text-gray-100 ${boards.length === 0 ? 'bg-gray-500' : 'bg-gray-600'}`}
                         >
-                            <option>board:</option>
+                            <option>board: {boardState?.board?.title}</option>
                             {
                                 boards.map((board, index) => {
                                     const { _id, title } = board;

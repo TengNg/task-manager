@@ -5,8 +5,9 @@ const List = require("../models/List");
 const Card = require("../models/Card");
 const User = require("../models/User");
 
-const getUser = (username) => {
-    const foundUser = User.findOne({ username }).lean();
+const getUser = (username, option = { lean: true }) => {
+    const foundUser = User.findOne({ username });
+    if (option.lean) foundUser.lean();
     return foundUser;
 };
 
@@ -255,7 +256,7 @@ const togglePinBoard = async (req, res) => {
     const { id } = req.params;
 
     const foundBoard = await Board.findById(id);
-    const foundUser = await getUser(username);
+    const foundUser = await getUser(username, { lean: false });
 
     if (!foundUser) return res.status(403).json({ msg: "user not found" });
     if (!foundBoard) return res.status(403).json({ msg: "board not found" });
@@ -281,7 +282,7 @@ const deletePinnedBoard = async (req, res) => {
     const { username } = req.user;
     const { id } = req.params;
 
-    const foundUser = await getUser(username);
+    const foundUser = await getUser(username, { lean: false });
     if (!foundUser) return res.status(403).json({ msg: "user not found" });
 
     if (foundUser.pinnedBoardIdCollection && foundUser.pinnedBoardIdCollection.has(id)) {
@@ -299,7 +300,7 @@ const deletePinnedBoard = async (req, res) => {
 const updatePinnedBoardsCollection = async (req, res) => {
     const { username } = req.user;
 
-    const foundUser = await getUser(username);
+    const foundUser = await getUser(username, { lean: false });
     if (!foundUser) return res.status(403).json({ msg: "user not found" });
 
     const result = await User.findOneAndUpdate(
@@ -314,7 +315,7 @@ const updatePinnedBoardsCollection = async (req, res) => {
 const cleanPinnedBoardsCollection = async (req, res) => {
     const { username } = req.user;
 
-    const foundUser = await getUser(username);
+    const foundUser = await getUser(username, { lean: false });
     if (!foundUser) return res.status(403).json({ msg: "user not found" });
 
     const result = await User.findOneAndUpdate(
