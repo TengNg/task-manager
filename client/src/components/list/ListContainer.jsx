@@ -56,9 +56,6 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
 
             try {
                 setBoardState(prev => {
-                    const newLists = [...prev.lists]
-                    const currentList = newLists.splice(srcIndex, 1)[0];
-                    newLists.splice(destIndex, 0, currentList);
                     return { ...prev, lists: newLists }
                 });
 

@@ -66,6 +66,8 @@ const sendInvitation = async (req, res) => {
 
 const acceptInvitation = async (req, res) => {
     const { id } = req.params;
+
+    const invitation = await Invitation.findByIdAndUpdate(id, { status: 'accepted' }, { new: true });
     const { boardId, invitedUserId } = invitation;
 
     const board = await Board.findById(boardId);
@@ -76,8 +78,6 @@ const acceptInvitation = async (req, res) => {
     if (board.members.length >= 1) {
         return res.status(409).json({ error: 'Board is full' });
     }
-
-    const invitation = await Invitation.findByIdAndUpdate(id, { status: 'accepted' }, { new: true });
 
     if (!board.members.includes(invitedUserId)) {
         board.members.push(invitedUserId);

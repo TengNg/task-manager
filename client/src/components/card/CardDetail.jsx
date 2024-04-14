@@ -41,17 +41,30 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
         const position = cards?.findIndex(el => el._id === card._id) || 0;
         setCardCount(cardCount);
         setPosition(position);
+        setCardDescription(card.description);
+        if (card.description) {
+            setOpenDescriptionComposer(true);
+        } else {
+            setOpenDescriptionComposer(false);
+        }
     }, [card]);
 
     useEffect(() => {
         if (open) {
             dialog.current.showModal();
-            dialog.current.querySelector('textarea').blur();
+            dialog.current.querySelector('.card__title__textarea').blur();
             dialog.current.focus();
 
             const handleKeyDown = (e) => {
                 if (e.ctrlKey && e.key === '/') {
-                    setOpenDescriptionComposer(true);
+                    if (!openDescriptionComposer) {
+                        setOpenDescriptionComposer(true);
+                    } else {
+                        let descTextArea = dialog.current.querySelector('.card__detail__description__textarea');
+                        if (descTextArea) {
+                            descTextArea.focus();
+                        }
+                    }
                 }
             };
 
@@ -193,7 +206,7 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
                     <div className="flex justify-start items start">
                         <div className="flex flex-col flex-1">
                             <TextArea
-                                className="break-words box-border p-1 min-h-[2rem] w-[98%] text-gray-600 bg-gray-200 leading-normal overflow-y-hidden resize-none placeholder-gray-400 focus:outline-blue-600 focus:bg-gray-100"
+                                className="card__title__textarea break-words box-border p-1 min-h-[2rem] w-[98%] text-gray-600 bg-gray-200 leading-normal overflow-y-hidden resize-none placeholder-gray-400 focus:outline-blue-600 focus:bg-gray-100"
                                 onKeyDown={(e) => {
                                     if (e.key == 'Enter') {
                                         e.target.blur();
@@ -204,7 +217,6 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
                                 onChange={(e) => setTitle(e.target.value)}
                                 minHeight={'2rem'}
                             />
-
                         </div>
 
                         <button
@@ -265,7 +277,7 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
                                 (card.description.trim() !== "" || openDescriptionComposer === true) &&
                                 <div className="flex flex-col items-start gap-2">
                                     <TextArea
-                                        className="overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 max-h-[400px] break-words box-border text-[0.75rem] py-2 px-3 w-[95%] text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
+                                        className="card__detail__description__textarea overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[175px] max-h-[400px] break-words box-border text-[0.75rem] py-2 px-3 w-[95%] text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
                                         autoFocus={true}
                                         onBlur={(e) => {
                                             confirmDescription(e)

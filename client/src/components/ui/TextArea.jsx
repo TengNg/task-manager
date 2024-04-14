@@ -27,6 +27,7 @@ const TextArea = ({ autoFocus = false, initialValue, minHeight, ...props }) => {
         ref={textAreaRef}
         onChange={handleTextAreaChanged}
         value={text}
+        autoFocus={autoFocus}
         {...props}
     />
 }

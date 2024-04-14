@@ -4,6 +4,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { lexorank } from '../../utils/class/Lexorank';
 
 const MoveListForm = () => {
     const [boards, setBoards] = useState([]);
@@ -40,7 +41,7 @@ const MoveListForm = () => {
                 const getBoards = async () => {
                     const response = await axiosPrivate.get(`/boards`);
                     const { boards } = response.data;
-                    setBoards(boards.filter(el => el._id != boardId));
+                    setBoards(boards);
                 };
 
                 getBoards().catch(err => {
@@ -83,30 +84,82 @@ const MoveListForm = () => {
             setSelectedBoardId(e.target.value);
         } catch (err) {
             console.log(err);
+            alert("Failed to select board, please try again");
         };
     };
 
     const handleMoveList = async () => {
         if (!selectedBoardId) return;
 
+        const list = listToMove;
+
+        // move list to another board ==================================================================================
+        if (list.boardId !== selectedBoardId) {
+            try {
+                const response = await axiosPrivate.post(`/lists/move/${listToMove._id}/b/${selectedBoardId}/i/${selectedIndex}`);
+                const { list, cards } = response.data;
+
+                setBoardState(prev => {
+                    return { ...prev, lists: prev.lists.filter(list => list._id != listToMove._id) };
+                });
+
+                socket.emit("deleteList", list._id);
+                socket.emit("addMovedListToBoard", { boardId: selectedBoardId, list, cards, index: selectedIndex });
+
+                setOpen(false);
+                setListToMove(undefined);
+            } catch (err) {
+                console.log(err);
+                setOpen(false);
+                setListToMove(undefined);
+                alert('Failed to delete list');
+            }
+            return;
+        }
+
+        // move list in current board ==================================================================================
         try {
-            const response = await axiosPrivate.post(`/lists/move/${listToMove._id}/b/${selectedBoardId}/i/${selectedIndex}`);
-            const { list, cards } = response.data;
+            const newLists = [...boardState.lists];
+            let removed = undefined;
+            let currentIndex = undefined;
+
+            for (let i = 0; i < newLists.length; i++) {
+                const l = newLists[i];
+                if (l._id === listToMove._id) {
+                    removed = newLists.splice(i, 1)[0];
+                    currentIndex = i;
+                    break;
+                }
+            }
+
+            if (currentIndex && selectedIndex && removed && +selectedIndex === +currentIndex) {
+                return;
+            }
+
+            newLists.splice(selectedIndex, 0, removed);
+
+            let prevRank = newLists[+selectedIndex - 1]?.order;
+            let nextRank = newLists[+selectedIndex + 1]?.order;
+
+            let [rank, ok] = lexorank.insert(prevRank, nextRank);
+
+            // failed to reorder
+            if (!ok) {
+                alert("Cannot move this list in current board, try again or enable #debug_mode to see what happened");
+                window.location.reload();
+                return;
+            }
 
             setBoardState(prev => {
-                return { ...prev, lists: prev.lists.filter(list => list._id != listToMove._id) };
+                return { ...prev, lists: newLists }
             });
 
-            socket.emit("deleteList", list._id);
-            socket.emit("addMovedListToBoard", { boardId: selectedBoardId, list, cards, index: selectedIndex });
-
-            setOpenMoveListForm(false);
-            setListToMove(undefined);
+            const removedId = removed._id;
+            await axiosPrivate.put(`/lists/${removedId}/reorder`, JSON.stringify({ rank }));
+            socket.emit("moveList", { listId: removedId, fromIndex: +currentIndex, toIndex: +selectedIndex });
         } catch (err) {
-            console.log(err);
-            setOpenMoveListForm(false);
-            setListToMove(undefined);
-            alert('Failed to delete list');
+            alert("Cannot move this list in current board, try again or enable #debug_mode to see what happened");
+            window.location.reload();
         }
     };
 
@@ -137,7 +190,7 @@ const MoveListForm = () => {
                             }}
                             className={`appearance-none cursor-pointer border-gray-300 text-sm w-full py-2 px-4 text-gray-100 ${boards.length === 0 ? 'bg-gray-500' : 'bg-gray-600'}`}
                         >
-                            <option>board: {boardState?.board?.title}</option>
+                            <option>select board to move</option>
                             {
                                 boards.map((board, index) => {
                                     const { _id, title } = board;
@@ -149,7 +202,7 @@ const MoveListForm = () => {
                         <select
                             disabled={listCount === 0}
                             onChange={(e) => {
-                                setSelectedIndex(e.target.value);
+                                setSelectedIndex(+e.target.value);
                             }}
                             className={`appearance-none cursor-pointer border-gray-300 text-sm w-full py-2 px-4 ${listCount === 0 ? 'bg-gray-500' : 'bg-gray-600'} text-gray-100`}
                         >
@@ -165,11 +218,13 @@ const MoveListForm = () => {
                         </select>
                     </div>
 
+                    <div className='h-[1px] w-full my-2 bg-black'></div>
+
                     <button
                         onClick={handleMoveList}
                         className="button--style border-[2px] py-2 text-[0.75rem] hover:bg-gray-600 hover:text-white transition-all"
                     >
-                        confirm
+                        move
                     </button>
 
                 </div>
