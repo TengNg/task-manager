@@ -1,10 +1,11 @@
+import { forwardRef } from "react";
 import highlightColors from "../../data/highlights";
 import useBoardState from '../../hooks/useBoardState';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
-const HighlightPicker = ({ setOpen, card }) => {
+const HighlightPicker = forwardRef(({ setOpen, card }, ref) => {
     const {
         setCardDetailHighlight,
         setCardHighlight,
@@ -31,12 +32,14 @@ const HighlightPicker = ({ setOpen, card }) => {
     };
 
     return (
-        <div className="absolute top-0 left-0 -translate-x-[105%] flex flex-col gap-1 items-center justify-center bg-gray-200 p-4 border-[2px] border-black shadow-black shadow-[4px_5px_0_0] w-[200px]">
+        <div
+            ref={ref}
+            className="absolute top-0 left-0 -translate-x-[105%] flex flex-col gap-1 items-center justify-center bg-gray-200 p-2 border-[2px] border-black shadow-black shadow-[4px_5px_0_0] w-[200px]">
             {
                 Object.keys(highlightColors).map((item, index) => {
                     return <div
                         key={index}
-                        className={`relative w-full h-[20px] border-[2px] hover:border-blue-400 cursor-pointer`}
+                        className={`relative w-full h-[1.25rem] border-[2px] hover:border-blue-400 cursor-pointer`}
                         style={{ background: `${highlightColors[item]}` }}
                         onClick={() => handleSetCardHighlight(highlightColors[item])}
                     >
@@ -48,7 +51,7 @@ const HighlightPicker = ({ setOpen, card }) => {
             }
 
             <div
-                className={`w-[161px] h-[25px] cursor-pointer mt-1 bg-transparent flex--center font-bold border-[2px] border-gray-400 text-gray-400 hover:border-blue-400 hover:text-blue-400 text-[0.75rem]`}
+                className={`w-full cursor-pointer mt-1 bg-transparent flex--center font-bold text-gray-400 hover:text-blue-400 text-[0.75rem]`}
                 onClick={() => handleSetCardHighlight(null)}
             >
                 <FontAwesomeIcon icon={faXmark} />
@@ -56,6 +59,6 @@ const HighlightPicker = ({ setOpen, card }) => {
 
         </div>
     )
-}
+});
 
 export default HighlightPicker

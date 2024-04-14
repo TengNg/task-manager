@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
@@ -38,11 +38,11 @@ const Configuration = ({ open, setOpen, handleChangeTheme, handleToggleEnableDeb
         <>
             <dialog
                 ref={dialog}
-                className='z-40 backdrop:bg-black/15 fixed top-0 right-0 box--style gap-4 items-start p-3 pb-5 h-fit min-w-[400px] max-h-[500px] border-black border-[2px] bg-gray-200'
+                className='z-40 backdrop:bg-black/15 fixed top-0 right-0 box--style gap-4 items-start p-3 pb-5 h-fit min-w-[300px] max-h-[500px] border-black border-[2px] bg-gray-200'
                 onClick={handleCloseOnOutsideClick}
             >
-                <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3 mb-5'>
-                    <p className="font-normal text-[1rem] text-gray-700">Configuration</p>
+                <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3 mb-3'>
+                    <p className="font-normal text-[1rem] text-gray-700">configuration</p>
                     <button
                         className="text-gray-600 flex justify-center items-center"
                         onClick={handleClose}
@@ -51,7 +51,7 @@ const Configuration = ({ open, setOpen, handleChangeTheme, handleToggleEnableDeb
                     </button>
                 </div>
 
-                <div className="w-full flex flex-col items-start justify-start px-6">
+                <div className="w-full flex flex-col items-start justify-start">
                     <div className='w-full'>
                         {/* <div className='text-[0.75rem]'>themes:</div> */}
                         <div className='flex flex-col gap-1'>

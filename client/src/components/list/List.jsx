@@ -51,7 +51,9 @@ const List = ({ index, list, cards }) => {
         }
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e) => {
+        if (e.button !== 0) return;
+
         textAreaRef.current.classList.remove('hidden');
         textAreaRef.current.classList.add('block');
         titleRef.current.classList.add('hidden');
@@ -131,57 +133,25 @@ const List = ({ index, list, cards }) => {
                 <div
                     {...provided.draggableProps}
                     ref={provided.innerRef}
-                    className='me-4'
+                    className='me-4 relative'
+                    onContextMenu={(e) => {
+                        e.preventDefault();
+                        setOpenListMenu(prev => !prev);
+                    }}
                 >
-                    <div
-                        {...provided.dragHandleProps}
-                        className='flex mb-1 gap-2 relative'>
-                        <button
-                            ref={openListMenuButtonRef}
-                            className={`border-[2px] border-gray-600 px-2 text-gray-600 flex justify-center items-center ${!openListMenu ? 'bg-gray-100' : 'bg-gray-600 text-white'} ${theme.itemTheme == 'rounded' ? 'rounded-md' : ''}`}
-                            onClick={() => {
-                                setOpenListMenu(open => !open);
-                            }}
-                        >
-                            <FontAwesomeIcon icon={faEllipsis} size='sm' />
-                        </button>
 
-                        {
-                            (list.cards && list.cards.length > 0) &&
-                            <div className='text-gray-500 text-[0.65rem] font-medium flex items-center gap-1'>
-                                <FontAwesomeIcon icon={faAnglesRight} size='sm' />
-                                <span>{list.cards.length}</span>
-                                {
-                                    hasFilter && (
-                                        <>
-                                            <span>{" "}</span>
-                                            <span>(found: {list.cards.filter(card => !card.hiddenByFilter).length})</span>
-                                        </>
-                                    )
-                                }
-                            </div>
-                        }
+                    {
+                        openListMenu &&
+                        <ListMenu
+                            list={list}
+                            open={openListMenu}
+                            setOpen={setOpenListMenu}
+                            handleDelete={handleDeleteList}
+                            handleCopy={handleCopyList}
+                        />
+                    }
 
-                        {
-                            debugModeEnabled.enabled &&
-                            <div className='ms-auto me-1 text-gray-500 text-[0.65rem] font-medium flex items-center gap-1'>
-                                rank: <span>{list.order}</span>
-                            </div>
-                        }
-
-                        {
-                            openListMenu &&
-                            <ListMenu
-                                list={list}
-                                open={openListMenu}
-                                setOpen={setOpenListMenu}
-                                handleDelete={handleDeleteList}
-                                handleCopy={handleCopyList}
-                            />
-                        }
-                    </div>
-
-                    <div className={`flex flex-col justify-start bg-gray-50 w-[280px] min-w-[280px] h-fit max-h-[62vh] min-h-auto border-[2px] select-none py-2 cursor-pointer border-gray-600 shadow-gray-600 ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}`}>
+                    <div className={`flex flex-col justify-start bg-gray-50 w-[280px] min-w-[280px] h-fit max-h-[62vh] min-h-auto border-[2px] select-none pt-2 cursor-pointer border-gray-600 shadow-gray-600 ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}`}>
                         <div
                             {...provided.dragHandleProps}
                             className="relative w-full bg-inherit">
@@ -194,7 +164,7 @@ const List = ({ index, list, cards }) => {
                             </div>
 
                             <textarea
-                                className="hidden bg-gray-100 h-fit w-full focus:outline-none font-semibold px-3 text-gray-600 leading-normal overflow-y-hidden resize-none"
+                                className="hidden bg-gray-50 h-fit w-full focus:outline-none font-semibold px-3 text-gray-600 leading-normal overflow-y-hidden resize-none"
                                 value={list.title}
                                 ref={textAreaRef}
                                 onFocus={handleTextAreaOnFocus}
@@ -243,16 +213,32 @@ const List = ({ index, list, cards }) => {
                         {
                             openCardComposer === false &&
                             <button
-                                className="flex gap-2 group text-gray-400 mt-2 mx-3 p-2 text-[0.8rem] hover:bg-gray-300 transition-all font-semibold text-start"
+                                className="flex gap-2 group text-gray-400 mt-2 mx-3 p-2 text-[0.8rem] hover:bg-gray-200 font-semibold text-start"
                                 onClick={() => setOpenCardComposer(true)}
                             >
                                 <span>
-                                    <FontAwesomeIcon className="group-hover:rotate-180 transition duration-300" icon={faPlus} />
-                                </span>
-                                <span>
-                                    Add card
+                                    + new card
                                 </span>
                             </button>
+                        }
+
+                        {
+                            <div className='flex items-center gap-1 ms-auto me-1 text-gray-500 text-[0.65rem] font-medium'>
+                                {
+                                    debugModeEnabled.enabled &&
+                                        <span>[r:{list.order}]</span>
+                                }
+
+                                <span>{list.cards.length}</span>
+                                {
+                                    hasFilter && (
+                                        <>
+                                            <span>{" "}</span>
+                                            <span>(found: {list.cards.filter(card => !card.hiddenByFilter).length})</span>
+                                        </>
+                                    )
+                                }
+                            </div>
                         }
 
                     </div>

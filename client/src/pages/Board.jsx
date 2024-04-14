@@ -210,7 +210,9 @@ const Board = () => {
         handleConfirmBoardTitle(e.target.value.trim());
     }
 
-    const handlePinBoard = async () => {
+    const handlePinBoard = async (e) => {
+        if (e.button !== 0) return;
+
         try {
             const response = await axiosPrivate.put(`/boards/${boardState.board._id}/pinned/`);
             const result = response.data?.result?.pinnedBoardIdCollection?.hasOwnProperty(boardId);
@@ -589,6 +591,10 @@ const Board = () => {
 
                 <button
                     onClick={handlePinBoard}
+                    onContextMenu={(e) => {
+                        e.preventDefault();
+                        setOpenPinnedBoards(true);
+                    }}
                     className={`fixed left-4 w-[100px] ${pinned ? 'bottom-5 text-gray-100 shadow-[0_1px_0_0]' : 'bottom-6 mt-2 shadow-gray-600 shadow-[0_4px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-4 py-2 text-[0.65rem] font-medium`}
                 >
                     {pinned ?
@@ -601,7 +607,6 @@ const Board = () => {
                         </div>
                     }
                 </button>
-
             </div>
 
         </>

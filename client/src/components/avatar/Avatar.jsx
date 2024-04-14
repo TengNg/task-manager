@@ -22,6 +22,7 @@ const Avatar = ({
     isAdmin = false,
     clickable = true,
     withBorder = false,
+    noShowRole = false,
 }) => {
     const [collapse, setCollapse] = useState(true);
 
@@ -88,7 +89,7 @@ const Avatar = ({
 
                         <div className='select-none text-gray-700 max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis'>
                             <p className='text-[0.85rem] font-semibold'>@{username}</p>
-                            <p className='text-[0.65rem]'>{!isAdmin ? 'member' : 'owner'}</p>
+                            {noShowRole === false && <p className='text-[0.65rem]'>{!isAdmin ? 'member' : 'owner'}</p>}
                         </div>
                     </div>
 

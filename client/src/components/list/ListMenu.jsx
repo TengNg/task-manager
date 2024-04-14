@@ -30,6 +30,10 @@ export default function ListMenu({ list, open, setOpen, handleDelete, handleCopy
         handleCopy(list._id);
     };
 
+    const close = () => {
+        setOpen(false);
+    };
+
     const closeOnBlur = (e) => {
         if (openMoveListForm) {
             return;
@@ -53,7 +57,7 @@ export default function ListMenu({ list, open, setOpen, handleDelete, handleCopy
             tabIndex={-1}
             ref={containerRef}
             onBlur={closeOnBlur}
-            className={`absolute outline-none z-10 bg-gray-100 border-gray-600 border-[2px] shadow-gray-600 box--style -bottom-[0.25rem] left-0 translate-y-[100%] w-[280px] p-3 ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}`}
+            className={`absolute top-0 left-0 outline-none z-10 bg-gray-100 border-gray-600 border-[2px] shadow-gray-600 box--style w-[280px] p-3 ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}`}
         >
 
             <div className='border-b-[1px] border-b-black pb-2'>
@@ -67,7 +71,12 @@ export default function ListMenu({ list, open, setOpen, handleDelete, handleCopy
                 <button
                     onClick={handleOpenMoveListForm}
                     className='text-[0.75rem] text-white bg-gray-600 px-1 py-2 transition-all hover:bg-gray-500'>move list</button>
-                <button onClick={del} className='text-[0.75rem] text-white bg-gray-600 px-1 py-2 transition-all hover:bg-gray-500'>delete list</button>
+                <button
+                    onClick={del}
+                    className='text-[0.75rem] text-white bg-gray-600 px-1 py-2 transition-all hover:bg-gray-500'>delete list</button>
+                <button
+                    onClick={close}
+                    className='text-[0.75rem] text-white bg-gray-600 px-1 py-2 transition-all hover:bg-gray-500'>close</button>
             </div>
         </div>
     )

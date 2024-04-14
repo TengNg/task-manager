@@ -118,10 +118,7 @@ const Card = ({ index, listIndex, card }) => {
                             {card.description != "" && <FontAwesomeIcon icon={faAlignLeft} size='xs' />}
                         </div>
 
-                        {
-                            ((focusedCard?.id === card._id && focusedCard?.highlight) || debugModeEnabled.enabled) &&
-                            <div className='font-thin text-[0.65rem] text-gray-700 mt-3 ms-[0.6rem]'>created: {dateFormatter(card.createdAt)}</div>
-                        }
+                        <div className='font-thin text-[0.65rem] text-gray-700 mt-3 ms-[0.6rem]'>created: {dateFormatter(card.createdAt)}</div>
 
                         {
                             debugModeEnabled.enabled &&

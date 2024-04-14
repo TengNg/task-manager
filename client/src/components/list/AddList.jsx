@@ -79,17 +79,14 @@ const AddList = ({ open, setOpen }) => {
     return (
         <div
             ref={containerRef}
-            className={`board--style--sm overflow-hidden bg-gray-100 w-[250px] min-w-[250px] border-[2px] min-h-[3rem] select-none cursor-pointer me-3 border-gray-500 shadow-gray-500 text-[0.8rem] text-gray-500 font-semibold mt-5 ${theme.itemTheme == 'rounded' ? 'rounded-md' : ''}`}>
+            className={`${theme.itemTheme == 'rounded' ? 'rounded-md' : ''} board--style--sm overflow-hidden bg-gray-100 w-[250px] min-w-[250px] border-[2px] min-h-[3rem] select-none cursor-pointer me-3 border-gray-500 shadow-gray-500 text-[0.8rem] text-gray-500 font-semibold`}>
             {
                 open === false &&
                 <button
                     className="w-full h-full text-start px-4 py-3 flex gap-2"
                     onClick={handleOpenAddListForm}
                 >
-                    <span>
-                        <FontAwesomeIcon className="group-hover:rotate-180 transition duration-300" icon={faPlus} />
-                    </span>
-                    Add list
+                    + new list
                 </button>
             }
 

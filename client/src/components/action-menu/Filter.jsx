@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from '../../hooks/useBoardState';
@@ -98,7 +98,7 @@ const Filter = ({ open, setOpen }) => {
             onClick={handleCloseOnOutsideClick}
         >
             <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
-                <p className="font-normal text-[1rem] text-gray-700">[filter]</p>
+                <p className="font-normal text-[1rem] text-gray-700">filter</p>
                 <button
                     className="text-gray-600 flex justify-center items-center"
                     onClick={handleClose}

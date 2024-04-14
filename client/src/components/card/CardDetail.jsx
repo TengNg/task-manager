@@ -29,6 +29,8 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
     const axiosPrivate = useAxiosPrivate();
 
     const dialog = useRef();
+    const highlightPicker = useRef();
+    const openHighlightPickerButton = useRef();
 
     useEffect(() => {
         setTitle(card?.title);
@@ -85,9 +87,13 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
     }, [card]);
 
     const handleCloseOnOutsideClick = (e) => {
+        if (e.target !== highlightPicker.current && e.target !== openHighlightPickerButton.current) {
+            setOpenHighlightPicker(false);
+        }
+
         if (e.target === dialog.current) {
             dialog.current.close();
-        };
+        }
     };
 
     const handleMemberSelectorOnChange = async (e) => {
@@ -297,12 +303,15 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
                             {
                                 openHighlightPicker &&
                                 <HighlightPicker
+                                    ref={highlightPicker}
                                     setOpen={setOpenHighlightPicker}
                                     card={card}
                                 />
                             }
 
+                            {/* change highlight button */}
                             <button
+                                ref={openHighlightPickerButton}
                                 onClick={() => setOpenHighlightPicker(prev => !prev)}
                                 className={`flex w-full justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold ${openHighlightPicker && 'bg-gray-600 shadow-black text-white'}`}
                             >

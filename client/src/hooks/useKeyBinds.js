@@ -115,14 +115,15 @@ const useKeyBinds = () => {
                 return;
             }
 
-            if (key === 'a') {
-                window.scrollBy({ left: -400, top: 0, behavior: 'smooth' });
-                return;
-            }
-
-            if (key === 'd') {
-                window.scrollBy({ left: 400, top: 0, behavior: 'smooth' });
-                return;
+            if (isTextFieldFocused) {
+                if (key === 'a') {
+                    window.scrollBy({ left: -400, top: 0, behavior: 'smooth' });
+                    return;
+                }
+                if (key === 'd') {
+                    window.scrollBy({ left: 400, top: 0, behavior: 'smooth' });
+                    return;
+                }
             }
 
             if (key === '.') {
