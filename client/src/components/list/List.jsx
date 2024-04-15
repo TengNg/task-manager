@@ -133,11 +133,7 @@ const List = ({ index, list, cards }) => {
                 <div
                     {...provided.draggableProps}
                     ref={provided.innerRef}
-                    className='me-4 relative'
-                    onContextMenu={(e) => {
-                        e.preventDefault();
-                        setOpenListMenu(prev => !prev);
-                    }}
+                    className='me-4 relative h-full'
                 >
 
                     {
@@ -151,7 +147,12 @@ const List = ({ index, list, cards }) => {
                         />
                     }
 
-                    <div className={`flex flex-col justify-start bg-gray-50 w-[280px] min-w-[280px] h-fit max-h-[62vh] min-h-auto border-[2px] select-none pt-2 cursor-pointer border-gray-600 shadow-gray-600 ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}`}>
+                    <div
+                        onContextMenu={(e) => {
+                            e.preventDefault();
+                            setOpenListMenu(prev => !prev);
+                        }}
+                        className={`list__item flex flex-col justify-start bg-gray-50 w-[280px] max-h-[100%] overflow-auto border-[2px] select-none pt-2 cursor-pointer border-gray-600 shadow-gray-600 ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}`}>
                         <div
                             {...provided.dragHandleProps}
                             className="relative w-full bg-inherit">

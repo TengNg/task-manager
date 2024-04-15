@@ -19,7 +19,6 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
         socket,
     } = useBoardState();
 
-    const [openDescriptionComposer, setOpenDescriptionComposer] = useState(false);
     const [openHighlightPicker, setOpenHighlightPicker] = useState(false);
     const [title, setTitle] = useState(card?.title);
     const [description, setDescription] = useState(card?.description);
@@ -33,45 +32,33 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
     const openHighlightPickerButton = useRef();
 
     useEffect(() => {
-        setTitle(card?.title);
-        setDescription(card?.description);
-    }, [card.title, card.description]);
-
-    useEffect(() => {
-        const cards = boardState?.lists?.find(list => list._id === card.listId)?.cards;
-        const cardCount = cards?.length || 0;
-        const position = cards?.findIndex(el => el._id === card._id) || 0;
-        setCardCount(cardCount);
-        setPosition(position);
-        setCardDescription(card.description);
-        if (card.description) {
-            setOpenDescriptionComposer(true);
-        } else {
-            setOpenDescriptionComposer(false);
-        }
-    }, [card]);
-
-    useEffect(() => {
         if (open) {
             dialog.current.showModal();
             dialog.current.querySelector('.card__title__textarea').blur();
             dialog.current.focus();
 
+            setTitle(card?.title);
+            setDescription(card?.description);
+
+            const cards = boardState?.lists?.find(list => list._id === card.listId)?.cards;
+            const cardCount = cards?.length || 0;
+            const position = cards?.findIndex(el => el._id === card._id) || 0;
+            setCardCount(cardCount);
+            setPosition(position);
+            setCardDescription(card.description);
+
             const handleKeyDown = (e) => {
                 if (e.ctrlKey && e.key === '/') {
-                    if (!openDescriptionComposer) {
-                        setOpenDescriptionComposer(true);
-                    } else {
-                        let descTextArea = dialog.current.querySelector('.card__detail__description__textarea');
-                        if (descTextArea) {
-                            descTextArea.focus();
-                        }
+                    let descTextArea = dialog.current.querySelector('.card__detail__description__textarea');
+                    if (descTextArea) {
+                        descTextArea.focus();
                     }
                 }
             };
 
             const handleOnClose = () => {
                 setOpen(false);
+                setOpenedCard(undefined);
             };
 
             dialog.current.addEventListener('close', handleOnClose);
@@ -84,7 +71,7 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
         } else {
             dialog.current.close();
         }
-    }, [card]);
+    }, [open]);
 
     const handleCloseOnOutsideClick = (e) => {
         if (e.target !== highlightPicker.current && e.target !== openHighlightPickerButton.current) {
@@ -121,14 +108,13 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
     const handleMoveCardOnListOptionChanged = (e) => {
         const newListId = e.target.value;
         handleMoveCardToList(card, newListId);
+
+        const cards = boardState?.lists?.find(list => list._id === newListId)?.cards;
+        setCardCount(cards?.length + 1 || 0);
+        setPosition(cards?.length);
     };
 
     const confirmDescription = async (e) => {
-        if (!card.description && !e.target.value.trim()) {
-            setOpenDescriptionComposer(false);
-            return;
-        }
-
         if (card.description === e.target.value.trim()) {
             return;
         }
@@ -136,7 +122,6 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
         try {
             if (!e.target.value) {
                 await axiosPrivate.put(`/cards/${card._id}/new-description`, JSON.stringify({ description: '' }));
-                setOpenDescriptionComposer(false);
                 setCardDescription(card._id, card.listId, "");
             } else {
                 await axiosPrivate.put(`/cards/${card._id}/new-description`, JSON.stringify({ description: e.target.value.trim() }));
@@ -151,11 +136,6 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
 
     const confirmTitle = async (e) => {
         if (card.title === e.target.value.trim()) {
-            return;
-        }
-
-        if (e.target.value.trim() === "") {
-            setOpenDescriptionComposer(false);
             return;
         }
 
@@ -267,34 +247,20 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
 
                     <div className="w-full flex border-b-[1px] border-t-[1px] py-4 border-black">
                         <div className="flex-1">
-                            {
-                                (card.description.trim() === "" && openDescriptionComposer === false) &&
-                                <div
-                                    className="bg-gray-100 border-[2px] text-gray-600 border-gray-600 shadow-[0_3px_0_0] w-fit text-[0.8rem] px-3 py-4 cursor-pointer font-semibold"
-                                    onClick={() => {
-                                        setOpenDescriptionComposer(true);
-                                    }}
-                                >
-                                    <p>Add description</p>
-                                </div>
-                            }
 
-                            {
-                                (card.description.trim() !== "" || openDescriptionComposer === true) &&
-                                <div className="flex flex-col items-start gap-2">
-                                    <TextArea
-                                        className="card__detail__description__textarea overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[175px] max-h-[400px] break-words box-border text-[0.75rem] py-2 px-3 w-[95%] text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
-                                        autoFocus={true}
-                                        onBlur={(e) => {
-                                            confirmDescription(e)
-                                        }}
-                                        placeholder={"Add more description..."}
-                                        value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
-                                        minHeight={'175px'}
-                                    />
-                                </div>
-                            }
+                            <div className="flex flex-col items-start gap-2">
+                                <TextArea
+                                    className="card__detail__description__textarea overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[175px] max-h-[400px] break-words box-border text-[0.75rem] py-2 px-3 w-[95%] text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
+                                    autoFocus={true}
+                                    onBlur={(e) => {
+                                        confirmDescription(e)
+                                    }}
+                                    placeholder={"Add more description..."}
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    minHeight={'175px'}
+                                />
+                            </div>
 
                         </div>
 

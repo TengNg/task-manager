@@ -149,8 +149,9 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
                             provided.innerRef(element)
                             listContainerRef.current = element
                         }}
+                        id="list-container"
                         ignoreContainerClipping={true}
-                        className='flex h-[90%] items-start justify-start border-black mt-14'
+                        className='flex justify-start items-start h-full overflow-x-auto border-black px-4 pb-6'
                     >
                         {boardState.lists.map((list, index) => (
                             <List

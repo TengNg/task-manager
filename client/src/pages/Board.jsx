@@ -492,16 +492,19 @@ const Board = () => {
                 fetchMessages={fetchMessages}
             />
 
-            <div className="flex flex-col justify-start h-[70vh] gap-3 items-start w-fit px-4">
-                <div className="fixed flex justify-between w-[100vw] z-20">
-                    <div className="flex-1 max-w-[70vw] justify-start">
+            <div
+                id='board-wrapper'
+                className="flex flex-col justify-start gap-3 items-start bg-transparent"
+            >
+                <div className="flex justify-between w-full z-20 px-4">
+                    <div>
                         <input
                             maxLength={70}
-                            className={`flex-1 overflow-hidden text-gray-700 whitespace-nowrap text-ellipsis border-b-[3px] bg-gray-100 border-gray-700 py-1 font-bold select-none font-mono mb-2 focus:outline-none`}
+                            className={`flex-1 bg-transparent overflow-hidden text-gray-700 whitespace-nowrap text-ellipsis border-b-[3px] bg-gray-100 border-gray-700 py-1 font-bold select-none font-mono mb-2 focus:outline-none`}
                             style={{
                                 width: `${boardState.board.title.length}ch`,
                                 minWidth: '1ch',
-                                maxWidth: '280px',
+                                maxWidth: '400px',
                             }}
                             onKeyDown={(e) => handleBoardTitleInputOnKeyDown(e)}
                             onFocus={(e) => e.target.select()}
@@ -511,7 +514,10 @@ const Board = () => {
                         />
                     </div>
 
-                    <div className="absolute right-8 -top-2 flex h-full gap-2">
+                    <div
+                        className="flex h-[2.5rem] gap-2"
+                        id="board-options-wrapper"
+                    >
                         <div
                             onClick={() => setOpenChatBox(prev => !prev)}
                             className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
@@ -522,9 +528,7 @@ const Board = () => {
                             onClick={() => setOpenFilter(prev => !prev)}
                             className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
                                     ${openFilter ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'} ${hasFilter ? 'text-white bg-teal-600' : ''}`}
-                        >Filter
-                        </div>
-
+                        >Filter</div>
 
                         <div
                             onClick={() => setOpenInvitationForm(true)}
@@ -556,17 +560,20 @@ const Board = () => {
                                 />
                             }
                         </div>
-
                     </div>
-
                 </div>
 
-                <ListContainer
-                    openAddList={openAddList}
-                    setOpenAddList={setOpenAddList}
-                />
+                <div id='list-container-wrapper' className='w-[100vw] h-full overflow-x-auto'>
+                    <ListContainer
+                        openAddList={openAddList}
+                        setOpenAddList={setOpenAddList}
+                    />
+                </div>
 
-                <div className="fixed top-[1rem] left-[1rem] flex items-center gap-1 w-fit min-w-[200px] z-[30]">
+                <div
+                    id="board-member-section"
+                    className="absolute top-[1rem] left-[1rem] flex gap-1"
+                >
                     <Avatar
                         username={boardState.board.createdBy.username}
                         profileImage={boardState.board.createdBy.profileImage}
@@ -586,16 +593,17 @@ const Board = () => {
                             />
                         })
                     }
-
                 </div>
+            </div>
 
+            <div className='flex items-center h-[75px]'>
                 <button
                     onClick={handlePinBoard}
                     onContextMenu={(e) => {
                         e.preventDefault();
                         setOpenPinnedBoards(true);
                     }}
-                    className={`fixed left-4 w-[100px] ${pinned ? 'bottom-5 text-gray-100 shadow-[0_1px_0_0]' : 'bottom-6 mt-2 shadow-gray-600 shadow-[0_4px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-4 py-2 text-[0.65rem] font-medium`}
+                    className={`ms-4 w-[100px] ${pinned ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_4px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-4 py-2 text-[0.65rem] font-medium`}
                 >
                     {pinned ?
                         <div className='flex justify-center items-center gap-2'>

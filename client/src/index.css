@@ -81,14 +81,25 @@ label {
     font-size: 0.8rem;
 }
 
-body {
+#root {
+    width: 100%;
     height: 100vh;
-    background: rgb(245, 245, 245);
+    background: lightblue;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
+    background: #f1f1f1;
 }
 
-#root {
-    height: 100%;
+#board-wrapper {
+    height: calc(100% - 150px);
+    width: 100vw;
+}
+
+#board-member-section {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
 }
 
 a {
@@ -108,4 +119,58 @@ div:focus, dialog:focus {
 .top-left-auto {
     top: auto !important;
     left: auto !important;
+}
+
+*::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: gray;
+    border-radius: 4px;
+}
+
+*::-webkit-scrollbar-track {
+    /* background: transparent; */
+}
+
+@media only screen and (max-width: 475px) {
+    #root {
+        position: relative;
+    }
+
+    #board-wrapper {
+        height: 70vh;
+    }
+
+    #board-options-wrapper {
+        position: absolute;
+        left: 1rem;
+        bottom: 1rem;
+        height: 2.5rem;
+    }
+
+    #board-menu {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        transform: translate(-75%, -25%); ;
+    }
+
+    #board-member-section {
+        top: auto;
+        bottom: 4.25rem;
+        left: 1rem !important;
+    }
+
+    #chat-box {
+        bottom: 0.8rem;
+        right: 0.5rem;
+        z-index: 100;
+    }
+
+    #activity-item {
+        text: 0.5rem;
+    }
 }

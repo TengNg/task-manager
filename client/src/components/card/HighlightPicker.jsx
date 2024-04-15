@@ -43,9 +43,6 @@ const HighlightPicker = forwardRef(({ setOpen, card }, ref) => {
                         style={{ background: `${highlightColors[item]}` }}
                         onClick={() => handleSetCardHighlight(highlightColors[item])}
                     >
-                        <div className='absolute -right-[0.65rem] text-center text-[0.75rem] text-gray-500 font-bold'>
-                            { highlightColors[item] === card.highlight && "<" }
-                        </div>
                     </div>
                 })
             }

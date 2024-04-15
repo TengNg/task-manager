@@ -117,7 +117,7 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, handleCopyCard, handl
         <>
             <div
                 onClick={handleClose}
-                className="fixed top-0 left-0 text-gray-700 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-400 opacity-60 z-20 cursor-auto">
+                className="absolute top-0 left-0 text-gray-700 font-bold h-[100vh] text-[1.25rem] w-full opacity-60 z-20 cursor-auto">
             </div>
 
             <div

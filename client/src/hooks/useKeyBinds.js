@@ -70,7 +70,7 @@ const useKeyBinds = () => {
                     return;
                 }
 
-                if (!formOpen) {
+                if (!formOpen && !isTextFieldFocused) {
                     if (key === 'ArrowLeft' || key === 'h') {
                         setFocusedListIndex(prev => {
                             if (prev === 0) return prev;
@@ -115,15 +115,23 @@ const useKeyBinds = () => {
                 return;
             }
 
-            if (isTextFieldFocused) {
-                if (key === 'a') {
-                    window.scrollBy({ left: -400, top: 0, behavior: 'smooth' });
-                    return;
+            if (key === 'a' && !formOpen && !isTextFieldFocused && !isTextAreaFocused) {
+                const listContainer = document.querySelector('#list-container');
+                if (listContainer) {
+                    listContainer.scrollBy({ left: -400, top: 0 });
+                } else {
+                    console.log('cant scroll');
                 }
-                if (key === 'd') {
-                    window.scrollBy({ left: 400, top: 0, behavior: 'smooth' });
-                    return;
+                return;
+            }
+            if (key === 'd' && !formOpen && !isTextFieldFocused && !isTextAreaFocused) {
+                const listContainer = document.querySelector('#list-container');
+                if (listContainer) {
+                    listContainer.scrollBy({ left: 400, top: 0 });
+                } else {
+                    console.log('cant scroll');
                 }
+                return;
             }
 
             if (key === '.') {

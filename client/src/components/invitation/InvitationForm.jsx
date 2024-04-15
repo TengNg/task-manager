@@ -123,7 +123,7 @@ const InvitationForm = ({ open, setOpen }) => {
         <>
             <dialog
                 ref={dialog}
-                className='z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 h-fit min-w-[400px] max-h-[400px] border-black border-[2px] bg-gray-200'
+                className='z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 h-fit min-w-[350px] max-h-[400px] border-black border-[2px] bg-gray-200'
                 onClick={handleCloseOnOutsideClick}
             >
                 <Loading loading={loading} />

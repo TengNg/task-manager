@@ -1,3 +1,7 @@
+require('dotenv').config();
+
+const PORT = process.env.PORT || 3000;
+
 const { Server } = require('socket.io');
 const io = new Server({ cors: "*" });
 
@@ -195,4 +199,4 @@ io.on('connection', (socket) => {
     });
 });
 
-io.listen(3000);
+io.listen(PORT);

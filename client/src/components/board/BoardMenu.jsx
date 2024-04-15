@@ -70,6 +70,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration })
         <>
             <div
                 ref={containerRef}
+                id="board-menu"
                 tabIndex={-1}
                 onBlur={handleCloseMenuOnBlur}
                 className='cursor-auto absolute outline-none bottom-0 right-0 overflow-x-hidden flex flex-col min-w-[300px] min-h-[200px] box--style shadow-gray-600 border-[2px] border-gray-600 p-3 select-none gap-2 bg-gray-100 translate-y-[108%]'

@@ -10,6 +10,7 @@ import dateFormatter from "../utils/dateFormatter";
 import PinnedBoards from "../components/board/PinnedBoards";
 import useKeyBinds from "../hooks/useKeyBinds";
 import useAuth from "../hooks/useAuth";
+import Title from "../components/ui/Title";
 
 const Boards = () => {
     const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -90,13 +91,17 @@ const Boards = () => {
                 />
             }
 
-            <section className="w-full mt-8 mb-12">
-                <div>
-                    {/* <Title */}
-                    {/*     titleName="your boards" */}
-                    {/* /> */}
+            <div className='opacity-1 lg:opacity-0 h-[1px] mx-auto w-3/4 bg-gray-700 my-4'></div>
 
-                    <div className="flex flex-wrap gap-4 p-8 border-[2px] mx-8 box--style shadow-gray-500 border-gray-500">
+            <section
+                className="w-full h-[calc(100%-150px)] overflow-auto pb-4"
+            >
+                <div className='mx-auto sm:w-3/4 w-[90%]'>
+                    <Title
+                        titleName="your boards"
+                    />
+
+                    <div className="flex flex-wrap gap-4 p-8 border-[2px] box--style shadow-gray-500 border-gray-500 w-full">
                         {
                             boards.map(item => {
                                 return (
@@ -130,21 +135,22 @@ const Boards = () => {
                         </div>
 
                     </div>
-                </div>
 
-                {
-                    recentlyViewedBoard &&
-                    <div>
-                        <div className="flex flex-col flex-wrap gap-1 px-8 pt-3 pb-8 mx-8 mt-8 box--style justify-start items-start w-fit box--style border-[2px] shadow-gray-500 border-gray-500">
-                            <p className="text-gray-600 text-[0.75rem] ms-1 font-semibold">recently viewed board</p>
-                            <p className="text-gray-600 text-[0.65rem] ms-1 mb-3"> at {dateFormatter(recentlyViewedBoard.lastViewed)}</p>
-                            <BoardItem
-                                item={recentlyViewedBoard}
-                                handleOpenBoard={handleOpenBoard}
-                            />
-                        </div>
-                    </div>
-                }
+                    {
+                        recentlyViewedBoard &&
+                            <div className='w-full sm:w-fit'>
+                                <div className="flex flex-col flex-wrap gap-1 px-8 pt-3 pb-8 mt-8 box--style justify-start items-start w-fit box--style border-[2px] shadow-gray-500 border-gray-500">
+                                    <p className="text-gray-600 text-[0.75rem] ms-1 font-semibold">recently viewed board</p>
+                                    <p className="text-gray-600 text-[0.65rem] ms-1 mb-3"> at {dateFormatter(recentlyViewedBoard.lastViewed)}</p>
+                                    <BoardItem
+                                        item={recentlyViewedBoard}
+                                        handleOpenBoard={handleOpenBoard}
+                                    />
+                                </div>
+                            </div>
+                    }
+
+                </div>
 
             </section>
         </>
