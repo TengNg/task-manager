@@ -67,17 +67,16 @@ const CardComposer = ({ list, open, setOpen }) => {
         const [rank, _] = lexorank.insert(currentList.cards[currentList.cards.length - 1]?.order);
 
         const cardData = {
+            trackedId: crypto.randomUUID(),
             listId: list._id,
             order: rank,
-            title: textAreaRef.current.value
+            title: textAreaRef.current.value,
+            createdAt: Date.now(),
         };
 
         try {
-            // OPTIMISTIC UPDATE =======================================================================================
-
-
             // create temp card (with loading state)
-            const tmpCard = { ...cardData, _id: crypto.randomUUID(), onLoading: true };
+            const tmpCard = { ...cardData, onLoading: true };
 
             // add temp card to list
             setBoardState(prev => {
@@ -89,36 +88,31 @@ const CardComposer = ({ list, open, setOpen }) => {
 
             // reset card composer block
             setText("");
-            textAreaRef.current.style.height = 'auto';
-            textAreaRef.current.focus();
-            composerRef.current.scrollIntoView({ block: 'end' });
+            setOpen(false);
 
             // send post request
-            await new Promise(r => setTimeout(r, 2000));
-            const newCard = { ...cardData, _id: crypto.randomUUID(), title: text, onLoading: false };
-
-            // currentList.splice(currentList.length - 1, 1);
-            // const response = await axiosPrivate.post("/cards", JSON.stringify(cardData));
-            // const { newCard } = response.data;
-
-            // ====================================================================================================
-
-            // add new card to list (replace new temp card)
-            // TODO: need to check card id instead of always replacing the last card in the list
+            const response = await axiosPrivate.post("/cards", JSON.stringify(cardData));
+            const { newCard } = response.data;
 
             setBoardState(prev => {
-                const currentListCards = prev.lists.find(el => el._id === list._id).cards;
-                currentListCards.splice(currentListCards.length - 1, 1, newCard);
                 return {
                     ...prev,
-                    lists: prev.lists.map(el => el._id === list._id ? { ...el, cards: currentListCards } : el)
+                    lists: prev.lists.map(el => {
+                        if (el._id === newCard.listId) {
+                            const cards = el.cards;
+                            const newCards = [...cards].map(c => c.trackedId === newCard.trackedId ? newCard : c);
+                            return { ...el, cards: newCards }
+                        } else {
+                            return el;
+                        }
+                    })
                 }
             });
 
-            // addCardToList(list._id, newCard);
-
+            setOpen(true);
             socket.emit("addCard", newCard);
         } catch (err) {
+            console.log(err);
             const errMsg = err?.response?.data?.errMsg || 'Failed to add new card';
             alert(errMsg);
         }
@@ -137,6 +131,7 @@ const CardComposer = ({ list, open, setOpen }) => {
             ref={composerRef}
             className="flex flex-col py-2 gap-2 items-start justify-start">
             <textarea
+                disabled={isAddingCard}
                 ref={textAreaRef}
                 className="text-[0.8rem] h-fit bg-gray-50 border-[2px] py-4 px-4 text-gray-600 border-gray-500 shadow-[0_3px_0_0] shadow-gray-500 leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50"
                 placeholder='Title for this card'
