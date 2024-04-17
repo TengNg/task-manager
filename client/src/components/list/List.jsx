@@ -188,7 +188,7 @@ const List = ({ index, list, cards }) => {
                                         <div className="flex flex-col pb-1 items-start justify-start h-full">
                                             {cards.map((card, idx) => {
                                                 return <Card
-                                                    key={card._id}
+                                                    key={idx}
                                                     card={card}
                                                     index={idx}
                                                     listIndex={index}

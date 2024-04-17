@@ -4,10 +4,36 @@ const Board = require('../models/Board.js');
 const List = require('../models/List.js');
 const mongoose = require('mongoose');
 
+const userByUsername = (username, option = { lean: true }) => {
+    const foundUser = User.findOne({ username });
+    if (option.lean) foundUser.lean();
+    return foundUser;
+};
+
+const cardById = (id, option = { lean: true }) => {
+    const foundCard = Card.findById(id);
+    if (option.lean) foundCard.lean();
+    return foundCard;
+};
+
+const getCard = async (req, res) => {
+    const { username } = req.user;
+    const { id } = req.params;
+
+    const foundUser = await userByUsername(username);
+    if (!foundUser) return res.status(403).json({ msg: "user not found" });
+
+    const foundCard = await cardById(id);
+    if (!foundCard) return res.status(403).json({ msg: "card not found" });
+
+    return res.status(201).json({ card: foundCard });
+};
+
 const addCard = async (req, res) => {
-    const { title, order, listId } = req.body;
+    const { trackedId, title, order, listId } = req.body;
 
     const newCard = new Card({
+        trackedId,
         title,
         order,
         listId
@@ -123,6 +149,7 @@ const updateOwner = async (req, res) => {
 };
 
 module.exports = {
+    getCard,
     addCard,
     updateCard,
     updateTitle,

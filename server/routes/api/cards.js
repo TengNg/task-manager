@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const {
+    getCard,
     addCard,
     updateCard,
     updateTitle,
@@ -17,6 +18,7 @@ router.route("/")
     .post(addCard)
 
 router.route("/:id")
+    .get(getCard)
     .put(updateCard)
     .delete(deleteCard)
 

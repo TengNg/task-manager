@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const MAX_CARD_COUNT = 20; // just start from small number from now
 
 const cardSchema = new mongoose.Schema({
+    trackedId: {
+        type: String,
+        required: true,
+    },
+
     title: {
         type: String,
         required: true,

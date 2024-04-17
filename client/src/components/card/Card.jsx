@@ -5,8 +5,9 @@ import { faPenToSquare, faAlignLeft, faAngleLeft } from '@fortawesome/free-solid
 import useBoardState from '../../hooks/useBoardState';
 import { highlightColorsRGBA } from "../../data/highlights";
 import dateFormatter from '../../utils/dateFormatter';
+import Loading from '../ui/Loading';
 
-const Card = ({ index, listIndex, card }) => {
+const Card = ({ index, card }) => {
     const {
         setOpenCardDetail,
         setOpenedCard,
@@ -20,7 +21,7 @@ const Card = ({ index, listIndex, card }) => {
     const cardRef = useRef();
 
     useEffect(() => {
-        if (focusedCard?.id === card._id && focusedCard?.highlight) {
+        if (cardRef && cardRef.current && focusedCard?.id === card._id && focusedCard?.highlight) {
             cardRef.current.focus();
 
             const handleClickOutside = (event) => {
@@ -69,6 +70,24 @@ const Card = ({ index, listIndex, card }) => {
         };
     }
 
+    if (card.onLoading === true) {
+        return (
+            <div className={`${card.hiddenByFilter && 'hidden'} relative d-flex justify-center items-center text-[0.75rem] text-gray-500 w-full h-[110px] border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 cursor-not-allowed`}>
+                <p className="w-full h-full bg-inherit font-semibold text-gray-600 rounded-md py-1 px-2 focus:outline-none text-sm break-words whitespace-pre-line" >
+                    {card.title}
+                </p>
+
+                <Loading
+                    loading={true}
+                    position={"absolute"}
+                    displayText={'creating new card...'}
+                    fontSize={"0.75rem"}
+                    zIndex={10}
+                />
+            </div>
+        )
+    }
+
     return (
         <>
             <Draggable
@@ -84,7 +103,6 @@ const Card = ({ index, listIndex, card }) => {
                         }}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        tabIndex={listIndex + 1}
                         onKeyDown={(e) => {
                             if (e.key == 'Enter') {
                                 e.preventDefault();
@@ -92,7 +110,7 @@ const Card = ({ index, listIndex, card }) => {
                                 return;
                             };
                         }}
-                        className={`card__item ${card.hiddenByFilter && 'hidden'} bg-gray-50 w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative ${theme.itemTheme == 'rounded' ? 'rounded' : ''}`}
+                        className={`card__item ${card.hiddenByFilter && 'hidden'} cursor-progress bg-gray-50 w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative ${theme.itemTheme == 'rounded' ? 'rounded' : ''}`}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >
@@ -117,11 +135,21 @@ const Card = ({ index, listIndex, card }) => {
                             {card.description != "" && <FontAwesomeIcon icon={faAlignLeft} size='xs' />}
                         </div>
 
-                        <div className='font-thin text-[0.65rem] text-gray-700 mt-3 ms-[0.6rem]'>created: {dateFormatter(card.createdAt)}</div>
+                        <div className='font-thin text-[0.65rem] text-gray-700 mt-3 ms-[0.6rem]'>
+                            {
+                                card.createdAt
+                                    ? <span>
+                                        created: {dateFormatter(card.createdAt)}
+                                    </span>
+                                    : <span className='text-red-600'>
+                                        error
+                                    </span>
+                            }
+                        </div>
 
                         {
                             debugModeEnabled.enabled &&
-                                <div className='font-thin text-[0.65rem] text-gray-700 mt-1 ms-[0.6rem]'>rank: {card.order}</div>
+                            <div className='font-thin text-[0.65rem] text-gray-700 mt-1 ms-[0.6rem]'>rank: {card.order}</div>
                         }
 
                         {
