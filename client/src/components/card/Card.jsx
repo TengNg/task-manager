@@ -5,6 +5,7 @@ import { faPenToSquare, faAlignLeft, faAngleLeft } from '@fortawesome/free-solid
 import useBoardState from '../../hooks/useBoardState';
 import { highlightColorsRGBA } from "../../data/highlights";
 import dateFormatter from '../../utils/dateFormatter';
+import Loading from '../ui/Loading';
 
 const Card = ({ index, listIndex, card }) => {
     const {
@@ -96,6 +97,13 @@ const Card = ({ index, listIndex, card }) => {
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >
+
+                        <Loading
+                            loading={card.onLoading || false}
+                            position={"absolute"}
+                            displayText={'creating new card...'}
+                            fontSize={"0.75rem"}
+                        />
 
                         <p className="w-full h-full bg-inherit font-semibold text-gray-600 rounded-md py-1 px-2 focus:outline-none text-sm break-words whitespace-pre-line" >
                             {card.title}

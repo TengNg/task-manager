@@ -8,6 +8,7 @@ const CardComposer = ({ list, open, setOpen }) => {
     const {
         socket,
         addCardToList,
+        setBoardState,
         boardState,
     } = useBoardState();
 
@@ -15,6 +16,8 @@ const CardComposer = ({ list, open, setOpen }) => {
     const composerRef = useRef();
 
     const axiosPrivate = useAxiosPrivate();
+
+    const [isAddingCard, setIsAddingCard] = useState(false);
 
     useEffect(() => {
         const closeOnEscape = (e) => {
@@ -48,13 +51,15 @@ const CardComposer = ({ list, open, setOpen }) => {
     };
 
     const handleTextAreaOnEnter = (e) => {
-        if (e.key == 'Enter' && !e.shiftKey) {
+        if (!isAddingCard && e.key == 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleAddCard();
         }
     };
 
     const handleAddCard = async () => {
+        setIsAddingCard(true);
+
         if (!text || text.trim() === "") return;
 
         const currentList = [...boardState.lists].find(el => el._id === list._id);
@@ -68,18 +73,57 @@ const CardComposer = ({ list, open, setOpen }) => {
         };
 
         try {
-            const response = await axiosPrivate.post("/cards", JSON.stringify(cardData));
-            const { newCard } = response.data;
-            addCardToList(list._id, newCard);
-            socket.emit("addCard", newCard);
+            // OPTIMISTIC UPDATE =======================================================================================
+
+
+            // create temp card (with loading state)
+            const tmpCard = { ...cardData, _id: crypto.randomUUID(), onLoading: true };
+
+            // add temp card to list
+            setBoardState(prev => {
+                return {
+                    ...prev,
+                    lists: prev.lists.map(el => el._id === list._id ? { ...el, cards: [...el.cards, tmpCard] } : el)
+                }
+            });
+
+            // reset card composer block
             setText("");
             textAreaRef.current.style.height = 'auto';
             textAreaRef.current.focus();
             composerRef.current.scrollIntoView({ block: 'end' });
+
+            // send post request
+            await new Promise(r => setTimeout(r, 2000));
+            const newCard = { ...cardData, _id: crypto.randomUUID(), title: text, onLoading: false };
+
+            // currentList.splice(currentList.length - 1, 1);
+            // const response = await axiosPrivate.post("/cards", JSON.stringify(cardData));
+            // const { newCard } = response.data;
+
+            // ====================================================================================================
+
+            // add new card to list (replace new temp card)
+            // TODO: need to check card id instead of always replacing the last card in the list
+
+            setBoardState(prev => {
+                const currentListCards = prev.lists.find(el => el._id === list._id).cards;
+                currentListCards.splice(currentListCards.length - 1, 1, newCard);
+                return {
+                    ...prev,
+                    lists: prev.lists.map(el => el._id === list._id ? { ...el, cards: currentListCards } : el)
+                }
+            });
+
+            // addCardToList(list._id, newCard);
+
+            socket.emit("addCard", newCard);
         } catch (err) {
             const errMsg = err?.response?.data?.errMsg || 'Failed to add new card';
             alert(errMsg);
         }
+
+        setIsAddingCard(false);
     };
 
     const handleInputBlur = (e) => {
