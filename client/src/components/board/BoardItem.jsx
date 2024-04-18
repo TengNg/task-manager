@@ -1,7 +1,10 @@
+import useAuth from "../../hooks/useAuth";
 import dateFormatter from "../../utils/dateFormatter";
 
 const BoardItem = ({ item, handleOpenBoard }) => {
-    const { _id, title, description, members, createdAt } = item;
+    const { _id, title, description, members, createdBy, createdAt } = item;
+
+    const { auth } = useAuth();
 
     const openBoard = () => {
         handleOpenBoard(_id);
@@ -10,8 +13,16 @@ const BoardItem = ({ item, handleOpenBoard }) => {
     return (
         <div
             onClick={openBoard}
-            className="w-[250px] h-[125px]">
+            className="w-[250px] h-[125px]"
+        >
+
             <div className="h-full w-full board--style board--hover border-[3px] border-gray-600 py-2 px-4 shadow-gray-600 select-none bg-gray-50 relative">
+
+                {
+                    auth?.user?._id === createdBy
+                    && <div className="absolute top-0 right-0 w-[12px] h-[12px] bg-gray-600 z-20"></div>
+                }
+
                 <p className="font-semibold text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
 
                 <p className="text-[0.75rem] mt-1">{dateFormatter(createdAt)}</p>

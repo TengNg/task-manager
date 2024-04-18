@@ -4,10 +4,12 @@ import useAuth from "./useAuth";
 const useKeyBinds = () => {
     const { auth } = useAuth();
 
+    const [openMembers, setOpenMembers] = useState(false);
     const [openFilter, setOpenFilter] = useState(false);
     const [openPinnedBoards, setOpenPinnedBoards] = useState(false);
     const [openChatBox, setOpenChatBox] = useState(false);
     const [openFloatingChat, setOpenFloatingChat] = useState(false);
+
     const [openInvitationForm, setOpenInvitationForm] = useState(false);
     const [openAddList, setOpenAddList] = useState(false);
     const [focusedListIndex, setFocusedListIndex] = useState(-1);
@@ -67,6 +69,11 @@ const useKeyBinds = () => {
 
                 if (key === 'e') {
                     setOpenPinnedBoards(prev => !prev);
+                    return;
+                }
+
+                if (key === 'm') {
+                    setOpenMembers(prev => !prev);
                     return;
                 }
 
@@ -167,6 +174,8 @@ const useKeyBinds = () => {
     ]);
 
     return {
+        openMembers, setOpenMembers,
+
         openFilter, setOpenFilter,
 
         openPinnedBoards, setOpenPinnedBoards,

@@ -13,6 +13,8 @@ import MoveListForm from "../components/list/MoveListForm";
 import PinnedBoards from "../components/board/PinnedBoards";
 import CardDetail from "../components/card/CardDetail";
 import CardQuickEditor from "../components/card/CardQuickEditor";
+import Members from "../components/board/Members";
+
 import { lexorank } from '../utils/class/Lexorank';
 
 import useAuth from "../hooks/useAuth";
@@ -66,6 +68,7 @@ const Board = () => {
     const axiosPrivate = useAxiosPrivate();
 
     const {
+        openMembers, setOpenMembers,
         openFilter, setOpenFilter,
         openPinnedBoards, setOpenPinnedBoards,
         openChatBox, setOpenChatBox,
@@ -455,6 +458,11 @@ const Board = () => {
                 setOpen={setOpenFilter}
             />
 
+            <Members
+                open={openMembers}
+                setOpen={setOpenMembers}
+            />
+
             <InvitationForm
                 open={openInvitationForm}
                 setOpen={setOpenInvitationForm}
@@ -496,11 +504,13 @@ const Board = () => {
                 id='board-wrapper'
                 className="flex flex-col justify-start gap-3 items-start bg-transparent"
             >
-                <div className="flex justify-between w-full z-20 px-4">
+
+                <div className="flex flex-wrap justify-between w-full z-20 px-4">
                     <div>
                         <input
                             maxLength={70}
                             className={`flex-1 bg-transparent overflow-hidden text-gray-700 whitespace-nowrap text-ellipsis border-b-[3px] bg-gray-100 border-gray-700 py-1 font-bold select-none font-mono mb-2 focus:outline-none`}
+                            id="board-title-input"
                             style={{
                                 width: `${boardState.board.title.length}ch`,
                                 minWidth: '1ch',
@@ -518,23 +528,29 @@ const Board = () => {
                         className="flex h-[2.5rem] gap-2"
                         id="board-options-wrapper"
                     >
-                        <div
-                            onClick={() => setOpenChatBox(prev => !prev)}
-                            className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
-                                    ${(openChatBox || openFloatingChat) ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
-                        >Chats</div>
+                        <div>
+                            <div
+                                onClick={() => setOpenChatBox(prev => !prev)}
+                                className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                        ${(openChatBox || openFloatingChat) ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
+                            >Chats</div>
+                        </div>
 
-                        <div
-                            onClick={() => setOpenFilter(prev => !prev)}
-                            className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
-                                    ${openFilter ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'} ${hasFilter ? 'text-white bg-teal-600' : ''}`}
-                        >Filter</div>
+                        <div>
+                            <div
+                                onClick={() => setOpenFilter(prev => !prev)}
+                                className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                        ${openFilter ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'} ${hasFilter ? 'text-white bg-teal-600' : ''}`}
+                            >Filter</div>
+                        </div>
 
-                        <div
-                            onClick={() => setOpenInvitationForm(true)}
-                            className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
-                                    ${openInvitationForm ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
-                        >Invite</div>
+                        <div>
+                            <div
+                                onClick={() => setOpenInvitationForm(true)}
+                                className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                        ${openInvitationForm ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
+                            >Invite</div>
+                        </div>
 
                         <div className='relative'>
                             <button
@@ -570,40 +586,25 @@ const Board = () => {
                     />
                 </div>
 
-                <div
-                    id="board-member-section"
-                    className="absolute top-[1rem] left-[1rem] flex gap-1"
-                >
-                    <Avatar
-                        username={boardState.board.createdBy.username}
-                        profileImage={boardState.board.createdBy.profileImage}
-                        size="md"
-                        withBorder={boardState.board.createdBy.username === auth?.user?.username}
-                        isAdmin={true}
-                    />
-
-                    {
-                        boardState.board.members.map((user, index) => {
-                            return <Avatar
-                                key={index}
-                                username={user.username}
-                                profileImage={user.profileImage}
-                                withBorder={user.username === auth?.user?.username}
-                                size="md"
-                            />
-                        })
-                    }
-                </div>
             </div>
 
-            <div className='flex items-center h-[75px]'>
+            <div id='bottom-buttons' className='flex items-center h-[75px]'>
+                <button
+                    className={`ms-4 w-[100px] ${openMembers ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium`}
+                    onClick={() => {
+                        setOpenMembers(prev => !prev);
+                    }}
+                >
+                    members
+                </button>
+
                 <button
                     onClick={handlePinBoard}
                     onContextMenu={(e) => {
                         e.preventDefault();
                         setOpenPinnedBoards(true);
                     }}
-                    className={`ms-4 w-[100px] ${pinned ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_4px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-4 py-2 text-[0.65rem] font-medium`}
+                    className={`ms-4 w-[100px] ${pinned ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] font-medium`}
                 >
                     {pinned ?
                         <div className='flex justify-center items-center gap-2'>

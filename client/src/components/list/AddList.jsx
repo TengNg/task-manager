@@ -94,7 +94,7 @@ const AddList = ({ open, setOpen }) => {
                 className={`flex-col flex py-2 px-2 min-w-[200px] h-[fit] gap-3 -mt-[100%] ${open && 'mt-0'}`}
             >
                 <input
-                    className='border-[2px] border-gray-400 text-gray-500 font-semibold text-[0.75rem] p-2 focus:outline-none'
+                    className='border-[2px] border-gray-400 text-gray-500 font-semibold text-[0.8rem] p-2 focus:outline-none'
                     type="text"
                     autoComplete="off"
                     placeholder="List title goes here..."
@@ -105,13 +105,13 @@ const AddList = ({ open, setOpen }) => {
                     onKeyDown={handleKeyDown}
                 />
 
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                     <button
                         onClick={handleAddList}
-                        className="button--style--dark">+</button>
+                        className="button--style--dark w-[40px] h-[40px]">+</button>
                     <button
                         onClick={() => setOpen(false)}
-                        className="button--style border-gray-500 border-[2px]">x</button>
+                        className="button--style border-gray-500 border-[2px] w-[40px] h-[40px]">x</button>
                 </div>
             </div>
         </div>

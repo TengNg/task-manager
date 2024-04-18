@@ -131,12 +131,6 @@ const Filter = ({ open, setOpen }) => {
                         </button>
                     }
 
-                    {
-                        false &&
-                        <div className='text-[0.8rem] ms-1 text-gray-600'>
-                            items found: {10}
-                        </div>
-                    }
                 </div>
             </form>
 

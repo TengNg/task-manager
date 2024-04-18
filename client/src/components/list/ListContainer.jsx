@@ -151,7 +151,7 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
                         }}
                         id="list-container"
                         ignoreContainerClipping={true}
-                        className='flex justify-start items-start h-full overflow-x-auto border-black px-4 pb-6'
+                        className='flex justify-start items-start h-full overflow-x-auto border-black px-4 pb-4'
                     >
                         {boardState.lists.map((list, index) => (
                             <List
@@ -172,7 +172,6 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
                 )}
             </Droppable>
         </DragDropContext>
-
     );
 };
 

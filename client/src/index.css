@@ -46,11 +46,11 @@
     }
 
     .button--style {
-        @apply border-gray-600 border-[2px] px-3 py-1 text-gray-600 box-border font-semibold
+        @apply border-gray-600 border-[2px] px-3 py-2 text-gray-600 box-border font-semibold
     }
 
     .button--style--dark {
-        @apply px-4 py-2 bg-gray-600 text-white hover:bg-gray-500 transition-all
+        @apply px-3 py-2 bg-gray-600 text-white hover:bg-gray-500 transition-all
     }
 
     .button--style--rounded {
@@ -96,12 +96,6 @@ label {
     width: 100vw;
 }
 
-#board-member-section {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-}
-
 a {
     font-weight: 500;
     color: inherit;
@@ -135,33 +129,50 @@ div:focus, dialog:focus {
     /* background: transparent; */
 }
 
-@media only screen and (max-width: 475px) {
+@media only screen and (max-width: 500px) {
     #root {
         position: relative;
     }
 
     #board-wrapper {
-        height: 70vh;
+        height: calc(100vh - 100px);
+    }
+
+    #board-title-input {
+        font-size: 12px;
+        border-bottom: 1px solid #181818;
+        width: 100%;
+    }
+
+    #header-section {
+        height: 50px;
+        padding: 0.5rem;
+    }
+
+    #header-section > nav {
+        padding: 0.25rem;
+    }
+
+    #header-section > nav > ul > li {
+        font-size: 12px;
     }
 
     #board-options-wrapper {
-        position: absolute;
-        left: 1rem;
-        bottom: 1rem;
-        height: 2.5rem;
+        width: 100%;
+        display: flex;
+        align-items: center;
     }
 
-    #board-menu {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        transform: translate(-75%, -25%); ;
+    #board-options-wrapper > div > div, #board-options-wrapper > div > button {
+        min-height: 36px;
+        width: 75px !important;
+        font-size: 9px;
+        border-width: 2px;
+        padding: 0 !important;
     }
 
-    #board-member-section {
-        top: auto;
-        bottom: 4.25rem;
-        left: 1rem !important;
+    #board-menu * {
+        font-size: 9px;
     }
 
     #chat-box {
@@ -172,5 +183,26 @@ div:focus, dialog:focus {
 
     #activity-item {
         text: 0.5rem;
+    }
+
+    .list__item {
+        width: 225px;
+    }
+
+    .card__item {
+        padding: 0.5rem;
+    }
+
+    .list__item, .list__item * {
+        font-size: 9px;
+    }
+
+    .card__item, .card__item * {
+        font-size: 9px;
+    }
+
+    #bottom-buttons > button {
+        padding: 0.5rem;
+        font-size: 9px !important;
     }
 }

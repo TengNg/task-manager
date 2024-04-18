@@ -72,7 +72,7 @@ const Card = ({ index, card }) => {
 
     if (card.onLoading === true) {
         return (
-            <div className={`${card.hiddenByFilter && 'hidden'} relative d-flex justify-center items-center text-[0.75rem] text-gray-500 w-full h-[110px] border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 cursor-not-allowed`}>
+            <div className={`card__item ${card.hiddenByFilter && 'hidden'} relative d-flex justify-center items-center text-[0.75rem] text-gray-500 w-full h-[110px] border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 cursor-not-allowed`}>
                 <p className="w-full h-full bg-inherit font-semibold text-gray-600 rounded-md py-1 px-2 focus:outline-none text-sm break-words whitespace-pre-line" >
                     {card.title}
                 </p>
@@ -110,7 +110,7 @@ const Card = ({ index, card }) => {
                                 return;
                             };
                         }}
-                        className={`card__item ${card.hiddenByFilter && 'hidden'} cursor-progress bg-gray-50 w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative ${theme.itemTheme == 'rounded' ? 'rounded' : ''}`}
+                        className={`card__item ${card.hiddenByFilter && 'hidden'} bg-gray-50 w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative ${theme.itemTheme == 'rounded' ? 'rounded' : ''}`}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >

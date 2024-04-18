@@ -52,9 +52,8 @@ const UserAccount = () => {
         navigate(`/u/${auth?.user?.username}`);
     };
 
-
     return (
-        <div className="fixed top-4 right-4 flex--center h-fit flex-col justify-start gap-2 z-30">
+        <div id='user-account' className="relative h-fit gap-2 z-30">
             <div
                 onClick={() => setCollapse(collapse => !collapse)}
                 ref={userProfileImageRef}
@@ -67,28 +66,30 @@ const UserAccount = () => {
                 collapse === false &&
                 <div
                     ref={userInfoRef}
-                    className='relative flex flex-col box--style shadow-gray-600 border-[2px] border-gray-600 p-3 select-none gap-4 bg-gray-100'
+                    className='absolute bottom-0 right-0 translate-y-[105%] flex flex-col box--style shadow-gray-600 border-[2px] border-gray-600 p-3 select-none gap-4 bg-gray-100'
                 >
                     {
                         Object.keys(auth).length > 0 ? <>
                             <button
-                                className="absolute top-0 right-1 text-[0.8rem] text-gray-600"
+                                className="absolute right-3 top-3 text-[0.8rem] text-gray-600"
                                 onClick={() => setCollapse(true)}
                             >
                                 <FontAwesomeIcon icon={faXmark} />
                             </button>
-                            <div className="font-bold text-gray-400">Account</div>
+                            <div className="font-medium text-[0.8rem] text-gray-400">Account</div>
 
-                            <div className='select-none font-semibold text-[0.75rem] max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis text-gray-700'>
+                            <div className='select-none font-medium text-[0.8rem] max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis text-gray-700'>
                                 Username: {auth?.user?.username}
                             </div>
 
-                            <button
-                                onClick={handleOpenProfile}
-                                className="button--style text-[0.75rem] font-bold">Edit account</button>
-                            <button
-                                onClick={handleLogout}
-                                className="button--style--dark text-[0.75rem] font-bold text-gray-200">Log out</button>
+                            <div className='flex flex-col gap-2'>
+                                <button
+                                    onClick={handleOpenProfile}
+                                    className="button--style text-[0.75rem] font-medium">Edit account</button>
+                                <button
+                                    onClick={handleLogout}
+                                    className="button--style--dark text-[0.75rem] font-medium text-gray-200">Log out</button>
+                            </div>
                         </> : <button onClick={() => navigate('/login')} className="button--style--dark w-[150px] text-[0.75rem] font-bold text-gray-200">Login</button>
                     }
                 </div>

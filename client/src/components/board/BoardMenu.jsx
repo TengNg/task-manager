@@ -73,7 +73,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration })
                 id="board-menu"
                 tabIndex={-1}
                 onBlur={handleCloseMenuOnBlur}
-                className='cursor-auto absolute outline-none bottom-0 right-0 overflow-x-hidden flex flex-col min-w-[300px] min-h-[200px] box--style shadow-gray-600 border-[2px] border-gray-600 p-3 select-none gap-2 bg-gray-100 translate-y-[108%]'
+                className='cursor-auto absolute outline-none bottom-0 right-0 overflow-x-hidden flex flex-col min-w-[300px] min-h-[200px] box--style shadow-gray-600 border-[2px] border-gray-600 p-3 select-none gap-2 bg-gray-100 translate-y-[105%]'
             >
 
                 <div className="font-medium text-gray-600 flex-1 flex--center border-b-[1px] border-black pb-1 mb-1">actions menu</div>
@@ -136,7 +136,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration })
 
                     <div className="font-medium text-gray-600 my-3 border-b-gray-400 flex--center">information</div>
 
-                    <p className="font-normal text-start text-[0.75rem]">created by: <span className='font-medium underline'>{auth.username}</span></p>
+                    <p className="font-normal text-start text-[0.75rem]">created by: <span className='font-medium underline'>{auth?.user?.username}</span></p>
                     <p className="font-normal text-[0.75rem] text-start">created at: {dateFormatter(boardState.board.createdAt)}</p>
 
                     <textarea

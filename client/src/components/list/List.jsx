@@ -174,7 +174,7 @@ const List = ({ index, list, cards }) => {
                                 onKeyDown={handleTextAreaOnEnter}
                             />
 
-                            <div className="mx-auto h-[1.5px] mt-1 w-[253px] bg-gray-500"></div>
+                            <div className="h-[1.5px] mt-1 mx-3 bg-gray-500"></div>
                         </div>
 
                         <div className="max-h-full overflow-y-auto px-3">

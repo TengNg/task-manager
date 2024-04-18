@@ -75,7 +75,7 @@ const acceptInvitation = async (req, res) => {
         return res.status(404).json({ error: 'Board not found' });
     }
 
-    if (board.members.length >= 1) {
+    if (board.members.length >= 5) {
         return res.status(409).json({ error: 'Board is full' });
     }
 

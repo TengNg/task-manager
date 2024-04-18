@@ -93,8 +93,6 @@ const Activities = () => {
 
     return (
         <>
-            <div className='opacity-1 lg:opacity-0 h-[1px] mx-auto w-3/4 bg-gray-700 my-4'></div>
-
             <section className="w-full h-[calc(100%-150px)] overflow-auto pb-4">
                 <Title titleName="activities" />
 
