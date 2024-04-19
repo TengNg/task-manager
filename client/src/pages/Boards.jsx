@@ -2,8 +2,6 @@ import { useEffect, useRef } from "react";
 import { useState } from "react"
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import BoardItem from "../components/board/BoardItem";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import BoardForm from "../components/board/BoardForm";
 import { useNavigate } from "react-router-dom";
 import dateFormatter from "../utils/dateFormatter";
@@ -92,6 +90,7 @@ const Boards = () => {
             }
 
             <section
+                id="boards"
                 className="w-full h-[calc(100%-75px)] overflow-auto pb-4"
             >
                 <div className='mx-auto sm:w-3/4 w-[90%]'>
@@ -99,7 +98,8 @@ const Boards = () => {
                         titleName="your boards"
                     />
 
-                    <div className="flex flex-wrap gap-4 p-8 border-[2px] box--style shadow-gray-500 border-gray-500 w-full">
+                    <div className="flex flex-col mx-auto sm:m-0 sm:justify-start sm:items-start sm:flex-row sm:flex-wrap gap-4 px-10 p-6 sm:p-8 border-[2px] box--style shadow-gray-500 border-gray-500 w-fit sm:w-full">
+
                         {
                             boards.map(item => {
                                 return (
@@ -112,15 +112,14 @@ const Boards = () => {
                             })
                         }
 
-                        <div className="relative w-[250px] h-[125px]">
+                        <div className="relative w-[200px] sm:w-[250px] h-[100px] sm:h-[125px]">
                             <div
                                 onClick={() => setOpenBoardForm(open => !open)}
                                 ref={createBoardButtonRef}
                                 className="h-full w-full border-[2px] border-gray-400 board--style shadow-gray-400 p-3 px-4 select-none bg-gray-200 cursor-pointer"
                             >
-                                <div className="flex items-center gap-2 text-gray-400">
-                                    <FontAwesomeIcon icon={faPlus} />
-                                    <p>New board</p>
+                                <div className="flex items-center gap-2 text-gray-400 font-medium">
+                                    <span>+ new</span>
                                 </div>
                             </div>
 
@@ -136,16 +135,16 @@ const Boards = () => {
 
                     {
                         recentlyViewedBoard &&
-                            <div className='w-full sm:w-fit'>
-                                <div className="flex flex-col flex-wrap gap-1 px-8 pt-3 pb-8 mt-8 box--style justify-start items-start w-fit box--style border-[2px] shadow-gray-500 border-gray-500">
-                                    <p className="text-gray-600 text-[0.75rem] ms-1 font-semibold">recently viewed board</p>
-                                    <p className="text-gray-600 text-[0.65rem] ms-1 mb-3"> at {dateFormatter(recentlyViewedBoard.lastViewed)}</p>
-                                    <BoardItem
-                                        item={recentlyViewedBoard}
-                                        handleOpenBoard={handleOpenBoard}
-                                    />
-                                </div>
+                        <div className='w-full sm:w-fit sm:block flex justify-center'>
+                            <div className="flex flex-col flex-wrap gap-1 px-8 pt-3 pb-8 mt-8 box--style justify-start items-start w-fit box--style border-[2px] shadow-gray-500 border-gray-500">
+                                <p className="text-gray-600 text-[0.75rem] ms-1 font-semibold">recently viewed board</p>
+                                <p className="text-gray-600 text-[0.75rem] ms-1 mb-3"> at {dateFormatter(recentlyViewedBoard.lastViewed)}</p>
+                                <BoardItem
+                                    item={recentlyViewedBoard}
+                                    handleOpenBoard={handleOpenBoard}
+                                />
                             </div>
+                        </div>
                     }
 
                 </div>

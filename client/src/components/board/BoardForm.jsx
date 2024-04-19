@@ -29,14 +29,14 @@ const BoardForm = forwardRef(({}, ref) => {
         <>
             <div
                 ref={ref}
-                className="absolute board--style border-[2px] border-gray-600 shadow-gray-600 px-4 py-4 w-[300px] flex flex-col gap-3 bg-gray-100 z-20 top-0"
+                className="absolute board--style border-[2px] border-gray-600 shadow-gray-600 px-4 py-4 w-[200px] sm:w-[300px] flex flex-col gap-3 bg-gray-100 z-20 top-0"
             >
-                <p className="text-[0.85rem] text-gray-600 font-medium">Create Board</p>
+                <p className="text-[12px] sm:text-[0.85rem] text-gray-600 font-medium">new board</p>
 
                 <input
                     autoFocus={true}
                     onKeyDown={handleInputOnEnter}
-                    className='border-[2px] border-gray-400 text-gray-600 text-[0.85rem] font-semibold p-2'
+                    className='border-[2px] border-gray-400 text-gray-600 text-[10px] sm:text-[0.85rem] font-semibold p-2'
                     type="text"
                     autoComplete="off"
                     placeholder="Title (required)"
@@ -46,7 +46,7 @@ const BoardForm = forwardRef(({}, ref) => {
                 />
 
                 <input
-                    className='border-[2px] border-gray-400 text-gray-600 text-[0.85rem] font-semibold p-2'
+                    className='border-[2px] border-gray-400 text-gray-600 text-[10px] sm:text-[0.85rem] font-semibold p-2'
                     onKeyDown={handleInputOnEnter}
                     type="text"
                     autoComplete="off"
@@ -58,8 +58,7 @@ const BoardForm = forwardRef(({}, ref) => {
 
                 <button
                     onClick={handleCreateBoard}
-                    className="button--style--dark">+ create</button>
-
+                    className="button--style--dark text-[10px] sm:text-[0.85rem]">+ create</button>
             </div>
         </>
     )

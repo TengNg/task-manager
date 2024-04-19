@@ -132,6 +132,8 @@ div:focus, dialog:focus {
 @media only screen and (max-width: 500px) {
     #root {
         position: relative;
+        min-height: 650px;
+        overflow-y: auto;
     }
 
     #board-wrapper {
@@ -163,16 +165,12 @@ div:focus, dialog:focus {
         align-items: center;
     }
 
-    #board-options-wrapper > div > div, #board-options-wrapper > div > button {
+    #board-options-wrapper > div > div:not(#board-menu), #board-options-wrapper > div > button {
         min-height: 36px;
         width: 75px !important;
         font-size: 9px;
         border-width: 2px;
         padding: 0 !important;
-    }
-
-    #board-menu * {
-        font-size: 9px;
     }
 
     #chat-box {

@@ -126,7 +126,11 @@ const InvitationForm = ({ open, setOpen }) => {
                 className='z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 h-fit min-w-[350px] max-h-[400px] border-black border-[2px] bg-gray-200'
                 onClick={handleCloseOnOutsideClick}
             >
-                <Loading loading={loading} />
+                <Loading
+                    loading={loading}
+                    position={'absolute'}
+                    displayText={'sending invitation...'}
+                />
 
                 <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
                     <p className="font-normal text-[1rem] text-gray-700">Invite people this board</p>
