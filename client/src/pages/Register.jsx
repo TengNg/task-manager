@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { axiosPrivate } from '../api/axios';
 import Title from '../components/ui/Title';
+import Loading from '../components/ui/Loading';
 
 // const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 // const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -18,6 +19,8 @@ export default function Register() {
 
     const [errMsg, setErrMsg] = useState('');
     const [success, setSuccess] = useState(false);
+
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -54,6 +57,8 @@ export default function Register() {
             return;
         }
 
+        setLoading(true);
+
         try {
             await axiosPrivate.post('/register', JSON.stringify({ username, password }));
             setSuccess(true);
@@ -69,14 +74,22 @@ export default function Register() {
                 setErrMsg('Registration Failed')
             }
         }
+
+        setLoading(false);
     }
 
     return (
         <>
-            <section className='relative w-[100%] h-[100vh] flex flex-col items-center p-5 gap-2 bg-gray-300'>
+            <section className='relative w-[100%] h-[100vh] flex flex-col items-center p-5 gap-2'>
                 <Title titleName={"Register"} />
 
-                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4'>
+                <Loading
+                    position={'absolute'}
+                    loading={loading}
+                    displayText={'please wait, logging in...'}
+                />
+
+                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 bg-gray-200'>
                     <label htmlFor="username" >Username</label>
                     <input
                         className='border-[3px] border-black p-1 font-semibold select-none'

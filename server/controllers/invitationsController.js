@@ -1,6 +1,7 @@
 const Invitation = require("../models/Invitation");
 const User = require("../models/User");
 const Board = require("../models/Board");
+const BoardMembership = require("../models/BoardMembership");
 
 const getUser = (username) => {
     const foundUser = User.findOne({ username }).lean();
@@ -67,7 +68,7 @@ const sendInvitation = async (req, res) => {
 const acceptInvitation = async (req, res) => {
     const { id } = req.params;
 
-    const invitation = await Invitation.findByIdAndUpdate(id, { status: 'accepted' }, { new: true });
+    let invitation = await Invitation.findByIdAndUpdate(id, { status: 'accepted' }, { new: true });
     const { boardId, invitedUserId } = invitation;
 
     const board = await Board.findById(boardId);
@@ -77,6 +78,19 @@ const acceptInvitation = async (req, res) => {
 
     if (board.members.length >= 5) {
         return res.status(409).json({ error: 'Board is full' });
+    }
+
+    // create board membership
+    try {
+        await BoardMembership.create({
+            boardId,
+            userId: invitedUserId,
+            role: 'member',
+        });
+    } catch (error) {
+        invitation.status = 'pending';
+        await invitation.save();
+        return res.status(500).json({ error: 'Failed to accept invitation' });
     }
 
     if (!board.members.includes(invitedUserId)) {

@@ -138,7 +138,6 @@ const Boards = () => {
                         <div className='w-full sm:w-fit sm:block flex justify-center'>
                             <div className="flex flex-col flex-wrap gap-1 px-8 pt-3 pb-8 mt-8 box--style justify-start items-start w-fit box--style border-[2px] shadow-gray-500 border-gray-500">
                                 <p className="text-gray-600 text-[0.75rem] ms-1 font-semibold">recently viewed board</p>
-                                <p className="text-gray-600 text-[0.75rem] ms-1 mb-3"> at {dateFormatter(recentlyViewedBoard.lastViewed)}</p>
                                 <BoardItem
                                     item={recentlyViewedBoard}
                                     handleOpenBoard={handleOpenBoard}

@@ -33,19 +33,32 @@ const boardSchema = new mongoose.Schema({
         required: true,
         default: Date.now,
     },
-
-    lastViewed: Date,
 });
 
+// update list count & save new board_membership
 boardSchema.pre('save', async function(next) {
     if (this.isNew) {
         const Board = mongoose.model('Board');
         const boardCount = await Board.countDocuments({ createdBy: this.createdBy });
+
         if (boardCount >= MAX_BOARD_COUNT) {
             const error = new Error(`Maximum board count reached (maximum: ${MAX_BOARD_COUNT})`);
             return next(error);
         }
+
+        const BoardMembership = mongoose.model('BoardMembership');
+        await BoardMembership.create({
+            boardId: this._id,
+            userId: this.createdBy,
+            role: 'owner',
+        });
     }
+});
+
+// delete all related board_memberships
+boardSchema.post('findOneAndDelete', async function(doc, _next) {
+    const BoardMembership = mongoose.model('BoardMembership');
+    await BoardMembership.deleteMany({ boardId: doc._id, });
 });
 
 module.exports = mongoose.model('Board', boardSchema);
