@@ -81,7 +81,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration })
                 <div className='flex justify-start'>
                     <button
                         onClick={() => setShowDescription(true)}
-                        className="button--style--dark ps-20 text-[0.75rem] font-bold text-start text-gray-200 w-full"
+                        className="button--style--dark ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
                     >
                         <FontAwesomeIcon icon={faLightbulb} /> information
                     </button>
@@ -90,7 +90,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration })
                 <div className='flex justify-start'>
                     <button
                         onClick={() => setOpenCopyBoardForm(true)}
-                        className="button--style--dark ps-20 text-[0.75rem] font-bold text-start text-gray-200 w-full"
+                        className="button--style--dark ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
                     >
                         <FontAwesomeIcon icon={faCopy} /> create a copy
                     </button>
@@ -99,7 +99,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration })
                 <div className='flex justify-start'>
                     <button
                         onClick={() => setOpenBoardConfiguration(true)}
-                        className="button--style--dark ps-20 text-[0.75rem] font-bold text-start text-gray-200 w-full"
+                        className="button--style--dark ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
                     >
                         <FontAwesomeIcon icon={faGear} /> configuration
                     </button>
@@ -110,7 +110,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration })
                         ? <div className='flex justify-start'>
                             <button
                                 onClick={() => handleCloseBoard()}
-                                className="button--style--dark ps-20 text-[0.75rem] font-bold text-start text-gray-200 w-full"
+                                className="button--style--dark ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
                             >
                                 <FontAwesomeIcon icon={faCircleXmark} /> close board
                             </button>
@@ -118,7 +118,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration })
                         : <div className='flex justify-start'>
                             <button
                                 onClick={() => handleLeaveBoard()}
-                                className="button--style--dark ps-20 text-[0.75rem] font-bold text-start text-gray-200 w-full"
+                                className="button--style--dark ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
                             >
                                 <FontAwesomeIcon icon={faCircleXmark} /> leave board
                             </button>

@@ -38,9 +38,9 @@ const CopyBoardForm = ({ setOpen }) => {
                 loading={loading}
             />
 
-            <div className="fixed box--style flex flex-col items-start py-3 px-3 top-[5rem] right-0 left-[50%] -translate-x-[50%] w-fit min-w-[400px] h-[300px] min-h-[300px] border-black border-[2px] z-40 cursor-auto bg-gray-200">
-                <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3 mb-5'>
-                    <p className="font-normal text-[1rem] text-gray-700">Create a copy from this board</p>
+            <div className="fixed box--style flex flex-col items-start py-3 px-3 top-[5rem] right-0 left-[50%] -translate-x-[50%] w-fit min-w-[300px] h-[300px] min-h-[300px] border-black border-[2px] z-40 cursor-auto bg-gray-200">
+                <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-2 mb-5'>
+                    <p className="font-normal text-[0.75rem] text-gray-700">create a copy from this board</p>
                     <button
                         className="text-gray-600 flex justify-center items-center"
                         onClick={handleClose}
@@ -49,7 +49,7 @@ const CopyBoardForm = ({ setOpen }) => {
                     </button>
                 </div>
 
-                <div className="w-full flex flex-col items-start justify-start gap-4 px-6">
+                <div className="w-full flex flex-col items-start justify-start gap-4">
                     <input
                         ref={nameInputEl}
                         className={`p-3 text-[0.75rem] w-full shadow-[0_3px_0_0] overflow-hidden whitespace-nowrap text-ellipsis border-[2px] bg-gray-100 border-gray-600 text-gray-600 font-semibold select-none focus:outline-none`}
