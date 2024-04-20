@@ -20,6 +20,7 @@ const InvitationForm = ({ open, setOpen }) => {
 
     const [username, setUsername] = useState("");
     const [errMsg, setErrMsg] = useState("");
+    const [successMsg, setSuccessMsg] = useState("");
     const [loading, setLoading] = useState(false);
 
     const usernameInputRef = useRef();
@@ -90,6 +91,7 @@ const InvitationForm = ({ open, setOpen }) => {
             await axiosPrivate.post(`/invitations`, JSON.stringify({ boardId: boardState.board._id, receiverName }));
             setUsername("");
             setLoading(false);
+            setSuccessMsg(`invitation sent to ${receiverName}`);
         } catch (err) {
             setLoading(false);
             setErrMsg(err?.response?.data?.msg || 'Failed to send invitation');
@@ -158,6 +160,7 @@ const InvitationForm = ({ open, setOpen }) => {
                         + invite
                     </button>
 
+                    {successMsg && <p className="absolute -top-2 left-1 text-center h-3 text-red-700 text-[0.65rem] font-semibold">{successMsg}</p>}
                     {errMsg && <p className="absolute -top-2 left-1 text-center h-3 text-red-700 text-[0.65rem] font-semibold">{errMsg}</p>}
                 </div>
 

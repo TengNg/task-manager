@@ -58,7 +58,7 @@ const BoardForm = forwardRef(({}, ref) => {
 
                 <button
                     onClick={handleCreateBoard}
-                    className="button--style--dark text-[10px] sm:text-[0.85rem]">+ create</button>
+                    className="button--style--dark text-[10px] sm:text-[0.85rem]">create</button>
             </div>
         </>
     )

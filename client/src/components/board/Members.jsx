@@ -4,6 +4,7 @@ import Avatar from "../avatar/Avatar";
 import useBoardState from "../../hooks/useBoardState";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import dateFormatter from "../../utils/dateFormatter";
 
 const Members = ({ open, setOpen }) => {
     const dialog = useRef();
@@ -61,7 +62,7 @@ const Members = ({ open, setOpen }) => {
                 </div>
 
                 <div
-                    className="flex flex-col justify-start items-start gap-4 mt-4 pb-3 overflow-auto max-h-[600px]"
+                    className="flex flex-col justify-start items-start gap-4 mt-4 pb-3 overflow-auto max-h-[600px] w-[90%] sm:w-[400px]"
                 >
                     <div className='flex gap-2 items-center'>
                         <Avatar
@@ -79,12 +80,17 @@ const Members = ({ open, setOpen }) => {
                             <div className='text-gray-600 text-[0.75rem] font-medium'>
                                 (owner)
                             </div>
+                            <div className='text-gray-600 text-[0.75rem] font-medium'>
+                                joined at: {dateFormatter(boardState.board.createdAt)}
+                            </div>
                         </div>
                     </div>
 
                     {
                         boardState.board.members.map((user, index) => {
-                            return (<div className='flex gap-2 items-center'>
+                            const joinedAt = boardState.memberships.find((membership) => membership.userId === user._id)?.createdAt;
+
+                            return (<div key={index} className='flex gap-2 items-center'>
                                 <Avatar
                                     key={index}
                                     username={user.username}
@@ -99,6 +105,9 @@ const Members = ({ open, setOpen }) => {
                                     </div>
                                     <div className='text-gray-600 text-[0.75rem] font-medium'>
                                         (member)
+                                    </div>
+                                    <div className='text-gray-600 text-[0.75rem] font-medium'>
+                                        joined at: {joinedAt !== undefined ? dateFormatter(joinedAt) : '(not found)' }
                                     </div>
                                 </div>
                             </div>)

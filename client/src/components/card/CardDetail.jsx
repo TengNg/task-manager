@@ -214,9 +214,9 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
                         </button>
                     </div>
 
-                    <div className='flex gap-2'>
+                    <div className='flex gap-2 md:w-1/2 w-full'>
                         <select
-                            className={`appearance-none truncate bg-transparent cursor-pointer border-[2px] border-gray-600 text-[0.75rem] font-medium w-[30%] py-2 px-4 text-gray-600 ${listSelectOptions.length === 0 ? 'bg-gray-400' : ''}`}
+                            className={`appearance-none truncate bg-transparent cursor-pointer border-[2px] border-gray-600 text-[0.75rem] font-medium w-3/4 py-2 px-4 text-gray-600 ${listSelectOptions.length === 0 ? 'bg-gray-400' : ''}`}
                             value={card.listId}
                             onChange={(e) => {
                                 handleMoveCardOnListOptionChanged(e);
@@ -245,24 +245,18 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
                         </select>
                     </div>
 
-                    <div className="w-full flex border-b-[1px] border-t-[1px] py-4 border-black">
-                        <div className="flex-1">
-
-                            <div className="flex flex-col items-start gap-2">
-                                <TextArea
-                                    className="card__detail__description__textarea overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[175px] max-h-[400px] break-words box-border text-[0.75rem] py-2 px-3 w-[95%] text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
-                                    autoFocus={true}
-                                    onBlur={(e) => {
-                                        confirmDescription(e)
-                                    }}
-                                    placeholder={"Add more description..."}
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    minHeight={'175px'}
-                                />
-                            </div>
-
-                        </div>
+                    <div className="w-full flex border-b-[1px] border-t-[1px] py-4 gap-3 border-black">
+                        <TextArea
+                            className="card__detail__description__textarea overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[175px] max-h-[400px] break-words box-border text-[0.75rem] py-2 px-3 w-[95%] text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
+                            autoFocus={true}
+                            onBlur={(e) => {
+                                confirmDescription(e)
+                            }}
+                            placeholder={"add description..."}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            minHeight={'175px'}
+                        />
 
                         <div className="relative flex flex-col gap-3">
 
@@ -279,7 +273,7 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
                             <button
                                 ref={openHighlightPickerButton}
                                 onClick={() => setOpenHighlightPicker(prev => !prev)}
-                                className={`flex w-full justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold ${openHighlightPicker && 'bg-gray-600 shadow-black text-white'}`}
+                                className={`flex sm:w-full sm:h-auto w-[35px] h-[35px] justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold ${openHighlightPicker && 'bg-gray-600 shadow-black text-white'}`}
                             >
                                 <FontAwesomeIcon icon={faDroplet} />
                             </button>
@@ -287,10 +281,10 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
                             <div>
                                 <button
                                     onClick={copyCard}
-                                    className={`flex w-full justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold`}
+                                    className={`flex sm:w-full sm:h-auto w-[35px] h-[35px] justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold`}
                                 >
                                     <FontAwesomeIcon icon={faCopy} />
-                                    <span>
+                                    <span className="hidden sm:block">
                                         copy
                                     </span>
                                 </button>
@@ -299,10 +293,10 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
                             <div>
                                 <button
                                     onClick={() => deleteCard()}
-                                    className={`flex w-full justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold`}
+                                    className={`flex sm:w-full sm:h-auto w-[35px] h-[35px] justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold`}
                                 >
                                     <FontAwesomeIcon icon={faEraser} />
-                                    <span>
+                                    <span className="hidden sm:block">
                                         delete
                                     </span>
                                 </button>

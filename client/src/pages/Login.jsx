@@ -4,12 +4,14 @@ import useAuth from '../hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { axiosPrivate } from '../api/axios';
 import Title from '../components/ui/Title';
+import Loading from '../components/ui/Loading';
 
 export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [errMsg, setErrMsg] = useState("");
     const [success, setSuccess] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const { setAuth } = useAuth();
 
@@ -34,6 +36,8 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+
         try {
             const response = await axiosPrivate.post('/login', JSON.stringify({ username: username.trim(), password }));
             const accessToken = response?.data?.accessToken;
@@ -54,14 +58,22 @@ export default function Login() {
 
             navigate('/login', { replace: true });
         }
+
+        setLoading(false);
     }
 
     return (
         <>
-            <section className='relative w-[100%] h-[100vh] flex items-center flex-col p-5 gap-2 bg-gray-300'>
+            <section className='relative w-[100%] h-[100vh] flex items-center flex-col p-5 gap-2'>
+                <Loading
+                    position={'absolute'}
+                    loading={loading}
+                    displayText={'please wait, logging in...'}
+                />
+
                 <Title titleName={"Login"} />
 
-                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4'>
+                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 bg-gray-200'>
                     <label htmlFor="username">Username</label>
                     <input
                         className='border-[3px] border-black p-1 font-semibold'

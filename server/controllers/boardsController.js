@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const Board = require("../models/Board");
+const BoardMembership = require("../models/BoardMembership");
 const List = require("../models/List");
 const Card = require("../models/Card");
 const User = require("../models/User");
@@ -62,16 +63,15 @@ const getBoard = async (req, res) => {
         .populate({
             path: 'members',
             select: 'username profileImage createdAt'
-        });
+        })
+        .lean();
 
     if (!board) return res.status(404).json({ msg: "board not found" });
 
     // set recently viewed board
     if (foundUser.recentlyViewedBoardId !== board._id) {
-        board.lastViewed = Date.now();
         foundUser.recentlyViewedBoardId = board._id;
         foundUser.save();
-        board.save();
     }
 
     const lists = await List.find({ boardId: id }).sort({ order: 'asc' });
@@ -86,9 +86,18 @@ const getBoard = async (req, res) => {
 
     const listsWithCards = await Promise.all(listsWithCardsPromises);
 
+    const memberships = await BoardMembership
+        .find({ boardId: board._id })
+        //.populate({
+        //    path: 'userId',
+        //    select: 'username '
+        //})
+        .lean();
+
     return res.json({
         board,
         lists: listsWithCards,
+        memberships,
     });
 }
 
@@ -152,6 +161,11 @@ const leaveBoard = async (req, res) => {
         return res.status(404).json({ error: 'Member not found' });
     }
 
+    const foundBoardMembership = await BoardMembership.findOne({ boardId: board._id, userId: user._id });
+    if (foundBoardMembership) {
+        await BoardMembership.deleteOne({ boardId: board._id, userId: user._id });
+    }
+
     res.status(200).json({ msg: 'Member removed from the board successfully' });
 };
 
@@ -181,6 +195,12 @@ const removeMemberFromBoard = async (req, res) => {
     } else {
         return res.status(404).json({ error: 'Member not found in the board' });
     }
+
+    await BoardMembership.deleteOne({
+        boardId: board._id,
+        userId: foundMember._id,
+        role: 'member'
+    });
 
     res.status(200).json({ msg: 'Member removed from the board successfully' });
 };
