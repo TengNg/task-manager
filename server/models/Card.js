@@ -4,6 +4,7 @@ const MAX_CARD_COUNT = 20; // just start from small number from now
 const cardSchema = new mongoose.Schema({
     trackedId: {
         type: String,
+        default: crypto.randomUUID(),
         required: true,
     },
 

@@ -4,7 +4,6 @@ import ListContainer from "../components/list/ListContainer";
 import useBoardState from "../hooks/useBoardState";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import InvitationForm from "../components/invitation/InvitationForm";
-import Avatar from "../components/avatar/Avatar";
 import BoardMenu from "../components/board/BoardMenu";
 import ChatBox from "../components/chat/ChatBox";
 import CopyBoardForm from "../components/board/CopyBoardForm";
@@ -42,6 +41,7 @@ const Board = () => {
 
         addCardToList,
         openedCardQuickEditor,
+        setOpenedCardQuickEditor,
         openedCard,
 
         addCopiedCard,
@@ -504,7 +504,6 @@ const Board = () => {
                 id='board-wrapper'
                 className="flex flex-col justify-start gap-3 items-start bg-transparent"
             >
-
                 <div className="flex flex-wrap justify-between w-full z-20 px-4">
                     <div>
                         <input
@@ -525,7 +524,7 @@ const Board = () => {
                     </div>
 
                     <div
-                        className="flex h-[2.5rem] gap-2"
+                        className="flex h-[2.5rem] gap-2 z-20"
                         id="board-options-wrapper"
                     >
                         <div>
@@ -588,7 +587,7 @@ const Board = () => {
 
             </div>
 
-            <div id='bottom-buttons' className='flex items-center h-[75px]'>
+            <div id='bottom-buttons' className='flex items-center h-[50px]'>
                 <button
                     className={`ms-4 w-[100px] ${openMembers ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium`}
                     onClick={() => {

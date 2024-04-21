@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { Draggable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faAlignLeft, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
+import { faAlignLeft, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from '../../hooks/useBoardState';
 import { highlightColorsRGBA } from "../../data/highlights";
 import dateFormatter from '../../utils/dateFormatter';
@@ -15,6 +15,7 @@ const Card = ({ index, card }) => {
         focusedCard,
         setFocusedCard,
         theme,
+        isSmallScreen,
         debugModeEnabled,
     } = useBoardState();
 
@@ -110,7 +111,7 @@ const Card = ({ index, card }) => {
                                 return;
                             };
                         }}
-                        className={`card__item ${card.hiddenByFilter && 'hidden'} bg-gray-50 w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative ${theme.itemTheme == 'rounded' ? 'rounded' : ''}`}
+                        className={`card__item ${card.hiddenByFilter && 'hidden'} ${theme.itemTheme == 'rounded' ? 'rounded' : ''} bg-gray-50 w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative`}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >
@@ -178,9 +179,12 @@ const Card = ({ index, card }) => {
                         }
 
                         <button
-                            onClick={handleOpenQuickEditor}
-                            className="absolute right-2 top-2 text-transparent hover:bg-gray-200 group-hover:text-gray-500 transition-all w-[25px] h-[25px] d-flex justify-center items-center rounded-md">
-                            <FontAwesomeIcon icon={faPenToSquare} size='sm' />
+                            onClick={(e) => {
+                                if (isSmallScreen) return;
+                                handleOpenQuickEditor(e);
+                            }}
+                            className="absolute hidden sm:block right-2 top-2 font-bold text-[0.75rem] text-transparent hover:bg-gray-100 group-hover:text-gray-600 w-[25px] h-[25px] d-flex justify-center items-center rounded-sm">
+                            ...
                         </button>
                     </div>
                 )}

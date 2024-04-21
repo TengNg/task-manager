@@ -80,7 +80,7 @@ export default function Register() {
 
     return (
         <>
-            <section className='relative w-[100%] h-[100vh] flex flex-col items-center p-5 gap-2'>
+            <section className='relative w-[100%] h-[100vh] bg-gray-300 flex flex-col items-center p-5 gap-2'>
                 <Title titleName={"Register"} />
 
                 <Loading
@@ -89,7 +89,7 @@ export default function Register() {
                     displayText={'please wait, logging in...'}
                 />
 
-                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 bg-gray-200'>
+                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 bg-gray-100'>
                     <label htmlFor="username" >Username</label>
                     <input
                         className='border-[3px] border-black p-1 font-semibold select-none'

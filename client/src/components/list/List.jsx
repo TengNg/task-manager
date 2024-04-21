@@ -2,8 +2,6 @@ import { useRef, useState } from "react"
 import { Draggable } from "react-beautiful-dnd"
 import { StrictModeDroppable as Droppable } from '../../helpers/StrictModeDroppable';
 import Card from "../card/Card";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faEllipsis, faAnglesRight } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from "../../hooks/useBoardState";
 import CardComposer from "../card/CardComposer";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -19,10 +17,10 @@ const List = ({ index, list, cards }) => {
         theme,
         debugModeEnabled,
         hasFilter,
+        isSmallScreen,
         socket,
     } = useBoardState();
 
-    const openListMenuButtonRef = useRef();
     const axiosPrivate = useAxiosPrivate();
 
     const [initialListData, setInitialListData] = useState(list.title);
@@ -121,6 +119,7 @@ const List = ({ index, list, cards }) => {
 
             socket.emit("updateLists", lists);
         } catch (err) {
+            alert('Failed to create a copy of this list');
             setBoardState(prev => {
                 return { ...prev, lists: tempLists };
             });
@@ -149,23 +148,25 @@ const List = ({ index, list, cards }) => {
 
                     <div
                         onContextMenu={(e) => {
+                            if (isSmallScreen) return;
                             e.preventDefault();
                             setOpenListMenu(prev => !prev);
                         }}
-                        className={`list__item flex flex-col justify-start bg-gray-50 w-[280px] max-h-[100%] overflow-auto border-[2px] select-none pt-2 cursor-pointer border-gray-600 shadow-gray-600 ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}`}>
+                        className={`${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'} list__item flex flex-col justify-start bg-gray-50 w-[280px] max-h-[100%] overflow-auto border-[2px] select-none pt-2 cursor-pointer border-gray-600 shadow-gray-600`}
+                    >
                         <div
                             {...provided.dragHandleProps}
                             className="relative w-full bg-inherit">
                             <div
                                 ref={titleRef}
-                                className="w-full font-semibold text-gray-600 break-words whitespace-pre-line px-3"
+                                className="sm:w-[240px] w-[180px] font-semibold text-gray-600 break-words whitespace-pre-line px-3"
                                 onMouseUp={handleMouseUp}
                             >
                                 <p>{list.title}</p>
                             </div>
 
                             <textarea
-                                className="hidden bg-gray-50 h-fit w-full focus:outline-none font-semibold px-3 text-gray-600 leading-normal overflow-y-hidden resize-none"
+                                className="hidden bg-gray-50 h-fit sm:w-[240px] w-[180px] focus:outline-none font-semibold px-3 text-gray-600 leading-normal overflow-y-hidden resize-none"
                                 value={list.title}
                                 ref={textAreaRef}
                                 onFocus={handleTextAreaOnFocus}
@@ -173,6 +174,15 @@ const List = ({ index, list, cards }) => {
                                 onBlur={handleTitleInputBlur}
                                 onKeyDown={handleTextAreaOnEnter}
                             />
+
+                            <button
+                                className="absolute h-full -top-[0.4rem] right-3 text-[0.75rem] text-gray-600 font-bold"
+                                onClick={() => {
+                                    setOpenListMenu(prev => !prev);
+                                }}
+                            >
+                                ...
+                            </button>
 
                             <div className="h-[1.5px] mt-1 mx-3 bg-gray-500"></div>
                         </div>

@@ -42,7 +42,7 @@ const QuickEditorHighlightPicker = ({ card }) => {
             }
 
             <div
-                className={`w-full h-[25px] mt-1 bg-transparent flex--center font-bold border-[2px] hover:border-blue-400 hover:text-blue-400 text-white text-[0.75rem]`}
+                className={`w-full h-[25px] mt-1 bg-transparent flex--center font-bold border-[2px] hover:border-blue-400 hover:text-blue-400 text-gray-400 border-gray-400 text-[0.75rem]`}
                 onClick={() => handleSetCardHighlight(null)}
             >
                 <FontAwesomeIcon icon={faXmark} />

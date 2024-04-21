@@ -74,14 +74,14 @@ const Members = ({ open, setOpen }) => {
                             clickable={false}
                         />
                         <div className='d-flex flex-col items-center'>
-                            <div className='text-gray-600 font-medium'>
+                            <div className='text-gray-600 font-medium text-[0.85rem]'>
                                 {boardState.board.createdBy.username}
                             </div>
-                            <div className='text-gray-600 text-[0.75rem] font-medium'>
+                            <div className='text-gray-500 text-[10px] sm:text-[0.65rem] font-medium'>
                                 (owner)
                             </div>
-                            <div className='text-gray-600 text-[0.75rem] font-medium'>
-                                joined at: {dateFormatter(boardState.board.createdAt)}
+                            <div className='text-gray-500 text-[10px] sm:text-[0.65rem] font-medium'>
+                                joined: {dateFormatter(boardState.board.createdAt)}
                             </div>
                         </div>
                     </div>
@@ -100,14 +100,14 @@ const Members = ({ open, setOpen }) => {
                                     clickable={false}
                                 />
                                 <div className='d-flex flex-col items-center'>
-                                    <div className='text-gray-600 font-medium'>
+                                    <div className='text-gray-600 font-medium text-[0.85rem]'>
                                         {user.username}
                                     </div>
-                                    <div className='text-gray-600 text-[0.75rem] font-medium'>
+                                    <div className='text-gray-500 text-[10px] sm:text-[0.65rem] font-medium'>
                                         (member)
                                     </div>
-                                    <div className='text-gray-600 text-[0.75rem] font-medium'>
-                                        joined at: {joinedAt !== undefined ? dateFormatter(joinedAt) : '(not found)' }
+                                    <div className='text-gray-500 text-[10px] sm:text-[0.65rem] font-medium'>
+                                        joined: {joinedAt !== undefined ? dateFormatter(joinedAt) : '(not found)' }
                                     </div>
                                 </div>
                             </div>)

@@ -129,7 +129,7 @@ const CardComposer = ({ list, open, setOpen }) => {
     return (
         <div
             ref={composerRef}
-            className="flex flex-col py-2 gap-2 items-start justify-start">
+            className={`flex flex-col py-2 gap-2 items-start justify-start`}>
             <textarea
                 disabled={isAddingCard}
                 ref={textAreaRef}
@@ -144,10 +144,10 @@ const CardComposer = ({ list, open, setOpen }) => {
             <div className="flex gap-1">
                 <button
                     onClick={handleAddCard}
-                    className="button--style--dark text-[0.8rem] font-semibold w-[40px] h-[40px]">+</button>
+                    className="button--style--dark grid place-items-center text-[0.8rem] font-semibold w-[40px] h-[40px]">+</button>
                 <button
                     onClick={() => setOpen(false)}
-                    className="button--style text-[0.8rem] text-gray-500 border-gray-500 font-semibold grid w-[40px] h-[40px]">x</button>
+                    className="button--style grid place-items-center text-[0.8rem] text-gray-500 border-gray-500 font-semibold w-[40px] h-[40px]">x</button>
             </div>
         </div>
     )

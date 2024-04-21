@@ -64,7 +64,7 @@ export default function Login() {
 
     return (
         <>
-            <section className='relative w-[100%] h-[100vh] flex items-center flex-col p-5 gap-2'>
+            <section className='relative w-[100%] h-[100vh] bg-gray-300 flex items-center flex-col p-5 gap-2'>
                 <Loading
                     position={'absolute'}
                     loading={loading}
@@ -73,7 +73,7 @@ export default function Login() {
 
                 <Title titleName={"Login"} />
 
-                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 bg-gray-200'>
+                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 bg-gray-100'>
                     <label htmlFor="username">Username</label>
                     <input
                         className='border-[3px] border-black p-1 font-semibold'
