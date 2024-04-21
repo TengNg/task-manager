@@ -83,9 +83,7 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
         }
     };
 
-    const handleMemberSelectorOnChange = async (e) => {
-        const memberName = e.target.value;
-
+    const handleCardOwnerChange = async (memberName) => {
         try {
             const response = await axiosPrivate.put(`/cards/${card._id}/member/update`, JSON.stringify({ ownerName: memberName }));
             const cardOwner = response.data.newCard.owner || "";
@@ -307,7 +305,7 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
                     <CardDetailInfo
                         card={card}
                         listSelectOptions={listSelectOptions}
-                        handleMemberSelectorOnChange={handleMemberSelectorOnChange}
+                        handleCardOwnerChange={handleCardOwnerChange}
                     />
 
                 </div>

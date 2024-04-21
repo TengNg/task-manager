@@ -54,7 +54,7 @@ const Members = ({ open, setOpen }) => {
                 <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
                     <p className="font-normal text-[1rem] text-gray-700">members</p>
                     <button
-                        className="text-gray-600 flex justify-center items-center"
+                        className="text-gray-600 flex justify-center items-center focus:outline-none"
                         onClick={handleClose}
                     >
                         <FontAwesomeIcon icon={faXmark} size='xl' />

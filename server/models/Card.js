@@ -29,6 +29,11 @@ const cardSchema = new mongoose.Schema({
         required: true,
     },
 
+    highlight: {
+        type: String,
+        default: null,
+    },
+
     owner: {
         type: String,
         default: null,
@@ -39,11 +44,6 @@ const cardSchema = new mongoose.Schema({
         required: true,
         default: Date.now,
     },
-
-    highlight: {
-        type: String,
-        default: null,
-    }
 
     // labels: [{
     //     type: mongoose.Schema.Types.ObjectId,

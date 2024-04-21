@@ -130,19 +130,23 @@ const updateOwner = async (req, res) => {
     const foundUser = await User.findOne({ username }).lean();
     if (!foundUser) return res.status(403).json({ msg: "User not found" });
 
-    if (!ownerName) {
-        const result = await Card.findByIdAndUpdate(
-            id, { $set: { owner: null } }, { new: true }
-        );
-
-        return res.status(200).json({ msg: 'Update member successfully', newCard: result });
-    }
-
-    const foundMember = await User.findOne({ username: ownerName }).lean();
-    if (!foundMember) return res.status(403).json({ msg: "Member not found" });
+    //if (!ownerName) {
+    //    const result = await Card.findByIdAndUpdate(
+    //        id, { $set: { owner: null } }, { new: true }
+    //    );
+    //
+    //    return res.status(200).json({ msg: 'Update member successfully', newCard: result });
+    //}
+    //
+    //const foundMember = await User.findOne({ username: ownerName }).lean();
+    //if (!foundMember) return res.status(403).json({ msg: "Member not found" });
+    //
+    //const result = await Card.findByIdAndUpdate(
+    //    id, { $set: { owner: foundMember.username } }, { new: true }
+    //);
 
     const result = await Card.findByIdAndUpdate(
-        id, { $set: { owner: foundMember.username } }, { new: true }
+        id, { $set: { owner: ownerName } }, { new: true }
     );
 
     res.status(200).json({ msg: 'Update member successfully', newCard: result });

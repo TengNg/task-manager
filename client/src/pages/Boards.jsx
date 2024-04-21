@@ -4,7 +4,6 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import BoardItem from "../components/board/BoardItem";
 import BoardForm from "../components/board/BoardForm";
 import { useNavigate } from "react-router-dom";
-import dateFormatter from "../utils/dateFormatter";
 import PinnedBoards from "../components/board/PinnedBoards";
 import useKeyBinds from "../hooks/useKeyBinds";
 import useAuth from "../hooks/useAuth";
@@ -137,7 +136,7 @@ const Boards = () => {
                         recentlyViewedBoard &&
                         <div className='w-full sm:w-fit sm:block flex justify-center'>
                             <div className="flex flex-col flex-wrap gap-1 px-8 pt-3 pb-8 mt-8 box--style justify-start items-start w-fit box--style border-[2px] shadow-gray-500 border-gray-500">
-                                <p className="text-gray-600 text-[0.75rem] ms-1 font-semibold">recently viewed board</p>
+                                <p className="text-gray-600 text-[0.75rem] ms-1 font-semibold">last viewed</p>
                                 <BoardItem
                                     item={recentlyViewedBoard}
                                     handleOpenBoard={handleOpenBoard}
