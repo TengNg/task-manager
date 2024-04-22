@@ -94,7 +94,7 @@ const Boards = () => {
             >
                 <div className='mx-auto sm:w-3/4 w-[90%]'>
                     <Title
-                        titleName="your boards"
+                        titleName="boards"
                     />
 
                     <div className="flex flex-col mx-auto sm:m-0 sm:justify-start sm:items-start sm:flex-row sm:flex-wrap gap-4 px-10 p-6 sm:p-8 border-[2px] box--style shadow-gray-500 border-gray-500 w-fit sm:w-full">

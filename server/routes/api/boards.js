@@ -3,6 +3,7 @@ const router = express.Router();
 
 const {
     getBoards,
+    getOwnedBoards,
     createBoard,
     getBoard,
     updateBoard,
@@ -21,6 +22,9 @@ const {
 router.route("/")
     .get(getBoards)
     .post(createBoard)
+
+router.route("/owned")
+    .get(getOwnedBoards)
 
 router.route("/:id")
     .get(getBoard)

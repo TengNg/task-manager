@@ -19,6 +19,7 @@ const Activities = () => {
 
     const [invitations, setInvitations] = useState([]);
     const [loadingInvitations, setLoadingInvitations] = useState(true);
+    const [hasNoInvitations, setHasNoInvitations] = useState(true);
     const axiosPrivate = useAxiosPrivate();
 
     const navigate = useNavigate();
@@ -34,7 +35,11 @@ const Activities = () => {
             const response = await axiosPrivate.get("/invitations");
             // await new Promise(resolve => setTimeout(resolve, 1000))
             setInvitations(response.data.invitations);
-            setPendingInvitations(response.data.invitations.filter(item => item.status === 'pending'));
+            if (response.data.invitations.length === 0) {
+                setHasNoInvitations(true);
+            } else {
+                setPendingInvitations(response.data.invitations.filter(item => item.status === 'pending'));
+            }
         } catch (err) {
             console.log(err);
             navigate('/login');
@@ -117,6 +122,10 @@ const Activities = () => {
                             displayText={"loading data..."}
                             fontSize={'0.9rem'}
                         />
+
+                        {
+                            hasNoInvitations && <div className='text-gray-500 text-center mt-20'>currently no invitations...</div>
+                        }
 
                         {
                             invitations.map((item, index) => {

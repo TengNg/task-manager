@@ -40,6 +40,17 @@ const getBoards = async (req, res) => {
     return res.json({ boards, recentlyViewedBoard });
 };
 
+const getOwnedBoards = async (req, res) => {
+    const { username } = req.user;
+
+    const foundUser = await getUser(username);
+    if (!foundUser) return res.status(403).json({ msg: "user not found" });
+
+    const boards = await Board.find({ createdBy: foundUser._id }).lean();
+
+    return res.json({ boards });
+};
+
 const getBoard = async (req, res) => {
     const { id } = req.params;
     const { username } = req.user;
@@ -349,6 +360,7 @@ const cleanPinnedBoardsCollection = async (req, res) => {
 
 module.exports = {
     getBoards,
+    getOwnedBoards,
     createBoard,
     getBoard,
     updateBoard,

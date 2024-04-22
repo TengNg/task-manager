@@ -3,6 +3,9 @@ import useAuth from '../hooks/useAuth';
 import { useNavigate, useParams } from 'react-router-dom';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import Loading from '../components/ui/Loading';
+import Title from '../components/ui/Title';
+import BoardItem from '../components/board/BoardItem';
+import dateFormatter from "../utils/dateFormatter";
 
 const Profile = () => {
     const { username } = useParams();
@@ -12,6 +15,9 @@ const Profile = () => {
     const [newPassword, setNewPassword] = useState("");
     const [confirmedPassword, setConfirmedPassword] = useState("");
     const [loading, setLoading] = useState(false);
+
+    const [ownedBoards, setOwnedBoards] = useState([]);
+    const [isBoardsDataLoaded, setIsBoardsDataLoaded] = useState(false);
 
     const [msg, setMsg] = useState({
         error: false,
@@ -34,6 +40,22 @@ const Profile = () => {
             usernameInputRef.current.focus();
             usernameInputRef.current.value = auth.user.username;
         }
+
+        setIsBoardsDataLoaded(false);
+
+        const getBoards = async () => {
+            const response = await axiosPrivate.get(`/boards/owned`);
+            const { boards, recentlyViewedBoard } = response.data;
+            setOwnedBoards(boards);
+        };
+        getBoards()
+            .catch(err => {
+                console.log(err);
+                alert("Failed to get boards");
+            })
+            .finally(() => {
+                setIsBoardsDataLoaded(true)
+            });
     }, []);
 
     useEffect(() => {
@@ -59,7 +81,7 @@ const Profile = () => {
             return false;
         }
 
-        if (!newPassword)  {
+        if (!newPassword) {
             setMsg({ error: true, content: 'Please provide new password' });
             return false;
         }
@@ -145,93 +167,156 @@ const Profile = () => {
         }
     };
 
+    const handleOpenBoard = (boardId) => {
+        navigate(`/b/${boardId}`);
+    }
+
     return (
-        <div className='mx-auto div--style flex flex-col justify-between mt-7 min-h-[200px] w-[400px] min-w-[400px] px-6 py-2 bg-gray-50 relative box--style border-gray-700 border-[2px] shadow-gray-700'>
-            <Loading loading={loading} position={'absolute'} />
-            <form id='userInfoForm' className='w-[100%] flex flex-col px-6 h-fit gap-3'>
-                <p className={`absolute top-0 right-1 text-[0.75rem] font-semibold ${msg.error ? 'text-red-600' : 'text-green-500'}`}>{msg.content}</p>
-                <label htmlFor="username" className='label--style'>Username:</label>
-                <input
-                    ref={usernameInputRef}
-                    className='border-[2px] border-black p-1 font-bold'
-                    type="text"
-                    id="username"
-                    autoComplete="off"
-                    defaultValue={auth.username}
-                    required
-                />
+        <section
+            id="profile"
+            className="w-full h-[calc(100%-75px)] overflow-auto pb-4"
+        >
+            <Title titleName={'Profile'} />
 
-                <button
-                    type='submit'
-                    form='userInfoForm'
-                    onClick={handleSaveProfile}
-                    className='text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 transition-all w-[100%]'
-                >update username</button>
+            <div className='mx-auto sm:w-3/4 w-[90%] flex flex-col items-center'>
+                <Loading loading={loading} position={'absolute'} />
 
-                {changePassword &&
-                    <div className="flex flex-col div--style w-[100%] relative py-8 border-[2px] border-gray-700 px-4">
+                <span className='text-gray-600'>
+                    information
+                </span>
+
+                <div className='box--style border-[2px] border-gray-700 bg-gray-50 p-4 xl:w-1/4 lg:w-1/3 sm:w-1/2 w-3/4'>
+
+                    <form id='userInfoForm' className='w-[100%] flex flex-col h-fit gap-2 text-gray-700'>
+                        <p className={`absolute top-0 right-1 text-[0.75rem] font-semibold ${msg.error ? 'text-red-600' : 'text-green-500'}`}>{msg.content}</p>
+                        <div className='flex flex-col'>
+                            <label htmlFor="username" className='label--style m-0 p-0'>Username:</label>
+                            <input
+                                ref={usernameInputRef}
+                                className='border-[2px] border-black p-1 font-medium'
+                                type="text"
+                                id="username"
+                                autoComplete="off"
+                                defaultValue={auth.username}
+                                required
+                            />
+                            <span className='text-[0.75rem] my-2'>joined at: {dateFormatter(auth?.user?.createdAt)}</span>
+                        </div>
+
                         <button
-                            className="absolute top-2 right-2 button--style text-[0.75rem] font-bold"
-                            onClick={closeChangePasswordOption}
-                        >Close</button>
+                            type='submit'
+                            form='userInfoForm'
+                            onClick={handleSaveProfile}
+                            className='text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 transition-all w-[100%]'
+                        >update username</button>
 
-                        <label htmlFor="password" className='label--style'>Current Password:</label>
-                        <input
-                            className='border-[2px] border-black p-1 font-bold'
-                            type="password"
-                            id="password"
-                            autoComplete="off"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
+                        {changePassword &&
+                            <div className="flex flex-col div--style w-[100%] relative py-8 border-[2px] border-gray-700 px-4">
+                                <button
+                                    className="absolute top-2 right-2 button--style text-[0.75rem] font-bold"
+                                    onClick={closeChangePasswordOption}
+                                >Close</button>
 
-                        <label htmlFor="newPassword" className='label--style'>New Password:</label>
-                        <input
-                            className='border-[2px] border-black p-1 font-bold'
-                            type="password"
-                            id="newPassword"
-                            autoComplete="off"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            required
-                        />
+                                <label htmlFor="password" className='label--style'>Current Password:</label>
+                                <input
+                                    className='border-[2px] border-black p-1 font-bold'
+                                    type="password"
+                                    id="password"
+                                    autoComplete="off"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
 
-                        <label htmlFor="confirmedPassword" className='label--style mt-4'>Confirm New Password:</label>
-                        <input
-                            className='border-[2px] border-black p-1 font-bold'
-                            type="password"
-                            id="confirmedPassword"
-                            autoComplete="off"
-                            value={confirmedPassword}
-                            onChange={(e) => setConfirmedPassword(e.target.value)}
-                            required
-                        />
+                                <label htmlFor="newPassword" className='label--style'>New Password:</label>
+                                <input
+                                    className='border-[2px] border-black p-1 font-bold'
+                                    type="password"
+                                    id="newPassword"
+                                    autoComplete="off"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    required
+                                />
+
+                                <label htmlFor="confirmedPassword" className='label--style mt-4'>Confirm New Password:</label>
+                                <input
+                                    className='border-[2px] border-black p-1 font-bold'
+                                    type="password"
+                                    id="confirmedPassword"
+                                    autoComplete="off"
+                                    value={confirmedPassword}
+                                    onChange={(e) => setConfirmedPassword(e.target.value)}
+                                    required
+                                />
+                            </div>
+
+                        }
+
+                        <div className="flex flex-col gap-4">
+                            <button
+                                onClick={() => setChangePassword(true)}
+                                className={`text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 transition-all w-[100%] ${changePassword && 'hidden'}`}
+                            >
+                                change password
+                            </button>
+
+                            <button
+                                onClick={(e) => handleCheckPassword(e)}
+                                className={`text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 transition-all w-[100%] ${!changePassword && 'hidden'}`}
+                            >
+                                update password
+                            </button>
+                        </div>
+
+                        <p className='text-[0.75rem]'>
+                            * you will be signed out after saved
+                        </p>
+                    </form>
+                </div>
+            </div>
+
+            <div className='mx-auto sm:w-3/4 w-[90%] flex flex-col items-center mt-6'>
+                <span className='text-gray-600'>
+                    owned boards
+                </span>
+
+                <div className='box--style border-[2px] border-gray-700 bg-gray-50 p-4 xl:w-1/4 lg:w-1/3 sm:w-1/2 w-3/4'>
+
+                    <div className='flex flex-col justify-center items-center gap-3 py-3 max-h-[450px] overflow-auto'>
+                        {
+                            ownedBoards.map(item => {
+                                const { _id, title, description, members, createdBy, createdAt } = item;
+                                return (
+                                    <div
+                                        onClick={() => handleOpenBoard(_id)}
+                                        className="w-[180px] sm:w-[225px] h-[125px]"
+                                    >
+
+                                        <div className="w-[180px] sm:w-[225px] h-[fit] board--style board--hover border-[3px] border-gray-600 py-3 px-3 shadow-gray-600 select-none bg-gray-50 relative">
+                                            <p className="text-[12px] sm:text-[0.75rem] font-semibold text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
+
+                                            <div className="h-[1px] w-full bg-black my-2"></div>
+
+                                            <p className="text-[10px] sm:text-[0.65rem] mt-1">{dateFormatter(createdAt)}</p>
+
+                                            <p className="text-[10px] sm:text-[0.65rem] mt-1">
+                                                total members: {members.length + 1}
+                                            </p>
+
+                                            <p className="text-[10px] sm:text-[0.65rem] mt-1">
+                                                total lists: {item.listCount}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        }
                     </div>
 
-                }
-
-                <div className="flex flex-col gap-4">
-                    <button
-                        onClick={() => setChangePassword(true)}
-                        className={`text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 transition-all w-[100%] ${changePassword && 'hidden'}`}
-                    >
-                        change password
-                    </button>
-
-                    <button
-                        onClick={(e) => handleCheckPassword(e)}
-                        className={`text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 transition-all w-[100%] ${!changePassword && 'hidden'}`}
-                    >
-                        update password
-                    </button>
                 </div>
-
-                <p className='text-[0.75rem]'>
-                    Notes: You will be signed out after saved
-                </p>
-            </form>
-        </div>
+            </div>
+        </section>
     )
 }
 
