@@ -190,7 +190,7 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
                     <div className="flex justify-start items start">
                         <div className="flex flex-col flex-1">
                             <TextArea
-                                className="card__title__textarea break-words box-border p-1 min-h-[2rem] w-[98%] text-gray-600 bg-gray-200 leading-normal overflow-y-hidden resize-none placeholder-gray-400 focus:outline-blue-600 focus:bg-gray-100"
+                                className="card__title__textarea break-words font-medium box-border p-1 min-h-[2rem] w-[98%] text-gray-600 bg-gray-200 leading-normal overflow-y-hidden resize-none placeholder-gray-400 focus:outline-blue-600 focus:bg-gray-100"
                                 onKeyDown={(e) => {
                                     if (e.key == 'Enter') {
                                         e.target.blur();

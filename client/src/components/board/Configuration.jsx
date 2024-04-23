@@ -5,6 +5,8 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons';
 const Configuration = ({ open, setOpen, handleChangeTheme, handleToggleEnableDebugMode, theme, debugModeEnabled }) => {
     const dialog = useRef();
 
+    const themeStyle = !theme.itemTheme || theme.itemTheme === 'squared' ? 'squared' : 'rounded';
+
     useEffect(() => {
         if (open) {
             dialog.current.showModal();
@@ -57,24 +59,26 @@ const Configuration = ({ open, setOpen, handleChangeTheme, handleToggleEnableDeb
                         <div className='flex flex-col gap-1'>
                             <button
                                 onClick={() => handleChangeTheme('squared')}
-                                className={`button--style w-[100%] mt-1 py-2 text-[0.75rem] border-[2px] ${!theme.itemTheme || theme.itemTheme === 'squared' ? 'bg-gray-500 text-white' : ''}`}>
-                                squared (default)
+                                className={`button--style w-[100%] mt-1 py-2 text-[0.75rem] border-[2px] ${themeStyle === 'squared' ? 'bg-gray-500 text-white' : ''}`}>
+                                squared
                             </button>
                             <button
                                 onClick={() => handleChangeTheme('rounded')}
-                                className={`button--style w-[100%] mt-1 py-2 text-[0.75rem] border-[2px] ${theme.itemTheme === 'rounded' ? 'bg-gray-500 text-white' : ''}`}>
-                                rounded (experimental)
+                                className={`button--style w-[100%] mt-1 py-2 text-[0.75rem] border-[2px] ${themeStyle === 'rounded' ? 'bg-gray-500 text-white' : ''}`}>
+                                rounded
                             </button>
                         </div>
                     </div>
 
-                    <div className='w-full mt-1'>
+                    <div className='h-[1px] w-full bg-black my-3'></div>
+
+                    <div className='w-full'>
                         {/* <div className='text-[0.75rem]'>enable debug mode:</div> */}
                         <div className='flex flex-col gap-1'>
                             <button
                                 onClick={() => handleToggleEnableDebugMode()}
                                 className={`button--style w-[100%] mt-1 py-2 text-[0.75rem] border-[2px] ${debugModeEnabled.enabled ? 'bg-pink-700 text-white' : 'border-pink-700 text-pink-700 '}`}>
-                                #enable_debug_mode
+                                {debugModeEnabled.enabled ? 'disable debug mode' : 'enable debug mode'}
                             </button>
                         </div>
                     </div>

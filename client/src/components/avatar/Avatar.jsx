@@ -24,6 +24,7 @@ const Avatar = ({
     withBorder = false,
     noShowRole = false,
 }) => {
+
     const [collapse, setCollapse] = useState(true);
 
     const userProfileImageRef = useRef();
@@ -63,7 +64,6 @@ const Avatar = ({
                         ? <div className="font-bold flex--center select-none">{username?.charAt(0)?.toUpperCase()}</div>
                         : <img className="flex--center h-[100%] w-[100%]" />
                 }
-
             </div>
 
             {

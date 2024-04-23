@@ -18,16 +18,23 @@ const CardDetailInfo = ({ card, handleCardOwnerChange }) => {
                 <select
                     value={card.owner || ownerValue}
                     onChange={(e) => handleCardOwnerChange(e.target.value)}
-                    className={`font-medium cursor-pointer max-w-[10rem] rounded-md px-2 py-1 text-[0.75rem] appearance-none hover:bg-gray-300`}
+                    className={`font-medium max-w-[10rem] rounded-md px-2 py-1 text-[0.75rem] appearance-none hover:bg-gray-300`}
                     style={{ backgroundColor: highlightColorsRGBA[`${card.highlight}`] }}
                 >
-                    <option value={ownerValue} className='text-[0.75rem]'>
+                    <option value={ownerValue} className='text-[0.75rem] cursor-pointer'>
                         {ownerValue ? ownerValue : "..."}
                     </option>
                     <option value={boardState.board.createdBy.username} className='text-[0.75rem]'>{boardState.board.createdBy.username}</option>
                     {
                         boardState.board.members.map((member, _) => {
-                            return <option value={member.username} className='text-[0.75rem]' key={member._id}>{member.username}</option>
+                            return (
+                                <option
+                                    value={member.username}
+                                    className='text-[0.75rem]'
+                                    key={member._id}>
+                                    {member.username}
+                                </option>
+                            )
                         })
                     }
                 </select>
@@ -44,21 +51,23 @@ const CardDetailInfo = ({ card, handleCardOwnerChange }) => {
 
                 {
                     openOwnerInput &&
-                        <input
-                            autoFocus
-                            maxLength={20}
-                            type="text"
-                            placeholder="type a name here..."
-                            className='text-[0.75rem] w-fit bg-gray-200 border-[1px] border-gray-400 rounded-md py-1 px-2 ms-2'
-                            onBlur={() => setOpenOwnerInput(false)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    handleCardOwnerChange(e.target.value);
-                                    setOwnerValue(e.target.value);
-                                    setOpenOwnerInput(false);
-                                }
-                            }}
-                        />
+                    <input
+                        autoFocus
+                        maxLength={20}
+                        type="text"
+                        value={ownerValue}
+                        placeholder="type a name here..."
+                        className='text-[0.75rem] w-fit bg-gray-200 border-[1px] border-gray-400 rounded-md py-1 px-2 ms-2'
+                        onBlur={() => setOpenOwnerInput(false)}
+                        onChange={(e) => setOwnerValue(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                handleCardOwnerChange(e.target.value);
+                                setOwnerValue(e.target.value);
+                                setOpenOwnerInput(false);
+                            }
+                        }}
+                    />
                 }
             </div>
 
