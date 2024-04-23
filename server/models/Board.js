@@ -22,6 +22,13 @@ const boardSchema = new mongoose.Schema({
         default: 0
     },
 
+    visibility: {
+        type: String,
+        enum: ['private', 'public', 'read-only', 'read-and-write'],
+        default: 'private',
+        required: true,
+    },
+
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
