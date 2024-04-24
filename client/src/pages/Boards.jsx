@@ -129,14 +129,13 @@ const Boards = () => {
                                 />
                             }
                         </div>
-
                     </div>
 
                     {
                         recentlyViewedBoard &&
                         <div className='w-full sm:w-fit sm:block flex justify-center'>
                             <div className="w-[280px] sm:w-fit flex flex-col flex-wrap gap-1 px-8 pt-3 pb-8 mt-8 box--style justify-start items-start box--style border-[2px] shadow-gray-500 border-gray-500">
-                                <p className="text-gray-600 text-[0.75rem] ms-1 my-1">last viewed board</p>
+                                <p className="text-gray-600 text-[0.75rem] font-medium ms-1 my-1">last viewed board</p>
                                 <BoardItem
                                     item={recentlyViewedBoard}
                                     handleOpenBoard={handleOpenBoard}

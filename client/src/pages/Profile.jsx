@@ -278,11 +278,13 @@ const Profile = () => {
 
             <div className='mx-auto sm:w-3/4 w-[90%] flex flex-col items-center mt-6'>
                 <span className='text-gray-600'>
-                    owned boards
+                    your boards
                 </span>
 
-                <div className='box--style border-[2px] border-gray-700 bg-gray-50 p-4 xl:w-1/4 lg:w-1/3 sm:w-1/2 w-3/4'>
-
+                <div className='box--style relative border-[2px] border-gray-700 bg-gray-50 p-4 xl:w-1/4 lg:w-1/3 sm:w-1/2 w-3/4'>
+                    <div className='absolute top-1 right-1 text-[0.75rem] font-semibold text-gray-700'>
+                        [{ownedBoards.length}]
+                    </div>
                     <div className='flex flex-col justify-center items-center gap-3 py-3 max-h-[450px] overflow-auto'>
                         {
                             ownedBoards.map(item => {
@@ -298,14 +300,16 @@ const Profile = () => {
 
                                             <div className="h-[1px] w-full bg-black my-2"></div>
 
-                                            <p className="text-[10px] sm:text-[0.65rem] mt-1">{dateFormatter(createdAt)}</p>
-
                                             <p className="text-[10px] sm:text-[0.65rem] mt-1">
                                                 total members: {members.length + 1}
                                             </p>
 
                                             <p className="text-[10px] sm:text-[0.65rem] mt-1">
                                                 total lists: {item.listCount}
+                                            </p>
+
+                                            <p className="text-[10px] sm:text-[0.65rem] mt-1">
+                                                created: {dateFormatter(createdAt)}
                                             </p>
                                         </div>
                                     </div>

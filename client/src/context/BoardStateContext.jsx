@@ -230,6 +230,12 @@ export const BoardStateContextProvider = ({ children }) => {
         };
     }, []);
 
+    const setBoardVisibility = (value) => {
+        setBoardState(prev => {
+            return { ...prev, board: { ...prev.board, visibility: value } };
+        });
+    };
+
     const setBoardTitle = (value) => {
         setBoardState(prev => {
             return { ...prev, board: { ...prev.board, title: value } };
@@ -427,6 +433,8 @@ export const BoardStateContextProvider = ({ children }) => {
             value={{
                 boardState,
                 setBoardState,
+
+                setBoardVisibility,
                 setBoardTitle,
                 setBoardDescription,
 

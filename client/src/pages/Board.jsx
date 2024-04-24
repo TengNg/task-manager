@@ -1,8 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom"
-import ListContainer from "../components/list/ListContainer";
+
 import useBoardState from "../hooks/useBoardState";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import useAuth from "../hooks/useAuth";
+import useKeyBinds from "../hooks/useKeyBinds";
+
+import { lexorank } from '../utils/class/Lexorank';
+import VISIBILITY_MAP from '../data/visibility';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faThumbtack } from '@fortawesome/free-solid-svg-icons';
+
+import ListContainer from "../components/list/ListContainer";
 import InvitationForm from "../components/invitation/InvitationForm";
 import BoardMenu from "../components/board/BoardMenu";
 import ChatBox from "../components/chat/ChatBox";
@@ -13,26 +23,22 @@ import PinnedBoards from "../components/board/PinnedBoards";
 import CardDetail from "../components/card/CardDetail";
 import CardQuickEditor from "../components/card/CardQuickEditor";
 import Members from "../components/board/Members";
-
-import { lexorank } from '../utils/class/Lexorank';
-
-import useAuth from "../hooks/useAuth";
-import useKeyBinds from "../hooks/useKeyBinds";
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbtack } from '@fortawesome/free-solid-svg-icons';
 import Configuration from "../components/board/Configuration";
 import Filter from "../components/action-menu/Filter";
+import VisibilityConfig from "../components/board/VisibilityConfig";
 
 const Board = () => {
     const {
         boardState,
         setBoardState,
+
+        setBoardVisibility,
         setBoardTitle,
         setChats,
+
         isRemoved,
 
-        focusedCard,
+        focusedCard: _focusedCard,
         setFocusedCard,
 
         openCardDetail,
@@ -41,7 +47,7 @@ const Board = () => {
 
         addCardToList,
         openedCardQuickEditor,
-        setOpenedCardQuickEditor,
+        setOpenedCardQuickEditor: _setOpenedCardQuickEditor,
         openedCard,
 
         addCopiedCard,
@@ -92,6 +98,12 @@ const Board = () => {
 
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+    const [openVisibilityConfig, setOpenVisibilityConfig] = useState(false);
+
+    const boardVisibility = useMemo(() => {
+        return boardState?.board?.visibility || 'private'
+    }, [boardState?.board?.visibility]);
 
     const { boardId } = useParams();
     const navigate = useNavigate();
@@ -183,6 +195,22 @@ const Board = () => {
         }
 
         setIsFetchingMoreMessages(false);
+    };
+
+    const handleSetBoardVisibility = async (visibility) => {
+        if (boardVisibility === visibility) return;
+
+        setBoardVisibility(visibility);
+        return
+
+        try {
+            const response = await axiosPrivate.put(`/boards/${boardState.board._id}/visibility`, JSON.stringify({ visibility }));
+            console.log(response.data);
+            setBoardVisibility(visibility);
+        } catch (err) {
+            console.log(err);
+            alert("Failed to update board visibility");
+        }
     };
 
     const handleConfirmBoardTitle = async (value) => {
@@ -458,6 +486,13 @@ const Board = () => {
                 setOpen={setOpenFilter}
             />
 
+            <VisibilityConfig
+                handleSetBoardVisibility={handleSetBoardVisibility}
+                visibility={boardVisibility}
+                open={openVisibilityConfig}
+                setOpen={setOpenVisibilityConfig}
+            />
+
             <Members
                 open={openMembers}
                 setOpen={setOpenMembers}
@@ -499,6 +534,13 @@ const Board = () => {
                 isFetching={isDataLoaded}
                 fetchMessages={fetchMessages}
             />
+
+            <div
+                onClick={() => setOpenVisibilityConfig(prev => !prev)}
+                className="absolute cursor-pointer w-[35px] h-[35px] grid place-items-center left-4 top-[0.55rem] sm:top-4 text-[0.75rem] sm:text-[0.75rem] border-[2px] border-gray-600 p-1 select-none bg-gray-50"
+            >
+                {VISIBILITY_MAP[boardVisibility]}
+            </div>
 
             <div
                 id='board-wrapper'
