@@ -27,6 +27,8 @@ import Configuration from "../components/board/Configuration";
 import Filter from "../components/action-menu/Filter";
 import VisibilityConfig from "../components/board/VisibilityConfig";
 
+const chatsPerPage = 10;
+
 const Board = () => {
     const {
         boardState,
@@ -92,7 +94,6 @@ const Board = () => {
 
     // chat messages ==================================================================================================
     const [chatsPage, setChatsPage] = useState(1);
-    const [chatsPerPage, _setChatsPerPage] = useState(10);
     const [isFetchingMoreMessages, setIsFetchingMoreMessages] = useState(undefined);
     const [allMessagesFetched, setAllMessagesFetched] = useState(false);
 
@@ -195,22 +196,6 @@ const Board = () => {
         }
 
         setIsFetchingMoreMessages(false);
-    };
-
-    const handleSetBoardVisibility = async (visibility) => {
-        if (boardVisibility === visibility) return;
-
-        setBoardVisibility(visibility);
-        return
-
-        try {
-            const response = await axiosPrivate.put(`/boards/${boardState.board._id}/visibility`, JSON.stringify({ visibility }));
-            console.log(response.data);
-            setBoardVisibility(visibility);
-        } catch (err) {
-            console.log(err);
-            alert("Failed to update board visibility");
-        }
     };
 
     const handleConfirmBoardTitle = async (value) => {
@@ -487,7 +472,6 @@ const Board = () => {
             />
 
             <VisibilityConfig
-                handleSetBoardVisibility={handleSetBoardVisibility}
                 visibility={boardVisibility}
                 open={openVisibilityConfig}
                 setOpen={setOpenVisibilityConfig}

@@ -6,6 +6,7 @@ import useBoardState from '../../hooks/useBoardState';
 import AddList from './AddList';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { lexorank } from '../../utils/class/Lexorank';
+import useAuth from '../../hooks/useAuth';
 
 const ListContainer = ({ openAddList, setOpenAddList }) => {
     const {
@@ -13,6 +14,10 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
         setBoardState,
         socket,
     } = useBoardState();
+
+    const {
+        auth
+    } = useAuth();
 
     const listContainerRef = useRef();
 
@@ -25,6 +30,12 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
     }, []);
 
     const handleOnDragEnd = async (result) => {
+        if (boardState?.board?.createdBy?._id !== auth?.user?._id &&
+            !boardState?.board?.members.map(member => member._id).includes(auth?.user?._id)) {
+            alert("You don't have permission, please join the board first");
+            return;
+        };
+
         const { destination, source, type } = result;
 
         if (!destination) return;

@@ -2,7 +2,44 @@ const mongoose = require('mongoose');
 const List = require('../models/List.js');
 const Card = require('../models/Card.js');
 const Board = require('../models/Board.js');
+const User = require('../models/User.js');
 const { lexorank } = require('../lib/lexorank.js');
+
+const getUser = (username, option = { lean: true }) => {
+    const foundUser = User.findOne({ username });
+    if (option.lean) foundUser.lean();
+    return foundUser;
+};
+
+const isActionAuthorized = async (boardId, username, option = { ownerOnly: false }) => {
+    const foundUser = await getUser(username);
+    if (!foundUser) return false;
+
+    const board = await Board.findById(boardId);
+    if (!board) return false;
+
+    const { ownerOnly } = option;
+
+    if (ownerOnly === false && (board.createdBy.toString() === foundUser._id.toString() || board.members.includes(foundUser._id))) {
+        return {
+            board,
+            user: foundUser,
+            authorized: true
+        }
+    }
+
+    if (ownerOnly === true && board.createdBy.toString() === foundUser._id.toString()) {
+        return {
+            board,
+            user: foundUser,
+            authorized: true
+        }
+    }
+
+    return {
+        authorized: false
+    }
+};
 
 const getListCount = async (req, res) => {
     const { boardId } = req.params;
@@ -17,63 +54,87 @@ const getListCount = async (req, res) => {
 };
 
 const addList = async (req, res) => {
+    const { username } = req.user;
     const { title, order, boardId } = req.body;
+
+    const { authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
+    if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
+
     const newList = new List({
         title,
         order,
         boardId,
     });
+
     await newList.save();
     return res.status(201).json({ msg: 'new list created', newList });
 }
 
-const updateLists = async (req, res) => {
-    const { lists } = req.body;
-
-    const bulkOps = lists.map(({ _id, order: _, title }, index) => ({
-        updateOne: {
-            filter: { _id },
-            update: { $set: { order: index, title } },
-        },
-    }));
-
-    await List.bulkWrite(bulkOps);
-
-    res.status(200).json({ message: 'all lists updated' });
-};
-
 const reorder = async (req, res) => {
+    const { username } = req.user;
     const { id } = req.params;
     const { rank } = req.body;
-    const newList = await List.findOneAndUpdate({ _id: id }, { order: rank }, { new: true });
-    res.status(200).json({ message: 'list updated', newList });
+
+    const foundList = await List.findById(id);
+    if (!foundList) return res.status(403).json({ msg: "list not found" });
+
+    const { boardId } = foundList;
+    const { board, user: _, authorized } = await isActionAuthorized(boardId, username);
+    if (!authorized) return res.status(403).json({ msg: "unauthorized" });
+
+    foundList.order = rank;
+    foundList.save();
+
+    res.status(200).json({ message: 'list updated', newList: foundList });
 };
 
 const updateTitle = async (req, res) => {
+    const { username } = req.user;
+
     const { id } = req.params;
     const { title } = req.body;
-    const newList = await List.findOneAndUpdate({ _id: id }, { title }, { new: true });
-    res.status(200).json({ message: 'list updated', newList });
+
+    const foundList = await List.findById(id);
+    if (!foundList) return res.status(403).json({ msg: "list not found" });
+
+    const { boardId } = foundList;
+    const { board, user: _, authorized } = await isActionAuthorized(boardId, username);
+    if (!authorized) return res.status(403).json({ msg: "unauthorized" });
+
+    foundList.title = title;
+    foundList.save();
+
+    res.status(200).json({ message: 'list updated', newList: foundList });
 };
 
 const deleteList = async (req, res) => {
+    const { username } = req.user;
     const { id } = req.params;
+
+    const foundList = await List.findById(id);
+    if (!foundList) return res.status(403).json({ msg: "list not found" });
+
+    const { boardId } = foundList;
+    const { authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
+    if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
+
     await List.findByIdAndDelete(id);
-    await Card.deleteMany({ listId: id });
     res.status(200).json({ message: 'list deleted' });
 };
 
 const copyList = async (req, res) => {
+    const { username } = req.user;
     const { id } = req.params;
     const { rank } = req.body;
 
     const foundList = await List.findById(id);
 
-    if (!foundList) {
-        return res.status(403).json({ msg: "List not found" });
-    }
+    if (!foundList) return res.status(403).json({ msg: "List not found" });
 
     const { title, boardId } = foundList;
+    const { authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
+    if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
+
     const newListId = new mongoose.Types.ObjectId();
 
     const newList = new List({
@@ -94,7 +155,8 @@ const copyList = async (req, res) => {
                 description,
                 order,
                 highlight,
-                listId: list._id
+                listId: list._id,
+                boardId: list.boardId
             });
 
             await newCard.save();
@@ -109,17 +171,14 @@ const copyList = async (req, res) => {
 };
 
 const moveList = async (req, res) => {
+    const { username } = req.user;
     const { id, boardId, index } = req.params;
 
     const foundList = await List.findById(id);
-    if (!foundList) {
-        return res.status(403).json({ msg: "List not found" });
-    }
+    if (!foundList) return res.status(403).json({ msg: "List not found" });
 
-    const foundBoard = await Board.findById(boardId);
-    if (!foundBoard) {
-        return res.status(403).json({ msg: "Board not found" });
-    }
+    const { board: foundBoard, authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
+    if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     const sortedLists = await List.find({ boardId }).sort({ order: 'asc' });
     const [newOrder, ok] = lexorank.insert(sortedLists[index - 1]?.order, sortedLists[index]?.order);
@@ -139,7 +198,6 @@ const moveList = async (req, res) => {
 module.exports = {
     getListCount,
     addList,
-    updateLists,
     updateTitle,
     deleteList,
     copyList,

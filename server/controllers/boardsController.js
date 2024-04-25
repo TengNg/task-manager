@@ -12,6 +12,36 @@ const getUser = (username, option = { lean: true }) => {
     return foundUser;
 };
 
+const isActionAuthorized = async (boardId, username, option = { ownerOnly: false }) => {
+    const foundUser = await getUser(username);
+    if (!foundUser) return false;
+
+    const board = await Board.findById(boardId);
+    if (!board) return false;
+
+    const { ownerOnly } = option;
+
+    if (ownerOnly === false && (board.createdBy.toString() === foundUser._id.toString() || board.members.includes(foundUser._id))) {
+        return {
+            board,
+            user: foundUser,
+            authorized: true
+        }
+    }
+
+    if (ownerOnly === true && board.createdBy.toString() === foundUser._id.toString()) {
+        return {
+            board,
+            user: foundUser,
+            authorized: true
+        }
+    }
+
+    return {
+        authorized: false
+    }
+};
+
 const getBoards = async (req, res) => {
     const { username } = req.user;
 
@@ -66,7 +96,6 @@ const getBoard = async (req, res) => {
                 { members: foundUser._id },
             ],
         })
-        .sort({ createdAt: -1 })
         .populate({
             path: 'createdBy',
             select: 'username profileImage createdAt'
@@ -131,23 +160,70 @@ const createBoard = async (req, res) => {
 
 const updateBoard = async (req, res) => {
     const { id } = req.params;
-    const { title, description } = req.body;
-    const newBoard = await Board.findOneAndUpdate({ _id: id }, { title, description }, { new: true });
-    return res.status(200).json({ msg: 'board updated', newBoard });
+    const { title, description, visibility } = req.body;
+
+    const { username } = req.user;
+
+    const foundUser = await getUser(username);
+    if (!foundUser) return res.status(403).json({ msg: "user not found" });
+
+    const foundBoard = await Board.findById(id);
+    if (!foundBoard) return res.status(403).json({ msg: "board not found" });
+
+    if (foundBoard.createdBy.toString() !== foundUser._id.toString() &&
+        !foundBoard.members.includes(foundUser._id)) {
+        return res.status(403).json({ msg: "unauthorized" });
+    }
+
+    foundBoard.title = title;
+    foundBoard.description = description;
+    foundBoard.visibility = visibility;
+
+    return res.status(200).json({ msg: 'board updated', newBoard: foundBoard });
 };
 
 const updateTitle = async (req, res) => {
     const { id } = req.params;
     const { title } = req.body;
-    const newBoard = await Board.findOneAndUpdate({ _id: id }, { title }, { new: true });
-    return res.status(200).json({ msg: 'board updated', newBoard });
+    const { username } = req.user;
+
+    const { board, user: _, authorized } = await isActionAuthorized(id, username);
+
+    if (!authorized) return res.status(403).json({ msg: "unauthorized" });
+
+    board.title = title;
+    board.save();
+
+    return res.status(200).json({ msg: 'board updated', newBoard: board });
 };
 
 const updateDescription = async (req, res) => {
     const { id } = req.params;
     const { description } = req.body;
-    const newBoard = await Board.findOneAndUpdate({ _id: id }, { description }, { new: true });
-    return res.status(200).json({ msg: 'board updated', newBoard });
+    const { username } = req.user;
+
+    const { board, user: _, authorized } = await isActionAuthorized(id, username);
+
+    if (!authorized) return res.status(403).json({ msg: "unauthorized" });
+
+    board.description = description;
+    board.save();
+
+    return res.status(200).json({ msg: 'board updated', newBoard: board });
+};
+
+const updateVisibility = async (req, res) => {
+    const { id } = req.params;
+    const { visibility } = req.body;
+    const { username } = req.user;
+
+    const { board, user: _, authorized } = await isActionAuthorized(id, username, { ownerOnly: true });
+
+    if (!authorized) return res.status(403).json({ msg: "unauthorized" });
+
+    board.visibility = visibility;
+    board.save();
+    return res.status(200).json({ msg: 'board updated', newBoard: board });
 };
 
 const leaveBoard = async (req, res) => {
@@ -217,16 +293,15 @@ const removeMemberFromBoard = async (req, res) => {
 };
 
 const closeBoard = async (req, res) => {
+    const { username } = req.user;
     const { id } = req.params;
-    const lists = await List.find({ boardId: id });
 
-    const cardPromises = lists.map(async (list) => {
-        await Card.deleteMany({ listId: list._id });
-    });
+    const { board, user: _, authorized } = await isActionAuthorized(id, username, { ownerOnly: true });
+    if (!authorized) return res.status(403).json({ msg: "unauthorized" });
 
-    await Promise.all(cardPromises);
+    await Card.deleteMany({ boardId: id });
     await List.deleteMany({ boardId: id });
-    await Board.findByIdAndDelete(id);
+    await Board.deleteOne({ _id: id });
 
     res.status(200).json({ msg: 'board closed' });
 };
@@ -236,11 +311,10 @@ const copyBoard = async (req, res) => {
     const { title, description } = req.body;
     const { username } = req.user
 
-    const foundUser = await getUser(username);
-    if (!foundUser) return res.status(403).json({ msg: "user not found" });
+    const { board: foundBoard, user: foundUser, authorized } = await isActionAuthorized(id, username, { ownerOnly: true });
+    if (!authorized) return res.status(403).json({ msg: "unauthorized" });
 
     const newBoardId = new mongoose.Types.ObjectId();
-    const foundBoard = await Board.findById(id);
     const lists = await List.find({ boardId: foundBoard.id });
 
     const newBoard = new Board({
@@ -363,7 +437,7 @@ module.exports = {
     getOwnedBoards,
     createBoard,
     getBoard,
-    updateBoard,
+    updateVisibility,
     updateTitle,
     updateDescription,
     leaveBoard,

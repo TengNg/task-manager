@@ -8,6 +8,18 @@ const cardSchema = new mongoose.Schema({
         required: true,
     },
 
+    listId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'List',
+        required: true,
+    },
+
+    boardId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Board',
+        required: true,
+    },
+
     title: {
         type: String,
         required: true,
@@ -20,12 +32,6 @@ const cardSchema = new mongoose.Schema({
 
     order: {
         type: String,
-        required: true,
-    },
-
-    listId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'List',
         required: true,
     },
 

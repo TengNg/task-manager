@@ -3,7 +3,6 @@ const router = express.Router();
 
 const {
     addList,
-    updateLists,
     updateTitle,
     deleteList,
     copyList,
@@ -16,7 +15,6 @@ router.route("/b/:boardId/count")
     .get(getListCount);
 
 router.route("/")
-    .put(updateLists)
     .post(addList)
 
 router.route("/:id")

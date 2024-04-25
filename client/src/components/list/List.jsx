@@ -104,7 +104,10 @@ const List = ({ index, list, cards }) => {
 
             const [rank, ok] = lexorank.insert(lists[currentIndex]?.order, nextElement?.order);
 
-            if (!ok) return;
+            if (!ok) {
+                alert('Failed to create a copy of this list');
+                return;
+            }
 
             const response = await axiosPrivate.post(`/lists/copy/${id}`, JSON.stringify({ rank }));
             const newList = response.data.list;

@@ -1,19 +1,13 @@
 const mongoose = require('mongoose');
 
-const invitationSchema = new mongoose.Schema({
+const joinBoardRequestSchema = new mongoose.Schema({
     boardId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Board',
         required: true,
     },
 
-    invitedUserId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-    },
-
-    invitedByUserId: {
+    requestedUserId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
@@ -32,5 +26,5 @@ const invitationSchema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model('Invitation', invitationSchema);
+module.exports = mongoose.model('join_board_requests', joinBoardRequestSchema);
 

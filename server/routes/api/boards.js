@@ -6,7 +6,7 @@ const {
     getOwnedBoards,
     createBoard,
     getBoard,
-    updateBoard,
+    updateVisibility,
     updateTitle,
     updateDescription,
     leaveBoard,
@@ -28,7 +28,6 @@ router.route("/owned")
 
 router.route("/:id")
     .get(getBoard)
-    .put(updateBoard)
     .delete(closeBoard)
 
 router.route("/:id/members/leave")
@@ -42,6 +41,9 @@ router.route("/:id/new-title")
 
 router.route("/:id/new-description")
     .put(updateDescription)
+
+router.route("/:id/new-visibility")
+    .put(updateVisibility)
 
 router.route("/copy/:id")
     .post(copyBoard)

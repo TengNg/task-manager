@@ -1,9 +1,21 @@
-import { useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import Loading from '../ui/Loading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import VISIBILITY_MAP from '../../data/visibility';
+import useBoardState from '../../hooks/useBoardState';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
-const VisibilityConfig = ({ open, setOpen, visibility, handleSetBoardVisibility }) => {
+const VisibilityConfig = ({ open, setOpen, visibility }) => {
+    const {
+        boardState,
+        setBoardVisibility,
+    } = useBoardState();
+
+    const axiosPrivate = useAxiosPrivate();
+
+    const [updating, setUpdating] = useState(false);
+
     const dialog = useRef();
     const visiblityOptions = Object.keys(VISIBILITY_MAP);
 
@@ -25,6 +37,22 @@ const VisibilityConfig = ({ open, setOpen, visibility, handleSetBoardVisibility 
         }
     }, [open]);
 
+    const handleSetBoardVisibility = async (visibility) => {
+        if (boardState?.board?.visibility === visibility) return;
+
+        try {
+            setUpdating(true);
+            const response = await axiosPrivate.put(`/boards/${boardState.board._id}/new-visibility`, JSON.stringify({ visibility }));
+            const { newBoard } = response.data;
+            setBoardVisibility(newBoard?.visibility);
+            setUpdating(false);
+        } catch (err) {
+            console.log(err);
+            setUpdating(false);
+            alert("Failed to update board visibility");
+        }
+    };
+
     const handleCloseOnOutsideClick = (e) => {
         if (e.target === dialog.current) {
             dialog.current.close();
@@ -38,9 +66,16 @@ const VisibilityConfig = ({ open, setOpen, visibility, handleSetBoardVisibility 
     return (
         <dialog
             ref={dialog}
-            className='z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 pb-4 h-fit min-w-[300px] max-h-[500px] border-black border-[2px] bg-gray-200'
+            className='z-40 relative backdrop:bg-black/15 box--style gap-4 items-start p-3 pb-4 h-fit min-w-[300px] max-h-[500px] border-black border-[2px] bg-gray-200'
             onClick={handleCloseOnOutsideClick}
         >
+            <Loading
+                loading={updating}
+                position={'absolute'}
+                displayText={'updating visibility...'}
+                fontSize={'0.9rem'}
+            />
+
             <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
                 <p className="font-normal text-[1rem] text-gray-700">board visibility</p>
                 <button

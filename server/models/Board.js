@@ -12,6 +12,13 @@ const boardSchema = new mongoose.Schema({
         default: "",
     },
 
+    visibility: {
+        type: String,
+        enum: ['private', 'public'],
+        default: 'private',
+        required: true,
+    },
+
     members: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -20,13 +27,6 @@ const boardSchema = new mongoose.Schema({
     listCount: {
         type: Number,
         default: 0
-    },
-
-    visibility: {
-        type: String,
-        enum: ['private', 'public', 'read-only', 'read-and-write'],
-        default: 'private',
-        required: true,
     },
 
     createdBy: {

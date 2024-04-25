@@ -1,8 +1,7 @@
 const VISIBILITY_MAP = {
     'private': '#',
     'public': 'pub',
-    'read-only': 'ro',
-    'read-and-write': 'rw'
-}
+    //'read-only': 'ro',
+};
 
 export default VISIBILITY_MAP;

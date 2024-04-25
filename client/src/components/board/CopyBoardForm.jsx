@@ -19,9 +19,16 @@ const CopyBoardForm = ({ setOpen }) => {
     };
 
     const handleCreate = async () => {
+        if (!title) return;
+
         if (confirm('Do you want to Copy this board with its data ?')) {
             setLoading(true);
-            await axiosPrivate.post(`/boards/copy/${boardState.board._id}`, JSON.stringify({ title: title, desciption }));
+            try {
+                await axiosPrivate.post(`/boards/copy/${boardState.board._id}`, JSON.stringify({ title: title, desciption }));
+            } catch (err) {
+                console.log(err);
+                alert('Failed to copy this board');
+            }
             setLoading(false);
         }
     };
@@ -55,6 +62,7 @@ const CopyBoardForm = ({ setOpen }) => {
                         className={`p-3 text-[0.75rem] w-full shadow-[0_3px_0_0] overflow-hidden whitespace-nowrap text-ellipsis border-[2px] bg-gray-100 border-gray-600 text-gray-600 font-semibold select-none focus:outline-none`}
                         placeholder="Name for this new board..."
                         onChange={(e) => setTitle(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
                         value={title}
                     />
 
