@@ -6,41 +6,8 @@ const List = require("../models/List");
 const Card = require("../models/Card");
 const User = require("../models/User");
 
-const getUser = (username, option = { lean: true }) => {
-    const foundUser = User.findOne({ username });
-    if (option.lean) foundUser.lean();
-    return foundUser;
-};
-
-const isActionAuthorized = async (boardId, username, option = { ownerOnly: false }) => {
-    const foundUser = await getUser(username);
-    if (!foundUser) return false;
-
-    const board = await Board.findById(boardId);
-    if (!board) return false;
-
-    const { ownerOnly } = option;
-
-    if (ownerOnly === false && (board.createdBy.toString() === foundUser._id.toString() || board.members.includes(foundUser._id))) {
-        return {
-            board,
-            user: foundUser,
-            authorized: true
-        }
-    }
-
-    if (ownerOnly === true && board.createdBy.toString() === foundUser._id.toString()) {
-        return {
-            board,
-            user: foundUser,
-            authorized: true
-        }
-    }
-
-    return {
-        authorized: false
-    }
-};
+const { isActionAuthorized } = require('../services/boardActionAuthorizeService');
+const { userByUsername: getUser } = require('../services/userService');
 
 const getBoards = async (req, res) => {
     const { username } = req.user;
@@ -92,6 +59,7 @@ const getBoard = async (req, res) => {
         .findOne({
             _id: id,
             $or: [
+                { visibility: 'public' },
                 { createdBy: foundUser._id },
                 { members: foundUser._id },
             ],
@@ -117,7 +85,9 @@ const getBoard = async (req, res) => {
     const lists = await List.find({ boardId: id }).sort({ order: 'asc' });
 
     const listsWithCardsPromises = lists.map(async (list) => {
-        const cards = await Card.find({ listId: list._id }).sort({ order: 'asc' });
+        const cards = await Card.find({ listId: list._id }).sort({ order: 'asc' }).lean();
+        await Card.updateMany({ listId: list._id }, { $set: { boardId: board._id } });
+
         return {
             ...list.toObject(),
             cards

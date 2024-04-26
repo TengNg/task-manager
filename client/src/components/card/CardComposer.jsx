@@ -7,7 +7,7 @@ const CardComposer = ({ list, open, setOpen }) => {
     const [text, setText] = useState("");
     const {
         socket,
-        addCardToList,
+        addCardToList: _,
         setBoardState,
         boardState,
     } = useBoardState();
@@ -18,6 +18,8 @@ const CardComposer = ({ list, open, setOpen }) => {
     const axiosPrivate = useAxiosPrivate();
 
     const [isAddingCard, setIsAddingCard] = useState(false);
+
+    const boardId = boardState?.board?._id;
 
     useEffect(() => {
         const closeOnEscape = (e) => {
@@ -68,6 +70,7 @@ const CardComposer = ({ list, open, setOpen }) => {
 
         const cardData = {
             trackedId: crypto.randomUUID(),
+            boardId: boardId,
             listId: list._id,
             order: rank,
             title: textAreaRef.current.value,

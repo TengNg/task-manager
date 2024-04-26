@@ -4,7 +4,6 @@ const router = express.Router();
 const {
     getCard,
     addCard,
-    updateCard,
     updateTitle,
     updateDescription,
     updateHighlight,
@@ -19,7 +18,6 @@ router.route("/")
 
 router.route("/:id")
     .get(getCard)
-    .put(updateCard)
     .delete(deleteCard)
 
 router.route("/:id/reorder")

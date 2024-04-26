@@ -2,44 +2,9 @@ const mongoose = require('mongoose');
 const List = require('../models/List.js');
 const Card = require('../models/Card.js');
 const Board = require('../models/Board.js');
-const User = require('../models/User.js');
 const { lexorank } = require('../lib/lexorank.js');
 
-const getUser = (username, option = { lean: true }) => {
-    const foundUser = User.findOne({ username });
-    if (option.lean) foundUser.lean();
-    return foundUser;
-};
-
-const isActionAuthorized = async (boardId, username, option = { ownerOnly: false }) => {
-    const foundUser = await getUser(username);
-    if (!foundUser) return false;
-
-    const board = await Board.findById(boardId);
-    if (!board) return false;
-
-    const { ownerOnly } = option;
-
-    if (ownerOnly === false && (board.createdBy.toString() === foundUser._id.toString() || board.members.includes(foundUser._id))) {
-        return {
-            board,
-            user: foundUser,
-            authorized: true
-        }
-    }
-
-    if (ownerOnly === true && board.createdBy.toString() === foundUser._id.toString()) {
-        return {
-            board,
-            user: foundUser,
-            authorized: true
-        }
-    }
-
-    return {
-        authorized: false
-    }
-};
+const { isActionAuthorized } = require('../services/boardActionAuthorizeService');
 
 const getListCount = async (req, res) => {
     const { boardId } = req.params;
@@ -79,7 +44,7 @@ const reorder = async (req, res) => {
     if (!foundList) return res.status(403).json({ msg: "list not found" });
 
     const { boardId } = foundList;
-    const { board, user: _, authorized } = await isActionAuthorized(boardId, username);
+    const { user: _, authorized } = await isActionAuthorized(boardId, username);
     if (!authorized) return res.status(403).json({ msg: "unauthorized" });
 
     foundList.order = rank;
@@ -98,7 +63,7 @@ const updateTitle = async (req, res) => {
     if (!foundList) return res.status(403).json({ msg: "list not found" });
 
     const { boardId } = foundList;
-    const { board, user: _, authorized } = await isActionAuthorized(boardId, username);
+    const { user: _, authorized } = await isActionAuthorized(boardId, username);
     if (!authorized) return res.status(403).json({ msg: "unauthorized" });
 
     foundList.title = title;

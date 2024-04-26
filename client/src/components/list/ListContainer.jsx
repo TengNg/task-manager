@@ -43,7 +43,8 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
         const { index: destIndex } = destination;
         const { index: srcIndex } = source
 
-        // const tempLists = [...boardState.lists]; // need this when failed to reorder
+        // deep copy, need this when failed to reorder
+        let tempLists = JSON.parse(JSON.stringify([...boardState.lists]));
 
         if (type === "LIST") {
             const newLists = [...boardState.lists];
@@ -74,11 +75,9 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
                 socket.emit("moveList", { listId: removedId, fromIndex: srcIndex, toIndex: destIndex });
             } catch (err) {
                 alert("Failed to reorder list");
-                window.location.reload();
-
-                // setBoardState(prev => {
-                //     return { ...prev, lists: tempLists };
-                // });
+                setBoardState(prev => {
+                    return { ...prev, lists: tempLists };
+                });
             }
 
             return;
@@ -90,7 +89,6 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
 
         const fromList = currentLists.find(list => list._id === source.droppableId);
         const toList = currentLists.find(list => list._id === destination.droppableId);
-
 
         // dragging outside
         if (!fromList || !toList) return;
@@ -142,11 +140,9 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
             });
         } catch (err) {
             alert("Failed to reorder card");
-            window.location.reload();
-
-            // setBoardState(prev => {
-            //     return { ...prev, lists: tempLists };
-            // });
+            setBoardState(prev => {
+                return { ...prev, lists: tempLists };
+            });
         }
     };
 
