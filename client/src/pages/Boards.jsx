@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
 import { useState } from "react"
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { useNavigate } from "react-router-dom";
+import useKeyBinds from "../hooks/useKeyBinds";
 import BoardItem from "../components/board/BoardItem";
 import BoardForm from "../components/board/BoardForm";
-import { useNavigate } from "react-router-dom";
 import PinnedBoards from "../components/board/PinnedBoards";
-import useKeyBinds from "../hooks/useKeyBinds";
-import useAuth from "../hooks/useAuth";
 import Title from "../components/ui/Title";
+import JoinBoardRequestForm from "../components/board/JoinBoardRequestForm";
 
 const Boards = () => {
     const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -15,9 +15,8 @@ const Boards = () => {
     const [recentlyViewedBoard, setRecentlyViewedBoard] = useState();
 
     const [openBoardForm, setOpenBoardForm] = useState(false);
+    const [openJoinBoardRequestForm, setOpenJoinBoardRequestForm] = useState(false);
     const axiosPrivate = useAxiosPrivate();
-
-    const { auth } = useAuth();
 
     const {
         openPinnedBoards,
@@ -88,6 +87,11 @@ const Boards = () => {
                 />
             }
 
+            <JoinBoardRequestForm
+                open={openJoinBoardRequestForm}
+                setOpen={setOpenJoinBoardRequestForm}
+            />
+
             <section
                 id="boards"
                 className="w-full h-[calc(100%-75px)] overflow-auto pb-4"
@@ -97,7 +101,20 @@ const Boards = () => {
                         titleName="boards"
                     />
 
-                    <div className="flex flex-col mx-auto sm:m-0 sm:justify-start sm:items-start sm:flex-row sm:flex-wrap gap-4 px-10 p-6 sm:p-8 border-[2px] box--style shadow-gray-500 border-gray-500 w-fit sm:w-full">
+                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-0 mb-1 sm:mb-0 justify-between items-center">
+                        <p className="text-[0.75rem] text-gray-700 m-0 p-0">
+                            total boards: {boards.length} / 8
+                        </p>
+
+                        <button
+                            className='text-[0.75rem] text-gray-700 pe-1 text-end underline cursor-pointer'
+                            onClick={() => setOpenJoinBoardRequestForm(open => !open)}
+                        >
+                            join board
+                        </button>
+                    </div>
+
+                    <div className="relative flex flex-col mx-auto sm:m-0 sm:justify-start sm:items-start sm:flex-row sm:flex-wrap gap-4 px-10 p-6 sm:p-8 border-[2px] box--style shadow-gray-500 border-gray-500 w-fit sm:w-full">
 
                         {
                             boards.map(item => {

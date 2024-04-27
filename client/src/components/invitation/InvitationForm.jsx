@@ -160,7 +160,7 @@ const InvitationForm = ({ open, setOpen }) => {
                         + invite
                     </button>
 
-                    {successMsg && <p className="absolute -top-2 left-1 text-center h-3 text-red-700 text-[0.65rem] font-semibold">{successMsg}</p>}
+                    {successMsg && <p className="absolute -top-2 left-0 text-center h-3 text-blue-700 text-[0.65rem] font-semibold">{successMsg}</p>}
                     {errMsg && <p className="absolute -top-2 left-1 text-center h-3 text-red-700 text-[0.65rem] font-semibold">{errMsg}</p>}
                 </div>
 

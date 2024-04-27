@@ -52,6 +52,8 @@ const getBoard = async (req, res) => {
     const { id } = req.params;
     const { username } = req.user;
 
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ msg: "board not found" });
+
     const foundUser = await User.findOne({ username });
     if (!foundUser) return res.status(403).json({ msg: "user not found" });
 
@@ -126,30 +128,6 @@ const createBoard = async (req, res) => {
 
     await newBoard.save();
     return res.status(201).json({ msg: 'new board created', newBoard });
-};
-
-const updateBoard = async (req, res) => {
-    const { id } = req.params;
-    const { title, description, visibility } = req.body;
-
-    const { username } = req.user;
-
-    const foundUser = await getUser(username);
-    if (!foundUser) return res.status(403).json({ msg: "user not found" });
-
-    const foundBoard = await Board.findById(id);
-    if (!foundBoard) return res.status(403).json({ msg: "board not found" });
-
-    if (foundBoard.createdBy.toString() !== foundUser._id.toString() &&
-        !foundBoard.members.includes(foundUser._id)) {
-        return res.status(403).json({ msg: "unauthorized" });
-    }
-
-    foundBoard.title = title;
-    foundBoard.description = description;
-    foundBoard.visibility = visibility;
-
-    return res.status(200).json({ msg: 'board updated', newBoard: foundBoard });
 };
 
 const updateTitle = async (req, res) => {

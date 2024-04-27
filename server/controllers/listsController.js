@@ -142,7 +142,7 @@ const moveList = async (req, res) => {
     const foundList = await List.findById(id);
     if (!foundList) return res.status(403).json({ msg: "List not found" });
 
-    const { board: foundBoard, authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
+    const { board: _, authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     const sortedLists = await List.find({ boardId }).sort({ order: 'asc' });

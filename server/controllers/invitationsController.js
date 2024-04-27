@@ -116,7 +116,7 @@ const rejectInvitation = async (req, res) => {
 const removeInvitation = async (req, res) => {
     const { id } = req.params;
 
-    const removed = await Invitation.findByIdAndRemove(id);
+    const removed = await Invitation.findByIdAndDelete(id);
 
     if (!removed) {
         return res.status(404).json({ error: 'Invitation not found' });

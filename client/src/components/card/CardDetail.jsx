@@ -68,8 +68,6 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
                 dialog.current.removeEventListener('close', handleOnClose);
                 dialog.current.removeEventListener('keydown', handleKeyDown);
             };
-        } else {
-            dialog.current.close();
         }
     }, [open]);
 
@@ -168,6 +166,8 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
         handleMoveCardByIndex(card, insertedIndex);
         setPosition(insertedIndex);
     }
+
+    if (!card) return null;
 
     return (
         <>

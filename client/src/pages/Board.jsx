@@ -34,7 +34,6 @@ const Board = () => {
         boardState,
         setBoardState,
 
-        setBoardVisibility,
         setBoardTitle,
         setChats,
 
@@ -99,17 +98,18 @@ const Board = () => {
 
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
+    const [error, setError] = useState({ msg: undefined });
 
     const [openVisibilityConfig, setOpenVisibilityConfig] = useState(false);
-
-    const boardVisibility = useMemo(() => {
-        return boardState?.board?.visibility || 'private'
-    }, [boardState?.board?.visibility]);
 
     const { boardId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
     const { pathname } = location;
+
+    const boardVisibility = useMemo(() => {
+        return boardState?.board?.visibility || 'private'
+    }, [boardState?.board?.visibility]);
 
     useEffect(() => {
         if (isRemoved) {
@@ -119,6 +119,7 @@ const Board = () => {
 
     useEffect(() => {
         if (!isDataLoaded) return;
+        if (error?.msg) return;
 
         const totalList = boardState.lists.length;
 
@@ -166,9 +167,10 @@ const Board = () => {
         }
 
         fetchData().catch(err => {
-            console.log(err);
-            navigate("/notfound");
-            setIsDataLoaded(false);
+            const errMsg = err?.response?.data?.msg || 'Failed to load board';
+            setError({ msg: errMsg });
+            setIsDataLoaded(true);
+            socket.emit("disconnectFromBoard");
         });
 
         return () => {
@@ -192,6 +194,7 @@ const Board = () => {
 
         } catch (err) {
             console.log(err);
+            alert('Failed to load messages');
             setIsFetchingMoreMessages(false);
         }
 
@@ -212,6 +215,7 @@ const Board = () => {
             socket.emit("updateBoardTitle", value);
         } catch (err) {
             console.log(err);
+            alert('Failed to update board title');
         }
     };
 
@@ -380,8 +384,8 @@ const Board = () => {
                 socket.emit('deleteMessage', { trackedId: deletedMessage.trackedId });
             }
         } catch (err) {
-            alert('Failed to delete this message');
             console.log(err);
+            alert('Failed to delete this message');
         }
     };
 
@@ -394,6 +398,7 @@ const Board = () => {
             }
         } catch (err) {
             console.log(err);
+            alert('Failed to clear chat messages');
         }
     };
 
@@ -410,7 +415,24 @@ const Board = () => {
     };
 
     if (isDataLoaded === false) {
-        return <div className="font-bold mx-auto text-center mt-20 text-gray-600">Loading...</div>
+        return <div className="font-medium mx-auto text-center mt-20 text-gray-600">Loading...</div>
+    }
+
+    if (error?.msg) {
+        return (
+            <>
+                <section className='w-full flex flex-col justify-center items-center gap-4'>
+                    <p className="font-medium mx-auto text-center mt-20 text-gray-600">{error.msg}.</p>
+
+                    <button
+                        className='button--style opacity-70 text-[0.85rem] w-fit max-auto'
+                        onClick={() => navigate('/boards')}
+                    >
+                        Back to Boards
+                    </button>
+                </section>
+            </>
+        )
     }
 
     return (
@@ -443,17 +465,14 @@ const Board = () => {
                 />
             }
 
-            {
-                openedCard &&
-                <CardDetail
-                    open={openCardDetail}
-                    setOpen={setOpenCardDetail}
-                    handleDeleteCard={handleDeleteCard}
-                    handleCopyCard={handleCopyCard}
-                    handleMoveCardToList={handleMoveCardToList}
-                    handleMoveCardByIndex={handleMoveCardByIndex}
-                />
-            }
+            <CardDetail
+                open={openCardDetail}
+                setOpen={setOpenCardDetail}
+                handleDeleteCard={handleDeleteCard}
+                handleCopyCard={handleCopyCard}
+                handleMoveCardToList={handleMoveCardToList}
+                handleMoveCardByIndex={handleMoveCardByIndex}
+            />
 
             <MoveListForm />
 

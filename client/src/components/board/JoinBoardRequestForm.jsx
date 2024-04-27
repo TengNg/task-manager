@@ -1,0 +1,120 @@
+import { useState, useEffect, useRef } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+
+const JoinBoardRequestForm = ({ open, setOpen }) => {
+    const dialog = useRef();
+    const boardCodeInput = useRef();
+
+    const axiosPrivate = useAxiosPrivate();
+
+    const [success, setSuccess] = useState(false);
+
+    useEffect(() => {
+        if (open) {
+            dialog.current.showModal();
+            boardCodeInput.current.focus();
+
+            const handleOnClose = () => {
+                setOpen(false);
+                setSuccess(false);
+                boardCodeInput.current.value = '';
+            };
+
+            dialog.current.addEventListener('close', handleOnClose);
+
+            () => {
+                dialog.current.removeEventListener('close', handleOnClose);
+            };
+        } else {
+            dialog.current.close();
+        }
+    }, [open]);
+
+    useEffect(() => {
+        let id = null;
+        if (success === true) {
+            id = setTimeout(() => {
+                setSuccess(false);
+            }, 2000);
+        }
+        return () => clearTimeout(id);
+    }, [success]);
+
+    const handleCloseOnOutsideClick = (e) => {
+        if (e.target === dialog.current) {
+            dialog.current.close();
+        };
+    };
+
+    const handleClose = () => {
+        dialog.current.close();
+    };
+
+    const handleSendJoinRequest = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const boardCode = formData.get('boardCode');
+
+        if (!boardCode) return;
+
+        try {
+            await axiosPrivate.post(`/join_board_requests/${boardCode}`);
+            boardCodeInput.current.value = '';
+            setSuccess(true);
+        } catch (err) {
+            const errMsg = err?.response?.data?.msg || 'Failed to send join request';
+            alert(errMsg);
+            setSuccess(false);
+        }
+    };
+
+    return (
+        <dialog
+            ref={dialog}
+            className='relative z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 pb-5 h-fit min-w-[350px] max-h-[500px] border-black border-[2px] bg-gray-200'
+            onClick={handleCloseOnOutsideClick}
+        >
+
+            <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
+                <p className="font-normal text-[1rem] text-gray-700">send join request</p>
+                <button
+                    className="text-gray-600 flex justify-center items-center"
+                    onClick={handleClose}
+                >
+                    <FontAwesomeIcon icon={faXmark} size='xl' />
+                </button>
+            </div>
+
+            <form onSubmit={handleSendJoinRequest}>
+                <div className="w-full relative flex flex-col items-start gap-4 py-2 mt-2">
+                    <div className='w-full flex gap-2'>
+                        <input
+                            type="text"
+                            name="boardCode"
+                            ref={boardCodeInput}
+                            className={`p-3 w-full overflow-hidden shadow-[0_3px_0_0] shadow-gray-600 text-[0.75rem] whitespace-nowrap text-ellipsis border-[2px] bg-gray-100 border-gray-600 text-gray-600 font-bold select-none font-mono focus:outline-none`}
+                            placeholder="enter board code..."
+                        />
+                    </div>
+                </div>
+            </form>
+
+
+            {
+                success && (
+                    <>
+                        <p className="text-[0.75rem] text-blue-600">
+                            request sent successfully
+                        </p>
+                    </>
+                )
+            }
+
+        </dialog>
+    )
+}
+
+export default JoinBoardRequestForm;

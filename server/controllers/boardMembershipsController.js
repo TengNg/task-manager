@@ -1,5 +1,3 @@
-const mongoose = require('mongoose');
-
 const Board = require("../models/Board");
 const BoardMembership = require("../models/BoardMembership");
 

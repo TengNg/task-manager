@@ -1,13 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useBoardState from '../hooks/useBoardState';
-import Title from '../components/ui/Title';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
-import dateFormatter from '../utils/dateFormatter';
-import Avatar from '../components/avatar/Avatar';
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
 import useAuth from '../hooks/useAuth';
-import Loading from '../components/ui/Loading';
+import Title from '../components/ui/Title';
+import Invitations from '../components/invitation/Invitations';
+import JoinBoardRequests from '../components/join-board-request/JoinRequests';
 
 const Activities = () => {
     const {
@@ -18,13 +15,14 @@ const Activities = () => {
     const { auth } = useAuth();
 
     const [invitations, setInvitations] = useState([]);
-    const [loadingInvitations, setLoadingInvitations] = useState(true);
+    const [joinBoardRequests, setJoinBoardRequests] = useState([]);
+    const [loadingInvitations, setLoadingInvitations] = useState(false);
+    const [loadingRequests, setLoadingRequests] = useState(false);
     const axiosPrivate = useAxiosPrivate();
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         fetchInvitations();
+        fetchJoinBoardRequests();
     }, []);
 
     const fetchInvitations = async () => {
@@ -37,10 +35,24 @@ const Activities = () => {
             setPendingInvitations(response.data.invitations.filter(item => item.status === 'pending'));
         } catch (err) {
             console.log(err);
-            navigate('/login');
+            alert('Failed to load invitations, please try again');
         }
 
         setLoadingInvitations(false);
+    };
+
+    const fetchJoinBoardRequests = async () => {
+        setLoadingRequests(true);
+
+        try {
+            const response = await axiosPrivate.get("/join_board_requests");
+            setJoinBoardRequests(response.data.joinRequests);
+        } catch (err) {
+            console.log(err);
+            alert('Failed to load invitations, please try again');
+        }
+
+        setLoadingRequests(false);
     };
 
     const handleAcceptInvitation = async (invitationId) => {
@@ -87,7 +99,68 @@ const Activities = () => {
 
             setPendingInvitations(prev => prev - 1)
         } catch (err) {
+            console.log(err);
             alert('Failed to reject invitation');
+        }
+    };
+
+    const handleAcceptJoinBoardRequest = async ({ boardId, requesterName }) => {
+        try {
+            await axiosPrivate.put(`/join_board_requests/${boardId}/accept`, JSON.stringify({ requesterName }));
+
+            setJoinBoardRequests(prev => {
+                const requests = [...prev];
+                return requests.map(request => {
+                    const { boardId: board, requester } = request;
+
+                    if (board._id === boardId && requester.username === requesterName) {
+                        return { ...request, status: 'accepted' };
+                    }
+
+                    return request;
+                });
+            });
+        } catch (err) {
+            const errMsg = err?.response?.data?.msg || 'Failed to accept join board request';
+            alert(errMsg);
+        }
+    };
+
+    const handleRejectJoinBoardRequest = async ({ boardId, requesterName }) => {
+        try {
+            await axiosPrivate.put(`/join_board_requests/${boardId}/reject`, JSON.stringify({ requesterName }));
+
+            setJoinBoardRequests(prev => {
+                const requests = [...prev];
+                return requests.map(request => {
+                    const { boardId: board, requester } = request;
+
+                    if (board._id === boardId && requester.username === requesterName) {
+                        return { ...request, status: 'rejected' };
+                    }
+
+                    return request;
+                });
+            });
+        } catch (err) {
+            const errMsg = err?.response?.data?.msg || 'Failed to reject join board request';
+            alert(errMsg);
+        }
+    };
+
+    const handleRemoveJoinBoardRequest = async ({ boardId, requesterName }) => {
+        try {
+            // body param: needs to be set under "data" key
+            await axiosPrivate.delete(`/join_board_requests/${boardId}`, { data: JSON.stringify({ requesterName }) });
+
+            setJoinBoardRequests(prev => {
+                return prev.filter(item => item.boardId._id !== boardId && item.requester.username !== requesterName);
+            });
+        } catch (err) {
+            console.log(err);
+
+            const errMsg = err?.response?.data?.msg || 'Failed to remove join board request';
+            alert(errMsg);
         }
     };
 
@@ -96,89 +169,26 @@ const Activities = () => {
             <section className="w-full h-[calc(100%-75px)] overflow-auto pb-4">
                 <Title titleName="activities" />
 
-                <div className='mx-auto lg:w-1/2 md:w-3/4 w-[90%]'>
-                    <div className='w-full flex justify-end'>
-                        <button
-                            className='ms-auto underline text-[0.75rem] me-1'
-                            onClick={() => {
-                                if (!loadingInvitations) {
-                                    fetchInvitations();
-                                }
-                            }}
-                        >
-                            refresh
-                        </button>
-                    </div>
+                <Invitations
+                    invitations={invitations}
+                    loadingInvitations={loadingInvitations}
+                    fetchInvitations={fetchInvitations}
+                    handleAcceptInvitation={handleAcceptInvitation}
+                    handleRejectInvitation={handleRejectInvitation}
+                    handleRemoveInvitation={handleRemoveInvitation}
+                />
 
-                    <div className='relative box--style border-[2px] border-gray-600 shadow-gray-600 min-h-[400px] max-h-[600px] mx-auto overflow-auto p-4 md:p-8 bg-gray-50 flex flex-col gap-4'>
-                        <Loading
-                            position='absolute'
-                            loading={loadingInvitations}
-                            displayText={"loading data..."}
-                            fontSize={'0.9rem'}
-                        />
+                <div className="h-[1px] w-full my-4"></div>
 
-                        {
-                            invitations.length === 0 && <div className='text-gray-500 text-center text-[0.75rem] mt-[7.5rem]'>currently no invitations found.</div>
-                        }
+                <JoinBoardRequests
+                    requests={joinBoardRequests}
+                    loading={loadingRequests}
+                    fetchRequests={fetchJoinBoardRequests}
+                    accept={handleAcceptJoinBoardRequest}
+                    reject={handleRejectJoinBoardRequest}
+                    remove={handleRemoveJoinBoardRequest}
+                />
 
-                        {
-                            invitations.map((item, index) => {
-                                const { _id, invitedByUserId: sender, createdAt, status, boardId } = item;
-                                return <div
-                                    key={index}
-                                    className={`button--style--rounded rounded-none border-gray-700 shadow-gray-700 flex justify-between flex-wrap sm:flex-nowrap items-center p-4
-                                                        ${status === "accepted" ? 'bg-blue-100 cursor-pointer' : status === "rejected" ? 'bg-red-100' : 'bg-gray-50'}`}
-                                    onClick={() => status === "accepted" && navigate(`/b/${boardId}`)}
-                                >
-                                    <div className='flex items-center gap-2 mb-4 sm:mb-0'>
-                                        <Avatar
-                                            profileImage={sender.profileImage}
-                                            username={sender.username}
-                                            noShowRole={true}
-                                        />
-                                        <div className='flex flex-col justify-start text-gray-800'>
-                                            <div className='text-[0.75rem] md:text-[1rem]'>
-                                                <span className='max-w-[200px] font-bold underline overflow-hidden whitespace-nowrap text-ellipsis'>{sender.username}</span>
-                                                <span>{" "}</span>
-                                                <span>sends you a board invitation</span>
-                                            </div>
-
-                                            <p className='mt-2 md:mt-0 md:text-[0.75rem] text-[0.65rem]'>{dateFormatter(createdAt)}</p>
-
-                                            {/* { */}
-                                            {/*     status != 'pending' && */}
-                                            {/*         <span className={`text-[0.65rem] mt-2 ${status == 'accepted' ? 'text-blue-700' : 'text-red-700'}`}> */}
-                                            {/*             {status} */}
-                                            {/*         </span> */}
-                                            {/* } */}
-                                        </div>
-                                    </div>
-
-
-                                    {
-                                        status === 'pending'
-                                            ? <div className='ms-auto flex gap-2'>
-                                                <button
-                                                    onClick={() => handleAcceptInvitation(_id)}
-                                                    className='button--style--rounded rounded-none px-3 py-2 bg-white text-[0.75rem] text-blue-700 border-blue-700'>Accept</button>
-                                                <button
-                                                    onClick={() => handleRejectInvitation(_id)}
-                                                    className='button--style--rounded rounded-none px-3 py-2 bg-white text-[0.75rem] text-red-700 border-red-700'>Reject</button>
-                                            </div>
-                                            : <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleRemoveInvitation(_id)
-                                                }}
-                                                className='ms-auto button--style--rounded rounded-none px-3 py-2 border-gray-600 text-[0.75rem] text-gray-600 bg-gray-100'>Remove</button>
-
-                                    }
-
-                                </div>
-                            })}
-                    </div>
-                </div>
             </section>
         </>
     )
