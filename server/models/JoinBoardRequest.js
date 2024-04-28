@@ -13,6 +13,12 @@ const joinBoardRequestSchema = new mongoose.Schema({
         required: true,
     },
 
+    status: {
+        type: String,
+        enum: ['pending', 'accepted', 'rejected'],
+        default: 'pending',
+    },
+
     createdAt: {
         type: Date,
         required: true,
@@ -24,24 +30,27 @@ const joinBoardRequestSchema = new mongoose.Schema({
         required: true,
         default: Date.now,
     },
-
-    status: {
-        type: String,
-        enum: ['pending', 'accepted', 'rejected'],
-        default: 'pending',
-    },
 });
-
-// add unique index [boardId, requester<->userId]
-joinBoardRequestSchema.index({ boardId: 1, requester: 1 }, { unique: true });
 
 // update 'updatedAt' field when 'status' is modified
 joinBoardRequestSchema.pre('findOneAndUpdate', function(next) {
-    console.log('findOneAndUpdate');
-
     this._update.updatedAt = new Date();
-    console.log(this._update);
     next();
+});
+
+joinBoardRequestSchema.post('save', async function(doc) {
+    if (doc.status === 'accepted') {
+        try {
+            const BoardMembership = mongoose.model('BoardMembership');
+            await BoardMembership.create({
+                boardId: doc.boardId,
+                userId: doc.requester,
+                role: 'member'
+            });
+        } catch (error) {
+            console.error("Error creating BoardMembership:", error);
+        }
+    }
 });
 
 module.exports = mongoose.model('join_board_requests', joinBoardRequestSchema);

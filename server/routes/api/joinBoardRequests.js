@@ -12,16 +12,18 @@ const {
 
 router.route("/")
     .get(getAllRequests)
+    .post(sendRequest)
 
 router.route("/:boardId")
     .get(getBoardRequests)
-    .post(sendRequest)
+
+router.route("/:requestId")
     .delete(removeRequest)
 
-router.route("/:boardId/accept")
+router.route("/:requestId/accept")
     .put(acceptRequest)
 
-router.route("/:boardId/reject")
+router.route("/:requestId/reject")
     .put(rejectRequest)
 
 module.exports = router;

@@ -4,6 +4,7 @@ import Loading from '../ui/Loading';
 import dateFormatter from '../../utils/dateFormatter';
 
 export default function Invitations({
+    show,
     invitations,
     loadingInvitations,
     fetchInvitations,
@@ -16,10 +17,15 @@ export default function Invitations({
 
     return (
         <>
-            <div className='mx-auto lg:w-1/2 md:w-3/4 w-[90%]'>
-                <div className='w-full flex justify-end'>
+            <div className={`mx-auto lg:w-1/2 md:w-3/4 w-[90%] ${!show && 'hidden'}`}>
+
+                <div className="flex gap-1 sm:gap-0 justify-between items-center">
+                    <p className="text-[0.75rem] text-gray-700 m-0 p-0">
+                        invitations [{invitations.length}]
+                    </p>
+
                     <button
-                        className='ms-auto underline text-[0.75rem] text-gray-700 me-1'
+                        className='underline text-[0.75rem] text-gray-700 me-1'
                         onClick={() => {
                             if (!loadingInvitations) {
                                 fetchInvitations();
@@ -48,20 +54,32 @@ export default function Invitations({
                                                         ${status === "accepted" ? 'bg-blue-100 cursor-pointer' : status === "rejected" ? 'bg-red-100' : 'bg-gray-50'}`}
                             onClick={() => status === "accepted" && navigate(`/b/${boardId}`)}
                         >
-                            <div className='flex items-center gap-2 mb-4 sm:mb-0'>
-                                <Avatar
-                                    profileImage={sender.profileImage}
-                                    username={sender.username}
-                                    noShowRole={true}
-                                />
+                            <div className='flex gap-2 mb-4 sm:mb-0'>
+                                <div className="sm:mt-1">
+                                    <Avatar
+                                        profileImage={sender.profileImage}
+                                        username={sender.username}
+                                        noShowRole={true}
+                                    />
+                                </div>
                                 <div className='flex flex-col justify-start text-gray-700'>
-                                    <div className='text-[0.75rem] md:text-[1rem] text-gray-700'>
+                                    <div className='text-[0.75rem] md:text-[0.9rem] text-gray-700'>
                                         <span className='max-w-[200px] font-bold underline overflow-hidden whitespace-nowrap text-ellipsis'>{sender.username}</span>
                                         <span>{" "}</span>
                                         <span>sends you a board invitation</span>
                                     </div>
 
-                                    <p className='mt-2 md:mt-0 md:text-[0.75rem] text-[0.65rem]'>{dateFormatter(createdAt)}</p>
+                                    <div className='mt-1 flex flex-col gap-1'>
+                                        <p className='text-[0.65rem]'>board code: {boardId || 'not found'}</p>
+                                        <p className='text-[0.65rem]'>sent at: {dateFormatter(createdAt)}</p>
+
+                                        {
+                                            status === 'pending' &&
+                                            <p className='text-[0.65rem] text-gray-400'>
+                                                waiting for response...
+                                            </p>
+                                        }
+                                    </div>
                                 </div>
                             </div>
 

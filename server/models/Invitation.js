@@ -19,18 +19,17 @@ const invitationSchema = new mongoose.Schema({
         required: true,
     },
 
-    createdAt: {
-        type: Date,
-        required: true,
-        default: Date.now,
-    },
-
     status: {
         type: String,
         enum: ['pending', 'accepted', 'rejected'],
         default: 'pending',
     },
+
+    createdAt: {
+        type: Date,
+        required: true,
+        default: Date.now,
+    },
 });
 
 module.exports = mongoose.model('Invitation', invitationSchema);
-

@@ -55,14 +55,23 @@ const InvitationForm = ({ open, setOpen }) => {
     }, [open]);
 
     useEffect(() => {
-        let id = null;
+        let id1 = null;
+        let id2 = null;
         if (errMsg !== "") {
-            id = setTimeout(() => {
+            id1 = setTimeout(() => {
                 setErrMsg("");
             }, 2000);
+        } else if (successMsg !== "") {
+            id2 = setTimeout(() => {
+                setSuccessMsg("");
+            }, 2000);
         }
-        return () => clearTimeout(id);
-    }, [errMsg]);
+
+        return () => {
+            if (id1) clearTimeout(id1);
+            if (id2) clearTimeout(id2);
+        }
+    }, [errMsg, successMsg]);
 
     const handleCloseOnOutsideClick = (e) => {
         if (e.target === dialog.current) {

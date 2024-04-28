@@ -13,7 +13,7 @@ const findUser = async (req, res) => {
 };
 
 const findBoard = async (req, res) => {
-    const { boardId } = req.params;
+    const { boardId } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(boardId)) return res.status(403).json({ msg: "board not found, invalid id" });
 
@@ -26,6 +26,13 @@ const findUserAndBoard = async (req, res) => {
     const foundUser = await findUser(req, res);
     const foundBoard = await findBoard(req, res);
     return { foundUser, foundBoard };
+};
+
+const findRequest = async (req, res) => {
+    const { requestId } = req.params;
+    const foundRequest = await JoinBoardRequest.findById(requestId);
+    if (!foundRequest) return res.status(403).json({ msg: "request not found" });
+    return foundRequest;
 };
 
 const getAllRequests = async (req, res) => {
@@ -65,7 +72,12 @@ const sendRequest = async (req, res) => {
 
     if (foundBoard.members.includes(foundUser._id)) return res.status(409).json({ msg: 'already a member' });
 
-    const joinRequestExists = await JoinBoardRequest.findOne({ boardId: foundBoard._id, requester: foundUser._id });
+    const joinRequestExists = await JoinBoardRequest.findOne({
+        boardId: foundBoard._id,
+        requester: foundUser._id,
+        status: 'pending',
+    });
+
     if (joinRequestExists) return res.status(409).json({ msg: 'join request already sent' });
 
     const joinRequest = new JoinBoardRequest({
@@ -78,22 +90,21 @@ const sendRequest = async (req, res) => {
 };
 
 const acceptRequest = async (req, res) => {
-    const { foundUser, foundBoard } = await findUserAndBoard(req, res);
-
-    if (foundBoard.members.includes(foundUser._id)) return res.status(409).json({ msg: 'already a member' });
+    const { foundUser: _foundUser, foundBoard } = await findUserAndBoard(req, res);
 
     const { requesterName } = req.body;
     const requester = await getUser(requesterName);
     if (!requester) return res.status(403).json({ msg: "requester not found" });
 
-    const acceptedRequest = await JoinBoardRequest.findOneAndUpdate(
-        { boardId: foundBoard._id, requester: requester._id },
-        { status: 'accepted' },
-        { new: true }
-    );
+    if (foundBoard.members.includes(requester._id)) return res.status(409).json({ msg: 'requester is already a member' });
 
+    const acceptedRequest = await findRequest(req, res);
     if (!acceptedRequest) return res.status(403).json({ msg: "request not found" });
 
+    acceptedRequest.status = 'accepted';
+    acceptedRequest.save();
+
+    // after accepting request, add requester to board members
     foundBoard.members.push(requester._id);
     foundBoard.save();
 
@@ -101,36 +112,30 @@ const acceptRequest = async (req, res) => {
 };
 
 const rejectRequest = async (req, res) => {
-    const { foundUser, foundBoard } = await findUserAndBoard(req, res);
-
-    if (foundBoard.members.includes(foundUser._id)) return res.status(409).json({ msg: 'already a member' });
+    const { foundUser: _foundUser, foundBoard } = await findUserAndBoard(req, res);
 
     const { requesterName } = req.body;
     const requester = await getUser(requesterName);
     if (!requester) return res.status(403).json({ msg: "requester not found" });
 
-    const rejectedRequest = await JoinBoardRequest.findOneAndUpdate(
-        { boardId: foundBoard._id, requester: requester._id },
-        { status: 'declined' },
-        { new: true }
-    );
+    if (foundBoard.members.includes(requester._id)) return res.status(409).json({ msg: 'requester is already a member' });
 
+    const rejectedRequest = await findRequest(req, res);
     if (!rejectedRequest) return res.status(403).json({ msg: "request not found" });
+
+    rejectedRequest.status = 'rejected';
+    rejectedRequest.save();
 
     return res.json({ msg: 'request rejected' });
 };
 
 const removeRequest = async (req, res) => {
-    const { foundUser: _, foundBoard } = await findUserAndBoard(req, res);
-
-    const { requesterName } = req.body;
-    const requester = await getUser(requesterName);
-    if (!requester) return res.status(403).json({ msg: "requester not found" });
-
-    const removedRequest = await JoinBoardRequest.findOneAndDelete({ boardId: foundBoard._id, requester: requester._id });
+    const removedRequest = await findRequest(req, res);
     if (!removedRequest) return res.status(403).json({ msg: "request not found" });
 
-    return res.json({ removedRequest });
+    await JoinBoardRequest.deleteOne({ _id: removedRequest._id });
+
+    return res.json({ msg: 'request removed' });
 };
 
 module.exports = {

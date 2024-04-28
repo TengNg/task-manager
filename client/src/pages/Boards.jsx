@@ -8,6 +8,7 @@ import BoardForm from "../components/board/BoardForm";
 import PinnedBoards from "../components/board/PinnedBoards";
 import Title from "../components/ui/Title";
 import JoinBoardRequestForm from "../components/board/JoinBoardRequestForm";
+import useAuth from "../hooks/useAuth";
 
 const Boards = () => {
     const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -17,6 +18,10 @@ const Boards = () => {
     const [openBoardForm, setOpenBoardForm] = useState(false);
     const [openJoinBoardRequestForm, setOpenJoinBoardRequestForm] = useState(false);
     const axiosPrivate = useAxiosPrivate();
+
+    const {
+        auth
+    } = useAuth();
 
     const {
         openPinnedBoards,
@@ -34,7 +39,9 @@ const Boards = () => {
         const getBoards = async () => {
             const response = await axiosPrivate.get(`/boards`);
             const { boards, recentlyViewedBoard } = response.data;
-            setBoards(boards);
+            const ownedBoards = [...boards].filter(board => board?.createdBy === auth?.user?._id);
+            const joinedBoards = [...boards].filter(board => board?.members?.some(memberId => memberId === auth?.user?._id));
+            setBoards([...ownedBoards, ...joinedBoards]);
             setRecentlyViewedBoard(recentlyViewedBoard);
         };
         getBoards()
@@ -103,7 +110,7 @@ const Boards = () => {
 
                     <div className="flex flex-col sm:flex-row gap-1 sm:gap-0 mb-1 sm:mb-0 justify-between items-center">
                         <p className="text-[0.75rem] text-gray-700 m-0 p-0">
-                            total boards: {boards.length} / 8
+                            total: {boards.length} / 8
                         </p>
 
                         <button

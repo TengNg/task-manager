@@ -61,7 +61,7 @@ const JoinBoardRequestForm = ({ open, setOpen }) => {
         if (!boardCode) return;
 
         try {
-            await axiosPrivate.post(`/join_board_requests/${boardCode}`);
+            await axiosPrivate.post(`/join_board_requests/`, JSON.stringify({ boardId: boardCode.trim() }));
             boardCodeInput.current.value = '';
             setSuccess(true);
         } catch (err) {
@@ -74,7 +74,7 @@ const JoinBoardRequestForm = ({ open, setOpen }) => {
     return (
         <dialog
             ref={dialog}
-            className='relative z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 pb-5 h-fit min-w-[350px] max-h-[500px] border-black border-[2px] bg-gray-200'
+            className='relative z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 pb-4 h-fit min-w-[350px] max-h-[500px] border-black border-[2px] bg-gray-200'
             onClick={handleCloseOnOutsideClick}
         >
 
@@ -106,8 +106,8 @@ const JoinBoardRequestForm = ({ open, setOpen }) => {
             {
                 success && (
                     <>
-                        <p className="text-[0.75rem] text-blue-600">
-                            request sent successfully
+                        <p className="text-[0.75rem] text-blue-600 text-center mt-2">
+                            request sent
                         </p>
                     </>
                 )

@@ -32,17 +32,17 @@ const getInvitations = async (req, res) => {
 const sendInvitation = async (req, res) => {
     const { username } = req.user;
     const sender = await getUser(username);
-    if (!sender) return res.status(403).json({ msg: "Cannot send invitation" });
+    if (!sender) return res.status(403).json({ msg: "can't send invitation" });
 
     const { boardId, receiverName } = req.body;
 
     const receiver = await getUser(receiverName);
-    if (!receiver) return res.status(404).json({ msg: "Username is not found" });
+    if (!receiver) return res.status(404).json({ msg: "username is not found" });
 
-    if (username === receiverName) return res.status(409).json({ msg: "Cannot send invitation" });
+    if (username === receiverName) return res.status(409).json({ msg: "can't send invitation" });
 
     const board = await Board.findById(boardId);
-    if (board.members.indexOf(receiver._id) !== -1) return res.status(409).json({ msg: "User is already in this board" });
+    if (board.members.indexOf(receiver._id) !== -1) return res.status(409).json({ msg: "this user is already in this board" });
 
     const foundInvitation = await Invitation
         .findOne({
@@ -53,7 +53,7 @@ const sendInvitation = async (req, res) => {
         })
         .sort({ createdAt: -1 })
 
-    if (foundInvitation) return res.status(409).json({ msg: "Invitation is already sent" }); // Conflict
+    if (foundInvitation) return res.status(409).json({ msg: "invitation is already sent" }); // Conflict
 
     const invitation = new Invitation({
         boardId,

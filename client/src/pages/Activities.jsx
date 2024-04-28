@@ -1,10 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useReducer, useState, useEffect } from 'react';
 import useBoardState from '../hooks/useBoardState';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import useAuth from '../hooks/useAuth';
 import Title from '../components/ui/Title';
 import Invitations from '../components/invitation/Invitations';
 import JoinBoardRequests from '../components/join-board-request/JoinRequests';
+
+const ACTIONS = Object.freeze({
+    TOGGLE_INVITATIONS_SECTION: 'toggle_invitation_section',
+    TOGGLE_JOIN_BOARD_REQUESTS_SECTION: 'toggle_join_board_request_section',
+});
+
+const reducer = (state, action) => {
+    switch (action.type) {
+        case ACTIONS.TOGGLE_INVITATIONS_SECTION:
+            return {
+                ...state,
+                showInvitations: !state.showInvitations
+            }
+        case ACTIONS.TOGGLE_JOIN_BOARD_REQUESTS_SECTION:
+            return {
+                ...state,
+                showJoinBoardRequests: !state.showJoinBoardRequests
+            }
+        default:
+            return state
+    }
+};
 
 const Activities = () => {
     const {
@@ -13,6 +35,16 @@ const Activities = () => {
     } = useBoardState();
 
     const { auth } = useAuth();
+
+    const [state, dispatch] = useReducer(
+        reducer,
+        {
+            showInvitations: false,
+            showJoinBoardRequests: false,
+        },
+    );
+
+    const { showInvitations, showJoinBoardRequests } = state;
 
     const [invitations, setInvitations] = useState([]);
     const [joinBoardRequests, setJoinBoardRequests] = useState([]);
@@ -54,6 +86,14 @@ const Activities = () => {
 
         setLoadingRequests(false);
     };
+
+    const handleToggleInvitationsSection = () => {
+        dispatch({ type: ACTIONS.TOGGLE_INVITATIONS_SECTION });
+    };
+
+    const handleToggleJoinBoardRequestsSection = () => {
+        dispatch({ type: ACTIONS.TOGGLE_JOIN_BOARD_REQUESTS_SECTION });
+    }
 
     const handleAcceptInvitation = async (invitationId) => {
         try {
@@ -104,16 +144,14 @@ const Activities = () => {
         }
     };
 
-    const handleAcceptJoinBoardRequest = async ({ boardId, requesterName }) => {
+    const handleAcceptJoinBoardRequest = async ({ id, boardId, requesterName }) => {
         try {
-            await axiosPrivate.put(`/join_board_requests/${boardId}/accept`, JSON.stringify({ requesterName }));
+            await axiosPrivate.put(`/join_board_requests/${id}/accept`, JSON.stringify({ boardId, requesterName }));
 
             setJoinBoardRequests(prev => {
                 const requests = [...prev];
                 return requests.map(request => {
-                    const { boardId: board, requester } = request;
-
-                    if (board._id === boardId && requester.username === requesterName) {
+                    if (request._id === id) {
                         return { ...request, status: 'accepted' };
                     }
 
@@ -126,16 +164,14 @@ const Activities = () => {
         }
     };
 
-    const handleRejectJoinBoardRequest = async ({ boardId, requesterName }) => {
+    const handleRejectJoinBoardRequest = async ({ id, boardId, requesterName }) => {
         try {
-            await axiosPrivate.put(`/join_board_requests/${boardId}/reject`, JSON.stringify({ requesterName }));
+            await axiosPrivate.put(`/join_board_requests/${id}/reject`, JSON.stringify({ boardId, requesterName }));
 
             setJoinBoardRequests(prev => {
                 const requests = [...prev];
                 return requests.map(request => {
-                    const { boardId: board, requester } = request;
-
-                    if (board._id === boardId && requester.username === requesterName) {
+                    if (request._id === id) {
                         return { ...request, status: 'rejected' };
                     }
 
@@ -148,17 +184,15 @@ const Activities = () => {
         }
     };
 
-    const handleRemoveJoinBoardRequest = async ({ boardId, requesterName }) => {
+    const handleRemoveJoinBoardRequest = async ({ id, boardId, requesterName }) => {
         try {
             // body param: needs to be set under "data" key
-            await axiosPrivate.delete(`/join_board_requests/${boardId}`, { data: JSON.stringify({ requesterName }) });
+            await axiosPrivate.delete(`/join_board_requests/${id}`, { data: JSON.stringify({ boardId, requesterName }) });
 
             setJoinBoardRequests(prev => {
-                return prev.filter(item => item.boardId._id !== boardId && item.requester.username !== requesterName);
+                return prev.filter(item => item._id !== id);
             });
         } catch (err) {
-            console.log(err);
-
             const errMsg = err?.response?.data?.msg || 'Failed to remove join board request';
             alert(errMsg);
         }
@@ -169,7 +203,29 @@ const Activities = () => {
             <section className="w-full h-[calc(100%-75px)] overflow-auto pb-4">
                 <Title titleName="activities" />
 
+                <div className={`flex justify-center gap-2 mx-auto mb-6 sm:mb-4 lg:w-1/2 md:w-3/4 w-[90%]`}>
+                    <div className='h-[35px]'>
+                        <button
+                            className={`w-fit ${showInvitations ? 'mt-[0.15rem] text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium`}
+                            onClick={handleToggleInvitationsSection}
+                        >
+                            inivitations
+                        </button>
+                    </div>
+
+                    <div className='h-[35px]'>
+                        <button
+                            className={`w-[100px] ${showJoinBoardRequests ? 'mt-[0.15rem] text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium`}
+                            onClick={handleToggleJoinBoardRequestsSection}
+                        >
+                            requests
+                        </button>
+                    </div>
+                </div>
+
                 <Invitations
+                    show={showInvitations}
+                    toggleShow={handleToggleInvitationsSection}
                     invitations={invitations}
                     loadingInvitations={loadingInvitations}
                     fetchInvitations={fetchInvitations}
@@ -178,9 +234,15 @@ const Activities = () => {
                     handleRemoveInvitation={handleRemoveInvitation}
                 />
 
-                <div className="h-[1px] w-full my-4"></div>
+                {
+                    showJoinBoardRequests &&
+                    showInvitations &&
+                    <div className="h-[1px] w-full my-4"></div>
+                }
 
                 <JoinBoardRequests
+                    show={showJoinBoardRequests}
+                    toggleShow={handleToggleJoinBoardRequestsSection}
                     requests={joinBoardRequests}
                     loading={loadingRequests}
                     fetchRequests={fetchJoinBoardRequests}

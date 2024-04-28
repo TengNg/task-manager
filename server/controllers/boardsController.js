@@ -244,7 +244,7 @@ const closeBoard = async (req, res) => {
     const { username } = req.user;
     const { id } = req.params;
 
-    const { board, user: _, authorized } = await isActionAuthorized(id, username, { ownerOnly: true });
+    const { board: _board, user: _user, authorized } = await isActionAuthorized(id, username, { ownerOnly: true });
     if (!authorized) return res.status(403).json({ msg: "unauthorized" });
 
     await Card.deleteMany({ boardId: id });

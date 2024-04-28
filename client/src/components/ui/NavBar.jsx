@@ -1,12 +1,9 @@
-import useBoardState from "../../hooks/useBoardState";
 import { NavLink } from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHouse, faListCheck, faEnvelope, faChalkboard } from '@fortawesome/free-solid-svg-icons';
 import UserAccount from "./UserAccount";
 
 const NavBar = () => {
-    const { pendingInvitations } = useBoardState();
-
     return (
         <>
             <section id='header-section' className='w-full h-[75px] flex--center relative py-3 px-4'>
@@ -29,13 +26,7 @@ const NavBar = () => {
                                 <FontAwesomeIcon icon={faListCheck} />
                             </NavLink>
                         </li>
-                        <li className="relative">
-                            {
-                                pendingInvitations.length > 0 &&
-                                <span className="flex--center w-[0.8rem] h-[0.8rem] bg-rose-500 text-white text-[0.5rem] rounded-full absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/4">
-                                    {pendingInvitations.length}
-                                </span>
-                            }
+                        <li>
                             <NavLink
                                 to={{ pathname: '/activities', state: 'hello' }}
                                 className={({ isActive }) => isActive ? 'anchor--style--selected' : 'anchor--style'}

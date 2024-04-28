@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import Loading from '../components/ui/Loading';
 import Title from '../components/ui/Title';
-import BoardItem from '../components/board/BoardItem';
 import dateFormatter from "../utils/dateFormatter";
 
 const Profile = () => {
@@ -17,7 +16,6 @@ const Profile = () => {
     const [loading, setLoading] = useState(false);
 
     const [ownedBoards, setOwnedBoards] = useState([]);
-    const [isBoardsDataLoaded, setIsBoardsDataLoaded] = useState(false);
 
     const [msg, setMsg] = useState({
         error: false,
@@ -41,21 +39,16 @@ const Profile = () => {
             usernameInputRef.current.value = auth.user.username;
         }
 
-        setIsBoardsDataLoaded(false);
-
         const getBoards = async () => {
             const response = await axiosPrivate.get(`/boards/owned`);
-            const { boards, recentlyViewedBoard } = response.data;
+            const { boards, recentlyViewedBoard: _recentlyViewedBoard } = response.data;
             setOwnedBoards(boards);
         };
-        getBoards()
-            .catch(err => {
-                console.log(err);
-                alert("Failed to get boards");
-            })
-            .finally(() => {
-                setIsBoardsDataLoaded(true)
-            });
+
+        getBoards().catch(err => {
+            console.log(err);
+            alert("Failed to get boards");
+        })
     }, []);
 
     useEffect(() => {
@@ -249,9 +242,7 @@ const Profile = () => {
                                     onChange={(e) => setConfirmedPassword(e.target.value)}
                                     required
                                 />
-                            </div>
-
-                        }
+                            </div>}
 
                         <div className="flex flex-col gap-4">
                             <button
@@ -288,7 +279,7 @@ const Profile = () => {
                     <div className='flex flex-col justify-center items-center gap-3 py-3 max-h-[450px] overflow-auto'>
                         {
                             ownedBoards.map(item => {
-                                const { _id, title, description, members, createdBy, createdAt } = item;
+                                const { _id, title, description: _description, members, createdBy: _createdBy, createdAt } = item;
                                 return (
                                     <div
                                         onClick={() => handleOpenBoard(_id)}
