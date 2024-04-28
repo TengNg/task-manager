@@ -79,13 +79,13 @@ const UserAccount = () => {
                             <div className="font-medium text-[0.8rem] text-gray-400">Account</div>
 
                             <div className='select-none font-medium text-[0.8rem] max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis text-gray-700'>
-                                Username: {auth?.user?.username}
+                                username: {auth?.user?.username}
                             </div>
 
                             <div className='flex flex-col gap-2'>
                                 <button
                                     onClick={handleOpenProfile}
-                                    className="button--style text-[0.75rem] font-medium">Edit account</button>
+                                    className="button--style text-[0.75rem] font-medium">Profile</button>
                                 <button
                                     onClick={handleLogout}
                                     className="button--style--dark text-[0.75rem] font-medium text-gray-200">Log out</button>

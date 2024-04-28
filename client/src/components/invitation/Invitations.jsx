@@ -55,7 +55,7 @@ export default function Invitations({
                             onClick={() => status === "accepted" && navigate(`/b/${boardId}`)}
                         >
                             <div className='flex gap-2 mb-4 sm:mb-0'>
-                                <div className="sm:mt-1">
+                                <div className="sm:mt-1 sm:block hidden">
                                     <Avatar
                                         profileImage={sender.profileImage}
                                         username={sender.username}

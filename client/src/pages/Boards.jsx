@@ -10,13 +10,28 @@ import Title from "../components/ui/Title";
 import JoinBoardRequestForm from "../components/board/JoinBoardRequestForm";
 import useAuth from "../hooks/useAuth";
 
+const FILTERS = Object.freeze({
+    ALL: 'all',
+    OWNED: 'owned',
+    JOINED: 'joined',
+    //PUBLIC: 'public',
+    //PRIVATE: 'private',
+    //PINNED: 'pinned',
+});
+
 const Boards = () => {
     const [isDataLoaded, setIsDataLoaded] = useState(false);
+
     const [boards, setBoards] = useState([]);
+    const [ownedBoards, setOwnedBoards] = useState([]);
+    const [joinedBoards, setJoinedBoards] = useState([]);
+    const [boardFilter, setBoardFilter] = useState(FILTERS.ALL);
+
     const [recentlyViewedBoard, setRecentlyViewedBoard] = useState();
 
     const [openBoardForm, setOpenBoardForm] = useState(false);
     const [openJoinBoardRequestForm, setOpenJoinBoardRequestForm] = useState(false);
+
     const axiosPrivate = useAxiosPrivate();
 
     const {
@@ -39,9 +54,11 @@ const Boards = () => {
         const getBoards = async () => {
             const response = await axiosPrivate.get(`/boards`);
             const { boards, recentlyViewedBoard } = response.data;
-            const ownedBoards = [...boards].filter(board => board?.createdBy === auth?.user?._id);
-            const joinedBoards = [...boards].filter(board => board?.members?.some(memberId => memberId === auth?.user?._id));
-            setBoards([...ownedBoards, ...joinedBoards]);
+            const owned = [...boards].filter(board => board?.createdBy === auth?.user?._id);
+            const joined = [...boards].filter(board => board?.members?.some(memberId => memberId === auth?.user?._id));
+            setOwnedBoards(owned);
+            setJoinedBoards(joined);
+            setBoards([...owned, ...joined]);
             setRecentlyViewedBoard(recentlyViewedBoard);
         };
         getBoards()
@@ -80,6 +97,19 @@ const Boards = () => {
         navigate(`/b/${boardId}`);
     }
 
+    const filteredBoards = (filterValue) => {
+        switch (filterValue) {
+            case FILTERS.ALL:
+                return boards;
+            case FILTERS.OWNED:
+                return ownedBoards;
+            case FILTERS.JOINED:
+                return joinedBoards;
+            default:
+                return boards;
+        }
+    };
+
     if (!isDataLoaded) {
         return <div className="font-bold mx-auto text-center mt-20 text-gray-600">Getting boards...</div>
     }
@@ -109,12 +139,26 @@ const Boards = () => {
                     />
 
                     <div className="flex flex-col sm:flex-row gap-1 sm:gap-0 mb-1 sm:mb-0 justify-between items-center">
-                        <p className="text-[0.75rem] text-gray-700 m-0 p-0">
-                            total: {boards.length} / 8
-                        </p>
+                        <div className="text-[0.75rem] text-gray-700 mb-1 sm:mb-0">
+                            <span className="cursor-pointer" onClick={() => setBoardFilter(FILTERS.ALL)}>
+                                total: {boards.length}
+                            </span>
+
+                            <span>{", "}</span>
+
+                            <span className="cursor-pointer" onClick={() => setBoardFilter(FILTERS.OWNED)}>
+                                owned: {ownedBoards.length} / 8
+                            </span>
+
+                            <span>{", "}</span>
+
+                            <span className="cursor-pointer" onClick={() => setBoardFilter(FILTERS.JOINED)}>
+                                joined: {joinedBoards.length}
+                            </span>
+                        </div>
 
                         <button
-                            className='text-[0.75rem] text-gray-700 pe-1 text-end underline cursor-pointer'
+                            className='text-[0.75rem] text-gray-700 pe-1 text-end underline cursor-pointer sm:mb-0 mb-2'
                             onClick={() => setOpenJoinBoardRequestForm(open => !open)}
                         >
                             join board
@@ -124,7 +168,7 @@ const Boards = () => {
                     <div className="relative flex flex-col mx-auto sm:m-0 sm:justify-start sm:items-start sm:flex-row sm:flex-wrap gap-4 px-10 p-6 sm:p-8 border-[2px] box--style shadow-gray-500 border-gray-500 w-fit sm:w-full">
 
                         {
-                            boards.map(item => {
+                            filteredBoards(boardFilter).map(item => {
                                 return (
                                     <BoardItem
                                         key={item._id}
@@ -141,7 +185,7 @@ const Boards = () => {
                                 ref={createBoardButtonRef}
                                 className="h-full w-full border-[2px] border-gray-400 board--style shadow-gray-400 p-3 px-4 select-none bg-gray-200 cursor-pointer"
                             >
-                                <div className="flex items-center gap-2 text-gray-400 font-medium">
+                                <div className="flex items-center gap-2 text-gray-400 font-medium sm:text-[0.925rem] text-[0.75rem]">
                                     <span>+ new</span>
                                 </div>
                             </div>

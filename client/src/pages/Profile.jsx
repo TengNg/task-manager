@@ -178,7 +178,7 @@ const Profile = () => {
                     information
                 </span>
 
-                <div className='box--style border-[2px] border-gray-700 bg-gray-50 p-4 xl:w-1/4 lg:w-1/3 sm:w-1/2 w-3/4'>
+                <div className='box--style border-[2px] border-gray-700 bg-gray-50 p-4 lg:w-1/3 sm:w-1/2 w-3/4'>
 
                     <form id='userInfoForm' className='w-[100%] flex flex-col h-fit gap-2 text-gray-700'>
                         <p className={`absolute top-0 right-1 text-[0.75rem] font-semibold ${msg.error ? 'text-red-600' : 'text-green-500'}`}>{msg.content}</p>
@@ -260,7 +260,7 @@ const Profile = () => {
                             </button>
                         </div>
 
-                        <p className='text-[0.75rem]'>
+                        <p className='text-[0.65rem]'>
                             * you will be signed out after saved
                         </p>
                     </form>
@@ -269,44 +269,42 @@ const Profile = () => {
 
             <div className='mx-auto sm:w-3/4 w-[90%] flex flex-col items-center mt-6'>
                 <span className='text-gray-600'>
-                    your boards
+                    owned boards
                 </span>
 
-                <div className='box--style relative border-[2px] border-gray-700 bg-gray-50 p-4 xl:w-1/4 lg:w-1/3 sm:w-1/2 w-3/4'>
-                    <div className='absolute top-1 right-1 text-[0.75rem] font-semibold text-gray-700'>
+                <div className='box--style relative border-[2px] border-gray-700 bg-gray-50 p-4 lg:w-1/3 sm:w-1/2 w-3/4'>
+                    <div className='absolute top-1 right-1 text-[0.75rem] font-medium text-gray-700'>
                         [{ownedBoards.length}]
                     </div>
-                    <div className='flex flex-col justify-center items-center gap-3 py-3 max-h-[450px] overflow-auto'>
-                        {
-                            ownedBoards.map(item => {
-                                const { _id, title, description: _description, members, createdBy: _createdBy, createdAt } = item;
-                                return (
-                                    <div
-                                        onClick={() => handleOpenBoard(_id)}
-                                        className="w-[180px] sm:w-[225px] h-[125px]"
-                                    >
+                    <div className='flex flex-col items-center mt-3 gap-4 pb-4 px-4 lg:px-2 max-h-[450px] overflow-auto'>
+                        {ownedBoards.map(item => {
+                            const { _id, title, description: _description, members, createdBy: _createdBy, createdAt } = item;
+                            return (
+                                <div
+                                    onClick={() => handleOpenBoard(_id)}
+                                    className="w-full h-[125px]"
+                                >
 
-                                        <div className="w-[180px] sm:w-[225px] h-[fit] board--style board--hover border-[3px] border-gray-600 py-3 px-3 shadow-gray-600 select-none bg-gray-50 relative">
-                                            <p className="text-[12px] sm:text-[0.75rem] font-semibold text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
+                                    <div className="w-full h-[125px] board--style board--hover border-[2px] md:border-[2.5px] border-gray-600 py-3 px-3 shadow-gray-600 select-none bg-gray-50 relative">
+                                        <p className="text-[12px] sm:text-[0.75rem] font-semibold text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
 
-                                            <div className="h-[1px] w-full bg-black my-2"></div>
+                                        <div className="h-[1px] w-full bg-black my-2"></div>
 
-                                            <p className="text-[10px] sm:text-[0.65rem] mt-1">
-                                                total members: {members.length + 1}
-                                            </p>
+                                        <p className="text-[10px] sm:text-[0.65rem] mt-1">
+                                            total members: {members.length + 1}
+                                        </p>
 
-                                            <p className="text-[10px] sm:text-[0.65rem] mt-1">
-                                                total lists: {item.listCount}
-                                            </p>
+                                        <p className="text-[10px] sm:text-[0.65rem] mt-1">
+                                            total lists: {item.listCount}
+                                        </p>
 
-                                            <p className="text-[10px] sm:text-[0.65rem] mt-1">
-                                                created: {dateFormatter(createdAt)}
-                                            </p>
-                                        </div>
+                                        <p className="text-[10px] sm:text-[0.65rem] mt-1">
+                                            created: {dateFormatter(createdAt)}
+                                        </p>
                                     </div>
-                                )
-                            })
-                        }
+                                </div>
+                            )
+                        })}
                     </div>
 
                 </div>

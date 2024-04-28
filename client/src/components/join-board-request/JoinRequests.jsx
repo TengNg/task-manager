@@ -55,7 +55,7 @@ const JoinRequests = ({
                                                         ${status === "accepted" ? 'bg-blue-100' : status === "rejected" ? 'bg-red-100' : 'bg-gray-50'}`}
                         >
                             <div className='flex gap-2 mb-4 sm:mb-0'>
-                                <div className="sm:mt-1">
+                                <div className="sm:mt-1 sm:block hidden">
                                     <Avatar
                                         username={requesterName}
                                         noShowRole={true}
