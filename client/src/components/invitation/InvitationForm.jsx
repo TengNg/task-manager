@@ -138,9 +138,10 @@ const InvitationForm = ({ open, setOpen }) => {
                 onClick={handleCloseOnOutsideClick}
             >
                 <Loading
-                    loading={loading}
+                    loading={true}
                     position={'absolute'}
-                    displayText={'sending invitation...'}
+                    fontSize={'0.75rem'}
+                    displayText={'loading...'}
                 />
 
                 <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>

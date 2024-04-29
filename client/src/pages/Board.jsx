@@ -49,7 +49,7 @@ const Board = () => {
         addCardToList,
         openedCardQuickEditor,
         setOpenedCardQuickEditor: _setOpenedCardQuickEditor,
-        openedCard,
+        openedCard: _openedCard,
 
         addCopiedCard,
         deleteCard,
@@ -101,6 +101,7 @@ const Board = () => {
     const [error, setError] = useState({ msg: undefined });
 
     const [openVisibilityConfig, setOpenVisibilityConfig] = useState(false);
+    const [isCopyingCard, setIsCopyingCard] = useState(false);
 
     const { boardId } = useParams();
     const navigate = useNavigate();
@@ -287,6 +288,8 @@ const Board = () => {
     };
 
     const handleCopyCard = async (card) => {
+        setIsCopyingCard(true);
+
         try {
             const currentList = boardState.lists.find(list => list._id == card.listId);
             const cards = currentList.cards;
@@ -302,9 +305,12 @@ const Board = () => {
             addCopiedCard(newCard, currentIndex);
 
             socket.emit("copyCard", { card: newCard, index: currentIndex });
+
+            setIsCopyingCard(false);
         } catch (err) {
             console.log(err);
             alert('Failed to create a copy of this card');
+            setIsCopyingCard(false);
         }
     };
 
@@ -468,6 +474,7 @@ const Board = () => {
             <CardDetail
                 open={openCardDetail}
                 setOpen={setOpenCardDetail}
+                isCopyingCard={isCopyingCard}
                 handleDeleteCard={handleDeleteCard}
                 handleCopyCard={handleCopyCard}
                 handleMoveCardToList={handleMoveCardToList}

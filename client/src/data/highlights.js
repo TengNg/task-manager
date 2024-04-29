@@ -9,7 +9,6 @@
 // lighterShade: "#8d97a5",
 
 const highlightColors = {
-    "": "#4b5563",
     "#d16179": "#d16179",
     "#a34356": "#a34356",
     "#e2a703": "#e2a703",

@@ -7,8 +7,9 @@ import { faXmark, faDroplet, faCopy, faEraser } from '@fortawesome/free-solid-sv
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HighlightPicker from "./HighlightPicker";
 import CardDetailInfo from "./CardDetailInfo";
+import Loading from "../ui/Loading";
 
-const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMoveCardToList, handleMoveCardByIndex }) => {
+const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMoveCardToList, handleMoveCardByIndex, isCopyingCard }) => {
     const {
         openedCard: card,
         boardState,
@@ -135,6 +136,10 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
             return;
         }
 
+        if (!e.target.value) {
+            return;
+        }
+
         try {
             await axiosPrivate.put(`/cards/${card._id}/new-title`, JSON.stringify({ title: e.target.value.trim() }));
             setCardTitle(card._id, card.listId, e.target.value.trim());
@@ -148,7 +153,7 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
     const deleteCard = () => {
         if (confirm('Are you want to delete this card ?')) {
             handleDeleteCard(card);
-            setOpen(false);
+            dialog.current.close();
         }
     }
 
@@ -176,6 +181,13 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
                 className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style p-3 gap-3 pb-4 w-[90%] xl:w-[700px] md:w-[75%] max-h-[75%] border-black border-[2px] bg-gray-200'
                 onClick={handleCloseOnOutsideClick}
             >
+
+                <Loading
+                    position={'absolute'}
+                    fontSize={'0.85rem'}
+                    loading={isCopyingCard}
+                    displayText={'copying...'}
+                />
 
                 <div className='w-full h-full flex flex-col gap-3'>
 

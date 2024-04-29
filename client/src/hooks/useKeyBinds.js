@@ -131,6 +131,7 @@ const useKeyBinds = () => {
                 }
                 return;
             }
+
             if (key === 'd' && !formOpen && !isTextFieldFocused && !isTextAreaFocused) {
                 const listContainer = document.querySelector('#list-container');
                 if (listContainer) {
@@ -141,20 +142,22 @@ const useKeyBinds = () => {
                 return;
             }
 
-            if (key === '.') {
-                if (openFloatingChat) {
-                    setOpenFloatingChat(false);
+            if (!isTextFieldFocused) {
+                if (key === '.') {
+                    if (openFloatingChat) {
+                        setOpenFloatingChat(false);
+                    }
+                    setOpenChatBox(prev => !prev);
+                    return;
                 }
-                setOpenChatBox(prev => !prev);
-                return;
-            }
 
-            if (key === '>') {
-                if (openChatBox) {
-                    setOpenChatBox(false);
+                if (key === '>') {
+                    if (openChatBox) {
+                        setOpenChatBox(false);
+                    }
+                    setOpenFloatingChat(prev => !prev);
+                    return;
                 }
-                setOpenFloatingChat(prev => !prev);
-                return;
             }
         };
 
