@@ -58,11 +58,11 @@
     }
 
     .anchor--style {
-        @apply hover:text-white hover:bg-gray-400 flex justify-center items-center p-2 transition-all text-gray-600
+        @apply hover:bg-gray-300 flex justify-center items-center py-1 px-2 text-gray-600
     }
 
     .anchor--style--selected {
-        @apply hover:text-white text-white bg-gray-500 flex justify-center items-center p-2
+        @apply text-gray-50 bg-gray-500 flex justify-center items-center py-1 px-2
     }
 
     .card--detail--button {

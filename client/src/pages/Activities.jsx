@@ -39,7 +39,7 @@ const Activities = () => {
     const [state, dispatch] = useReducer(
         reducer,
         {
-            showInvitations: false,
+            showInvitations: true,
             showJoinBoardRequests: false,
         },
     );

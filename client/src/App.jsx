@@ -10,7 +10,7 @@ import Board from './pages/Board'
 import Activities from './pages/Activities'
 import Profile from './pages/Profile'
 import NotFound from './pages/NotFound'
-import TodoList from './pages/TodoList'
+import Writedown from './pages/Writedown'
 import PersistLogin from './components/auth/PersistLogin'
 // import Missing from './pages/Missing'
 
@@ -30,7 +30,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/b/:boardId/" element={<Board />} />
                     <Route path="/boards" element={<Boards />} />
-                    <Route path="/todo-list" element={<TodoList />} />
+                    <Route path="/writedown" element={<Writedown />} />
                     <Route path="/activities" element={<Activities />} />
                     <Route path="/u/:username" element={<Profile />} />
                     <Route path="*" element={<NotFound />} />

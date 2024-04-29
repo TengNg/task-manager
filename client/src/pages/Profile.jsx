@@ -281,6 +281,7 @@ const Profile = () => {
                             const { _id, title, description: _description, members, createdBy: _createdBy, createdAt } = item;
                             return (
                                 <div
+                                    key={_id}
                                     onClick={() => handleOpenBoard(_id)}
                                     className="w-full h-[125px]"
                                 >

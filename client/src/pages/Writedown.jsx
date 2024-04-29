@@ -1,9 +1,6 @@
-import { useNavigate } from "react-router-dom";
 import Title from "../components/ui/Title";
 
-const TodoList = () => {
-    const navigate = useNavigate();
-
+const Writedown = () => {
     return (
         <>
             <section className="w-full flex--center flex-col">
@@ -26,4 +23,4 @@ const TodoList = () => {
     )
 }
 
-export default TodoList
+export default Writedown;

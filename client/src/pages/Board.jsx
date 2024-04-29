@@ -540,7 +540,7 @@ const Board = () => {
 
             <div
                 onClick={() => setOpenVisibilityConfig(prev => !prev)}
-                className="absolute cursor-pointer w-[35px] h-[35px] grid place-items-center left-4 top-[0.55rem] sm:top-4 text-[0.75rem] sm:text-[0.75rem] border-[2px] border-gray-600 p-1 select-none bg-gray-50"
+                className="absolute cursor-pointer w-[30px] h-[30px] md:w-[35px] md:h-[35px] grid place-items-center left-4 top-[0.55rem] sm:top-4 text-[0.65rem] md:text-[0.75rem] border-[2px] border-gray-600 p-1 select-none bg-gray-50"
             >
                 {VISIBILITY_MAP[boardVisibility]}
             </div>

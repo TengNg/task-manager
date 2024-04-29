@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const MAX_CARD_COUNT = 20; // just start from small number from now
+const { MAX_CARD_COUNT } = require('../data/limits');
 
 const cardSchema = new mongoose.Schema({
     trackedId: {

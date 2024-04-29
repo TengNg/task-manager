@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const MAX_BOARD_COUNT = 8;
+const { MAX_BOARD_COUNT } = require('../data/limits');
 
 const boardSchema = new mongoose.Schema({
     title: {

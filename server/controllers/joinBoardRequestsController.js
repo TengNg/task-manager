@@ -3,6 +3,8 @@ const JoinBoardRequest = require("../models/JoinBoardRequest");
 
 const mongoose = require('mongoose');
 
+const { MAX_BOARD_MEMBER_COUNT } = require('../data/limits');
+
 const { userByUsername: getUser } = require('../services/userService');
 
 const findUser = async (req, res) => {
@@ -91,6 +93,10 @@ const sendRequest = async (req, res) => {
 
 const acceptRequest = async (req, res) => {
     const { foundUser: _foundUser, foundBoard } = await findUserAndBoard(req, res);
+
+    if (foundBoard.members.length >= MAX_BOARD_MEMBER_COUNT) {
+        return res.status(409).json({ error: 'Board is full' });
+    }
 
     const { requesterName } = req.body;
     const requester = await getUser(requesterName);

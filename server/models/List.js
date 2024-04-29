@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const MAX_LIST_COUNT = 10; // just start from small number from now
+const { MAX_LIST_COUNT } = require('../data/limits');
 
 const listSchema = new mongoose.Schema({
     title: {

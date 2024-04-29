@@ -111,7 +111,7 @@ const Boards = () => {
     };
 
     if (!isDataLoaded) {
-        return <div className="font-bold mx-auto text-center mt-20 text-gray-600">Getting boards...</div>
+        return <div className="font-bold mx-auto text-center mt-20 text-gray-600">getting boards...</div>
     }
 
     return (

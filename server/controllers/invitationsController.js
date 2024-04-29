@@ -3,6 +3,8 @@ const User = require("../models/User");
 const Board = require("../models/Board");
 const BoardMembership = require("../models/BoardMembership");
 
+const { MAX_BOARD_MEMBER_COUNT } = require('../data/limits');
+
 const getUser = (username) => {
     const foundUser = User.findOne({ username }).lean();
     return foundUser;
@@ -16,7 +18,7 @@ const getInvitations = async (req, res) => {
 
     const invitations = await Invitation
         .find({ invitedUserId: foundUser._id })
-        .sort({ createdAt: 1 })
+        .sort({ createdAt: -1 })
         .populate({
             path: 'invitedUserId',
             select: 'username profileImage createdAt'
@@ -76,7 +78,7 @@ const acceptInvitation = async (req, res) => {
         return res.status(404).json({ error: 'Board not found' });
     }
 
-    if (board.members.length >= 5) {
+    if (board.members.length >= MAX_BOARD_MEMBER_COUNT) {
         return res.status(409).json({ error: 'Board is full' });
     }
 
@@ -90,12 +92,12 @@ const acceptInvitation = async (req, res) => {
     } catch (error) {
         invitation.status = 'pending';
         await invitation.save();
-        return res.status(500).json({ error: 'Failed to accept invitation' });
+        return res.status(500).json({ error: error });
     }
 
     if (!board.members.includes(invitedUserId)) {
         board.members.push(invitedUserId);
-        await board.save(); // Save the board to persist the changes
+        await board.save();
     }
 
     res.json({ invitation });

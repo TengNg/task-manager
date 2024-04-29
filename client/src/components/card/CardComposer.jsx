@@ -77,7 +77,12 @@ const CardComposer = ({ list, open, setOpen }) => {
             createdAt: Date.now(),
         };
 
+        let tempLists = undefined;
+
         try {
+            // deep copy, need this when failed to add new card
+            tempLists = JSON.parse(JSON.stringify([...boardState.lists]));
+
             // create temp card (with loading state)
             const tmpCard = { ...cardData, onLoading: true };
 
@@ -118,6 +123,9 @@ const CardComposer = ({ list, open, setOpen }) => {
             console.log(err);
             const errMsg = err?.response?.data?.errMsg || 'Failed to add new card';
             alert(errMsg);
+            setBoardState(prev => {
+                return { ...prev, lists: tempLists }
+            });
         }
 
         setIsAddingCard(false);
