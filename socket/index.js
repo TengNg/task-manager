@@ -132,6 +132,12 @@ io.on('connection', (socket) => {
         socket.to(boardId).emit("cardOwnerUpdated", { ...data });
     });
 
+    socket.on("updateCardPriorityLevel", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("cardPriorityLevelUpdated", { ...data });
+    });
+
     socket.on("updateListTitle", (data) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;

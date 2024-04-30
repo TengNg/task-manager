@@ -15,6 +15,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         boardState,
         setOpenedCard,
         setCardDescription,
+        setCardPriorityLevel,
         setCardTitle,
         setCardOwner,
         socket,
@@ -85,7 +86,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
     const handleCardOwnerChange = async (memberName) => {
         try {
             const response = await axiosPrivate.put(`/cards/${card._id}/member/update`, JSON.stringify({ ownerName: memberName }));
-            const cardOwner = response.data.newCard.owner || "";
+            const cardOwner = response?.data?.newCard?.owner || "";
             setCardOwner(card._id, card.listId, cardOwner);
 
             setOpenedCard(prev => {
@@ -93,6 +94,22 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
             });
 
             socket.emit("updateCardOwner", { cardId: card._id, listId: card.listId, username: cardOwner });
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const handleCardPriorityLevelChange = async (value) => {
+        try {
+            const response = await axiosPrivate.put(`/cards/${card._id}/priority/update`, JSON.stringify({ priorityLevel: value }));
+            const priorityLevel = response?.data?.newCard?.priorityLevel || "none";
+            setCardPriorityLevel(card._id, card.listId, priorityLevel);
+
+            setOpenedCard(prev => {
+                return { ...prev, priorityLevel };
+            });
+
+            socket.emit("updateCardPriorityLevel", { cardId: card._id, listId: card.listId, priorityLevel });
         } catch (err) {
             console.log(err);
         }
@@ -316,6 +333,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                         card={card}
                         listSelectOptions={listSelectOptions}
                         handleCardOwnerChange={handleCardOwnerChange}
+                        handleCardPriorityLevelChange={handleCardPriorityLevelChange}
                     />
 
                 </div>

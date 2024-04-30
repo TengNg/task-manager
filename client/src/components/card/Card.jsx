@@ -3,9 +3,10 @@ import { Draggable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAlignLeft, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from '../../hooks/useBoardState';
-import { highlightColorsRGBA } from "../../data/highlights";
 import dateFormatter from '../../utils/dateFormatter';
 import Loading from '../ui/Loading';
+import { highlightColorsRGBA } from "../../data/highlights";
+import PRIORITY_LEVELS from "../../data/priorityLevels";
 
 const Card = ({ index, card }) => {
     const {
@@ -121,6 +122,20 @@ const Card = ({ index, card }) => {
                         </p>
 
                         <div className='flex justify-start items-center ms-2 text-gray-500 gap-2 mt-1'>
+                            {
+                                card.priorityLevel &&
+                                    card.priorityLevel !== "none" &&
+                                    <div
+                                        className='p-2 bg-gray-200 flex justify-center items-center rounded'
+                                        style={{ backgroundColor: PRIORITY_LEVELS[`${card.priorityLevel}`]?.color?.rgba }}
+                                    >
+                                        <span className='text-[0.65rem] text-gray-50 font-medium tracking-wider'>
+                                            {card.priorityLevel.toUpperCase()}
+                                        </span>
+                                    </div>
+                            }
+
+
                             {
                                 card.owner &&
                                 <div

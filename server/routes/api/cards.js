@@ -7,6 +7,7 @@ const {
     updateTitle,
     updateDescription,
     updateHighlight,
+    updatePriorityLevel,
     deleteCard,
     reorder,
     copyCard,
@@ -37,5 +38,8 @@ router.route("/:id/copy")
 
 router.route("/:id/member/update")
     .put(updateOwner)
+
+router.route("/:id/priority/update")
+    .put(updatePriorityLevel)
 
 module.exports = router;

@@ -124,6 +124,23 @@ const updateHighlight = async (req, res) => {
     res.status(200).json({ message: 'card updated', newCard: foundCard });
 };
 
+const updatePriorityLevel = async (req, res) => {
+    const { id } = req.params;
+    const { priorityLevel } = req.body;
+
+    const foundCard = await cardById(id, { lean: false });
+    if (!foundCard) return res.status(404).json({ error: 'Card not found' });
+
+    const { boardId } = foundCard;
+    const { authorized } = await isActionAuthorized(boardId, req.user.username);
+    if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
+
+    foundCard.priorityLevel = priorityLevel;
+    await foundCard.save();
+
+    res.status(200).json({ message: 'card updated', newCard: foundCard });
+};
+
 const deleteCard = async (req, res) => {
     const { id } = req.params;
 
@@ -185,6 +202,7 @@ module.exports = {
     updateTitle,
     updateDescription,
     updateHighlight,
+    updatePriorityLevel,
     deleteCard,
     reorder,
     copyCard,

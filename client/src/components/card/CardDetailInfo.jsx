@@ -2,8 +2,9 @@ import { useState } from "react"
 import useBoardState from "../../hooks/useBoardState";
 import dateFormatter from "../../utils/dateFormatter"
 import highlightColors, { highlightColorsRGBA } from "../../data/highlights";
+import PRIORITY_LEVELS from "../../data/priorityLevels";
 
-const CardDetailInfo = ({ card, handleCardOwnerChange }) => {
+const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelChange }) => {
     const {
         boardState,
     } = useBoardState();
@@ -11,8 +12,35 @@ const CardDetailInfo = ({ card, handleCardOwnerChange }) => {
     const [ownerValue, setOwnerValue] = useState(card.owner || "");
     const [openOwnerInput, setOpenOwnerInput] = useState(false);
 
+    const priorityLevel = card?.priorityLevel;
+
     return (
         <div className='flex flex-col gap-2 text-[0.8rem] text-gray-700 p-4 pb-5 border-[1px] border-gray-700'>
+            <div className='flex flex-start items-center h-[30px] w-fit max-w-[30rem]'>
+                <span className='me-1'>priority: </span>
+                <select
+                    value={priorityLevel}
+                    onChange={(e) => handleCardPriorityLevelChange(e.target.value)}
+                    className={`${priorityLevel && priorityLevel !== "none" && 'text-gray-50 text-center'} font-medium max-w-[10rem] rounded-md px-2 py-1 text-[0.75rem] appearance-none hover:bg-gray-300`}
+                    style={{ backgroundColor: priorityLevel ? PRIORITY_LEVELS[`${priorityLevel}`]?.color?.rgba : 'transparent' }}
+                >
+                    <option value="none" className='text-[0.75rem]'>...</option>
+                    {
+                        Object.values(PRIORITY_LEVELS).map((el, _) => {
+                            return (
+                                <option
+                                    className='text-[0.75rem]'
+                                    value={el.title}
+                                    key={el.title}
+                                >
+                                    {el.title.toUpperCase()}
+                                </option>
+                            )
+                        })
+                    }
+                </select>
+            </div>
+
             <div className='flex flex-start items-center h-[30px] w-fit max-w-[30rem]'>
                 <span className='me-1'>owner: </span>
                 <select
@@ -73,6 +101,9 @@ const CardDetailInfo = ({ card, handleCardOwnerChange }) => {
 
             <div className='text-[0.8rem]'>
                 <span className=''>created: </span>{dateFormatter(card.createdAt)}
+            </div>
+
+            <div>
             </div>
 
         </div>

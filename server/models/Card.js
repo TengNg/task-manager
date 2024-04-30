@@ -39,6 +39,12 @@ const cardSchema = new mongoose.Schema({
         default: null,
     },
 
+    priorityLevel: {
+        type: String,
+        enum: ['none', 'low', 'medium', 'high', 'critical'],
+        default: 'none',
+    },
+
     owner: {
         type: String,
         default: null,

@@ -64,6 +64,11 @@ export const BoardStateContextProvider = ({ children }) => {
                 setCardOwner(cardId, listId, username);
             });
 
+            socket.on("cardPriorityLevelUpdated", (data) => {
+                const { cardId, listId, priorityLevel } = data;
+                setCardPriorityLevel(cardId, listId, priorityLevel);
+            });
+
             socket.on("invitationAccepted", (data) => {
                 const { username, profileImage: _ } = data;
                 addMemberToBoard({ username });
@@ -323,6 +328,18 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
+    const setCardPriorityLevel = (cardId, listId, value) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.map(list => list._id === listId ? {
+                    ...list,
+                    cards: list.cards.map(card => card._id === cardId ? { ...card, priorityLevel: value } : card)
+                } : list)
+            }
+        });
+    };
+
     const addListToBoard = (list) => {
         setBoardState(prev => {
             return {
@@ -445,6 +462,8 @@ export const BoardStateContextProvider = ({ children }) => {
                 setCardDescription,
                 setCardHighlight,
                 setCardOwner,
+                setCardPriorityLevel,
+
                 deleteCard,
 
                 addListToBoard,
