@@ -52,7 +52,9 @@ const Members = ({ open, setOpen }) => {
             >
 
                 <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
-                    <p className="font-normal text-[1rem] text-gray-700">members</p>
+                    <p className="font-normal text-[1rem] text-gray-700">
+                        members
+                    </p>
                     <button
                         className="text-gray-600 flex justify-center items-center focus:outline-none"
                         onClick={handleClose}
@@ -107,7 +109,7 @@ const Members = ({ open, setOpen }) => {
                                         (member)
                                     </div>
                                     <div className='text-gray-500 text-[10px] sm:text-[0.65rem] font-medium'>
-                                        joined: {joinedAt !== undefined ? dateFormatter(joinedAt) : '(not found)' }
+                                        joined: {joinedAt !== undefined ? dateFormatter(joinedAt) : '(not found)'}
                                     </div>
                                 </div>
                             </div>)

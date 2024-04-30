@@ -70,9 +70,12 @@ const sendInvitation = async (req, res) => {
 const acceptInvitation = async (req, res) => {
     const { id } = req.params;
 
-    let invitation = await Invitation.findByIdAndUpdate(id, { status: 'accepted' }, { new: true });
-    const { boardId, invitedUserId } = invitation;
+    let invitation = await Invitation.findById(id);
+    if (!invitation) {
+        return res.status(404).json({ error: 'Invitation not found' });
+    }
 
+    const { boardId, invitedUserId } = invitation;
     const board = await Board.findById(boardId);
     if (!board) {
         return res.status(404).json({ error: 'Board not found' });
@@ -82,22 +85,23 @@ const acceptInvitation = async (req, res) => {
         return res.status(409).json({ error: 'Board is full' });
     }
 
-    // create board membership
-    try {
-        await BoardMembership.create({
-            boardId,
-            userId: invitedUserId,
-            role: 'member',
-        });
-    } catch (error) {
-        invitation.status = 'pending';
-        await invitation.save();
-        return res.status(500).json({ error: error });
+    const boardMembership = await BoardMembership.create({
+        boardId,
+        userId: invitedUserId,
+        role: 'member',
+    });
+
+    if (!boardMembership) {
+        return res.status(500).json({ error: 'Failed to create board membership' });
     }
 
     if (!board.members.includes(invitedUserId)) {
         board.members.push(invitedUserId);
+        invitation.status = 'accepted';
         await board.save();
+        await invitation.save();
+    } else {
+        return res.status(500).json({ error: 'Failed to add member to the board' });
     }
 
     res.json({ invitation });

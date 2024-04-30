@@ -9,7 +9,7 @@ import HighlightPicker from "./HighlightPicker";
 import CardDetailInfo from "./CardDetailInfo";
 import Loading from "../ui/Loading";
 
-const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMoveCardToList, handleMoveCardByIndex, isCopyingCard }) => {
+const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCard, handleMoveCardToList, handleMoveCardByIndex }) => {
     const {
         openedCard: card,
         boardState,
@@ -151,10 +151,8 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
     };
 
     const deleteCard = () => {
-        if (confirm('Are you want to delete this card ?')) {
-            handleDeleteCard(card);
-            dialog.current.close();
-        }
+        handleDeleteCard(card);
+        dialog.current.close();
     }
 
     const copyCard = () => {
@@ -185,7 +183,7 @@ const CardDetail = ({ open, setOpen, handleDeleteCard, handleCopyCard, handleMov
                 <Loading
                     position={'absolute'}
                     fontSize={'0.85rem'}
-                    loading={isCopyingCard}
+                    loading={processing.processing}
                     displayText={'copying...'}
                 />
 

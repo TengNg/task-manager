@@ -62,7 +62,7 @@ const ChatBox = ({
     return (
         <div
             id="chat-box"
-            className={`${open ? 'flex' : 'hidden'} fixed flex-col border-[2px] border-black right-1 bottom-1 bg-white w-[300px] h-[400px] overflow-auto z-30`}
+            className={`${open ? 'flex' : 'hidden'} fixed flex-col border-[2px] border-black right-0 bottom-0 sm:right-1 sm:bottom-1 bg-white w-[300px] h-[400px] overflow-auto z-30`}
         >
             <div className='relative flex items-center gap-3 border-b-2 border-black bg-white px-3 py-2'>
                 <p className='flex-1 font-semibold text-gray-600'>Chats</p>

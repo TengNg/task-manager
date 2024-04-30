@@ -3,7 +3,7 @@ import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import QuickEditorHighlightPicker from "./QuickEditorHighlightPicker";
 
-const CardQuickEditor = ({ open, setOpen, card, attribute, handleCopyCard, handleDeleteCard }) => {
+const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCard }) => {
     const {
         setOpenedCardQuickEditor,
         setOpenCardDetail,
@@ -108,6 +108,7 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, handleCopyCard, handl
 
     const copyCard = () => {
         handleCopyCard(card);
+        close();
     };
 
     return (

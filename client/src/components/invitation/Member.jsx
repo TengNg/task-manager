@@ -13,8 +13,8 @@ const Member = ({ auth, user, boardState, handleRemoveMemberFromBoard }) => {
                     clickable={false}
                 />
                 <div className="flex flex-col justify-center">
-                    <p className="text-[0.65rem] text-gray-800 font-semibold">{user.username} {auth?.user?.username === user.username && '(you)'}</p>
-                    <p className="text-[0.65rem] text-gray-800">member</p>
+                    <p className="text-[0.75rem] text-gray-800 font-medium">{user.username} {auth?.user?.username === user.username && '(you)'}</p>
+                    <p className="text-[0.75rem] text-gray-800">member</p>
                 </div>
             </div>
             {

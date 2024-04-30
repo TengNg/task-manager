@@ -41,7 +41,7 @@ const CardDetailInfo = ({ card, handleCardOwnerChange }) => {
 
                 <button
                     className={`text-white text-[1rem] w-[25px] h-[25px] rounded-md ms-1 d-flex align-items-center justify-content-center hover:opacity-50 ${!openOwnerInput ? 'opacity-20' : 'opacity-50'}`}
-                    style={{ backgroundColor: highlightColors[`${card.highlight || ""}`] }}
+                    style={{ backgroundColor: card.highlight ? highlightColors[card.highlight] : "#4b5563" }}
                     onClick={() => {
                         setOpenOwnerInput(prev => !prev)
                     }}

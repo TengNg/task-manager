@@ -1,6 +1,9 @@
 import Title from "../components/ui/Title";
+import { useNavigate } from "react-router-dom";
 
 const Writedown = () => {
+    const navigate = useNavigate();
+
     return (
         <>
             <section className="w-full h-[calc(100%-75px)] overflow-auto pb-4">

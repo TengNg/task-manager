@@ -24,11 +24,6 @@ const boardSchema = new mongoose.Schema({
         ref: 'User',
     }],
 
-    listCount: {
-        type: Number,
-        default: 0
-    },
-
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -62,10 +57,10 @@ boardSchema.pre('save', async function(next) {
     }
 });
 
-// delete all related board_memberships
-boardSchema.post('findOneAndDelete', async function(doc, _next) {
-    const BoardMembership = mongoose.model('BoardMembership');
-    await BoardMembership.deleteMany({ boardId: doc._id, });
-});
+// // delete all related board_memberships
+// boardSchema.post('findOneAndDelete', async function(doc, _next) {
+//     const BoardMembership = mongoose.model('BoardMembership');
+//     await BoardMembership.deleteMany({ boardId: doc._id, });
+// });
 
 module.exports = mongoose.model('Board', boardSchema);

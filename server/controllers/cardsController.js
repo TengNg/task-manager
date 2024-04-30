@@ -151,7 +151,9 @@ const copyCard = async (req, res) => {
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     const newCard = new Card({
-        ...foundCard, _id: new mongoose.Types.ObjectId(), rank
+        ...foundCard,
+        _id: new mongoose.Types.ObjectId(),
+        order: rank
     });
 
     await newCard.save();

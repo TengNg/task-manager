@@ -249,6 +249,7 @@ const closeBoard = async (req, res) => {
 
     await Card.deleteMany({ boardId: id });
     await List.deleteMany({ boardId: id });
+    await BoardMembership.deleteMany({ boardId: id });
     await Board.deleteOne({ _id: id });
 
     res.status(200).json({ msg: 'board closed' });

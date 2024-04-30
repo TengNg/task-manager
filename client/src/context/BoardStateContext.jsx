@@ -372,7 +372,7 @@ export const BoardStateContextProvider = ({ children }) => {
                 lists: prev.lists.map(list => {
                     if (list._id === card.listId) {
                         const cards = [...list.cards];
-                        cards.splice(index + 2, 0, card);
+                        cards.splice(index + 1, 0, card);
                         return { ...list, cards };
                     } else {
                         return list;

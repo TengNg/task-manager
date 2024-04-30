@@ -101,7 +101,10 @@ const Board = () => {
     const [error, setError] = useState({ msg: undefined });
 
     const [openVisibilityConfig, setOpenVisibilityConfig] = useState(false);
-    const [isCopyingCard, setIsCopyingCard] = useState(false);
+    const [processingCard, setProcessingCard] = useState({
+        msg: 'loading...',
+        processing: false
+    });
 
     const { boardId } = useParams();
     const navigate = useNavigate();
@@ -179,6 +182,7 @@ const Board = () => {
         };
     }, [pathname]);
 
+    // fetching chat messages from current board =======================================================================
     const fetchMessages = async () => {
         setIsFetchingMoreMessages(true);
 
@@ -200,6 +204,30 @@ const Board = () => {
         }
 
         setIsFetchingMoreMessages(false);
+    };
+
+    // card process wrapper => set loading state =======================================================================
+    const withCardProcessWrapper = (handleFunction) => {
+        return async (...args) => {
+            try {
+                setProcessingCard({
+                    msg: 'processing...',
+                    processing: true
+                });
+
+                await handleFunction(...args);
+
+                setProcessingCard(prev => {
+                    return { ...prev, processing: false };
+                });
+            } catch (err) {
+                console.log(err);
+                alert('Operation failed');
+                setProcessingCard(prev => {
+                    return { ...prev, processing: false };
+                });
+            }
+        };
     };
 
     const handleConfirmBoardTitle = async (value) => {
@@ -247,18 +275,20 @@ const Board = () => {
         }
     };
 
-    const handleDeleteCard = async (card) => {
-        try {
-            await axiosPrivate.delete(`/cards/${card._id}`);
-            deleteCard(card.listId, card._id);
-            socket.emit('deleteCard', { listId: card.listId, cardId: card._id });
-        } catch (err) {
-            console.log(err);
-            alert('Failed to delete card');
+    const handleDeleteCard = withCardProcessWrapper(async (card) => {
+        if (confirm('Delete this card, are you sure?')) {
+            try {
+                await axiosPrivate.delete(`/cards/${card._id}`);
+                deleteCard(card.listId, card._id);
+                socket.emit('deleteCard', { listId: card.listId, cardId: card._id });
+            } catch (err) {
+                console.log(err);
+                alert('Failed to delete card');
+            }
         }
-    };
+    });
 
-    const handleMoveCardToList = async (card, newListId) => {
+    const handleMoveCardToList = withCardProcessWrapper(async (card, newListId) => {
         try {
             const { _id: cardId, listId: oldListId } = card;
 
@@ -285,16 +315,14 @@ const Board = () => {
             console.log(err);
             alert('Failed to move card');
         }
-    };
+    });
 
-    const handleCopyCard = async (card) => {
-        setIsCopyingCard(true);
-
+    const handleCopyCard = withCardProcessWrapper(async (card) => {
         try {
-            const currentList = boardState.lists.find(list => list._id == card.listId);
+            const currentList = [...boardState.lists].find(list => list._id == card.listId);
             const cards = currentList.cards;
 
-            const currentIndex = cards.indexOf(card);
+            const currentIndex = cards.findIndex(el => el._id == card._id);
             const [rank, ok] = lexorank.insert(cards[currentIndex]?.order, cards[currentIndex + 1]?.order);
 
             if (!ok) return;
@@ -305,16 +333,13 @@ const Board = () => {
             addCopiedCard(newCard, currentIndex);
 
             socket.emit("copyCard", { card: newCard, index: currentIndex });
-
-            setIsCopyingCard(false);
         } catch (err) {
             console.log(err);
             alert('Failed to create a copy of this card');
-            setIsCopyingCard(false);
         }
-    };
+    });
 
-    const handleMoveCardByIndex = async (card, insertedIndex) => {
+    const handleMoveCardByIndex = withCardProcessWrapper(async (card, insertedIndex) => {
         try {
             const currentList = boardState.lists.find(list => list._id == card.listId);
             const cards = currentList.cards;
@@ -342,7 +367,7 @@ const Board = () => {
             console.log(err);
             alert('Failed to create a copy of this card');
         }
-    };
+    });
 
     const handleSendMessage = async (value) => {
         const msgTrackedId = crypto.randomUUID();
@@ -421,7 +446,7 @@ const Board = () => {
     };
 
     if (isDataLoaded === false) {
-        return <div className="font-medium mx-auto text-center mt-20 text-gray-600">Loading...</div>
+        return <div className="font-bold mx-auto text-center mt-20 text-gray-600">Loading...</div>
     }
 
     if (error?.msg) {
@@ -474,7 +499,7 @@ const Board = () => {
             <CardDetail
                 open={openCardDetail}
                 setOpen={setOpenCardDetail}
-                isCopyingCard={isCopyingCard}
+                processing={processingCard}
                 handleDeleteCard={handleDeleteCard}
                 handleCopyCard={handleCopyCard}
                 handleMoveCardToList={handleMoveCardToList}
