@@ -108,6 +108,7 @@ const Board = () => {
 
     const { boardId } = useParams();
     const navigate = useNavigate();
+
     const location = useLocation();
     const { pathname } = location;
 

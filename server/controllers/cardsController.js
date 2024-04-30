@@ -27,7 +27,12 @@ const getCard = async (req, res) => {
     const foundCard = await cardById(id);
     if (!foundCard) return res.status(403).json({ msg: "card not found" });
 
-    return res.status(201).json({ card: foundCard });
+    // get extra data for card's infomation in card detail
+    const cards = await Card.find({ boardId: foundCard.boardId, listId: foundCard.listId }).sort({ order: 'asc' }).lean();
+    const index = cards.findIndex(card => card._id.toString() === foundCard._id.toString());
+    const cardCount = cards.length;
+
+    return res.status(201).json({ card: foundCard, cardCount: cardCount, position: index });
 };
 
 const addCard = async (req, res) => {

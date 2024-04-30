@@ -6,6 +6,7 @@ import useBoardState from '../../hooks/useBoardState';
 import { highlightColorsRGBA } from "../../data/highlights";
 import dateFormatter from '../../utils/dateFormatter';
 import Loading from '../ui/Loading';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Card = ({ index, card }) => {
     const {
@@ -20,6 +21,9 @@ const Card = ({ index, card }) => {
     } = useBoardState();
 
     const cardRef = useRef();
+
+    const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         if (cardRef && cardRef.current && focusedCard?.id === card._id && focusedCard?.highlight) {
@@ -113,7 +117,10 @@ const Card = ({ index, card }) => {
                         }}
                         className={`card__item ${card.hiddenByFilter && 'hidden'} ${theme.itemTheme == 'rounded' ? 'rounded' : ''} bg-gray-50 w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative`}
                         style={getStyle(provided.draggableProps.style, snapshot)}
-                        onClick={handleOpenCardDetail}
+                        // onClick={handleOpenCardDetail}
+                        onClick={() => {
+                            navigate(`/c/${card._id}`, { state: { background: location } });
+                        }}
                     >
 
                         <p className="w-full h-full bg-inherit font-semibold text-gray-600 rounded-md py-1 px-2 focus:outline-none text-sm break-words whitespace-pre-line" >

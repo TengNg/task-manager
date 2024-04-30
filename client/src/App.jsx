@@ -12,17 +12,20 @@ import Profile from './pages/Profile'
 import NotFound from './pages/NotFound'
 import Writedown from './pages/Writedown'
 import PersistLogin from './components/auth/PersistLogin'
+import CardDetail from './components/card/CardDetail'
+import CardDetailTesting from './components/card/CardDetailTesting'
 // import Missing from './pages/Missing'
 
 const noNavPaths = ["/login", "/register"];
 
 function App() {
-    const { pathname } = useLocation();
+    const location = useLocation();
+    const background = location.state && location.state.background;
 
     return (
         <>
-            {!noNavPaths.includes(pathname) && <NavBar />}
-            <Routes>
+            {!noNavPaths.includes(location.pathname) && <NavBar />}
+            <Routes location={background || location}>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
@@ -33,9 +36,15 @@ function App() {
                     <Route path="/writedown" element={<Writedown />} />
                     <Route path="/activities" element={<Activities />} />
                     <Route path="/u/:username" element={<Profile />} />
-                    <Route path="*" element={<NotFound />} />
+                    {/* <Route path="*" element={<NotFound />} /> */}
                 </Route>
             </Routes>
+
+            {background && (
+                <Routes>
+                    <Route path="/c/:cardId/" element={<CardDetail />} />
+                </Routes>
+            )}
         </>
     )
 }

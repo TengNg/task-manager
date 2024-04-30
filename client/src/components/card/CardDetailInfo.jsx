@@ -24,9 +24,9 @@ const CardDetailInfo = ({ card, handleCardOwnerChange }) => {
                     <option value={ownerValue} className='text-[0.75rem] cursor-pointer'>
                         {ownerValue ? ownerValue : "..."}
                     </option>
-                    <option value={boardState.board.createdBy.username} className='text-[0.75rem]'>{boardState.board.createdBy.username}</option>
+                    <option value={boardState?.board?.createdBy?.username} className='text-[0.75rem]'>{boardState?.board?.createdBy?.username}</option>
                     {
-                        boardState.board.members.map((member, _) => {
+                        boardState?.board?.members.map((member, _) => {
                             return (
                                 <option
                                     value={member.username}

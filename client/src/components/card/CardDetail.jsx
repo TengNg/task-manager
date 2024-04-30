@@ -5,11 +5,15 @@ import useBoardState from "../../hooks/useBoardState";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faDroplet, faCopy, faEraser } from '@fortawesome/free-solid-svg-icons';
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+
 import HighlightPicker from "./HighlightPicker";
 import CardDetailInfo from "./CardDetailInfo";
 import Loading from "../ui/Loading";
 
 const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCard, handleMoveCardToList, handleMoveCardByIndex }) => {
+    const { cardId } = useParams();
+
     const {
         openedCard: card,
         boardState,
@@ -25,6 +29,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
     const [description, setDescription] = useState(card?.description);
     const [cardCount, setCardCount] = useState(0);
     const [position, setPosition] = useState(0);
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
 
     const axiosPrivate = useAxiosPrivate();
 
@@ -32,45 +37,100 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
     const highlightPicker = useRef();
     const openHighlightPickerButton = useRef();
 
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { pathname } = location;
+
     useEffect(() => {
-        if (open) {
-            dialog.current.showModal();
-            dialog.current.querySelector('.card__title__textarea').blur();
-            dialog.current.focus();
+        const cardIdRegex = /^\/c\/\w+$/;
+        if (!cardIdRegex.test(pathname)) return;
 
-            setTitle(card?.title);
-            setDescription(card?.description);
+        if (!dialog.current) return;
+        if (!cardId) return;
 
-            const cards = boardState?.lists?.find(list => list._id === card.listId)?.cards;
-            const cardCount = cards?.length || 0;
-            const position = cards?.findIndex(el => el._id === card._id) || 0;
-            setCardCount(cardCount);
-            setPosition(position);
-            setCardDescription(card.description);
+        dialog.current.showModal();
 
-            const handleKeyDown = (e) => {
-                if (e.ctrlKey && e.key === '/') {
-                    let descTextArea = dialog.current.querySelector('.card__detail__description__textarea');
-                    if (descTextArea) {
-                        descTextArea.focus();
-                    }
+        const handleKeyDown = (e) => {
+            if (e.ctrlKey && e.key === '/') {
+                let descTextArea = dialog.current.querySelector('.card__detail__description__textarea');
+                if (descTextArea) {
+                    descTextArea.focus();
                 }
-            };
+            }
+        };
 
-            const handleOnClose = () => {
-                setOpen(false);
-                setOpenedCard(undefined);
-            };
+        const handleOnClose = () => {
+            dialog.current.close();
+            //navigate(-1);
+        };
 
-            dialog.current.addEventListener('close', handleOnClose);
-            dialog.current.addEventListener('keydown', handleKeyDown);
+        const getCardData = async () => {
+            try {
+                setIsDataLoaded(false);
+                const response = await axiosPrivate.get(`/cards/${cardId}/`);
+                setOpenedCard(response.data.card);
 
-            () => {
-                dialog.current.removeEventListener('close', handleOnClose);
-                dialog.current.removeEventListener('keydown', handleKeyDown);
-            };
+                const { cardCount, position } = response.data;
+
+                setTitle(response.data.card.title);
+                setPosition(position);
+                setCardCount(cardCount);
+                setIsDataLoaded(true);
+            } catch (err) {
+                console.log(err);
+            }
         }
-    }, [open]);
+
+        getCardData();
+
+        dialog.current.addEventListener('close', handleOnClose);
+        dialog.current.addEventListener('keydown', handleKeyDown);
+
+        () => {
+            dialog.current.removeEventListener('close', handleOnClose);
+            dialog.current.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [pathname]);
+
+    //useEffect(() => {
+    //    if (open) {
+    //        dialog.current.showModal();
+    //        dialog.current.querySelector('.card__title__textarea').blur();
+    //        dialog.current.focus();
+    //
+    //        setTitle(card?.title);
+    //        setDescription(card?.description);
+    //
+    //        const cards = boardState?.lists?.find(list => list._id === card.listId)?.cards;
+    //        const cardCount = cards?.length || 0;
+    //        const position = cards?.findIndex(el => el._id === card._id) || 0;
+    //        setCardCount(cardCount);
+    //        setPosition(position);
+    //        setCardDescription(card.description);
+    //
+    //        const handleKeyDown = (e) => {
+    //            if (e.ctrlKey && e.key === '/') {
+    //                let descTextArea = dialog.current.querySelector('.card__detail__description__textarea');
+    //                if (descTextArea) {
+    //                    descTextArea.focus();
+    //                }
+    //            }
+    //        };
+    //
+    //        const handleOnClose = () => {
+    //            setOpen(false);
+    //            setOpenedCard(undefined);
+    //        };
+    //
+    //        dialog.current.addEventListener('close', handleOnClose);
+    //        dialog.current.addEventListener('keydown', handleKeyDown);
+    //
+    //        () => {
+    //            dialog.current.removeEventListener('close', handleOnClose);
+    //            dialog.current.removeEventListener('keydown', handleKeyDown);
+    //        };
+    //    }
+    //}, [open]);
 
     const handleCloseOnOutsideClick = (e) => {
         if (e.target !== highlightPicker.current && e.target !== openHighlightPickerButton.current) {
@@ -170,7 +230,19 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         setPosition(insertedIndex);
     }
 
-    if (!card) return null;
+    if (!isDataLoaded) {
+        return (
+            <dialog
+                ref={dialog}
+                className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style p-3 gap-3 pb-4 w-[90%] xl:w-[700px] md:w-[75%] max-h-[75%] border-black border-[2px] bg-gray-200'
+                onClick={handleCloseOnOutsideClick}
+            >
+                <div className='w-full h-full flex flex-col gap-3'>
+                    loading...
+                </div>
+            </dialog>
+        )
+    }
 
     return (
         <>
@@ -183,7 +255,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                 <Loading
                     position={'absolute'}
                     fontSize={'0.85rem'}
-                    loading={processing.processing}
+                    loading={processing?.processing}
                     displayText={'copying...'}
                 />
 
