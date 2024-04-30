@@ -325,7 +325,10 @@ const Board = () => {
             const currentIndex = cards.findIndex(el => el._id == card._id);
             const [rank, ok] = lexorank.insert(cards[currentIndex]?.order, cards[currentIndex + 1]?.order);
 
-            if (!ok) return;
+            if (!ok) {
+                alert('Failed to create a copy of this card, rank is not valid');
+                return;
+            }
 
             const response = await axiosPrivate.post(`/cards/${card._id}/copy`, JSON.stringify({ rank }));
             const { newCard } = response.data;

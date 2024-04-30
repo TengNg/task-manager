@@ -60,7 +60,10 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
             let [rank, ok] = lexorank.insert(prevRank, nextRank);
 
             // failed to reorder
-            if (!ok) return;
+            if (!ok) {
+                alert("Failed to reorder list, rank is not valid");
+                return;
+            }
 
             const removedId = removed._id;
 
@@ -119,8 +122,10 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
 
         let [rank, ok] = lexorank.insert(prevRank, nextRank);
 
-        // failed to reorder
-        if (!ok) return;
+        if (!ok) {
+            alert("Failed to reorder card, rank is not valid");
+            return;
+        }
 
         removed.order = rank;
 
