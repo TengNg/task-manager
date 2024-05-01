@@ -112,7 +112,7 @@ const MoveListForm = () => {
                 console.log(err);
                 setOpen(false);
                 setListToMove(undefined);
-                alert('Failed to delete list');
+                alert('Failed to move list');
             }
             return;
         }

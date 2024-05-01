@@ -160,7 +160,7 @@ const moveList = async (req, res) => {
     await Card.updateMany({ listId: id }, { boardId });
     const newCards = await Card.find({ listId: id, boardId }).sort({ order: 'asc' });
 
-    return res.status(200).json({ list: newList, cards: newCards });
+    return res.status(200).json({ list: foundList, cards: newCards });
 };
 
 module.exports = {
