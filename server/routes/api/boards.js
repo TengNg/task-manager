@@ -4,6 +4,7 @@ const router = express.Router();
 const {
     getBoards,
     getOwnedBoards,
+    getBoardStats,
     createBoard,
     getBoard,
     updateVisibility,
@@ -29,6 +30,9 @@ router.route("/owned")
 router.route("/:id")
     .get(getBoard)
     .delete(closeBoard)
+
+router.route("/:id/stats")
+    .get(getBoardStats)
 
 router.route("/:id/members/leave")
     .put(leaveBoard)

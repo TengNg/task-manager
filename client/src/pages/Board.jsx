@@ -345,7 +345,7 @@ const Board = () => {
                 return;
             }
 
-            alert('Failed to create a copy of this card');
+            alert(err.response?.data?.message || 'Failed to copy card');
         }
     });
 
@@ -702,6 +702,13 @@ const Board = () => {
                         </div>
                     }
                 </button>
+
+                {
+                    debugModeEnabled &&
+                    <p className='absolute bottom-4 right-4 text-[0.5rem] sm:text-[0.65rem] text-gray-500'>
+                        lists: {boardState?.board?.listCount || 0} / 20
+                    </p>
+                }
             </div>
 
         </>

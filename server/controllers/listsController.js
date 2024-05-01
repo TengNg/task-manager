@@ -131,7 +131,8 @@ const copyList = async (req, res) => {
 
         res.status(200).json({ list, cards, message: 'list copied' });
     } catch (err) {
-        console.error("Error saving document:", err);
+        console.log(err);
+        res.status(500).json({ msg: err.message });
     }
 };
 
@@ -152,7 +153,9 @@ const moveList = async (req, res) => {
         return res.status(403).send('Bad Request');
     }
 
-    const newList = await List.findByIdAndUpdate(id, { boardId, order: newOrder }, { new: true });
+    foundList.order = newOrder;
+    foundList.boardId = boardId;
+    await foundList.save();
 
     await Card.updateMany({ listId: id }, { boardId });
     const newCards = await Card.find({ listId: id, boardId }).sort({ order: 'asc' });

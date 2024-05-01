@@ -74,7 +74,6 @@ const getBoard = async (req, res) => {
             path: 'members',
             select: 'username profileImage createdAt'
         })
-        .lean();
 
     if (!board) return res.status(404).json({ msg: "board not found" });
 
@@ -86,8 +85,14 @@ const getBoard = async (req, res) => {
 
     const lists = await List.find({ boardId: id }).sort({ order: 'asc' });
 
+    // for making sure board has correct list count
+    board.listCount = lists.length;
+    await board.save();
+
     const listsWithCardsPromises = lists.map(async (list) => {
         const cards = await Card.find({ listId: list._id }).sort({ order: 'asc' }).lean();
+
+        // for making sure card belongs to board
         await Card.updateMany({ listId: list._id }, { $set: { boardId: board._id } });
 
         return {
@@ -112,6 +117,55 @@ const getBoard = async (req, res) => {
         memberships,
     });
 }
+
+const getBoardStats = async (req, res) => {
+    const { id } = req.params;
+    const { username } = req.user;
+
+    const foundUser = await getUser(username);
+    if (!foundUser) return res.status(403).json({ msg: "user not found" });
+
+    const foundBoard = await Board.findById(id)
+        .populate({
+            path: 'createdBy',
+            select: 'username'
+        })
+        .populate({
+            path: 'members',
+            select: 'username'
+        })
+        .lean();
+
+    if (!foundBoard) return res.status(403).json({ msg: "board not found" });
+
+    const prioirtyLevelStats = await Card.aggregate([
+        {
+            $match: {
+                boardId: mongoose.Types.ObjectId.createFromHexString(id),
+            }
+        },
+        {
+            $group: {
+                _id: {
+                    $cond: {
+                        if: {
+                            $or: [
+                                { $eq: [{ $ifNull: ['$priorityLevel', null] }, null] },
+                                { $eq: ['$priorityLevel', undefined] },
+                                { $eq: ['$priorityLevel', ''] },
+                            ]
+                        },
+                        then: 'none',
+                        else: '$priorityLevel',
+                    }
+                },
+                count: { $sum: 1 }
+            }
+        }
+    ]);
+
+    res.status(200).json({ board: foundBoard, prioirtyLevelStats });
+};
 
 const createBoard = async (req, res) => {
     const { title, description } = req.body;
@@ -384,6 +438,7 @@ const cleanPinnedBoardsCollection = async (req, res) => {
 module.exports = {
     getBoards,
     getOwnedBoards,
+    getBoardStats,
     createBoard,
     getBoard,
     updateVisibility,
