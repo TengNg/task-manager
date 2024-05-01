@@ -86,7 +86,7 @@ export default function Register() {
                 <Loading
                     position={'absolute'}
                     loading={loading}
-                    displayText={'please wait, logging in...'}
+                    displayText={'please wait, creating account...'}
                 />
 
                 <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 bg-gray-100'>

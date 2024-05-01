@@ -456,7 +456,7 @@ const Board = () => {
     };
 
     if (isDataLoaded === false) {
-        return <div className="font-bold mx-auto text-center mt-20 text-gray-600">Loading...</div>
+        return <div className="font-semibold mx-auto text-center mt-20 text-gray-600">getting board data...</div>
     }
 
     if (error?.msg) {

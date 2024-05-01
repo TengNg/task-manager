@@ -28,10 +28,13 @@ const useAxiosPrivate = () => {
                     const newAccessToken = await refresh();
                     prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
                     return axiosPrivate(prevRequest);
-                }
-                else if (error?.response?.status === 500) {
+                } else if (error?.response?.status === 500) {
                     if (error?.response?.data?.msg === 'user not found') {
                         await axiosPrivate.get('/logout');
+                        navigate('/login');
+                    }
+                } else if (error?.response?.status === 401) {
+                    if (error?.response?.data?.msg === 'currently not logged in') {
                         navigate('/login');
                     }
                 }

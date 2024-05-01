@@ -137,7 +137,7 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
             <Loading
                 loading={loading}
                 position={'absolute'}
-                displayText={'Loading...'}
+                displayText={'loading...'}
                 fontSize={'0.75rem'}
             />
 
