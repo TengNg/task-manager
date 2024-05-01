@@ -19,6 +19,11 @@ const boardSchema = new mongoose.Schema({
         required: true,
     },
 
+    listCount: {
+        type: Number,
+        default: 0
+    },
+
     members: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

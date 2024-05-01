@@ -1,9 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
-import useAuth from '../hooks/useAuth';
 import { useNavigate, useParams } from 'react-router-dom';
+import useAuth from '../hooks/useAuth';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
+
 import Loading from '../components/ui/Loading';
 import Title from '../components/ui/Title';
+import BoardStats from '../components/board/BoardStats';
+
 import dateFormatter from "../utils/dateFormatter";
 
 const Profile = () => {
@@ -16,6 +19,13 @@ const Profile = () => {
     const [loading, setLoading] = useState(false);
 
     const [ownedBoards, setOwnedBoards] = useState([]);
+
+    const [boardStatsModal, setBoardStatsModal] = useState({
+        stats: [],
+        board: {},
+        open: false,
+        loadingData: false,
+    });
 
     const [msg, setMsg] = useState({
         error: false,
@@ -160,11 +170,48 @@ const Profile = () => {
         }
     };
 
-    const handleOpenBoard = (boardId) => {
-        navigate(`/b/${boardId}`);
-    }
+    const fetchBoardStats = async (boardId) => {
+        try {
+            const response = await axiosPrivate.get(`/boards/${boardId}/stats`);
+            return response;
+        } catch (err) {
+            throw err
+        }
+    };
 
-    return (
+    const handleOpenBoardStats = async (boardId) => {
+        try {
+            setBoardStatsModal({ board: {}, stats: [], open: true, loadingData: true });
+
+            const response = await fetchBoardStats(boardId);
+            const { board, prioirtyLevelStats } = response.data;
+
+            const priorityOrder = ['none', 'low', 'medium', 'high', 'critical'];
+            prioirtyLevelStats.sort((a, b) => {
+                const indexA = priorityOrder.indexOf(a._id);
+                const indexB = priorityOrder.indexOf(b._id);
+                return indexA - indexB;
+            });
+
+            setBoardStatsModal(prev => {
+                return {
+                    ...prev,
+                    board,
+                    stats: prioirtyLevelStats,
+                    loadingData: false
+                }
+            })
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    return (<>
+        <BoardStats
+            boardStatsModal={boardStatsModal}
+            setBoardStatsModal={setBoardStatsModal}
+        />
+
         <section
             id="profile"
             className="w-full h-[calc(100%-75px)] overflow-auto pb-4"
@@ -282,7 +329,7 @@ const Profile = () => {
                             return (
                                 <div
                                     key={_id}
-                                    onClick={() => handleOpenBoard(_id)}
+                                    onClick={() => handleOpenBoardStats(_id)}
                                     className="w-full h-[125px]"
                                 >
 
@@ -292,11 +339,11 @@ const Profile = () => {
                                         <div className="h-[1px] w-full bg-black my-2"></div>
 
                                         <p className="text-[10px] sm:text-[0.65rem] mt-1">
-                                            total members: {members.length + 1}
+                                            lists: {item.listCount}
                                         </p>
 
                                         <p className="text-[10px] sm:text-[0.65rem] mt-1">
-                                            total lists: {item.listCount}
+                                            members: {members.length + 1}
                                         </p>
 
                                         <p className="text-[10px] sm:text-[0.65rem] mt-1">
@@ -311,7 +358,7 @@ const Profile = () => {
                 </div>
             </div>
         </section>
-    )
+    </>)
 }
 
 export default Profile
