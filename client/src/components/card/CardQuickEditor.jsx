@@ -16,7 +16,7 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
     const axiosPrivate = useAxiosPrivate();
 
     const [initialTitle, setInitialTitle] = useState(card.title);
-    const [openHighlightPicker, setOpenHighlightPicker] = useState(false);
+    const [openHighlightPicker, setOpenHighlightPicker] = useState(true);
 
     const textAreaRef = useRef();
     const quickEditorRef = useRef();
@@ -135,7 +135,13 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
                         value={initialTitle}
                     />
                     <div className="flex flex-col gap-2 absolute top-0 -right-1 translate-x-[100%] justify-start items-start w-[200px]">
-                        {openHighlightPicker && <QuickEditorHighlightPicker card={card} />}
+                        {
+                            openHighlightPicker &&
+                            <QuickEditorHighlightPicker
+                                card={card}
+                                closeQuickEditor={close}
+                            />
+                        }
 
                         <button
                             onClick={() => handleOpenCardDetail()}

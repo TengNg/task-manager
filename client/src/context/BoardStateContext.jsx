@@ -7,8 +7,6 @@ import LOCAL_STORAGE_KEYS from "../data/localStorageKeys";
 const BoardStateContext = createContext({});
 
 export const BoardStateContextProvider = ({ children }) => {
-    const [isSmallScreen, setIsSmallScreen] = useState(false);
-
     const [boardState, setBoardState] = useState({});
     const [pendingInvitations, setPendingInvitations] = useState(0);
     const [chats, setChats] = useState([]);
@@ -23,20 +21,6 @@ export const BoardStateContextProvider = ({ children }) => {
 
     const [theme, setTheme] = useLocalStorage(LOCAL_STORAGE_KEYS.BOARD_ITEM_THEME, {});
     const [debugModeEnabled, setDebugModeEnabled] = useLocalStorage(LOCAL_STORAGE_KEYS.DEBUG_MODE_ENABLED, {});
-
-    useEffect(() => {
-        const handleResize = () => {
-            setIsSmallScreen(window.innerWidth < 640);
-        };
-
-        handleResize();
-
-        window.addEventListener("resize", handleResize);
-
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    }, []);
 
     useEffect(() => {
         if (socket) {
@@ -509,8 +493,6 @@ export const BoardStateContextProvider = ({ children }) => {
                 debugModeEnabled, setDebugModeEnabled,
 
                 hasFilter, setHasFilter,
-
-                isSmallScreen, setIsSmallScreen,
 
                 socket,
             }}

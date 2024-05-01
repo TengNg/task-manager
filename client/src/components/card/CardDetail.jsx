@@ -216,17 +216,21 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
 
                     <div className="flex justify-start items start">
                         <div className="flex flex-col flex-1">
-                            <TextArea
-                                className="card__title__textarea break-words font-medium box-border p-1 min-h-[2rem] w-[98%] text-gray-600 bg-gray-200 leading-normal overflow-y-hidden resize-none placeholder-gray-400 focus:outline-blue-600 focus:bg-gray-100"
+                            <textarea
+                                className="card__title__textarea font-medium p-1 w-[98%] text-gray-600 bg-gray-200 leading-normal resize-none focus:bg-gray-100"
+                                value={title}
                                 onKeyDown={(e) => {
                                     if (e.key == 'Enter') {
                                         e.target.blur();
                                     }
                                 }}
                                 onBlur={(e) => confirmTitle(e)}
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                minHeight={'2rem'}
+                                onChange={(e) => {
+                                    setTitle(e.target.value)
+                                    e.target.style.height = 'auto';
+                                    e.target.style.height = `${e.target.scrollHeight}px`;
+                                }}
+                                maxLength={200}
                             />
                         </div>
 

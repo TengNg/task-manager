@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import dateFormatter from "../../utils/dateFormatter"
 import useBoardState from "../../hooks/useBoardState";
 
-export default function ListMenu({ list, open, setOpen, handleDelete, handleCopy }) {
+export default function ListMenu({ list, setOpen, handleDelete, handleCopy, processingList }) {
     const containerRef = useRef();
 
     const {
@@ -67,7 +67,9 @@ export default function ListMenu({ list, open, setOpen, handleDelete, handleCopy
             <div className='flex flex-col gap-3 mt-3'>
                 <button
                     onClick={copy}
-                    className='text-[9px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 transition-all hover:bg-gray-500'>create a copy</button>
+                    className={`${processingList?.processing ? 'cursor-not-allowed' : ''} text-[9px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 transition-all hover:bg-gray-500`}>
+                    {processingList.processing ? 'copying...' : 'copy list'}
+                </button>
                 <button
                     onClick={handleOpenMoveListForm}
                     className='text-[9px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 transition-all hover:bg-gray-500'>move list</button>

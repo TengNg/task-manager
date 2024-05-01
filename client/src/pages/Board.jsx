@@ -222,9 +222,10 @@ const Board = () => {
                 });
             } catch (err) {
                 console.log(err);
-                alert('Operation failed');
-                setProcessingCard(prev => {
-                    return { ...prev, processing: false };
+                alert('Process failed');
+                setProcessingCard({
+                    msg: '',
+                    processing: false
                 });
             }
         };
@@ -338,6 +339,12 @@ const Board = () => {
             socket.emit("copyCard", { card: newCard, index: currentIndex });
         } catch (err) {
             console.log(err);
+
+            if (err.response?.status === 503) {
+                alert("Action is processing, this maybe done by other user, please try again later");
+                return;
+            }
+
             alert('Failed to create a copy of this card');
         }
     });

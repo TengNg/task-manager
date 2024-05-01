@@ -16,7 +16,6 @@ const Card = ({ index, card }) => {
         focusedCard,
         setFocusedCard,
         theme,
-        isSmallScreen,
         debugModeEnabled,
     } = useBoardState();
 
@@ -195,7 +194,6 @@ const Card = ({ index, card }) => {
 
                         <button
                             onClick={(e) => {
-                                if (isSmallScreen) return;
                                 handleOpenQuickEditor(e);
                             }}
                             className="absolute hidden sm:block right-2 top-2 font-bold text-[0.75rem] text-transparent hover:bg-gray-100 group-hover:text-gray-600 w-[25px] h-[25px] d-flex justify-center items-center rounded-sm">

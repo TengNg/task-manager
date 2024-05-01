@@ -17,7 +17,6 @@ const List = ({ index, list, cards }) => {
         theme,
         debugModeEnabled,
         hasFilter,
-        isSmallScreen,
         socket,
     } = useBoardState();
 
@@ -26,6 +25,11 @@ const List = ({ index, list, cards }) => {
     const [initialListData, setInitialListData] = useState(list.title);
     const [openCardComposer, setOpenCardComposer] = useState(false);
     const [openListMenu, setOpenListMenu] = useState(false);
+
+    const [processingList, setProcessingList] = useState({
+        msg: 'loading...',
+        processing: false
+    });
 
     const textAreaRef = useRef(null);
     const titleRef = useRef(null);
@@ -99,6 +103,11 @@ const List = ({ index, list, cards }) => {
         const tempLists = [...boardState.lists];
 
         try {
+            setProcessingList({
+                msg: 'copying...',
+                processing: true
+            });
+
             const currentIndex = lists.indexOf(lists.find(el => el._id == id));
             const nextElement = index < lists.length - 1 ? lists[index + 1] : null;
 
@@ -120,9 +129,14 @@ const List = ({ index, list, cards }) => {
                 return { ...prev, lists };
             });
 
+            setProcessingList({ msg: '', processing: false });
+
             socket.emit("updateLists", lists);
         } catch (err) {
-            alert('Failed to create a copy of this list');
+            alert('Failed to create a copy of this list, action cannot be performed at this time, please try again');
+
+            setProcessingList({ msg: '', processing: false });
+
             setBoardState(prev => {
                 return { ...prev, lists: tempLists };
             });
@@ -146,6 +160,7 @@ const List = ({ index, list, cards }) => {
                             setOpen={setOpenListMenu}
                             handleDelete={handleDeleteList}
                             handleCopy={handleCopyList}
+                                processingList={processingList}
                         />
                     }
 
