@@ -343,13 +343,15 @@ const copyBoard = async (req, res) => {
 
         const cards = await Card.find({ listId: _id });
         for (const card of cards) {
-            const { title, description, order, highlight } = card;
+            const { title, description, order, highlight, priorityLevel } = card;
             const newCard = new Card({
                 title,
                 description,
                 order,
                 highlight,
-                listId: newListId
+                priorityLevel,
+                boardId: newBoardId,
+                listId: newListId,
             });
 
             await newCard.save();

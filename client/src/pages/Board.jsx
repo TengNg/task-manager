@@ -703,12 +703,22 @@ const Board = () => {
                     }
                 </button>
 
-                {
-                    debugModeEnabled &&
-                    <p className='absolute bottom-4 right-4 text-[0.5rem] sm:text-[0.65rem] text-gray-500'>
+
+                <div className='flex gap-4 absolute bottom-4 right-4 text-[0.65rem] text-gray-500'>
+                    <button
+                        className='w-[14px] h-[14px] bg-pink-200 hover:bg-pink-300 rounded-full'
+                        onClick={() => {
+                            navigator.clipboard.writeText(boardState?.board?._id).then(() => {
+                                alert('copied board code to clipboard');
+                            })
+                        }}
+                        title='Copy board code'
+                    >
+                    </button>
+                    <p>
                         lists: {boardState?.board?.listCount || 0} / 20
                     </p>
-                }
+                </div>
             </div>
 
         </>

@@ -33,8 +33,11 @@ const joinBoardRequestSchema = new mongoose.Schema({
 });
 
 // update 'updatedAt' field when 'status' is modified
-joinBoardRequestSchema.pre('findOneAndUpdate', function(next) {
-    this._update.updatedAt = new Date();
+joinBoardRequestSchema.pre('save', function(next) {
+    if (!this.isNew) {
+        this.updatedAt = Date.now();
+    }
+
     next();
 });
 

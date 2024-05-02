@@ -22,6 +22,7 @@ const Member = ({ auth, user, boardState, handleRemoveMemberFromBoard }) => {
                 <button
                     onClick={() => handleRemoveMemberFromBoard(user.username)}
                     className='text-gray-400 me-2'
+                    title='remove member'
                 >
                     <FontAwesomeIcon icon={faXmark} size='lg' />
                 </button>
