@@ -54,7 +54,7 @@ const addCard = async (req, res) => {
 
 const reorder = async (req, res) => {
     const { id } = req.params;
-    const { rank, listId } = req.body;
+    const { rank, listId, timestamp } = req.body;
 
     const foundCard = await cardById(id, { lean: false });
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
@@ -66,8 +66,9 @@ const reorder = async (req, res) => {
     const { authorized } = await isActionAuthorized(boardId, req.user.username);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
-    foundCard.rank = rank;
+    foundCard.order = rank;
     foundCard.listId = listId;
+    foundCard.updatedAt = timestamp;
     await foundCard.save();
 
     res.status(200).json({ message: 'card updated', newCard: foundCard });

@@ -330,23 +330,23 @@ const Profile = () => {
                                 <div
                                     key={_id}
                                     onClick={() => handleOpenBoardStats(_id)}
-                                    className="w-full h-[125px]"
+                                    className="w-full h-[150px]"
                                 >
 
-                                    <div className="w-full h-[125px] board--style board--hover border-[2px] md:border-[2.5px] border-gray-600 py-3 px-3 shadow-gray-600 select-none bg-gray-50 relative">
-                                        <p className="text-[12px] sm:text-[0.75rem] font-semibold text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
+                                    <div className="w-full h-[150px] board--style board--hover border-[2px] md:border-[2.5px] border-gray-600 py-3 px-3 shadow-gray-600 select-none bg-gray-50 relative">
+                                        <p className="text-[12px] sm:text-[1rem] font-semibold text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
 
                                         <div className="h-[1px] w-full bg-black my-2"></div>
 
-                                        <p className="text-[10px] sm:text-[0.65rem] mt-1">
+                                        <p className="text-[10px] sm:text-[0.85rem] mt-1">
                                             lists: {item.listCount}
                                         </p>
 
-                                        <p className="text-[10px] sm:text-[0.65rem] mt-1">
+                                        <p className="text-[10px] sm:text-[0.85rem] mt-1">
                                             members: {members.length + 1}
                                         </p>
 
-                                        <p className="text-[10px] sm:text-[0.65rem] mt-1">
+                                        <p className="text-[10px] sm:text-[0.85rem] mt-1">
                                             created: {dateFormatter(createdAt)}
                                         </p>
                                     </div>
