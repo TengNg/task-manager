@@ -276,7 +276,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
 
                     <div className="w-full flex border-b-[1px] border-t-[1px] py-4 gap-3 border-black">
                         <TextArea
-                            className="card__detail__description__textarea overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[175px] max-h-[400px] break-words box-border text-[0.75rem] py-2 px-3 w-[95%] text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
+                            className="card__detail__description__textarea overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[175px] max-h-[400px] break-words box-border text-[0.65rem] sm:text-[0.85rem] py-2 px-3 w-[95%] text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
                             autoFocus={true}
                             onBlur={(e) => {
                                 confirmDescription(e)
@@ -300,17 +300,19 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
 
                             {/* change highlight button */}
                             <button
+                                title="change highlight color"
                                 ref={openHighlightPickerButton}
                                 onClick={() => setOpenHighlightPicker(prev => !prev)}
-                                className={`flex sm:w-full sm:h-auto w-[35px] h-[35px] justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold ${openHighlightPicker && 'bg-gray-600 shadow-black text-white'}`}
+                                className={`flex sm:w-full sm:h-auto w-[35px] h-[35px] justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white text-[0.75rem] p-2 font-semibold ${openHighlightPicker && 'bg-gray-600 shadow-black text-white'}`}
                             >
                                 <FontAwesomeIcon icon={faDroplet} />
                             </button>
 
                             <div>
                                 <button
+                                    title="create a copy of this card"
                                     onClick={copyCard}
-                                    className={`flex sm:w-full sm:h-auto w-[35px] h-[35px] justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold`}
+                                    className={`flex sm:w-full sm:h-auto w-[35px] h-[35px] justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white text-[0.75rem] p-2 font-semibold`}
                                 >
                                     <FontAwesomeIcon icon={faCopy} />
                                     <span className="hidden sm:block">
@@ -321,8 +323,9 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
 
                             <div>
                                 <button
+                                    title="delete this card"
                                     onClick={() => deleteCard()}
-                                    className={`flex sm:w-full sm:h-auto w-[35px] h-[35px] justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white transition-all text-[0.75rem] p-2 font-semibold`}
+                                    className={`flex sm:w-full sm:h-auto w-[35px] h-[35px] justify-center items-center gap-1 border-2 border-pink-800 text-pink-800 hover:bg-pink-600 hover:text-white text-[0.75rem] p-2 font-semibold`}
                                 >
                                     <FontAwesomeIcon icon={faEraser} />
                                     <span className="hidden sm:block">

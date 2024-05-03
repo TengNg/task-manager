@@ -150,7 +150,7 @@ const Card = ({ index, card }) => {
                             {card.description != "" && <FontAwesomeIcon icon={faAlignLeft} size='xs' />}
                         </div>
 
-                        <div className='font-thin text-[0.65rem] text-gray-700 mt-3 ms-[0.6rem]'>
+                        <div className='font-medium sm:text-[0.65rem] text-[0.75rem] text-gray-700 mt-3 ms-[0.6rem]'>
                             {
                                 card.createdAt
                                     ? <span>
@@ -164,7 +164,7 @@ const Card = ({ index, card }) => {
 
                         {
                             debugModeEnabled.enabled &&
-                            <div className='font-thin text-[0.65rem] text-gray-700 mt-1 ms-[0.6rem]'>rank: {card.order}</div>
+                            <div className='font-medium sm:text-[0.65rem] text-[0.75rem] text-gray-700 mt-1 ms-[0.6rem]'>rank: {card.order}</div>
                         }
 
                         {

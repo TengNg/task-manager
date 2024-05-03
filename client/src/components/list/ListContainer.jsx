@@ -128,13 +128,14 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
         }
 
         removed.order = rank;
+        removed.updatedAt = new Date();
 
         try {
             setBoardState(prev => {
                 return { ...prev, lists: currentLists };
             });
 
-            const response = await axiosPrivate.put(`/cards/${removedId}/reorder`, JSON.stringify({ rank, listId: removed.listId }));
+            const response = await axiosPrivate.put(`/cards/${removedId}/reorder`, JSON.stringify({ rank, listId: removed.listId, timestamp: removed.updatedAt }));
             const newCard = response.data.newCard;
 
             socket.emit("moveCardToList", {

@@ -15,7 +15,7 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
     const priorityLevel = card?.priorityLevel;
 
     return (
-        <div className='flex flex-col gap-2 text-[0.8rem] text-gray-700 p-4 pb-5 border-[1px] border-gray-700'>
+        <div className='flex flex-col gap-3 text-[0.8rem] text-gray-700 p-4 border-[1px] border-gray-700'>
             <div className='flex flex-start items-center h-[30px] w-fit max-w-[30rem]'>
                 <span className='me-1'>priority: </span>
                 <select
@@ -100,10 +100,16 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
             </div>
 
             <div className='text-[0.8rem]'>
-                <span className=''>created: </span>{dateFormatter(card.createdAt)}
+                <span>created: </span>{dateFormatter(card.createdAt)}
             </div>
 
-            <div>
+            <div className='text-[0.8rem]'>
+                <span>updated: </span>
+                {
+                    card.updatedAt
+                    ? dateFormatter(card.updatedAt)
+                    : 'not found'
+                }
             </div>
 
         </div>
@@ -111,3 +117,4 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
 }
 
 export default CardDetailInfo
+

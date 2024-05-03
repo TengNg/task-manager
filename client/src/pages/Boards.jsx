@@ -49,26 +49,7 @@ const Boards = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        setIsDataLoaded(false);
-
-        const getBoards = async () => {
-            const response = await axiosPrivate.get(`/boards`);
-            const { boards, recentlyViewedBoard } = response.data;
-            const owned = [...boards].filter(board => board?.createdBy === auth?.user?._id);
-            const joined = [...boards].filter(board => board?.members?.some(memberId => memberId === auth?.user?._id));
-            setOwnedBoards(owned);
-            setJoinedBoards(joined);
-            setBoards([...owned, ...joined]);
-            setRecentlyViewedBoard(recentlyViewedBoard);
-        };
-        getBoards()
-            .catch(err => {
-                console.log(err);
-                navigate('/login');
-            })
-            .finally(() => {
-                setIsDataLoaded(true)
-            });
+        fetchBoards();
     }, []);
 
     useEffect(() => {
@@ -92,6 +73,32 @@ const Boards = () => {
             document.removeEventListener('click', closeBoxOutside);
         };
     }, [openBoardForm])
+
+    function fetchBoards() {
+        setIsDataLoaded(false);
+        const getBoards = async () => {
+            const response = await axiosPrivate.get(`/boards`);
+            const { boards, recentlyViewedBoard } = response.data;
+            const owned = [...boards].filter(board => board?.createdBy === auth?.user?._id);
+            const joined = [...boards].filter(board => board?.members?.some(memberId => memberId === auth?.user?._id));
+            setOwnedBoards(owned);
+            setJoinedBoards(joined);
+            setBoards([...owned, ...joined]);
+            setRecentlyViewedBoard(recentlyViewedBoard);
+        };
+        getBoards()
+            .catch(err => {
+                console.log(err);
+                navigate('/login');
+            })
+            .finally(() => {
+                setIsDataLoaded(true)
+            });
+    }
+
+    function handleRefreshData() {
+        fetchBoards();
+    }
 
     const handleOpenBoard = (boardId) => {
         navigate(`/b/${boardId}`);
@@ -157,12 +164,21 @@ const Boards = () => {
                             </span>
                         </div>
 
-                        <button
-                            className='text-[0.75rem] text-gray-700 pe-1 text-end underline cursor-pointer sm:mb-0 mb-2'
-                            onClick={() => setOpenJoinBoardRequestForm(open => !open)}
-                        >
-                            join board
-                        </button>
+                        <div className='flex gap-3'>
+                            <button
+                                className='text-[0.75rem] text-gray-700 pe-1 text-end underline cursor-pointer sm:mb-0 mb-2'
+                                onClick={() => setOpenJoinBoardRequestForm(open => !open)}
+                            >
+                                join board
+                            </button>
+
+                            <button
+                                className='text-[0.75rem] text-gray-700 pe-1 text-end underline cursor-pointer sm:mb-0 mb-2'
+                                onClick={handleRefreshData}
+                            >
+                                refresh
+                            </button>
+                        </div>
                     </div>
 
                     <div className="relative flex flex-col mx-auto sm:m-0 sm:justify-start sm:items-start sm:flex-row sm:flex-wrap gap-4 px-10 p-6 sm:p-8 border-[2px] box--style shadow-gray-500 border-gray-500 w-fit sm:w-full">
