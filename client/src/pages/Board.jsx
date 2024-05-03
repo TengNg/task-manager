@@ -580,12 +580,15 @@ const Board = () => {
                 fetchMessages={fetchMessages}
             />
 
-            <div
-                onClick={() => setOpenVisibilityConfig(prev => !prev)}
-                className="absolute cursor-pointer w-[30px] h-[30px] md:w-[35px] md:h-[35px] grid place-items-center left-4 top-[0.55rem] sm:top-4 text-[0.65rem] md:text-[0.75rem] border-[2px] border-gray-600 p-1 select-none bg-gray-50"
-            >
-                {VISIBILITY_MAP[boardVisibility]}
-            </div>
+            {
+                boardState?.board?.visibility === 'private' &&
+                <div
+                    className="absolute left-4 top-4 text-[0.65rem] md:text-[0.75rem] text-gray-600 hover:text-gray-800 select-none"
+                    title="this board is in private mode"
+                >
+                    [private]
+                </div>
+            }
 
             <div
                 id='board-wrapper'
@@ -703,6 +706,12 @@ const Board = () => {
                     }
                 </button>
 
+                <button
+                    onClick={() => setOpenVisibilityConfig(prev => !prev)}
+                    className={`ms-2 w-[100px] ${openVisibilityConfig ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-2 py-2 text-[0.65rem] font-medium`}
+                >
+                    visibility
+                </button>
 
                 <div className='flex gap-4 absolute bottom-4 right-4 text-[0.65rem] text-gray-500'>
                     <button
