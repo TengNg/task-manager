@@ -55,7 +55,7 @@ const NavBar = () => {
 
     return (
         <>
-            <section id='header-section' className='w-full h-[70px] flex--center relative py-3 px-4'>
+            <section id='header-section' className='w-full h-[70px] flex--center relative gap-2 py-3 px-4'>
                 <div className='w-[40px] h-[40px]'></div>
 
                 <nav className="h-full top-4 m-auto border-gray-700 border-[2px] bg-gray-100 px-2 z-30">

@@ -57,7 +57,7 @@ export default function ListMenu({ list, setOpen, handleDelete, handleCopy, proc
             tabIndex={-1}
             ref={containerRef}
             onBlur={closeOnBlur}
-            className={`absolute top-0 left-0 outline-none z-10 bg-gray-100 border-gray-600 border-[2px] shadow-gray-600 box--style w-[225px] sm:w-[280px] p-3 ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}`}
+            className={`absolute top-0 left-0 outline-none z-10 bg-gray-100 border-gray-600 border-[2px] shadow-gray-600 box--style w-full p-3 ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}`}
         >
 
             <div className='border-b-[1px] border-b-black pb-2'>

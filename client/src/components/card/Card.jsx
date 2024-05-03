@@ -128,7 +128,7 @@ const Card = ({ index, card }) => {
                                         className='p-2 bg-gray-200 flex justify-center items-center rounded'
                                         style={{ backgroundColor: PRIORITY_LEVELS[`${card.priorityLevel}`]?.color?.rgba }}
                                     >
-                                        <span className='text-[0.65rem] text-gray-50 font-medium tracking-wider'>
+                                        <span className='text-[0.55rem] sm:text-[0.65rem] text-gray-50 font-medium tracking-wider'>
                                             {card.priorityLevel.toUpperCase()}
                                         </span>
                                     </div>
@@ -141,7 +141,7 @@ const Card = ({ index, card }) => {
                                     className='p-2 bg-gray-200 flex justify-center items-center rounded'
                                     style={{ backgroundColor: highlightColorsRGBA[`${card.highlight}`] }}
                                 >
-                                    <span className='text-[0.65rem] text-gray-700 font-medium'>
+                                    <span className='text-[0.55rem] sm:text-[0.65rem] text-gray-700 font-medium'>
                                         {card.owner}
                                     </span>
                                 </div>
@@ -150,7 +150,7 @@ const Card = ({ index, card }) => {
                             {card.description != "" && <FontAwesomeIcon icon={faAlignLeft} size='xs' />}
                         </div>
 
-                        <div className='font-medium sm:text-[0.65rem] text-[0.75rem] text-gray-700 mt-3 ms-[0.6rem]'>
+                        <div className='sm:text-[0.65rem] text-[0.75rem] text-gray-700 mt-3 ms-[0.6rem]'>
                             {
                                 card.createdAt
                                     ? <span>
@@ -164,7 +164,7 @@ const Card = ({ index, card }) => {
 
                         {
                             debugModeEnabled.enabled &&
-                            <div className='font-medium sm:text-[0.65rem] text-[0.75rem] text-gray-700 mt-1 ms-[0.6rem]'>rank: {card.order}</div>
+                            <div className='sm:text-[0.65rem] text-[0.75rem] text-gray-700 mt-1 ms-[0.6rem]'>rank: {card.order}</div>
                         }
 
                         {

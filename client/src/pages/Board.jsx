@@ -7,7 +7,6 @@ import useAuth from "../hooks/useAuth";
 import useKeyBinds from "../hooks/useKeyBinds";
 
 import { lexorank } from '../utils/class/Lexorank';
-import VISIBILITY_MAP from '../data/visibility';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbtack } from '@fortawesome/free-solid-svg-icons';
@@ -583,7 +582,7 @@ const Board = () => {
             {
                 boardState?.board?.visibility === 'private' &&
                 <div
-                    className="absolute left-4 top-4 text-[0.65rem] md:text-[0.75rem] text-gray-600 hover:text-gray-800 select-none"
+                    className="md:block hidden absolute left-4 top-4 text-[0.65rem] md:text-[0.75rem] text-gray-600 hover:text-gray-800 select-none"
                     title="this board is in private mode"
                 >
                     [private]
@@ -713,18 +712,18 @@ const Board = () => {
                     visibility
                 </button>
 
-                <div className='flex gap-4 absolute bottom-4 right-4 text-[0.65rem] text-gray-500'>
+                <div className='flex gap-4 absolute right-2 bottom-4 sm:right-4 text-[0.65rem] text-gray-500'>
                     <button
-                        className='w-[14px] h-[14px] bg-pink-200 hover:bg-pink-300 rounded-full'
+                        className='w-[12px] h-[12px] sm:w-[16px] sm:h-[16px] bg-pink-200 hover:bg-pink-300 rounded-full'
                         onClick={() => {
                             navigator.clipboard.writeText(boardState?.board?._id).then(() => {
                                 alert('copied board code to clipboard');
                             })
                         }}
-                        title='Copy board code'
+                        title='copy board code'
                     >
                     </button>
-                    <p>
+                    <p className='md:block hidden select-none'>
                         lists: {boardState?.board?.listCount || 0} / 20
                     </p>
                 </div>
