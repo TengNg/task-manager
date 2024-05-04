@@ -34,6 +34,14 @@ const handleAuthorizationAndGetWritedown = async (req, res) => {
     return { writedown };
 };
 
+const getWritedowns = async (req, res) => {
+    const { username } = req.user;
+    const foundUser = await getUser(username);
+    if (!foundUser) return res.status(403).json({ msg: "user not found" });
+    const writedowns = await Writedown.find({ owner: foundUser._id }).lean();
+    return res.status(200).json({ writedowns });
+};
+
 const getWritedown = async (req, res) => {
     const { writedown } = await handleAuthorizationAndGetWritedown(req, res);
     return res.status(200).json({ writedown });
@@ -74,6 +82,7 @@ const deleteWritedown = async (req, res) => {
 };
 
 module.exports = {
+    getWritedowns,
     getWritedown,
     reorder,
     updateContent,
