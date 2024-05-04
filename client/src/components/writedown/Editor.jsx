@@ -1,23 +1,25 @@
 import { useState, useEffect, useRef } from 'react'
+import Loading from '../ui/Loading';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import dateFormatter from '../../utils/dateFormatter';
 
-const Editor = ({ writedown, setWritedown }) => {
+const Editor = ({ writedown, setWritedown, saveWritedown, pinWritedown }) => {
     const dialog = useRef();
     const textarea = useRef();
 
-    const [content, setContent] = useState("");
+    const { content, createdAt, updatedAt } = writedown?.data;
 
     useEffect(() => {
         if (writedown.open) {
             dialog.current.showModal();
+            textarea.current.value = content || "";
+            textarea.current.style.height = `${textarea.current.scrollHeight}px`;
             textarea.current.focus();
 
             const handleOnClose = () => {
                 setWritedown(prev => {
-                    return { ...prev, open: false }
-                })
+                    return { ...prev, data: {}, open: false, pinned: false, processingMsg: '' }
+                });
             };
 
             dialog.current.addEventListener('close', handleOnClose);
@@ -28,57 +30,89 @@ const Editor = ({ writedown, setWritedown }) => {
         } else {
             dialog.current.close();
         }
-    }, [writedown.open]);
+    }, [writedown.open, writedown.data]);
 
     const handleCloseOnOutsideClick = (e) => {
         if (e.target === dialog.current) {
-            dialog.current.close();
-        } else {
-            textarea.current.focus();
+            handleClose();
+            return;
         }
+
+        textarea.current.focus();
     };
 
     const handleClose = () => {
-        dialog.current.close();
+        const { _id } = writedown.data;
+        try {
+            saveWritedown(_id, textarea.current.value);
+        } catch (err) {
+            alert('Failed to save writedown');
+        }
     };
 
     return (
         <dialog
             ref={dialog}
-            className='z-40 backdrop:bg-black/15 box--style gap-4 items-start min-w-[350px] w-[90%] lg:w-[80%] h-[80vh] border-black border-[2px] bg-gray-200'
+            className='z-40 backdrop:bg-black/15 min-w-[350px] overflow-y-hidden w-[90%] lg:w-[60%] h-[85vh] border-gray-500 border-[2.5px] border-dashed'
+            style={{
+                backgroundColor: 'rgba(235, 235, 235, 0.9)'
+            }}
             onClick={(e) => {
                 handleCloseOnOutsideClick(e);
             }}
+            onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    handleClose();
+                }
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                }
+            }}
+            onCancel={(e) => {
+                e.preventDefault();
+            }}
         >
 
+            <Loading
+                position={'absolute'}
+                loading={writedown.loading}
+                displayText={writedown.processingMsg || "loading..."}
+                fontSize='1rem'
+            />
+
             <button
-                className="text-gray-600 flex justify-center items-center absolute right-3 top-3 z-20"
-                onClick={handleClose}
+                title='pin'
+                className="absolute bg-gray-300 w-[12px] h-[12px] rounded-full left-3 top-3"
+                style={{ backgroundColor: writedown?.data?.pinned ? 'rgba(191, 155, 70, 0.75)' : '#d4d4d4' }}
+                onClick={() => pinWritedown(writedown?.data?._id)}
             >
-                <FontAwesomeIcon icon={faXmark} size='xl' />
             </button>
 
-            <div className="absolute w-full h-full py-8 px-10">
+            <button
+                title='close'
+                className="absolute bg-rose-600 w-[12px] h-[12px] rounded-full right-3 top-3 z-20 opacity-[65%]"
+                onClick={handleClose}
+            >
+            </button>
 
-                {
-                    !content &&
-                    <div className='absolute text-sm top-[45%] left-1/2 -translate-x-1/2 text-gray-400'>
-                        <p>
-                            writedown something...
-                        </p>
-                    </div>
-                }
+            <div className="w-full h-[97%] pt-8 pb-4 px-8">
 
                 <textarea
                     ref={textarea}
-                    className="font-medium w-full pb-2 bg-transparent focus:bg-transparent text-sm text-gray-600 leading-6 resize-none focus:outline-none"
-                    value={content}
+                    className="font-medium w-full max-h-full overflow-y-scroll bg-transparent focus:bg-transparent text-[11px] px-2 sm:text-sm text-gray-600 leading-6 resize-none focus:outline-none"
+                    placeholder="writedown something..."
                     onChange={(e) => {
-                        setContent(e.target.value)
                         e.target.style.height = 'auto';
                         e.target.style.height = `${e.target.scrollHeight}px`;
                     }}
                 />
+            </div>
+
+            <div className='flex flex-wrap gap-3 w-full justify-end pe-2 pb-2'>
+                <p className="text-gray-600 text-[9px] sm:text-[0.85rem]">
+                    created: {dateFormatter(createdAt, { weekdayFormat: true })} | updated: {dateFormatter(updatedAt, { weekdayFormat: true })}
+                </p>
             </div>
 
         </dialog>

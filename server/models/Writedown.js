@@ -7,25 +7,24 @@ const WritedownSchema = new mongoose.Schema({
         required: true,
     },
 
-    trackedId: {
-        type: String,
-        default: crypto.randomUUID(),
-        required: true,
-    },
-
     title: {
         type: String,
-        required: true,
+        default: ""
+    },
+
+    content: {
+        type: String,
+        default: ""
     },
 
     highlight: {
         type: String,
-        default: null,
+        default: ""
     },
 
-    rank: {
-        type: String,
-        required: true,
+    pinned: {
+        type: Boolean,
+        default: false
     },
 
     createdAt: {
@@ -36,7 +35,6 @@ const WritedownSchema = new mongoose.Schema({
 
     updatedAt: {
         type: Date,
-        required: true,
         default: Date.now,
     },
 });

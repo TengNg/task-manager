@@ -38,7 +38,7 @@ const getWritedowns = async (req, res) => {
     const { username } = req.user;
     const foundUser = await getUser(username);
     if (!foundUser) return res.status(403).json({ msg: "user not found" });
-    const writedowns = await Writedown.find({ owner: foundUser._id }).lean();
+    const writedowns = await Writedown.find({ owner: foundUser._id }).select('-content').sort({ pinned: -1, content: -1, createdAt: -1 }).lean();
     return res.status(200).json({ writedowns });
 };
 
@@ -47,32 +47,42 @@ const getWritedown = async (req, res) => {
     return res.status(200).json({ writedown });
 };
 
-const reorder = async (req, res) => {
-    const { writedown } = await handleAuthorizationAndGetWritedown(req, res);
-    writedown.rank = req.body.rank;
-    await writedown.save();
-    return res.status(200).json({ rank: writedown.rank });
+const createWritedown = async (req, res) => {
+    const { username } = req.user;
+
+    const foundUser = await getUser(username);
+    if (!foundUser) return res.status(403).json({ msg: "user not found" });
+
+    const newWritedown = new Writedown({
+        owner: foundUser._id
+    });
+
+    await newWritedown.save();
+
+    return res.status(201).json({ msg: 'new writedown added', newWritedown });
 };
 
-const updateContent = async (req, res) => {
+const saveWritedown = async (req, res) => {
     const { writedown } = await handleAuthorizationAndGetWritedown(req, res);
-    writedown.content = req.body.content;
+    const { content } = req.body;
+
+    const contentFirst50Chars = content.substring(0, 50);
+    writedown.content = content;
+    writedown.title = content.length > 50 ? contentFirst50Chars + "..." : contentFirst50Chars;
+
     await writedown.save();
-    return res.status(200).json({ newContnet: writedown.content });
+
+    const { _id, title, createdAt } = writedown;
+    const updatedWritedown = { _id, title, createdAt }
+
+    return res.status(200).json({ msg: 'writedown updated', updatedWritedown });
 };
 
-const updateTitle = async (req, res) => {
+const pinWritedown = async (req, res) => {
     const { writedown } = await handleAuthorizationAndGetWritedown(req, res);
-    writedown.title = req.body.title;
+    writedown.pinned = !writedown.pinned;
     await writedown.save();
-    return res.status(200).json({ newTitle: writedown.title });
-};
-
-const updateHighlight = async (req, res) => {
-    const { writedown } = await handleAuthorizationAndGetWritedown(req, res);
-    writedown.highlight = req.body.highlight;
-    await writedown.save();
-    return res.status(200).json({ newTitle: writedown.highlight });
+    return res.status(200).json({ message: 'writedown pinned', pinned: writedown.pinned });
 };
 
 const deleteWritedown = async (req, res) => {
@@ -84,9 +94,8 @@ const deleteWritedown = async (req, res) => {
 module.exports = {
     getWritedowns,
     getWritedown,
-    reorder,
-    updateContent,
-    updateTitle,
-    updateHighlight,
+    createWritedown,
+    saveWritedown,
+    pinWritedown,
     deleteWritedown,
 };

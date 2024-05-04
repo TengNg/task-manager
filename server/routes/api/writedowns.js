@@ -4,30 +4,22 @@ const router = express.Router();
 const {
     getWritedowns,
     getWritedown,
-    reorder,
-    updateContent,
-    updateTitle,
-    updateHighlight,
+    createWritedown,
+    saveWritedown,
+    pinWritedown,
     deleteWritedown,
 } = require('../../controllers/writedownsController');
 
 router.route("/")
     .get(getWritedowns)
+    .post(createWritedown)
 
-router.route("/:id")
+router.route("/:writedownId")
     .get(getWritedown)
     .delete(deleteWritedown)
+    .put(saveWritedown)
 
-router.route("/:id/rank")
-    .get(reorder)
-
-router.route("/:id/content")
-    .get(updateContent)
-
-router.route("/:id/title")
-    .get(updateTitle)
-
-router.route("/:id/highlight")
-    .get(updateHighlight)
+router.route("/:writedownId/pin")
+    .put(pinWritedown)
 
 module.exports = router;

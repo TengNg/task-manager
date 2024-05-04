@@ -1,5 +1,19 @@
-export default function dateFormatter(miliseconds, option = { withTime: true }) {
+export default function dateFormatter(miliseconds, option = { weekdayFormat: false, withTime: true }) {
+    if (!miliseconds) return '';
+
     const date = new Date(miliseconds);
+
+    if (option.weekdayFormat) {
+        const options = {
+            weekday: 'short',
+            month: 'short',
+            day: '2-digit'
+        };
+        const formattedDate = date.toLocaleDateString('en-US', options);
+        const time = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        return `${formattedDate} ${time}`;
+    }
+
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
