@@ -138,7 +138,7 @@ const getBoardStats = async (req, res) => {
 
     if (!foundBoard) return res.status(403).json({ msg: "board not found" });
 
-    const prioirtyLevelStats = await Card.aggregate([
+    const priorityLevelStats = await Card.aggregate([
         {
             $match: {
                 boardId: mongoose.Types.ObjectId.createFromHexString(id),
@@ -164,7 +164,7 @@ const getBoardStats = async (req, res) => {
         }
     ]);
 
-    res.status(200).json({ board: foundBoard, prioirtyLevelStats });
+    res.status(200).json({ board: foundBoard, priorityLevelStats });
 };
 
 const createBoard = async (req, res) => {

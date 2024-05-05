@@ -12,7 +12,6 @@ import Profile from './pages/Profile'
 import NotFound from './pages/NotFound'
 import Writedown from './pages/Writedown'
 import PersistLogin from './components/auth/PersistLogin'
-// import Missing from './pages/Missing'
 
 const noNavPaths = ["/login", "/register"];
 
