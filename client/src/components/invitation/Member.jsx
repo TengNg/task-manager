@@ -9,8 +9,8 @@ const Member = ({ auth, user, boardState, handleRemoveMemberFromBoard }) => {
                 <Avatar
                     username={user.username}
                     profileImage={user.profileImage}
+                    createdAt={user.createdAt}
                     size="md"
-                    clickable={false}
                 />
                 <div className="flex flex-col justify-center">
                     <p className="text-[0.75rem] text-gray-800 font-medium">{user.username} {auth?.user?.username === user.username && '(you)'}</p>

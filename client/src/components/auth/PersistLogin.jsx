@@ -18,6 +18,9 @@ const PersistLogin = () => {
                 await refresh();
             } catch (err) {
                 console.log(err);
+                if (err?.response?.status === 401) {
+                    navigate('/login');
+                }
             } finally {
                 isMounted && setIsLoading(false);
             }
@@ -43,7 +46,7 @@ const PersistLogin = () => {
                             <br />
                             <br />
 
-                            <div>
+                            <div className='text-gray-400 hover:text-gray-600'>
                                 <span className='text-[0.85rem] text-gray-500'>
                                     If the page takes too long to load, this might be probably due to a slow connecting time from the server.
                                 </span>

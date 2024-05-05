@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark, faExpand } from '@fortawesome/free-solid-svg-icons';
-import Chat from './Chat';
-import ChatInput from './ChatInput';
 import useBoardState from '../../hooks/useBoardState';
 import useAuth from '../../hooks/useAuth';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark, faExpand } from '@fortawesome/free-solid-svg-icons';
+
+import Chat from './Chat';
+import ChatInput from './ChatInput';
+import Loading from '../ui/Loading';
 
 const ChatBox = ({
     open,
@@ -64,8 +67,9 @@ const ChatBox = ({
             id="chat-box"
             className={`${open ? 'flex' : 'hidden'} fixed flex-col border-[2px] border-black right-0 bottom-0 sm:right-1 sm:bottom-1 bg-white w-[300px] h-[400px] overflow-auto z-30`}
         >
+
             <div className='relative flex items-center gap-3 border-b-2 border-black bg-white px-3 py-2'>
-                <p className='flex-1 font-semibold text-gray-600'>Chats</p>
+                <p className='flex-1 font-semibold text-gray-600'>Chat</p>
 
                 {
                     auth.user?.username === boardState.board.createdBy.username &&
@@ -93,6 +97,15 @@ const ChatBox = ({
                 className='relative flex-1 w-full border-red-100 flex flex-col gap-3 overflow-y-auto p-1'
                 onScroll={handleLoadMoreOnScroll}
             >
+
+                <Loading
+                    loading={isFetchingMore}
+                    position={'sticky'}
+                    fontSize={'0.75rem'}
+                    displayText={'getting messages...'}
+                />
+
+
                 {
                     chats.map((item, index) => {
                         return <Chat

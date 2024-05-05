@@ -1,15 +1,19 @@
-import React from 'react'
 import { useRef, useEffect, useState } from 'react';
 import useBoardState from '../../hooks/useBoardState';
+import useAuth from '../../hooks/useAuth';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faCompress } from '@fortawesome/free-solid-svg-icons';
+
 import Chat from './Chat';
 import ChatInput from './ChatInput';
-import useAuth from '../../hooks/useAuth';
+import Loading from '../ui/Loading';
 
 const FloatingChat = ({
     open,
     setOpen,
+    setOpenChatBox,
+
     sendMessage,
     deleteMessage,
     clearMessages,
@@ -72,10 +76,10 @@ const FloatingChat = ({
                 className={`fixed ${!open ? 'hidden' : 'block'} box-border top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-500 opacity-40 z-50 cursor-auto`}>
             </div>
 
-            <div className={`fixed ${!open ? 'hidden' : 'block'} box--style flex pt-1 flex-col top-[5rem] right-0 left-[50%] overflow-auto -translate-x-[50%] w-[90%] md:w-[80%] lg:w-[80%] xl:w-[50%] 2xl:w-[50%] h-[75%] border-[2px] border-black z-50 cursor-auto bg-gray-200`}>
+            <div className={`fixed ${!open ? 'hidden' : 'block'} box--style flex pt-1 flex-col top-[5rem] right-0 left-[50%] overflow-auto -translate-x-[50%] w-[90%] md:w-[80%] lg:w-[80%] xl:w-[50%] 2xl:w-[50%] h-[75%] border-[2px] border-black z-50 cursor-auto bg-gray-100`}>
 
-                <div className="flex justify-between items-center border-[1px] border-b-black pb-2 mx-3">
-                    <div>Chats</div>
+                <div className="flex justify-between items-center pb-2 mx-3">
+                    <div>Chat</div>
 
                     <div className='d-flex justify-center items-center'>
                         {
@@ -98,10 +102,20 @@ const FloatingChat = ({
                     </div>
                 </div>
 
+                <div className='h-[1px] bg-gray-700 w-full'></div>
+
                 <div
                     onScroll={handleLoadMoreOnScroll}
                     className='relative flex-1 w-full border-red-100 flex flex-col gap-3 overflow-auto py-3 px-3'
                 >
+
+                    <Loading
+                        loading={isFetchingMore}
+                        position={'sticky'}
+                        fontSize={'0.75rem'}
+                        displayText={'getting messages...'}
+                    />
+
                     {
                         chats.map((item, index) => {
                             return <Chat

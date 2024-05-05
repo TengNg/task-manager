@@ -61,7 +61,7 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
 
             // failed to reorder
             if (!ok) {
-                alert("Failed to reorder list, rank is not valid");
+                alert("Failed to reorder list, rank is not valid. You can try to drag to another place, then drag back to this position again.");
                 return;
             }
 
@@ -123,7 +123,7 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
         let [rank, ok] = lexorank.insert(prevRank, nextRank);
 
         if (!ok) {
-            alert("Failed to reorder card, rank is not valid");
+            alert("Failed to reorder card, rank is not valid. You can try to drag to another place, then drag back to this position again.");
             return;
         }
 

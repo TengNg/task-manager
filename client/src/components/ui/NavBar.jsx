@@ -40,7 +40,7 @@ const NavBar = () => {
     useEffect(() => {
         const handleOnKeyDown = (e) => {
             const isTextFieldFocused = document.querySelector('input:focus, textarea:focus');
-            if (isTextFieldFocused) return;
+            if (isTextFieldFocused || e.ctrlKey) return;
 
             if (e.key === '5') {
                 const recentlyViewedBoardId = auth?.user?.recentlyViewedBoardId;
@@ -77,7 +77,7 @@ const NavBar = () => {
                 {
                     (!pathname.includes('/b/') && auth?.user?.recentlyViewedBoardId) &&
                     <button
-                        title='Go to recently viewed board'
+                        title='Go to last viewed board'
                         className='absolute lg:top-5 sm:top-4 left-4 w-[12px] h-[12px] sm:w-[14px] sm:h-[14px] bg-pink-300 hover:bg-pink-400 rounded-full'
                         onClick={() => {
                             const recentlyViewedBoardId = auth?.user?.recentlyViewedBoardId;

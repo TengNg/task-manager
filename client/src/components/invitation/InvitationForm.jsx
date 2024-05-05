@@ -134,7 +134,7 @@ const InvitationForm = ({ open, setOpen }) => {
         <>
             <dialog
                 ref={dialog}
-                className='z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 h-fit min-w-[350px] max-h-[400px] border-black border-[2px] bg-gray-200'
+                className='z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 h-fit min-w-[350px] border-black border-[2px] bg-gray-200 overflow-hidden'
                 onClick={handleCloseOnOutsideClick}
             >
                 <Loading
@@ -174,13 +174,14 @@ const InvitationForm = ({ open, setOpen }) => {
                     {errMsg && <p className="absolute -top-2 left-1 text-center h-3 text-red-700 text-[0.65rem] font-semibold">{errMsg}</p>}
                 </div>
 
-                <div className="flex flex-col gap-3 w-full max-w-[400px] max-h-[400px] overflow-auto border-[1px] border-t-gray-600 p-0 py-3">
+                <div className="flex flex-col gap-3 w-full max-w-[400px] max-h-[250px] overflow-auto border-[1px] border-t-gray-600 p-0 py-3">
                     <div className="flex gap-1">
                         <Avatar
                             username={boardState.board.createdBy.username}
                             profileImage={boardState.board.createdBy.profileImage}
                             size="md"
-                            clickable={false}
+                            isAdmin={true}
+                            createdAt={auth?.user?.createdAt}
                         />
 
                         <div className="flex flex-col justify-center">
@@ -189,17 +190,15 @@ const InvitationForm = ({ open, setOpen }) => {
                         </div>
                     </div>
 
-                    {
-                        boardState.board.members.map((user, index) => {
-                            return <Member
-                                key={index}
-                                handleRemoveMemberFromBoard={handleRemoveMemberFromBoard}
-                                boardState={boardState}
-                                user={user}
-                                auth={auth}
-                            />
-                        })
-                    }
+                    {boardState.board.members.map((user, index) => {
+                        return <Member
+                            key={index}
+                            handleRemoveMemberFromBoard={handleRemoveMemberFromBoard}
+                            boardState={boardState}
+                            user={user}
+                            auth={auth}
+                        />
+                    })}
                 </div>
             </dialog>
         </>

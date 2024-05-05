@@ -26,6 +26,7 @@ export const BoardStateContextProvider = ({ children }) => {
         if (socket) {
             const url = new URL(location.href);
             const filter = url.searchParams.get("filter");
+            const priority = url.searchParams.get("priority");
 
             socket.on("boardClosed", (_) => {
                 setIsRemoved(true);
@@ -119,6 +120,11 @@ export const BoardStateContextProvider = ({ children }) => {
                     card["hiddenByFilter"] = !includesFilter;
                 }
 
+                if (priority) {
+                    const includesFilter = card.priorityLevel === priority;
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
                 addCardToList(card.listId, card);
             });
 
@@ -127,6 +133,11 @@ export const BoardStateContextProvider = ({ children }) => {
 
                 if (filter) {
                     const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                if (priority) {
+                    const includesFilter = card.priorityLevel === priority;
                     card["hiddenByFilter"] = !includesFilter;
                 }
 
@@ -142,6 +153,11 @@ export const BoardStateContextProvider = ({ children }) => {
 
                 if (filter) {
                     const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                if (priority) {
+                    const includesFilter = card.priorityLevel === priority;
                     card["hiddenByFilter"] = !includesFilter;
                 }
 
@@ -171,10 +187,13 @@ export const BoardStateContextProvider = ({ children }) => {
             socket.on("cardMovedToList", (data) => {
                 const { oldListId, newListId, insertedIndex, card } = data;
 
-                const url = new URL(location.href);
-                const filter = url.searchParams.get("filter");
                 if (filter) {
                     const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                if (priority) {
+                    const includesFilter = card.priorityLevel === priority;
                     card["hiddenByFilter"] = !includesFilter;
                 }
 

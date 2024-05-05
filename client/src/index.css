@@ -71,6 +71,10 @@
     .card--detail--button {
         @apply bg-gray-100 border-[2px] border-black shadow-[0_3px_0_0] w-fit text-[0.8rem] px-3 py-4 cursor-pointer
     }
+
+    .key {
+        @apply bg-gray-100 border-[1.5px] border-gray-600 shadow-[0_2px_0_0] shadow-gray-600 p-1 px-2 text-[10px] text-gray-600 font-medium hover:bg-slate-400 hover:text-white select-none
+    }
 }
 
 body,

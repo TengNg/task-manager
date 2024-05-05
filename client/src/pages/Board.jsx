@@ -25,6 +25,7 @@ import Members from "../components/board/Members";
 import Configuration from "../components/board/Configuration";
 import Filter from "../components/action-menu/Filter";
 import VisibilityConfig from "../components/board/VisibilityConfig";
+import KeyBindings from "../components/ui/KeyBindings";
 
 const chatsPerPage = 10;
 
@@ -82,11 +83,12 @@ const Board = () => {
         openAddList, setOpenAddList,
         focusedListIndex, setFocusedListIndex,
         focusedCardIndex, setFocusedCardIndex,
+        openKeyBindings, setOpenKeyBindings,
+        openConfiguration: openBoardConfiguration, setOpenConfiguration: setOpenBoardConfiguration
     } = useKeyBinds();
 
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
     const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
-    const [openBoardConfiguration, setOpenBoardConfiguration] = useState(false);
     const [pinned, setPinned] = useState(false);
 
     // chat messages ==================================================================================================
@@ -145,8 +147,6 @@ const Board = () => {
     }, [isDataLoaded, focusedListIndex, focusedCardIndex]);
 
     useEffect(() => {
-        console.log(boardId);
-
         setAuth(prev => {
             prev.user.recentlyViewedBoardId = boardId;
             return prev;
@@ -380,7 +380,7 @@ const Board = () => {
             socket.emit("moveCardByIndex", { cards, listId: card.listId });
         } catch (err) {
             console.log(err);
-            alert('Failed to create a copy of this card');
+            alert('Failed to move this card');
         }
     });
 
@@ -511,6 +511,11 @@ const Board = () => {
                 />
             }
 
+            <KeyBindings
+                open={openKeyBindings}
+                setOpen={setOpenKeyBindings}
+            />
+
             <CardDetail
                 open={openCardDetail}
                 setOpen={setOpenCardDetail}
@@ -627,7 +632,7 @@ const Board = () => {
                                 onClick={() => setOpenChatBox(prev => !prev)}
                                 className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
                                         ${(openChatBox || openFloatingChat) ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
-                            >Chats</div>
+                            >Chat</div>
                         </div>
 
                         <div>
@@ -718,9 +723,12 @@ const Board = () => {
                     visibility
                 </button>
 
-                <div className='flex gap-4 absolute right-2 bottom-4 sm:right-4 text-[0.65rem] text-gray-500'>
+                <div className='flex gap-3 absolute right-2 bottom-4 sm:right-4 text-[0.65rem] text-gray-500'>
+                    <p className='md:block hidden select-none'>
+                        lists: {boardState?.board?.listCount || 0} / 20
+                    </p>
                     <button
-                        className='w-[12px] h-[12px] sm:w-[16px] sm:h-[16px] bg-pink-200 hover:bg-pink-300 rounded-full'
+                        className='w-[16px] h-[16px] bg-pink-200 hover:bg-pink-300 rounded-full'
                         onClick={() => {
                             navigator.clipboard.writeText(boardState?.board?._id).then(() => {
                                 alert('copied board code to clipboard');
@@ -729,9 +737,16 @@ const Board = () => {
                         title='copy board code'
                     >
                     </button>
-                    <p className='md:block hidden select-none'>
-                        lists: {boardState?.board?.listCount || 0} / 20
-                    </p>
+
+                    <button
+                        className='w-[16px] h-[16px] bg-gray-500 hover:bg-gray-600 text-white rounded-full'
+                        onClick={() => {
+                            setOpenKeyBindings(prev => !prev)
+                        }}
+                        title='open help'
+                    >
+                        ?
+                    </button>
                 </div>
             </div>
 

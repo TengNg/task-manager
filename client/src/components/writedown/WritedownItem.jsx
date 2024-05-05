@@ -51,12 +51,12 @@ const WritedownItem = ({ writedown, open, remove }) => {
 
             {
                 title ?
-                    <pre
-                        className='max-w-[200px] text-gray-700 whitespace-pre-wrap hover:underline cursor-pointer'
+                    <p
+                        className='max-w-[200px] max-h-[100px] overflow-hidden text-gray-700 whitespace-pre-wrap hover:underline cursor-pointer'
                         onClick={() => open(id)}
                     >
                         {title}
-                    </pre>
+                    </p>
                     : <div
                         className='p-2 flex justify-center items-center rounded bg-gray-200 hover:bg-gray-300 cursor-pointer'
                         onClick={() => open(id)}

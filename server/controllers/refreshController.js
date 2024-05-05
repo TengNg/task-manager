@@ -8,7 +8,6 @@ const handleRefresh = async (req, res) => {
     const refreshToken = cookies.token;
 
     const foundUser = await User.findOne({ refreshToken }).select('-password -refreshToken');
-
     if (!foundUser) return res.status(500).json({ msg: "user not found" });
 
     jwt.verify(

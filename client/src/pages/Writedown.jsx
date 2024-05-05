@@ -60,6 +60,9 @@ const Writedown = () => {
 
     async function handleCreateWritedown() {
         setIsCreatingWritedown(true);
+
+        if (isCreatingWritedown) return;
+
         try {
             const response = await axiosPrivate.post("/personal_writedowns");
             const { newWritedown } = response.data;
@@ -95,6 +98,8 @@ const Writedown = () => {
     };
 
     async function handleDeleteWritedown(id) {
+        if (!confirm('Are you sure you want to delete this writedown?')) return;
+
         try {
             await axiosPrivate.delete(`/personal_writedowns/${id}`);
             setWritedowns(prev => {

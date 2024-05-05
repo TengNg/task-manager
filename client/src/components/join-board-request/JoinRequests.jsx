@@ -47,7 +47,7 @@ const JoinRequests = ({
 
                     {requests.map((item, index) => {
                         const { _id, boardId: board, requester, status, createdAt, updatedAt } = item;
-                        const { username: requesterName } = requester;
+                        const { username: requesterName, createdAt: requesterCreatedAt } = requester;
 
                         return <div
                             key={index}
@@ -59,6 +59,7 @@ const JoinRequests = ({
                                     <Avatar
                                         username={requesterName}
                                         noShowRole={true}
+                                        createdAt={requesterCreatedAt}
                                     />
                                 </div>
                                 <div className='flex flex-col justify-start text-gray-800'>

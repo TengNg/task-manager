@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import dateFormatter from "../../utils/dateFormatter";
 
 const UserAccount = () => {
     const [collapse, setCollapse] = useState(true);
@@ -90,6 +91,10 @@ const UserAccount = () => {
 
                             <div className='select-none font-medium text-[0.8rem] max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis text-gray-700'>
                                 username: {auth?.user?.username}
+                            </div>
+
+                            <div className='select-none font-medium text-[0.8rem] max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis text-gray-700'>
+                                joined at: {dateFormatter(auth?.user?.createdAt, { withTime: false })}
                             </div>
 
                             <div className='flex flex-col gap-2'>

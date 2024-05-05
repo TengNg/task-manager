@@ -72,10 +72,16 @@ const Home = () => {
                                         </div>
                                         <ul className='flex flex-col gap-2 ms-4 list-disc'>
                                             <li>
+                                                a: Scroll left
+                                            </li>
+                                            <li>
+                                                d: Scroll right
+                                            </li>
+                                            <li>
                                                 Ctrl + Arrow Keys: Navigate through task-cards
                                             </li>
                                             <li>
-                                                Ctrl + HJKL: Navigate through task-cards (for vim-users)
+                                                Ctrl + hjkl: Navigate through task-cards (for vim-users)
                                             </li>
                                             <li>
                                                 Ctrl + e: Open Pinned-board list

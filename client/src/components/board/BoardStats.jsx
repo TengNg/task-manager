@@ -83,9 +83,9 @@ const BoardStats = ({ boardStatsModal, setBoardStatsModal }) => {
                     <div className='flex gap-2'>
                         members:
                         <span className='font-medium'>
-                        {
-                            boardStatsModal.board?.members?.map(member => member.username).join(', ')
-                        }
+                            {
+                                boardStatsModal.board?.members?.map(member => member.username).join(', ')
+                            }
                         </span>
                     </div>
                 </div>
@@ -110,16 +110,53 @@ const BoardStats = ({ boardStatsModal, setBoardStatsModal }) => {
                     </p>
                 </div>
 
-                <div className='w-full flex flex-col gap-2 text-gray-700 text-[0.65rem] sm:text-[0.75rem] border-[1px] border-dashed border-gray-700 p-4'>
+                <div className='relative w-full flex flex-col gap-2 text-gray-700 text-[0.65rem] sm:text-[0.75rem] border-[1px] border-dashed border-gray-700 p-4'>
                     <p>stats:</p>
+
+                    <div className='flex items-center absolute right-2 top-2 gap-2'>
+                        <button
+                            className='text-[10px] text-gray-400 font-medium'
+                            onClick={() => {
+                                const json = JSON.stringify(boardStatsModal.stats, null, 2);
+                                navigator.clipboard.writeText(json).then(() => {
+                                    alert('stats copied to clipboard (as json format)');
+                                });
+                            }}
+                            title='Copy board stats (json format)'
+                        >
+                            json
+                        </button>
+                        <button
+                            className='w-[12px] h-[12px] bg-gray-300 hover:bg-gray-400 rounded-full'
+                            onClick={() => {
+                                let str = "";
+                                boardStatsModal.stats.forEach(item => {
+                                    str += `${item._id}: ${item.count}\n`;
+                                });
+
+                                navigator.clipboard.writeText(str).then(() => {
+                                    alert('stats copied to clipboard');
+                                });
+                            }}
+                            title='Copy board stats'
+                        >
+                        </button>
+                    </div>
+
                     {
                         boardStatsModal.stats.map(item => {
                             const { _id, count } = item;
                             return (<>
                                 <div
                                     key={_id}
-                                    className='w-full p-1 px-3 text-gray-50 font-semibold'
+                                    className='w-full p-1 px-3 text-gray-50 font-semibold cursor-pointer rounded-sm hover:opacity-80'
                                     style={{ backgroundColor: PRIORITY_LEVELS[`${_id}`]?.color?.rgba || 'rgba(133, 149, 173, 0.8)' }}
+                                    onClick={() => {
+                                        navigate({
+                                            pathname: `/b/${boardStatsModal?.board?._id}`,
+                                            search: `?priority=${_id}`,
+                                        })
+                                    }}
                                 >
                                     {_id.toUpperCase()}: {count}
                                 </div>

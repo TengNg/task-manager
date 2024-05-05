@@ -15,8 +15,20 @@ const useKeyBinds = () => {
     const [focusedListIndex, setFocusedListIndex] = useState(-1);
     const [focusedCardIndex, setFocusedCardIndex] = useState(0);
 
+    const [openKeyBindings, setOpenKeyBindings] = useState(false);
+    const [openConfiguration, setOpenConfiguration] = useState(false);
+
     useEffect(() => {
         const handleKeyDown = (event) => {
+            const key = event.key;
+
+            if (key === 'Escape') {
+                setOpenFloatingChat(false);
+                setOpenChatBox(false);
+                setOpenPinnedBoards(false);
+                return;
+            }
+
             const isTextFieldFocused = document.querySelector('input:focus');
             const isTextAreaFocused = document.querySelector('textarea:focus');
 
@@ -26,21 +38,20 @@ const useKeyBinds = () => {
 
             const formOpen = openFilter || openPinnedBoards || openFloatingChat || openInvitationForm || openAddList;
 
-            const key = event.key;
 
             if (event.ctrlKey) {
                 if (
                     key === 'e'
-                    || key === 'x'
                     || key === 'm'
                     || key === 'i'
-
                     || key === 'p'
+                    || key === 'x'
 
                     || key === 'h'
                     || key === 'j'
                     || key === 'k'
                     || key === 'l'
+                    || key === ';'
 
                     || key === 'ArrowLeft'
                     || key === 'ArrowRight'
@@ -110,13 +121,6 @@ const useKeyBinds = () => {
                 }
             }
 
-            if (key === 'Escape') {
-                setOpenFloatingChat(false);
-                setOpenChatBox(false);
-                setOpenPinnedBoards(false);
-                return;
-            }
-
             if (openPinnedBoards && key === 'Escape') {
                 setOpenPinnedBoards(false);
                 return;
@@ -139,6 +143,15 @@ const useKeyBinds = () => {
                 } else {
                     console.log('cant scroll');
                 }
+                return;
+            }
+
+            if (key === 'x' && !formOpen && !isTextFieldFocused && !isTextAreaFocused) {
+                setOpenConfiguration(prev => !prev);
+            }
+
+            if (key === '?' && !isTextFieldFocused && !isTextAreaFocused) {
+                setOpenKeyBindings(prev => !prev);
                 return;
             }
 
@@ -194,6 +207,10 @@ const useKeyBinds = () => {
         focusedListIndex, setFocusedListIndex,
 
         focusedCardIndex, setFocusedCardIndex,
+
+        openKeyBindings, setOpenKeyBindings,
+
+        openConfiguration, setOpenConfiguration
     };
 }
 

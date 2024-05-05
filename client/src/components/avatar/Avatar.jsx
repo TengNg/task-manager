@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import dateFormatter from "../../utils/dateFormatter";
 
 const SIZE = {
     'xsm': 'w-[20px] h-[20px]',
@@ -23,6 +24,7 @@ const Avatar = ({
     clickable = true,
     withBorder = false,
     noShowRole = false,
+    createdAt,
 }) => {
 
     const [collapse, setCollapse] = useState(true);
@@ -56,7 +58,10 @@ const Avatar = ({
     return (
         <div className="flex--center h-fit flex-col justify-start gap-2 relative">
             <div
-                onClick={() => clickable && setCollapse(collapse => !collapse)}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    clickable && setCollapse(collapse => !collapse)
+                }}
                 ref={userProfileImageRef}
                 className={`relative ${AVATAR_BG_COLORS[bgColor]} hover:opacity-[0.8] text-white flex--center text-[0.8rem] border-box ${withBorder && 'border-[4px] border-teal-600'} rounded-full bg-center bg-cover overflow-hidden ${clickable && 'cursor-pointer'} ${SIZE[size]}`}>
                 {
@@ -90,6 +95,7 @@ const Avatar = ({
                         <div className='select-none text-gray-700 max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis'>
                             <p className='text-[0.85rem] font-semibold'>@{username}</p>
                             {noShowRole === false && <p className='text-[0.65rem]'>{!isAdmin ? 'member' : 'owner'}</p>}
+                            <p className='text-[0.65rem]'>{dateFormatter(createdAt, { weekdayFormat: true })}</p>
                         </div>
                     </div>
 

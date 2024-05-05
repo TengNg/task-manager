@@ -60,6 +60,7 @@ export default function Invitations({
                                         profileImage={sender.profileImage}
                                         username={sender.username}
                                         noShowRole={true}
+                                        createdAt={sender.createdAt}
                                     />
                                 </div>
                                 <div className='flex flex-col justify-start text-gray-700'>

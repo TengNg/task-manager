@@ -66,9 +66,9 @@ const saveWritedown = async (req, res) => {
     const { writedown } = await handleAuthorizationAndGetWritedown(req, res);
     const { content } = req.body;
 
-    const contentFirst50Chars = content.substring(0, 50);
+    const contentFirst20Chars = content.substring(0, 25);
     writedown.content = content;
-    writedown.title = content.length > 50 ? contentFirst50Chars + "..." : contentFirst50Chars;
+    writedown.title = content.length > 25 ? contentFirst20Chars + "..." : contentFirst20Chars;
 
     await writedown.save();
 

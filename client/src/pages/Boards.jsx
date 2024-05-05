@@ -50,6 +50,11 @@ const Boards = () => {
 
     useEffect(() => {
         fetchBoards();
+
+        document.addEventListener('keydown', handleKeyDown);
+        () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        }
     }, []);
 
     useEffect(() => {
@@ -73,6 +78,32 @@ const Boards = () => {
             document.removeEventListener('click', closeBoxOutside);
         };
     }, [openBoardForm])
+
+    function handleKeyDown(e) {
+        const key = e.key;
+
+        if (key === 'Escape') {
+            setOpenBoardForm(false);
+            setOpenJoinBoardRequestForm(false);
+            return;
+        }
+
+        if (e.ctrlKey) {
+            if (key === 'j' || key === ';') {
+                e.preventDefault();
+            }
+
+            switch (key) {
+                case "j":
+                    setOpenJoinBoardRequestForm(prev => !prev);
+                    break;
+                case ";":
+                    setOpenBoardForm(prev => !prev);
+                default:
+                    break;
+            }
+        }
+    }
 
     function fetchBoards() {
         setIsDataLoaded(false);

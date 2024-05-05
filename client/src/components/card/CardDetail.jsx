@@ -201,7 +201,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                     position={'absolute'}
                     fontSize={'0.85rem'}
                     loading={processing.processing}
-                    displayText={'copying...'}
+                    displayText={'processing...'}
                 />
 
                 <div className='w-full h-full flex flex-col gap-3'>

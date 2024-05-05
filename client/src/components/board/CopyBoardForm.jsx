@@ -43,6 +43,8 @@ const CopyBoardForm = ({ setOpen }) => {
             <Loading
                 displayText={'Please wait, creating board...'}
                 loading={loading}
+                position={'absolute'}
+                fontSize={'0.75rem'}
             />
 
             <div className="fixed box--style flex flex-col items-start py-3 px-3 top-[5rem] right-0 left-[50%] -translate-x-[50%] w-fit min-w-[300px] h-[300px] min-h-[300px] border-black border-[2px] z-40 cursor-auto bg-gray-200">

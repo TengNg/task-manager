@@ -92,9 +92,6 @@ const getBoard = async (req, res) => {
     const listsWithCardsPromises = lists.map(async (list) => {
         const cards = await Card.find({ listId: list._id }).sort({ order: 'asc' }).lean();
 
-        // for making sure card belongs to board
-        await Card.updateMany({ listId: list._id }, { $set: { boardId: board._id } });
-
         return {
             ...list.toObject(),
             cards
