@@ -118,7 +118,19 @@ const Boards = () => {
     };
 
     if (!isDataLoaded) {
-        return <div className="font-semibold mx-auto text-center mt-20 text-gray-600">getting boards...</div>
+        return (
+            <section
+                id="boards"
+                className="w-full h-[calc(100%-75px)] overflow-auto pb-4"
+            >
+                <div className='mx-auto sm:w-3/4 w-[90%]'>
+                    <Title
+                        titleName="boards"
+                    />
+                </div>
+                <div className="font-semibold mx-auto text-center mt-20 text-gray-600">getting boards...</div>
+            </section>
+        )
     }
 
     return (

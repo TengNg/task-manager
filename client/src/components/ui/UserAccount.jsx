@@ -52,6 +52,16 @@ const UserAccount = () => {
         navigate(`/u/${auth?.user?.username}`);
     };
 
+    if (Object.keys(auth).length === 0 || !auth.accessToken) {
+        return (
+            <button onClick={() => navigate('/login')}
+                className="border-[2px] border-gray-600 shadow-gray-600 shadow-[0_3px_0_0] bg-gray-100 p-1 px-3 text-[0.75rem] font-medium text-gray-600"
+            >
+                Sign in
+            </button>
+        )
+    }
+
     return (
         <div id='user-account' className="relative h-fit gap-2 z-30">
             <div
@@ -69,7 +79,7 @@ const UserAccount = () => {
                     className='absolute bottom-0 right-0 translate-y-[105%] flex flex-col box--style shadow-gray-600 border-[2px] border-gray-600 p-3 select-none gap-4 bg-gray-100'
                 >
                     {
-                        Object.keys(auth).length > 0 ? <>
+                        Object.keys(auth).length > 0 && <>
                             <button
                                 className="absolute right-3 top-3 text-[0.8rem] text-gray-600"
                                 onClick={() => setCollapse(true)}
@@ -90,11 +100,11 @@ const UserAccount = () => {
                                     onClick={handleLogout}
                                     className="button--style--dark text-[0.75rem] font-medium text-gray-200">Log out</button>
                             </div>
-                        </> : <button onClick={() => navigate('/login')} className="button--style--dark w-[150px] text-[0.75rem] font-bold text-gray-200">Login</button>
+                        </>
                     }
+
                 </div>
             }
-
         </div>
     )
 }
