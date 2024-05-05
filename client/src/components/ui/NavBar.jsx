@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { useNavigate, NavLink } from "react-router-dom"
+import { useNavigate, useLocation, NavLink } from "react-router-dom"
 import UserAccount from "./UserAccount";
+import useAuth from '../../hooks/useAuth';
 
 const PAGES = Object.freeze({
     HOME: {
@@ -32,10 +33,21 @@ const KEYS = {
 };
 
 const NavBar = () => {
+    const navigate = useNavigate();
+    const { pathname } = useLocation();
+    const { auth } = useAuth();
+
     useEffect(() => {
         const handleOnKeyDown = (e) => {
             const isTextFieldFocused = document.querySelector('input:focus, textarea:focus');
             if (isTextFieldFocused) return;
+
+            if (e.key === '5') {
+                const recentlyViewedBoardId = auth?.user?.recentlyViewedBoardId;
+                if (recentlyViewedBoardId) {
+                    navigate(`/b/${recentlyViewedBoardId}`);
+                }
+            }
 
             const path = KEYS[e.key]?.path;
             if (!path) return;
@@ -48,15 +60,27 @@ const NavBar = () => {
         () => {
             document.removeEventListener('keydown', handleOnKeyDown);
         }
-
-    }, []);
-
-    const navigate = useNavigate();
+    }, [auth?.user?.recentlyViewedBoardId]);
 
     return (
         <>
             <section id='header-section' className='w-full h-[70px] flex--center relative gap-2 py-3 px-4'>
                 <div className='w-[40px] h-[40px]'></div>
+
+                {
+                    (!pathname.includes('/b/') && auth?.user?.recentlyViewedBoardId) &&
+                    <button
+                        title='Go to recently viewed board'
+                        className='absolute lg:top-5 sm:top-4 left-4 w-[12px] h-[12px] sm:w-[14px] sm:h-[14px] bg-pink-300 hover:bg-pink-400 rounded-full'
+                        onClick={() => {
+                            const recentlyViewedBoardId = auth?.user?.recentlyViewedBoardId;
+                            if (recentlyViewedBoardId) {
+                                navigate(`/b/${recentlyViewedBoardId}`);
+                            }
+                        }}
+                    >
+                    </button>
+                }
 
                 <nav className="h-full top-4 m-auto border-gray-700 border-[2px] bg-gray-100 px-2 z-30">
                     <ul className="w-[100%] h-[100%] flex justify-around items-center sm:gap-4 gap-2">

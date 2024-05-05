@@ -94,24 +94,6 @@ const Writedown = () => {
         }
     };
 
-    async function handlePinWritedown(id) {
-        try {
-            const response = await axiosPrivate.put(`/personal_writedowns/${id}/pin`);
-
-            if (writedown.open) {
-                setWritedown(prev => {
-                    return { ...prev, data: { ...prev.data, pinned: response.data.pinned } }
-                });
-            }
-
-            setWritedowns(prev => {
-                return prev.map(writedown => writedown._id === id ? { ...writedown, pinned: response.data.pinned } : writedown);
-            });
-        } catch (err) {
-            alert('Failed to pin writedown');
-        }
-    };
-
     async function handleDeleteWritedown(id) {
         try {
             await axiosPrivate.delete(`/personal_writedowns/${id}`);
@@ -129,7 +111,6 @@ const Writedown = () => {
                 writedown={writedown}
                 setWritedown={setWritedown}
                 saveWritedown={handleSaveWritedown}
-                pinWritedown={handlePinWritedown}
             />
 
             <section className="w-full h-[calc(100%-75px)] overflow-auto pb-4">
@@ -174,14 +155,13 @@ const Writedown = () => {
                             <div className="font-medium mx-auto text-center mt-10 text-gray-400">getting writedowns...</div>
                         ) : (
                             <div className="flex flex-wrap gap-4 justify-center items-center mt-4">
-                                {writedowns.map(writedown => {
+                                {writedowns.map(w => {
                                     return (
                                         <WritedownItem
-                                            key={writedown._id}
-                                            writedown={writedown}
+                                            key={w._id}
+                                            writedown={w}
                                             open={handleOpenWritedown}
                                             remove={handleDeleteWritedown}
-                                            pin={handlePinWritedown}
                                         />
                                     )
                                 })}

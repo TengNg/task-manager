@@ -184,10 +184,10 @@ const Profile = () => {
             setBoardStatsModal({ board: {}, stats: [], open: true, loadingData: true });
 
             const response = await fetchBoardStats(boardId);
-            const { board, prioirtyLevelStats } = response.data;
+            const { board, priorityLevelStats } = response.data;
 
             const priorityOrder = ['none', 'low', 'medium', 'high', 'critical'];
-            prioirtyLevelStats.sort((a, b) => {
+            priorityLevelStats.sort((a, b) => {
                 const indexA = priorityOrder.indexOf(a._id);
                 const indexB = priorityOrder.indexOf(b._id);
                 return indexA - indexB;
@@ -197,7 +197,7 @@ const Profile = () => {
                 return {
                     ...prev,
                     board,
-                    stats: prioirtyLevelStats,
+                    stats: priorityLevelStats,
                     loadingData: false
                 }
             })

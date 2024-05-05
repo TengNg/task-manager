@@ -13,7 +13,7 @@ const Home = () => {
 
                     <div className="flex flex-col gap-4 justify-between items-center">
                         <p className="text-justify text-gray-500">
-                            Docs + Guides + History Tracking
+                            Docs + Guides
                         </p>
                         <button
                             onClick={() => navigate("/boards")}

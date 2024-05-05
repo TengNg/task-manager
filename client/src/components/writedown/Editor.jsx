@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import Loading from '../ui/Loading';
 
 import dateFormatter from '../../utils/dateFormatter';
@@ -82,15 +82,7 @@ const Editor = ({ writedown, setWritedown, saveWritedown, pinWritedown }) => {
             />
 
             <button
-                title='pin'
-                className="absolute bg-gray-300 w-[12px] h-[12px] rounded-full left-3 top-3"
-                style={{ backgroundColor: writedown?.data?.pinned ? 'rgba(191, 155, 70, 0.75)' : '#d4d4d4' }}
-                onClick={() => pinWritedown(writedown?.data?._id)}
-            >
-            </button>
-
-            <button
-                title='close'
+                title='save & close'
                 className="absolute bg-rose-600 w-[12px] h-[12px] rounded-full right-3 top-3 z-20 opacity-[65%]"
                 onClick={handleClose}
             >

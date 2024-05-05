@@ -70,7 +70,6 @@ const Board = () => {
         setAuth
     } = useAuth();
 
-
     const axiosPrivate = useAxiosPrivate();
 
     const {
@@ -146,6 +145,13 @@ const Board = () => {
     }, [isDataLoaded, focusedListIndex, focusedCardIndex]);
 
     useEffect(() => {
+        console.log(boardId);
+
+        setAuth(prev => {
+            prev.user.recentlyViewedBoardId = boardId;
+            return prev;
+        });
+
         socket.emit("joinBoard", { boardId, username: auth?.user?.username });
         setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
 
