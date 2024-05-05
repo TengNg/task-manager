@@ -49,6 +49,13 @@ const NavBar = () => {
                 }
             }
 
+            if (e.key === '0') {
+                const uname = auth?.user?.username;
+                if (uname) {
+                    navigate(`/u/${uname}`);
+                }
+            }
+
             const path = KEYS[e.key]?.path;
             if (!path) return;
 

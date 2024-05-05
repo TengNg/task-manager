@@ -46,7 +46,19 @@ const Home = () => {
                                         <div className='underline'>Global Keybinds:</div>
                                         <ul className='flex flex-col gap-2 ms-4 list-disc'>
                                             <li>
-                                                1, 2, 3, 4: Navigate through pages
+                                                0: Navigate to Profile
+                                            </li>
+                                            <li>
+                                                1: Navigate to Home
+                                            </li>
+                                            <li>
+                                                2: Navigate to Boards
+                                            </li>
+                                            <li>
+                                                3: Navigate to Writedown
+                                            </li>
+                                            <li>
+                                                4: Navigate to Activities
                                             </li>
                                             <li>
                                                 5: Navigate to Last Viewed Board

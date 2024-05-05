@@ -45,7 +45,6 @@ const Profile = () => {
         } else if (username != auth?.user?.username) {
             navigate('/notfound');
         } else {
-            usernameInputRef.current.focus();
             usernameInputRef.current.value = auth.user.username;
         }
 
