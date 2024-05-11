@@ -5,6 +5,7 @@ const Board = require('../models/Board.js');
 const { lexorank } = require('../lib/lexorank.js');
 
 const { isActionAuthorized } = require('../services/boardActionAuthorizeService');
+const saveBoardActivity = require('../services/saveBoardActivity');
 
 const getListCount = async (req, res) => {
     const { boardId } = req.params;
@@ -38,17 +39,29 @@ const addList = async (req, res) => {
 const reorder = async (req, res) => {
     const { username } = req.user;
     const { id } = req.params;
-    const { rank } = req.body;
+    const { rank, sourceIndex, destinationIndex } = req.body;
 
     const foundList = await List.findById(id);
     if (!foundList) return res.status(403).json({ msg: "list not found" });
 
     const { boardId } = foundList;
-    const { user: _, authorized } = await isActionAuthorized(boardId, username);
+    const { user, authorized } = await isActionAuthorized(boardId, username);
     if (!authorized) return res.status(403).json({ msg: "unauthorized" });
 
     foundList.order = rank;
     foundList.save();
+
+    await saveBoardActivity({
+        boardId,
+        userId: user._id,
+        listId: foundList._id,
+        action: "update list rank",
+        type: "list",
+        description: `(${sourceIndex}) > (${destinationIndex})`,
+        previousState: sourceIndex,
+        updatedState: destinationIndex,
+        createdAt: foundList.updatedAt,
+    })
 
     res.status(200).json({ message: 'list updated', newList: foundList });
 };

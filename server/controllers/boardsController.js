@@ -9,6 +9,8 @@ const User = require("../models/User");
 const { isActionAuthorized } = require('../services/boardActionAuthorizeService');
 const { userByUsername: getUser } = require('../services/userService');
 
+const saveBoardActivity = require('../services/saveBoardActivity');
+
 const getBoards = async (req, res) => {
     const { username } = req.user;
 
@@ -102,10 +104,6 @@ const getBoard = async (req, res) => {
 
     const memberships = await BoardMembership
         .find({ boardId: board._id })
-        //.populate({
-        //    path: 'userId',
-        //    select: 'username '
-        //})
         .lean();
 
     return res.json({
@@ -186,12 +184,23 @@ const updateTitle = async (req, res) => {
     const { title } = req.body;
     const { username } = req.user;
 
-    const { board, user: _, authorized } = await isActionAuthorized(id, username);
+    const { board, user, authorized } = await isActionAuthorized(id, username);
+    const currentTitle = board.title;
 
     if (!authorized) return res.status(403).json({ msg: "unauthorized" });
 
     board.title = title;
     board.save();
+
+    if (title !== currentTitle) {
+        await saveBoardActivity({
+            boardId: id,
+            userId: user._id,
+            action: "update board title",
+            type: "board",
+            description: `${currentTitle} > ${title}`,
+        })
+    }
 
     return res.status(200).json({ msg: 'board updated', newBoard: board });
 };
@@ -201,12 +210,20 @@ const updateDescription = async (req, res) => {
     const { description } = req.body;
     const { username } = req.user;
 
-    const { board, user: _, authorized } = await isActionAuthorized(id, username);
+    const { board, user, authorized } = await isActionAuthorized(id, username);
 
     if (!authorized) return res.status(403).json({ msg: "unauthorized" });
 
     board.description = description;
     board.save();
+
+    await saveBoardActivity({
+        boardId: id,
+        userId: user._id,
+        action: "update board description",
+        type: "board",
+        description: board.description,
+    })
 
     return res.status(200).json({ msg: 'board updated', newBoard: board });
 };

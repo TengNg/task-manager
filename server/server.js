@@ -52,6 +52,7 @@ app.use("/chats", require("./routes/api/chats"));
 app.use("/join_board_requests", require("./routes/api/joinBoardRequests"));
 app.use("/account/edit", require("./routes/api/account"));
 app.use("/personal_writedowns", require("./routes/api/writedowns"));
+app.use("/board_activities", require("./routes/api/boardActivities"));
 
 app.use(errorHandler);
 

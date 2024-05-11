@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom"
+import { useNavigate, useSearchParams, useParams, useLocation } from "react-router-dom"
 
 import useBoardState from "../hooks/useBoardState";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
@@ -26,6 +26,7 @@ import Configuration from "../components/board/Configuration";
 import Filter from "../components/action-menu/Filter";
 import VisibilityConfig from "../components/board/VisibilityConfig";
 import KeyBindings from "../components/ui/KeyBindings";
+import BoardActivities from "../components/activity-history/BoardActivities";
 
 const chatsPerPage = 10;
 
@@ -42,8 +43,11 @@ const Board = () => {
         focusedCard: _focusedCard,
         setFocusedCard,
 
+        setOpenedCard,
+
         openCardDetail,
         setOpenCardDetail,
+
         setCardDetailListId,
 
         addCardToList,
@@ -84,12 +88,15 @@ const Board = () => {
         focusedListIndex, setFocusedListIndex,
         focusedCardIndex, setFocusedCardIndex,
         openKeyBindings, setOpenKeyBindings,
-        openConfiguration: openBoardConfiguration, setOpenConfiguration: setOpenBoardConfiguration
+        openConfiguration: openBoardConfiguration, setOpenConfiguration: setOpenBoardConfiguration,
+        openBoardActivities, setOpenBoardActivities
     } = useKeyBinds();
 
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
     const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
     const [pinned, setPinned] = useState(false);
+
+    const [cardDetailAbortController, setCardDetailAbortController] = useState(null);
 
     // chat messages ==================================================================================================
     const [chatsPage, setChatsPage] = useState(1);
@@ -114,6 +121,32 @@ const Board = () => {
     const boardVisibility = useMemo(() => {
         return boardState?.board?.visibility || 'private'
     }, [boardState?.board?.visibility]);
+
+    const [searchParams, _] = useSearchParams();
+
+    useEffect(() => {
+        const cardId = searchParams.get('card');
+        if (!cardId) {
+            return;
+        }
+
+        const getCardData = async () => {
+            try {
+                const controller = new AbortController();
+                setCardDetailAbortController(controller);
+                setOpenCardDetail(true);
+                setOpenedCard(undefined);
+                const response = await axiosPrivate.get(`/cards/${cardId}`, { signal: controller.signal });
+                const { card } = response.data;
+                setOpenedCard(card);
+            } catch (err) {
+                console.log(err);
+                alert('Failed to get card data');
+            }
+        }
+
+        getCardData();
+    }, [searchParams]);
 
     useEffect(() => {
         if (isRemoved) {
@@ -511,12 +544,19 @@ const Board = () => {
                 />
             }
 
+            <BoardActivities
+                boardId={boardState.board._id}
+                open={openBoardActivities}
+                setOpen={setOpenBoardActivities}
+            />
+
             <KeyBindings
                 open={openKeyBindings}
                 setOpen={setOpenKeyBindings}
             />
 
             <CardDetail
+                abortController={cardDetailAbortController}
                 open={openCardDetail}
                 setOpen={setOpenCardDetail}
                 processing={processingCard}
@@ -672,6 +712,7 @@ const Board = () => {
                                     board={boardState.board}
                                     setOpenCopyBoardForm={setOpenCopyBoardForm}
                                     setOpenBoardConfiguration={setOpenBoardConfiguration}
+                                    setOpenBoardActivities={setOpenBoardActivities}
                                 />
                             }
                         </div>

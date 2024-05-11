@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 const { isActionAuthorized } = require('../services/boardActionAuthorizeService');
 const { userByUsername } = require('../services/userService');
+const saveBoardActivity = require('../services/saveBoardActivity');
 
 const listById = (id, option = { lean: true }) => {
     const foundList = List.findById(id);
@@ -54,22 +55,39 @@ const addCard = async (req, res) => {
 
 const reorder = async (req, res) => {
     const { id } = req.params;
-    const { rank, listId, timestamp } = req.body;
+    const { rank, listId, timestamp, sourceIndex, destinationIndex } = req.body;
 
-    const foundCard = await cardById(id, { lean: false });
+    const foundCard = await Card.findById(id).populate({
+        path: 'listId',
+        select: '-_id title'
+    });
+
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
+    const currentCardListTitle = foundCard.listId.title;
 
     const foundList = await listById(listId);
     if (!foundList) return res.status(404).json({ error: 'List not found' });
+    const updatedCardListTitle = foundList.title;
 
     const { boardId } = foundList;
-    const { authorized } = await isActionAuthorized(boardId, req.user.username);
+    const { user, authorized } = await isActionAuthorized(boardId, req.user.username);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     foundCard.order = rank;
     foundCard.listId = listId;
     foundCard.updatedAt = timestamp;
     await foundCard.save();
+
+    await saveBoardActivity({
+        boardId,
+        userId: user._id,
+        cardId: foundCard._id,
+        listId: foundList._id,
+        action: "update card position",
+        type: "card",
+        description: `${currentCardListTitle} (${sourceIndex}) > ${updatedCardListTitle} (${destinationIndex})`,
+        createdAt: foundCard.updatedAt,
+    })
 
     res.status(200).json({ message: 'card updated', newCard: foundCard });
 };
@@ -132,12 +150,24 @@ const updatePriorityLevel = async (req, res) => {
     const foundCard = await cardById(id, { lean: false });
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
 
+    const currentPriorityLevel = foundCard.priorityLevel;
+
     const { boardId } = foundCard;
-    const { authorized } = await isActionAuthorized(boardId, req.user.username);
+    const { user, authorized } = await isActionAuthorized(boardId, req.user.username);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     foundCard.priorityLevel = priorityLevel;
     await foundCard.save();
+
+    await saveBoardActivity({
+        boardId,
+        userId: user._id,
+        cardId: foundCard._id,
+        action: "update card priority level",
+        type: "card",
+        description: `${currentPriorityLevel} > ${priorityLevel}`,
+        createdAt: foundCard.updatedAt,
+    })
 
     res.status(200).json({ message: 'card updated', newCard: foundCard });
 };
