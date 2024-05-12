@@ -1,55 +1,115 @@
-import { NavLink, useLocation } from "react-router-dom"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouse, faListCheck, faEnvelope, faChalkboard } from '@fortawesome/free-solid-svg-icons';
+import { useEffect } from 'react';
+import { useNavigate, useLocation, NavLink } from "react-router-dom"
 import UserAccount from "./UserAccount";
-import useAppContext from '../../hooks/useAppContext';
+import useAuth from '../../hooks/useAuth';
+
+const PAGES = Object.freeze({
+    HOME: {
+        path: '/',
+        title: 'home',
+    },
+
+    BOARDS: {
+        path: '/boards',
+        title: 'boards',
+    },
+
+    WRITEDOWN: {
+        path: '/writedown',
+        title: 'writedown',
+    },
+
+    ACTIVITIES: {
+        path: '/activities',
+        title: 'activities',
+    },
+});
+
+const KEYS = {
+    '1': PAGES.HOME,
+    '2': PAGES.BOARDS,
+    '3': PAGES.WRITEDOWN,
+    '4': PAGES.ACTIVITIES,
+};
 
 const NavBar = () => {
-    const location = useLocation();
-    const { pathname } = location;
+    const navigate = useNavigate();
+    const { pathname } = useLocation();
+    const { auth } = useAuth();
 
-    const { invitations, _ } = useAppContext();
+    useEffect(() => {
+        const handleOnKeyDown = (e) => {
+            const isTextFieldFocused = document.querySelector('input:focus, textarea:focus');
+            if (isTextFieldFocused || e.ctrlKey) return;
 
-    const pendingInvitations = invitations.filter(inv => inv.status === "pending");
+            if (e.key === '5') {
+                const recentlyViewedBoardId = auth?.user?.recentlyViewedBoardId;
+                if (recentlyViewedBoardId) {
+                    navigate(`/b/${recentlyViewedBoardId}`);
+                }
+            }
+
+            if (e.key === '0') {
+                const uname = auth?.user?.username;
+                if (uname) {
+                    navigate(`/u/${uname}`);
+                }
+            }
+
+            const path = KEYS[e.key]?.path;
+            if (!path) return;
+
+            navigate(path, { replace: true });
+        };
+
+        document.addEventListener('keydown', handleOnKeyDown);
+
+        () => {
+            document.removeEventListener('keydown', handleOnKeyDown);
+        }
+    }, [auth?.user?.recentlyViewedBoardId]);
 
     return (
         <>
-            <section className={`w-full flex--center z-20 ${pathname.includes('/b/') ? 'fixed top-0' : 'relative'}`}>
-                {/* <section className={`w-full flex--center z-20 relative`}> */}
-                <UserAccount />
-                <nav className="h-[3rem] mt-[1rem] mx-auto border-gray-700 border-[2px] bg-gray-100 rounded-lg px-4">
-                    <ul className="w-[100%] h-[100%] flex justify-around items-center gap-5">
-                        <li>
-                            <NavLink to="/" className={({ isActive }) => isActive ? 'anchor--style--selected' : 'anchor--style'} >
-                                <FontAwesomeIcon icon={faHouse} />
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/boards" className={({ isActive }) => isActive ? 'anchor--style--selected' : 'anchor--style'} >
-                                <FontAwesomeIcon icon={faChalkboard} />
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/todo-list" className={({ isActive }) => isActive ? 'anchor--style--selected' : 'anchor--style'} >
-                                <FontAwesomeIcon icon={faListCheck} />
-                            </NavLink>
-                        </li>
-                        <li className="relative">
-                            {
-                                pendingInvitations.length > 0 &&
-                                <span className="flex--center w-[0.8rem] h-[0.8rem] bg-rose-500 text-white text-[0.5rem] rounded-full absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/4">
-                                    {pendingInvitations.length}
-                                </span>
+            <section id='header-section' className='w-full h-[70px] flex--center relative gap-2 py-3 px-4'>
+                <div className='w-[40px] h-[40px]'></div>
+
+                {
+                    (!pathname.includes('/b/') && auth?.user?.recentlyViewedBoardId) &&
+                    <button
+                        title='Go to last viewed board'
+                        className='absolute lg:top-5 sm:top-4 left-4 w-[12px] h-[12px] sm:w-[14px] sm:h-[14px] bg-pink-300 hover:bg-pink-400 rounded-full'
+                        onClick={() => {
+                            const recentlyViewedBoardId = auth?.user?.recentlyViewedBoardId;
+                            if (recentlyViewedBoardId) {
+                                navigate(`/b/${recentlyViewedBoardId}`);
                             }
-                            <NavLink
-                                to={{ pathname: '/activities', state: 'hello' }}
-                                className={({ isActive }) => isActive ? 'anchor--style--selected' : 'anchor--style'}
-                            >
-                                <FontAwesomeIcon icon={faEnvelope} />
-                            </NavLink>
-                        </li>
+                        }}
+                    >
+                    </button>
+                }
+
+                <nav className="h-full top-4 m-auto border-gray-700 border-[2px] bg-gray-100 px-2 z-30">
+                    <ul className="w-[100%] h-[100%] flex justify-around items-center sm:gap-4 gap-2">
+                        {
+                            Object.values(PAGES).map((el, index) => {
+                                const { path, title } = el;
+                                const num = `0${index + 1}`;
+                                return <li key={path}>
+                                    <NavLink to={path} className={({ isActive }) => isActive ? 'anchor--style--selected' : 'anchor--style'} >
+                                        <div className='md:text-[0.75rem] text-[0.65rem]'>
+                                            <span className='md:inline hidden'>{num}</span>
+                                            <span className='md:inline hidden'>{" "}</span>
+                                            <span>{title}</span>
+                                        </div>
+                                    </NavLink>
+                                </li>
+                            })
+                        }
                     </ul>
                 </nav>
+
+                <UserAccount />
             </section>
         </>
     )

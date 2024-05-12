@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { MAX_BOARD_COUNT } = require('../data/limits');
 
 const boardSchema = new mongoose.Schema({
     title: {
@@ -6,7 +7,22 @@ const boardSchema = new mongoose.Schema({
         required: true,
     },
 
-    description: String,
+    description: {
+        type: String,
+        default: "",
+    },
+
+    visibility: {
+        type: String,
+        enum: ['private', 'public'],
+        default: 'private',
+        required: true,
+    },
+
+    listCount: {
+        type: Number,
+        default: 0
+    },
 
     members: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -24,20 +40,32 @@ const boardSchema = new mongoose.Schema({
         required: true,
         default: Date.now,
     },
-
-    lastViewed: {
-        type: Date,
-        required: true,
-        default: Date.now,
-    },
-
-    // labels: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Label',
-    // }],
 });
 
-const Board = mongoose.model('Board', boardSchema);
+// update list count & save new board_membership
+boardSchema.pre('save', async function(next) {
+    if (this.isNew) {
+        const Board = mongoose.model('Board');
+        const boardCount = await Board.countDocuments({ createdBy: this.createdBy });
 
-module.exports = Board;
+        if (boardCount >= MAX_BOARD_COUNT) {
+            const error = new Error(`Maximum board count reached (maximum: ${MAX_BOARD_COUNT})`);
+            return next(error);
+        }
 
+        const BoardMembership = mongoose.model('BoardMembership');
+        await BoardMembership.create({
+            boardId: this._id,
+            userId: this.createdBy,
+            role: 'owner',
+        });
+    }
+});
+
+// // delete all related board_memberships
+// boardSchema.post('findOneAndDelete', async function(doc, _next) {
+//     const BoardMembership = mongoose.model('BoardMembership');
+//     await BoardMembership.deleteMany({ boardId: doc._id, });
+// });
+
+module.exports = mongoose.model('Board', boardSchema);

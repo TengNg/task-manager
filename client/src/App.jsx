@@ -1,5 +1,6 @@
 import './App.css'
 import './index.css'
+import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -10,33 +11,46 @@ import Board from './pages/Board'
 import Activities from './pages/Activities'
 import Profile from './pages/Profile'
 import NotFound from './pages/NotFound'
-import TodoList from './pages/TodoList'
-// import Missing from './pages/Missing'
+import Writedown from './pages/Writedown'
+import PersistLogin from './components/auth/PersistLogin'
 
 const noNavPaths = ["/login", "/register"];
 
+const titles = {
+    '/profile': '00 About',
+    '/': '01 home',
+    '/home': '01 home',
+    '/boards': '02 boards',
+    '/writedown': '03 writedown',
+    '/activities': '04 activities',
+}
+
 function App() {
-    const { pathname } = useLocation();
+    const location = useLocation()
+    const { pathname } = location;
+
+    useEffect(() => {
+        if (pathname.includes('/b/')) return;
+        document.title = titles[pathname] || 'tamago-start';
+    }, [location]);
 
     return (
         <>
             {!noNavPaths.includes(pathname) && <NavBar />}
             <Routes>
-                {/* <Route path="/" element={ */}
-                {/*     <RequireAuth> */}
-                {/*         <Home /> */}
-                {/*     </RequireAuth> */}
-                {/* } /> */}
-
-                <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/b/:boardId/" element={<Board />} />
-                <Route path="/boards" element={<Boards />} />
-                <Route path="/todo-list" element={<TodoList />} />
-                <Route path="/activities" element={<Activities />} />
-                <Route path="/u/:username" element={<Profile />} />
-                <Route path="*" element={<NotFound />} />
+
+                <Route element={<PersistLogin />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/home" element={<Home />} />
+                    <Route path="/b/:boardId/" element={<Board />} />
+                    <Route path="/boards" element={<Boards />} />
+                    <Route path="/writedown" element={<Writedown />} />
+                    <Route path="/activities" element={<Activities />} />
+                    <Route path="/u/:username" element={<Profile />} />
+                    <Route path="*" element={<NotFound />} />
+                </Route>
             </Routes>
         </>
     )

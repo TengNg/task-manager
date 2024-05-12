@@ -1,23 +1,23 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { axiosPrivate } from '../api/axios';
 import Title from '../components/ui/Title';
+import Loading from '../components/ui/Loading';
 
 export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [errMsg, setErrMsg] = useState("");
     const [success, setSuccess] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const { setAuth } = useAuth();
 
     const usernameInputEl = useRef();
 
     const navigate = useNavigate();
-    const location = useLocation();
-    const from = location.state?.from?.pathname || "/";
 
     useEffect(() => {
         const isLoggedIn = async () => {
@@ -26,14 +26,16 @@ export default function Login() {
                 navigate('/boards', { replace: true });
             }
         }
-        isLoggedIn().catch(_ => {
+        isLoggedIn().catch(err => {
+            console.log(err);
             setSuccess(false);
-            usernameInputEl.current.focus();
         });
     }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+
         try {
             const response = await axiosPrivate.post('/login', JSON.stringify({ username: username.trim(), password }));
             const accessToken = response?.data?.accessToken;
@@ -54,20 +56,29 @@ export default function Login() {
 
             navigate('/login', { replace: true });
         }
+
+        setLoading(false);
     }
 
     return (
         <>
-            <section className='relative w-[100%] h-[100vh] flex items-center flex-col p-5 gap-2 bg-gray-300'>
+            <section className='relative w-[100%] h-[100vh] bg-gray-300 flex items-center flex-col p-5 gap-2'>
+                <Loading
+                    position={'absolute'}
+                    loading={loading}
+                    displayText={'please wait, logging in...'}
+                />
+
                 <Title titleName={"Login"} />
 
-                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4'>
+                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 bg-gray-100'>
                     <label htmlFor="username">Username</label>
                     <input
                         className='border-[3px] border-black p-1 font-semibold'
                         type="text"
                         id="username"
                         autoComplete="off"
+                        autoFocus
                         ref={usernameInputEl}
                         onChange={(e) => setUsername(e.target.value)}
                         value={username}
@@ -86,7 +97,7 @@ export default function Login() {
                     />
 
                     <div className='h-[1rem] w-[100%] my-1 flex--center'>
-                        {success === false && <p className='text-xs text-red-700 top-[1rem] right-[1rem] font-bold select-none'>{errMsg}</p>}
+                        {success === false && <p className='text-[0.65rem] text-red-700 top-[1rem] right-[1rem] font-bold select-none'>{errMsg}</p>}
                     </div>
 
                     <button className='button--style--dark flex--center'>Log in</button>
@@ -96,7 +107,7 @@ export default function Login() {
                 <div className='flex flex-col font-normal select-none mt-4'>
                     Don't have an account?
                     <Link className='text-black hover:text-black' to="/register">
-                        <button className='button--style'>Sign up</button>
+                        <button className='button--style mt-1'>Sign up</button>
                     </Link>
                 </div>
 

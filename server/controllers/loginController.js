@@ -9,7 +9,7 @@ const handleLogin = async (req, res) => {
 
     if (!username || !password) res.status(400).json({ msg: "Username and password are required" });
 
-    const foundUser = await User.findOne({ username });
+    const foundUser = await User.findOne({ username }).lean();
     if (!foundUser) return res.status(401).json({ msg: "Unauthorized" });
 
     const validPwd = await bcrypt.compare(password, foundUser.password);
@@ -27,7 +27,7 @@ const handleLogin = async (req, res) => {
         { expiresIn: '1d' }
     );
 
-    const currentUser = await User.findOneAndUpdate({ username }, { refreshToken }, { new: true });
+    const currentUser = await User.findOneAndUpdate({ username }, { refreshToken }, { new: true }).select('-password -refreshToken');
 
     res.cookie(
         'token',
@@ -40,13 +40,13 @@ const handleLogin = async (req, res) => {
         }
     );
 
-    const userData = {
-        profileImage: currentUser.profileImage,
-        username: currentUser.username,
-    };
+    // const userData = {
+    //     profileImage: currentUser.profileImage,
+    //     username: currentUser.username,
+    // };
 
     return res.status(200).json({
-        user: userData,
+        user: currentUser,
         accessToken,
         refreshToken,
     });

@@ -1,45 +1,49 @@
 import { useRef, useState, useEffect } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeftLong } from '@fortawesome/free-solid-svg-icons';
 
-const ChatInput = ({ sendMessage }) => {
+const ChatInput = ({ sendMessage, withSentButton = false, setIsFetchingMore, setScrollToBottom }) => {
     const [message, setMessage] = useState("");
     const textAreaRef = useRef();
 
-    const send = (e) => {
-        e.preventDefault();
-        if (e.target.value.trim() === "") return;
+    useEffect(() => {
+        const textarea = textAreaRef.current;
+        textarea.style.height = '2.35rem';
+        textarea.style.height = `${textarea.scrollHeight}px`;
+    }, []);
+
+    const send = () => {
         sendMessage(textAreaRef.current.value.trim());
         setMessage("");
         textAreaRef.current.style.height = '2.35rem';
     };
 
-    useEffect(() => {
-        const textarea = textAreaRef.current;
-        textarea.style.height = '2rem';
-        const littleOffset = 4; // prevent resizing when start typing
-        textarea.style.height = `${textarea.scrollHeight + littleOffset}px`;
-    }, []);
-
     const handleTextAreaChanged = () => {
         const textarea = textAreaRef.current;
         setMessage(textarea.value);
-        const littleOffset = 4;
-        textarea.style.height = '2rem';
-        textarea.style.height = `${textarea.scrollHeight + littleOffset}px`;
+        textarea.style.height = '2.35rem';
+        textarea.style.height = `${textarea.scrollHeight}px`;
     };
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
+            if (e.target.value.trim() === "") return;
             e.preventDefault();
             send(e);
-        } else if (e.key === 'Enter' && e.shiftKey) {
-            setMessage(message + '\n');
+            setScrollToBottom(true)
+        }
+    };
+
+    const handleSentButtonOnClick = () => {
+        if (message) {
+            send(message);
         }
     };
 
     return (
-        <form className="flex w-full px-1 py-2 gap-1 bg-gray-200 justify-start items-start">
+        <div className="flex w-full py-2 gap-1 bg-transparent justify-start items-start">
             <textarea
-                className="text-[0.75rem] bg-gray-100 h-[2rem] max-h-[100px] border rounded-md border-gray-400 leading-normal overflow-y-auto resize-none w-full py-2 px-3 font-medium placeholder-gray-500 focus:outline-none focus:bg-white"
+                className="text-[0.75rem] bg-gray-100 min-h-[2.35rem] max-h-[100px] border border-gray-400 leading-normal overflow-y-auto resize-none w-full py-2 px-3 font-medium placeholder-gray-500 focus:outline-none focus:bg-white"
                 placeholder='Write something...'
                 ref={textAreaRef}
                 value={message}
@@ -49,7 +53,16 @@ const ChatInput = ({ sendMessage }) => {
             >
             </textarea>
 
-        </form>
+            {
+                withSentButton &&
+                <button
+                    className="d-flex h-100 justify-center items-center h-[2.35rem] text-gray-500 border-[2px] border-gray-500 px-3 hover:text-white hover:bg-gray-500 transition-all"
+                    onClick={handleSentButtonOnClick}
+                >
+                    <FontAwesomeIcon icon={faArrowLeftLong} size='sm' />
+                </button>
+            }
+        </div>
     )
 }
 

@@ -1,6 +1,6 @@
-const Loading = ({ position = 'fixed', loading, displayText = 'Loading...' }) => {
+const Loading = ({ position = 'fixed', loading, displayText = 'Loading...', fontSize = '1.25rem', zIndex = '50' }) => {
     return (
-        <div className={`${position} top-0 left-0 text-gray-600 font-bold h-full text-[1.25rem] w-full bg-white opacity-70 z-50 flex--center ${loading === false && 'hidden'}`}>
+        <div className={`${loading ? position : 'hidden'} ${position} text-[${fontSize}] z-${zIndex} select-none top-0 left-0 text-gray-600 font-medium h-full w-full bg-white opacity-70 flex--center`}>
             {displayText}
         </div>
     )

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 
-const TextArea = ({ autoFocus = false, ref, initialValue, minHeight, ...props }) => {
-    const textAreaRef = ref || useRef(null);
+const TextArea = ({ autoFocus = false, initialValue, minHeight, ...props }) => {
+    const textAreaRef = useRef(null);
     const [text, setText] = useState(initialValue || "");
 
     useEffect(() => {
@@ -27,6 +27,7 @@ const TextArea = ({ autoFocus = false, ref, initialValue, minHeight, ...props })
         ref={textAreaRef}
         onChange={handleTextAreaChanged}
         value={text}
+        autoFocus={autoFocus}
         {...props}
     />
 }

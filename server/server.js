@@ -1,4 +1,5 @@
 require('dotenv').config();
+require('express-async-errors');
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -8,6 +9,7 @@ const authenticateToken = require("./middlewares/authenticateToken.js");
 const errorHandler = require('./middlewares/errorHandler');
 const credentials = require('./middlewares/credentials');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
 const app = express();
 
@@ -28,6 +30,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(bodyParser.json())
 
 app.get("/", (_, res) => {
     res.json({ msg: "home page" });
@@ -46,7 +49,10 @@ app.use("/lists", require("./routes/api/lists"));
 app.use("/cards", require("./routes/api/cards"));
 app.use("/invitations", require("./routes/api/invitations"));
 app.use("/chats", require("./routes/api/chats"));
+app.use("/join_board_requests", require("./routes/api/joinBoardRequests"));
 app.use("/account/edit", require("./routes/api/account"));
+app.use("/personal_writedowns", require("./routes/api/writedowns"));
+app.use("/board_activities", require("./routes/api/boardActivities"));
 
 app.use(errorHandler);
 

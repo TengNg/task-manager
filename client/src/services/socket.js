@@ -1,5 +1,7 @@
 import io from 'socket.io-client';
 
-const socket = io.connect("http://localhost:3000");
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
+
+const socket = io.connect(SOCKET_URL);
 
 export default socket;

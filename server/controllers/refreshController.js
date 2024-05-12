@@ -4,12 +4,11 @@ const jwt = require('jsonwebtoken');
 
 const handleRefresh = async (req, res) => {
     const cookies = req.cookies;
-    if (!cookies?.token) return res.status(401).json({ msg: "error" });
+    if (!cookies?.token) return res.status(401).json({ msg: "currently not logged in" });
     const refreshToken = cookies.token;
 
-    const foundUser = await User.findOne({ refreshToken });
-
-    if (!foundUser) return res.status(403).json({ msg: "user not found" }); // Forbidden
+    const foundUser = await User.findOne({ refreshToken }).select('-password -refreshToken');
+    if (!foundUser) return res.status(500).json({ msg: "user not found" });
 
     jwt.verify(
         refreshToken,
@@ -23,7 +22,7 @@ const handleRefresh = async (req, res) => {
                 process.env.ACCESS_TOKEN,
                 { expiresIn: '600s' }
             );
-            res.json({ accessToken })
+            res.json({ user: foundUser, accessToken })
         }
     );
 }

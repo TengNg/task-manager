@@ -6,13 +6,18 @@ import useBoardState from '../../hooks/useBoardState';
 import AddList from './AddList';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { lexorank } from '../../utils/class/Lexorank';
+import useAuth from '../../hooks/useAuth';
 
-const ListContainer = () => {
+const ListContainer = ({ openAddList, setOpenAddList }) => {
     const {
         boardState,
         setBoardState,
         socket,
     } = useBoardState();
+
+    const {
+        auth
+    } = useAuth();
 
     const listContainerRef = useRef();
 
@@ -25,6 +30,12 @@ const ListContainer = () => {
     }, []);
 
     const handleOnDragEnd = async (result) => {
+        if (boardState?.board?.createdBy?._id !== auth?.user?._id &&
+            !boardState?.board?.members.map(member => member._id).includes(auth?.user?._id)) {
+            alert("You don't have permission, please join the board first");
+            return;
+        };
+
         const { destination, source, type } = result;
 
         if (!destination) return;
@@ -32,7 +43,8 @@ const ListContainer = () => {
         const { index: destIndex } = destination;
         const { index: srcIndex } = source
 
-        const tempLists = [...boardState.lists]; // need this when failed to reorder
+        // deep copy, need this when failed to reorder
+        let tempLists = JSON.parse(JSON.stringify([...boardState.lists]));
 
         if (type === "LIST") {
             const newLists = [...boardState.lists];
@@ -45,73 +57,104 @@ const ListContainer = () => {
             let prevRank = newLists[destIndex - 1]?.order;
             let nextRank = newLists[destIndex + 1]?.order;
 
-            let [rank, _] = lexorank.insert(prevRank, nextRank);
+            let [rank, ok] = lexorank.insert(prevRank, nextRank);
+
+            // failed to reorder
+            if (!ok) {
+                alert("Failed to reorder list, rank is not valid. You can try to drag to another place, then drag back to this position again.");
+                return;
+            }
+
             const removedId = removed._id;
 
             removed.order = rank;
 
             try {
                 setBoardState(prev => {
-                    return { ...prev, lists: newLists };
+                    return { ...prev, lists: newLists }
                 });
-                await axiosPrivate.put(`/lists/${removedId}/reorder`, JSON.stringify({ rank }));
-                socket.emit("updateLists", newLists);
+
+                await axiosPrivate.put(`/lists/${removedId}/reorder`, JSON.stringify({ rank, sourceIndex: srcIndex, destinationIndex: destIndex }));
+                socket.emit("moveList", { listId: removedId, fromIndex: srcIndex, toIndex: destIndex });
             } catch (err) {
+                alert("Failed to reorder list");
                 setBoardState(prev => {
                     return { ...prev, lists: tempLists };
                 });
-                console.log(err);
             }
+
+            return;
+        }
+
+        // type CARD ============================================================================================
+
+        let currentLists = boardState.lists;
+
+        const fromList = currentLists.find(list => list._id === source.droppableId);
+        const toList = currentLists.find(list => list._id === destination.droppableId);
+
+        // dragging outside
+        if (!fromList || !toList) return;
+
+        // dragging to the same location
+        if (fromList._id === toList._id && source.index === destination.index) return;
+
+        const fromListCards = fromList.cards;
+        const toListCards = toList.cards;
+
+        // get dragged card
+        const [removed] = fromListCards.splice(source.index, 1);
+        const removedId = removed._id;
+
+        let prevRank = '';
+        let nextRank = '';
+
+        if (fromList._id === toList._id) {
+            fromListCards.splice(destination.index, 0, removed);
+            prevRank = fromListCards[destIndex - 1]?.order;
+            nextRank = fromListCards[destIndex + 1]?.order;
         } else {
-            const currentLists = JSON.parse(JSON.stringify(boardState.lists)); // deep copy
-            const fromList = currentLists.find(list => list._id === source.droppableId);
-            const toList = currentLists.find(list => list._id === destination.droppableId);
+            toListCards.splice(destination.index, 0, removed);
+            removed.listId = destination.droppableId;
+            prevRank = toListCards[destIndex - 1]?.order;
+            nextRank = toListCards[destIndex + 1]?.order;
+        }
 
-            // dragging outside
-            if (!fromList || !toList) return;
+        let [rank, ok] = lexorank.insert(prevRank, nextRank);
 
-            // dragging to the same location
-            if (fromList._id === toList._id && source.index === destination.index) return;
+        if (!ok) {
+            alert("Failed to reorder card, rank is not valid. You can try to drag to another place, then drag back to this position again.");
+            return;
+        }
 
-            const fromListCards = fromList.cards;
-            const toListCards = toList.cards;
+        removed.order = rank;
+        removed.updatedAt = new Date();
 
-            // get dragged card
-            const [removed] = fromListCards.splice(source.index, 1);
-            const removedId = removed._id;
+        try {
+            setBoardState(prev => {
+                return { ...prev, lists: currentLists };
+            });
 
-            let rank = '';
+            const response = await axiosPrivate.put(`/cards/${removedId}/reorder`, JSON.stringify({
+                rank,
+                listId: removed.listId,
+                timestamp: removed.updatedAt,
+                sourceIndex: srcIndex,
+                destinationIndex: destIndex
+            }));
+            const newCard = response.data.newCard;
 
-            if (fromList._id === toList._id) {
-                fromListCards.splice(destination.index, 0, removed);
-
-                let prevRank = fromListCards[destIndex - 1]?.order;
-                let nextRank = fromListCards[destIndex + 1]?.order;
-                rank = lexorank.insert(prevRank, nextRank)[0];
-                removed.order = rank;
-
-            } else {
-                toListCards.splice(destination.index, 0, removed);
-                removed.listId = destination.droppableId;
-
-                let prevRank = toListCards[destIndex - 1]?.order;
-                let nextRank = toListCards[destIndex + 1]?.order;
-                rank = lexorank.insert(prevRank, nextRank)[0];
-                removed.order = rank;
-            }
-
-            try {
-                setBoardState(prev => {
-                    return { ...prev, lists: currentLists };
-                });
-                await axiosPrivate.put(`/cards/${removedId}/reorder`, JSON.stringify({ rank, listId: removed.listId }));
-                socket.emit("updateLists", currentLists);
-            } catch (err) {
-                setBoardState(prev => {
-                    return { ...prev, lists: tempLists };
-                });
-                console.log(err);
-            }
+            socket.emit("moveCardToList", {
+                oldListId: source.droppableId,
+                newListId: newCard.listId,
+                insertedIndex: destIndex,
+                card: newCard
+            });
+        } catch (err) {
+            alert("Failed to reorder card");
+            setBoardState(prev => {
+                return { ...prev, lists: tempLists };
+            });
         }
     };
 
@@ -125,8 +168,9 @@ const ListContainer = () => {
                             provided.innerRef(element)
                             listContainerRef.current = element
                         }}
+                        id="list-container"
                         ignoreContainerClipping={true}
-                        className='flex min-h-[90%] h-[90%] items-start justify-start border-black'
+                        className='flex justify-start items-start h-full overflow-x-auto border-black px-4 pb-4'
                     >
                         {boardState.lists.map((list, index) => (
                             <List
@@ -136,14 +180,17 @@ const ListContainer = () => {
                                 cards={list?.cards || []}
                             />
                         ))}
+
                         {provided.placeholder}
 
-                        <AddList />
+                        <AddList
+                            open={openAddList}
+                            setOpen={setOpenAddList}
+                        />
                     </div>
                 )}
             </Droppable>
         </DragDropContext>
-
     );
 };
 

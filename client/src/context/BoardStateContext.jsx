@@ -1,17 +1,88 @@
 import { createContext, useEffect, useState } from "react";
 import socket from "../services/socket";
 
+import useLocalStorage from "../hooks/useLocalStorage";
+import LOCAL_STORAGE_KEYS from "../data/localStorageKeys";
+
 const BoardStateContext = createContext({});
 
 export const BoardStateContextProvider = ({ children }) => {
     const [boardState, setBoardState] = useState({});
+    const [pendingInvitations, setPendingInvitations] = useState(0);
     const [chats, setChats] = useState([]);
     const [isRemoved, setIsRemoved] = useState(false);
+    const [openMoveListForm, setOpenMoveListForm] = useState(false);
+    const [focusedCard, setFocusedCard] = useState();
+    const [openCardDetail, setOpenCardDetail] = useState(false);
+    const [openedCard, setOpenedCard] = useState(undefined);
+    const [openedCardQuickEditor, setOpenedCardQuickEditor] = useState(undefined);
+    const [listToMove, setListToMove] = useState();
+    const [hasFilter, setHasFilter] = useState(false);
+
+    const [theme, setTheme] = useLocalStorage(LOCAL_STORAGE_KEYS.BOARD_ITEM_THEME, {});
+    const [debugModeEnabled, setDebugModeEnabled] = useLocalStorage(LOCAL_STORAGE_KEYS.DEBUG_MODE_ENABLED, {});
 
     useEffect(() => {
         if (socket) {
-            socket.on("removedFromBoard", (_) => {
+            const url = new URL(location.href);
+            const filter = url.searchParams.get("filter");
+            const priority = url.searchParams.get("priority");
+
+            socket.on("boardClosed", (_) => {
                 setIsRemoved(true);
+            });
+
+            socket.on("memberKicked", (data) => {
+                const { userSocketId } = data;
+                if (socket.id === userSocketId) {
+                    window.location.reload();
+                }
+            });
+
+            socket.on("memberLeaved", (data) => {
+                const { username } = data;
+                removeMemberFromBoard(username);
+            });
+
+            socket.on("cardOwnerUpdated", (data) => {
+                const { cardId, listId, username } = data;
+                setCardOwner(cardId, listId, username);
+            });
+
+            socket.on("cardPriorityLevelUpdated", (data) => {
+                const { cardId, listId, priorityLevel } = data;
+                setCardPriorityLevel(cardId, listId, priorityLevel);
+            });
+
+            socket.on("invitationAccepted", (data) => {
+                const { username, profileImage: _ } = data;
+                addMemberToBoard({ username });
+            });
+
+            socket.on("getBoardWithMovedListAdded", (data) => {
+                const { list, cards, index } = data;
+
+                setBoardState(prev => {
+                    const newLists = [...prev.lists]
+                    newLists.splice(index, 0, { ...list, cards });
+                    return { ...prev, lists: newLists }
+                });
+            });
+
+            socket.on("listMoved", (data) => {
+                const { listId: _, fromIndex, toIndex } = data;
+                setBoardState(prev => {
+                    const newLists = [...prev.lists]
+                    const currentList = newLists.splice(fromIndex, 1)[0];
+                    newLists.splice(toIndex, 0, currentList);
+                    return { ...prev, lists: newLists }
+                });
+            });
+
+            socket.on("getBoardWithUpdatedLists", (data) => {
+                setBoardState(prev => {
+                    return { ...prev, lists: data }
+                });
             });
 
             socket.on("getBoardWithUpdatedLists", (data) => {
@@ -37,16 +108,98 @@ export const BoardStateContextProvider = ({ children }) => {
                 addListToBoard(newList);
             });
 
-            socket.on("deletedList", (data) => {
-                deleteList(data);
+            socket.on("deletedList", (listId) => {
+                deleteList(listId);
             });
 
             socket.on("newCard", (data) => {
-                addCardToList(data.listId, data);
+                const card = data;
+
+                if (filter) {
+                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                if (priority) {
+                    const includesFilter = card.priorityLevel === priority;
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                addCardToList(card.listId, card);
+            });
+
+            socket.on("copyCard", (data) => {
+                const { card, index } = data;
+
+                if (filter) {
+                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                if (priority) {
+                    const includesFilter = card.priorityLevel === priority;
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                addCopiedCard(card, index);
             });
 
             socket.on("deletedCard", (data) => {
                 deleteCard(data.listId, data.cardId);
+            });
+
+            socket.on("cardMoved", (data) => {
+                const { oldListId, newListId, cardId, newCard: card } = data;
+
+                if (filter) {
+                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                if (priority) {
+                    const includesFilter = card.priorityLevel === priority;
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                deleteCard(oldListId, cardId);
+                addCardToList(newListId, card);
+            });
+
+            socket.on("cardMovedByIndex", (data) => {
+                let { cards, listId } = data;
+
+                if (filter) {
+                    cards = cards.map(card => {
+                        const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                        card["hiddenByFilter"] = !includesFilter;
+                        return card;
+                    });
+                }
+
+                setBoardState(prev => {
+                    return {
+                        ...prev,
+                        lists: prev.lists.map(list => list._id === listId ? { ...list, cards } : list)
+                    };
+                });
+            });
+
+            socket.on("cardMovedToList", (data) => {
+                const { oldListId, newListId, insertedIndex, card } = data;
+
+                if (filter) {
+                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                if (priority) {
+                    const includesFilter = card.priorityLevel === priority;
+                    card["hiddenByFilter"] = !includesFilter;
+                }
+
+                const cardId = card._id;
+                deleteCard(oldListId, cardId);
+                addCardToListByIndex(newListId, card, insertedIndex);
             });
 
             socket.on("updatedListTitle", (data) => {
@@ -68,8 +221,28 @@ export const BoardStateContextProvider = ({ children }) => {
             socket.on("receiveMessage", (data) => {
                 setChats(prev => [...prev, data]);
             });
+
+            socket.on("messageDeleted", (data) => {
+                setChats(prev => {
+                    return prev.filter(chat => chat.trackedId !== data.trackedId);
+                });
+            });
+
+            socket.on("messagesCleared", (_) => {
+                setChats([]);
+            });
         }
+        return () => {
+            // socket.off('receiveMessage');
+            socket.off();
+        };
     }, []);
+
+    const setBoardVisibility = (value) => {
+        setBoardState(prev => {
+            return { ...prev, board: { ...prev.board, visibility: value } };
+        });
+    };
 
     const setBoardTitle = (value) => {
         setBoardState(prev => {
@@ -128,6 +301,48 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
+    const setCardDetailHighlight = (highlight) => {
+        setOpenedCard(prev => {
+            return { ...prev, highlight }
+        });
+    };
+
+    const setCardDetailListId = (listId) => {
+        setOpenedCard(prev => {
+            return { ...prev, listId }
+        });
+    };
+
+    const setCardQuickEditorHighlight = (highlight) => {
+        setOpenedCardQuickEditor(prev => {
+            return { ...prev, card: { ...prev.card, highlight } }
+        });
+    };
+
+    const setCardOwner = (cardId, listId, value) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.map(list => list._id === listId ? {
+                    ...list,
+                    cards: list.cards.map(card => card._id === cardId ? { ...card, owner: value } : card)
+                } : list)
+            }
+        });
+    };
+
+    const setCardPriorityLevel = (cardId, listId, value) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.map(list => list._id === listId ? {
+                    ...list,
+                    cards: list.cards.map(card => card._id === cardId ? { ...card, priorityLevel: value } : card)
+                } : list)
+            }
+        });
+    };
+
     const addListToBoard = (list) => {
         setBoardState(prev => {
             return {
@@ -153,6 +368,40 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
+    const addCardToListByIndex = (listId, card, index) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.map(list => {
+                    if (list._id === listId) {
+                        const cards = [...list.cards];
+                        cards.splice(index, 0, card);
+                        return { ...list, cards };
+                    } else {
+                        return list;
+                    }
+                })
+            };
+        });
+    };
+
+    const addCopiedCard = (card, index) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.map(list => {
+                    if (list._id === card.listId) {
+                        const cards = [...list.cards];
+                        cards.splice(index + 1, 0, card);
+                        return { ...list, cards };
+                    } else {
+                        return list;
+                    }
+                })
+            };
+        });
+    };
+
     const deleteCard = (listId, cardId) => {
         setBoardState(prev => {
             return {
@@ -164,7 +413,6 @@ export const BoardStateContextProvider = ({ children }) => {
                     } : list)
             };
         });
-
     };
 
     const deleteList = (listId) => {
@@ -176,13 +424,25 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
-    const removeMemberFromBoard = (memberId) => {
+    const removeMemberFromBoard = (memberName) => {
         setBoardState(prev => {
             return {
                 ...prev,
                 board: {
                     ...prev.board,
-                    members: prev.board.members.filter(member => member._id !== memberId)
+                    members: prev.board.members.filter(member => member.username !== memberName)
+                }
+            };
+        });
+    };
+
+    const addMemberToBoard = (member) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                board: {
+                    ...prev.board,
+                    members: [...prev.board.members, { username: member.username, profileImage: member.profileImage }]
                 }
             };
         });
@@ -193,6 +453,8 @@ export const BoardStateContextProvider = ({ children }) => {
             value={{
                 boardState,
                 setBoardState,
+
+                setBoardVisibility,
                 setBoardTitle,
                 setBoardDescription,
 
@@ -202,18 +464,54 @@ export const BoardStateContextProvider = ({ children }) => {
                 setCardTitle,
                 setCardDescription,
                 setCardHighlight,
+                setCardOwner,
+                setCardPriorityLevel,
+
                 deleteCard,
 
                 addListToBoard,
                 addCardToList,
+                addCopiedCard,
+
+                pendingInvitations,
+                setPendingInvitations,
 
                 removeMemberFromBoard,
+                addMemberToBoard,
 
                 setChats,
                 chats,
 
                 isRemoved,
                 setIsRemoved,
+
+                openedCard,
+                setOpenedCard,
+
+                openCardDetail,
+                setOpenCardDetail,
+
+                openedCardQuickEditor,
+                setOpenedCardQuickEditor,
+
+                setCardDetailHighlight,
+                setCardDetailListId,
+
+                setCardQuickEditorHighlight,
+
+                openMoveListForm,
+                setOpenMoveListForm,
+
+                listToMove,
+                setListToMove,
+
+                focusedCard,
+                setFocusedCard,
+
+                theme, setTheme,
+                debugModeEnabled, setDebugModeEnabled,
+
+                hasFilter, setHasFilter,
 
                 socket,
             }}

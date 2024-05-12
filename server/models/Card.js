@@ -1,18 +1,9 @@
 const mongoose = require('mongoose');
 
 const cardSchema = new mongoose.Schema({
-    title: {
+    trackedId: {
         type: String,
-        required: true,
-    },
-
-    description: {
-        type: String,
-        default: null,
-    },
-
-    order: {
-        type: String,
+        default: crypto.randomUUID(),
         required: true,
     },
 
@@ -22,16 +13,53 @@ const cardSchema = new mongoose.Schema({
         required: true,
     },
 
-    createdAt: {
-        type: Date,
+    boardId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Board',
         required: true,
-        default: Date.now,
+    },
+
+    title: {
+        type: String,
+        required: true,
+    },
+
+    description: {
+        type: String,
+        default: "",
+    },
+
+    order: {
+        type: String,
+        required: true,
     },
 
     highlight: {
         type: String,
         default: null,
-    }
+    },
+
+    priorityLevel: {
+        type: String,
+        enum: ['none', 'low', 'medium', 'high', 'critical'],
+        default: 'none',
+    },
+
+    owner: {
+        type: String,
+        default: null,
+    },
+
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
+
+    createdAt: {
+        type: Date,
+        required: true,
+        default: Date.now,
+    },
 
     // labels: [{
     //     type: mongoose.Schema.Types.ObjectId,
@@ -52,4 +80,11 @@ const cardSchema = new mongoose.Schema({
     // }],
 });
 
-module.exports = mongoose.model('Card', cardSchema);;
+cardSchema.pre('save', function(next) {
+    if (!this.isNew) {
+        this.updatedAt = Date.now();
+    }
+    next();
+});
+
+module.exports = mongoose.model('Card', cardSchema);

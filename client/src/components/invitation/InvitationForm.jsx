@@ -6,9 +6,9 @@ import Avatar from "../avatar/Avatar";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import Loading from "../ui/Loading";
-import { useNavigate } from "react-router-dom";
+import Member from "./Member";
 
-const InvitationForm = ({ setOpen }) => {
+const InvitationForm = ({ open, setOpen }) => {
     const { auth } = useAuth();
     const {
         boardState,
@@ -20,26 +20,77 @@ const InvitationForm = ({ setOpen }) => {
 
     const [username, setUsername] = useState("");
     const [errMsg, setErrMsg] = useState("");
+    const [successMsg, setSuccessMsg] = useState("");
     const [loading, setLoading] = useState(false);
 
     const usernameInputRef = useRef();
+    const dialog = useRef();
 
     useEffect(() => {
-        let id = null;
+        if (open) {
+            dialog.current.showModal();
+            usernameInputRef.current.focus();
+
+            const handleKeyDown = (e) => {
+                if (e.ctrlKey && e.key === '/') {
+                    e.preventDefault();
+                    usernameInputRef.current.focus();
+                }
+            };
+
+            const handleOnClose = () => {
+                setOpen(false);
+            };
+
+            dialog.current.addEventListener('close', handleOnClose);
+            dialog.current.addEventListener('keydown', handleKeyDown);
+
+            () => {
+                dialog.current.removeEventListener('close', handleOnClose);
+                dialog.current.removeEventListener('keydown', handleKeyDown);
+            };
+        } else {
+            dialog.current.close();
+        }
+    }, [open]);
+
+    useEffect(() => {
+        let id1 = null;
+        let id2 = null;
         if (errMsg !== "") {
-            id = setTimeout(() => {
+            id1 = setTimeout(() => {
                 setErrMsg("");
             }, 2000);
+        } else if (successMsg !== "") {
+            id2 = setTimeout(() => {
+                setSuccessMsg("");
+            }, 2000);
         }
-        return () => clearTimeout(id);
-    }, [errMsg]);
+
+        return () => {
+            if (id1) clearTimeout(id1);
+            if (id2) clearTimeout(id2);
+        }
+    }, [errMsg, successMsg]);
+
+    const handleCloseOnOutsideClick = (e) => {
+        if (e.target === dialog.current) {
+            dialog.current.close();
+        };
+    };
 
     const handleClose = () => {
-        setOpen(false);
+        dialog.current.close();
     };
 
     const handleSendInvitation = async () => {
         if (usernameInputRef.current.value.trim() === "") {
+            return;
+        }
+
+        if (usernameInputRef.current.value.trim() === auth.username ||
+            usernameInputRef.current.value.trim() === boardState.board.createdBy.username) {
+            setErrMsg("Can't sent invitation");
             return;
         }
 
@@ -49,52 +100,67 @@ const InvitationForm = ({ setOpen }) => {
             await axiosPrivate.post(`/invitations`, JSON.stringify({ boardId: boardState.board._id, receiverName }));
             setUsername("");
             setLoading(false);
+            setSuccessMsg(`invitation sent to ${receiverName}`);
         } catch (err) {
-            console.log(err);
             setLoading(false);
-            setErrMsg(err.response.data.msg);
+            setErrMsg(err?.response?.data?.msg || 'Failed to send invitation');
         }
     };
 
-    const handleRemoveMemberFromBoard = async (memberId) => {
+    const handleRemoveMemberFromBoard = async (memberName) => {
         try {
             setLoading(true);
-            await axiosPrivate.put(`/boards/${boardState.board._id}/members/${memberId}`);
-            removeMemberFromBoard(memberId);
+            await axiosPrivate.put(`/boards/${boardState.board._id}/members/${memberName}`);
+            removeMemberFromBoard(memberName);
+            socket.emit('kickMember', memberName);
             setLoading(false);
-            socket.emit('removeFromBoard');
         } catch (err) {
-            console.log(err);
             setLoading(false);
-            setErrMsg(err.response.data.toString());
+            setErrMsg(err?.response?.data?.error || 'Failed to remove member');
+        }
+    };
+
+    const handleInputOnEnter = (e) => {
+        if (!e.target.value) {
+            return;
+        }
+
+        if (e.key == 'Enter') {
+            handleSendInvitation();
         }
     };
 
     return (
         <>
-            <div
-                onClick={handleClose}
-                className="fixed box-border top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-500 opacity-40 z-50 cursor-auto">
-            </div>
+            <dialog
+                ref={dialog}
+                className='z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 h-fit min-w-[350px] border-black border-[2px] bg-gray-200 overflow-hidden'
+                onClick={handleCloseOnOutsideClick}
+            >
+                <Loading
+                    loading={loading}
+                    position={'absolute'}
+                    fontSize={'0.75rem'}
+                    displayText={'loading...'}
+                />
 
-            <div className="fixed box--style flex flex-col items-start pt-3 pb-6 px-8 top-[5rem] right-0 left-[50%] -translate-x-[50%] w-fit min-w-[400px] max-h-[500px] min-h-[300px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
-                <Loading loading={loading} />
+                <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
+                    <p className="font-normal text-[1rem] text-gray-700">Invite people this board</p>
+                    <button
+                        className="text-gray-600 flex justify-center items-center"
+                        onClick={handleClose}
+                    >
+                        <FontAwesomeIcon icon={faXmark} size='xl' />
+                    </button>
+                </div>
 
-                <button
-                    className="absolute top-2 right-3 text-gray-600"
-                    onClick={() => setOpen(false)}
-                >
-                    <FontAwesomeIcon icon={faXmark} size='xl' />
-                </button>
-
-                <p className="mt-2 mb-4 font-normal text-[1rem] text-gray-700">Invite people this board</p>
-
-                <div className="w-full flex flex-wrap items-center gap-3 pb-1">
+                <div className="w-full relative flex flex-col justify-center gap-3 py-2 my-3">
                     <input
                         ref={usernameInputRef}
                         className={`p-3 w-full overflow-hidden shadow-[0_3px_0_0] shadow-gray-600 text-[0.75rem] whitespace-nowrap text-ellipsis border-[2px] bg-gray-100 border-gray-600 text-gray-600 font-bold select-none font-mono focus:outline-none`}
                         placeholder="Enter username..."
                         onChange={(e) => setUsername(e.target.value)}
+                        onKeyDown={handleInputOnEnter}
                         value={username}
                     />
                     <button
@@ -103,56 +169,38 @@ const InvitationForm = ({ setOpen }) => {
                     >
                         + invite
                     </button>
+
+                    {successMsg && <p className="absolute -top-2 left-0 text-center h-3 text-blue-700 text-[0.65rem] font-semibold">{successMsg}</p>}
+                    {errMsg && <p className="absolute -top-2 left-1 text-center h-3 text-red-700 text-[0.65rem] font-semibold">{errMsg}</p>}
                 </div>
 
-                <p className="text-center h-3 text-red-700 text-[0.65rem] font-semibold mb-1">{errMsg}</p>
-
-                <div className="flex flex-col gap-3 w-full max-w-[400px] overflow-auto border-[1px] border-t-gray-600 pt-4">
+                <div className="flex flex-col gap-3 w-full max-w-[400px] max-h-[250px] overflow-auto border-[1px] border-t-gray-600 p-0 py-3">
                     <div className="flex gap-1">
                         <Avatar
                             username={boardState.board.createdBy.username}
                             profileImage={boardState.board.createdBy.profileImage}
                             size="md"
-                            clickable={false}
+                            isAdmin={true}
+                            createdAt={auth?.user?.createdAt}
                         />
 
                         <div className="flex flex-col justify-center">
-                            <p className="text-[0.65rem] text-gray-800 font-semibold">{boardState.board.createdBy.username} {auth?.username === boardState.board.createdBy.username && '(you)'}</p>
-                            <p className="text-[0.65rem] text-gray-800">Owner</p>
+                            <p className="text-[0.75rem] text-gray-800 font-medium">{boardState.board.createdBy.username} {auth?.user?.username === boardState.board.createdBy.username && '(you)'}</p>
+                            <p className="text-[0.75rem] text-gray-800">owner</p>
                         </div>
                     </div>
 
-                    {
-                        boardState.board.members.map((user, _) => {
-                            return <>
-                                <div key={user._id} className="flex gap-1">
-                                    <div className="flex gap-1 flex-1">
-                                        <Avatar
-                                            username={user.username}
-                                            profileImage={user.profileImage}
-                                            size="md"
-                                            clickable={false}
-                                        />
-                                        <div className="flex flex-col justify-center">
-                                            <p className="text-[0.65rem] text-gray-800 font-semibold">{user.username} {auth?.username === user.username && '(you)'}</p>
-                                            <p className="text-[0.65rem] text-gray-800">Member</p>
-                                        </div>
-                                    </div>
-                                    {
-                                        boardState.board.createdBy.username === auth.username
-                                        && <button
-                                            onClick={() => handleRemoveMemberFromBoard(user._id)}
-                                            className="text-[0.65rem] button--style border-[2px] hover:bg-gray-600 hover:text-white transition-all">
-                                            Remove from board
-                                        </button>}
-                                </div>
-                            </>
-                        })
-                    }
+                    {boardState.board.members.map((user, index) => {
+                        return <Member
+                            key={index}
+                            handleRemoveMemberFromBoard={handleRemoveMemberFromBoard}
+                            boardState={boardState}
+                            user={user}
+                            auth={auth}
+                        />
+                    })}
                 </div>
-
-
-            </div>
+            </dialog>
         </>
     )
 }

@@ -1,31 +1,52 @@
+require('dotenv').config();
+
+const PORT = process.env.PORT || 3000;
+
 const { Server } = require('socket.io');
-const io = new Server({ cors: "http://localhost:5173" });
+const io = new Server({ cors: "*" });
 
 const boardIdMap = new Map();
+const usernameMap = {};
 
 io.on('connection', (socket) => {
     socket.on("joinBoard", (data) => {
-        boardIdMap.set(socket.id, data);
-        const boardId = boardIdMap.get(socket.id);
-        socket.join(data);
-        console.log(`User with socket ID ${socket.id} joins ${boardId}`);
+        const { boardId, username } = data;
+        boardIdMap.set(socket.id, boardId);
+        usernameMap[socket.id] = username;
+        socket.join(boardId);
+        console.log(`User with socket ID ${socket.id} joins board with id ${boardId}`);
     });
 
-    socket.on("leaveBoard", (_) => {
-        const boardId = boardIdMap.get(socket.id);
-        if (boardId) {
-            socket.leave(boardId);
-            boardIdMap.delete(socket.id);
-            console.log(`User with socket ID ${socket.id} left board ${boardId}`);
-        }
-    });
-
-    socket.on("removeFromBoard", (data) => {
+    socket.on("leaveBoard", (data) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
-        socket.leave(boardId);
+        const { username } = data;
+        socket.to(boardId).emit("memberLeaved", { username });
+    });
+
+    socket.on("acceptInvitation", (data) => {
+        const { boardId, username, profileImage } = data;
+        if (!boardId) return;
+        socket.to(boardId).emit("invitationAccepted", { username, profileImage });
+    });
+
+    socket.on("kickMember", (memberName) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+
+        const userEntry = Object.entries(usernameMap).find(([_userId, username]) => username === memberName);
+        if (!userEntry) return;
+
+        const userSocketId = userEntry[0];
+        socket.to(boardId).emit("memberKicked", { userSocketId });
+    });
+
+    socket.on("closeBoard", (_) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
         boardIdMap.delete(socket.id);
-        console.log(`User with socket ID ${socket.id} get removed ${boardId}`);
+        socket.leave(boardId);
+        socket.to(boardId).emit("boardClosed");
     });
 
     socket.on("updateBoardTitle", (data) => {
@@ -44,6 +65,17 @@ io.on('connection', (socket) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
         socket.to(boardId).emit("getBoardWithUpdatedLists", data);
+    });
+
+    socket.on("moveList", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("listMoved", data);
+    });
+
+    socket.on("addMovedListToBoard", (data) => {
+        const { boardId, list, cards, index } = data;
+        socket.to(boardId).emit("getBoardWithMovedListAdded", { list, cards, index });
     });
 
     socket.on("addList", (data) => {
@@ -68,6 +100,42 @@ io.on('connection', (socket) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;
         socket.to(boardId).emit("deletedCard", data);
+    });
+
+    socket.on("copyCard", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("copyCard", data);
+    });
+
+    socket.on("moveCard", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("cardMoved", data);
+    });
+
+    socket.on("moveCardByIndex", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("cardMovedByIndex", data);
+    });
+
+    socket.on("moveCardToList", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("cardMovedToList", data);
+    });
+
+    socket.on("updateCardOwner", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("cardOwnerUpdated", { ...data });
+    });
+
+    socket.on("updateCardPriorityLevel", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("cardPriorityLevelUpdated", { ...data });
     });
 
     socket.on("updateListTitle", (data) => {
@@ -100,17 +168,41 @@ io.on('connection', (socket) => {
         socket.to(boardId).emit("receiveMessage", data);
     });
 
+    socket.on("deleteMessage", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("messageDeleted", data);
+    });
+
+    socket.on("clearMessages", (_) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("messagesCleared");
+    });
+
+    socket.on("disconnectFromBoard", () => {
+        const boardId = boardIdMap.get(socket.id);
+        if (boardId) {
+            socket.leave(boardId);
+            boardIdMap.delete(socket.id);
+            delete usernameMap[socket.id];
+            console.log(`#disconnectFromBoard: User with socket ID ${socket.id} disconnected from board ${boardId}`);
+        } else {
+            console.log(`#disconnectFromBoard: User with socket ID ${socket.id} disconnected without joining a board`);
+        }
+    });
+
     socket.on("disconnect", () => {
         const boardId = boardIdMap.get(socket.id);
         if (boardId) {
             socket.leave(boardId);
             boardIdMap.delete(socket.id);
+            delete usernameMap[socket.id];
             console.log(`User with socket ID ${socket.id} disconnected from board ${boardId}`);
         } else {
             console.log(`User with socket ID ${socket.id} disconnected without joining a board`);
         }
-
     });
 });
 
-io.listen(3000);
+io.listen(PORT);

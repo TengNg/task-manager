@@ -2,16 +2,21 @@ import { useRef, useState } from "react"
 import { Draggable } from "react-beautiful-dnd"
 import { StrictModeDroppable as Droppable } from '../../helpers/StrictModeDroppable';
 import Card from "../card/Card";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTrashCan, faDeleteLeft } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from "../../hooks/useBoardState";
 import CardComposer from "../card/CardComposer";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import ListMenu from "./ListMenu";
+import { lexorank } from "../../utils/class/Lexorank";
 
 const List = ({ index, list, cards }) => {
     const {
+        boardState,
+        setBoardState,
         setListTitle,
         deleteList,
+        theme,
+        debugModeEnabled,
+        hasFilter,
         socket,
     } = useBoardState();
 
@@ -19,6 +24,12 @@ const List = ({ index, list, cards }) => {
 
     const [initialListData, setInitialListData] = useState(list.title);
     const [openCardComposer, setOpenCardComposer] = useState(false);
+    const [openListMenu, setOpenListMenu] = useState(false);
+
+    const [processingList, setProcessingList] = useState({
+        msg: 'loading...',
+        processing: false
+    });
 
     const textAreaRef = useRef(null);
     const titleRef = useRef(null);
@@ -42,7 +53,9 @@ const List = ({ index, list, cards }) => {
         }
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e) => {
+        if (e.button !== 0) return;
+
         textAreaRef.current.classList.remove('hidden');
         textAreaRef.current.classList.add('block');
         titleRef.current.classList.add('hidden');
@@ -52,7 +65,6 @@ const List = ({ index, list, cards }) => {
 
     const handleTextAreaChanged = () => {
         const textarea = textAreaRef.current;
-        // setText(textarea.value);
         textarea.style.height = '24px';
         textarea.style.height = `${textarea.scrollHeight}px`;
         setListTitle(list._id, textAreaRef.current.value);
@@ -77,104 +89,186 @@ const List = ({ index, list, cards }) => {
     const handleDeleteList = async () => {
         if (confirm('Are you want to delete this list ?')) {
             try {
+                await axiosPrivate.delete(`/lists/${list._id}`);
                 deleteList(list._id)
                 socket.emit("deleteList", list._id);
-                await axiosPrivate.delete(`/lists/${list._id}`);
             } catch (err) {
-                console.log(err);
+                alert('Failed to delete list');
             }
+        }
+    };
+
+    const handleCopyList = async (id) => {
+        const lists = boardState.lists;
+        const tempLists = [...boardState.lists];
+
+        try {
+            setProcessingList({
+                msg: 'copying...',
+                processing: true
+            });
+
+            const currentIndex = lists.indexOf(lists.find(el => el._id == id));
+            const nextElement = index < lists.length - 1 ? lists[index + 1] : null;
+
+            const [rank, ok] = lexorank.insert(lists[currentIndex]?.order, nextElement?.order);
+
+            if (!ok) {
+                alert('Failed to create a copy of this list');
+                return;
+            }
+
+            const response = await axiosPrivate.post(`/lists/copy/${id}`, JSON.stringify({ rank }));
+            const newList = response.data.list;
+            const newCards = response.data.cards;
+            newList.cards = newCards;
+
+            lists.splice(index + 1, 0, newList);
+
+            setBoardState(prev => {
+                return { ...prev, lists };
+            });
+
+            setProcessingList({ msg: '', processing: false });
+
+            socket.emit("updateLists", lists);
+        } catch (err) {
+            alert('Failed to create a copy of this list, action cannot be performed at this time, please try again');
+
+            setProcessingList({ msg: '', processing: false });
+
+            setBoardState(prev => {
+                return { ...prev, lists: tempLists };
+            });
         }
     };
 
     return (
         <Draggable key={list._id} draggableId={list._id} index={index}>
-            {(provided, snapshot) => (
+            {(provided, _) => (
                 <div
                     {...provided.draggableProps}
                     ref={provided.innerRef}
-                    className={`flex flex-col justify-start bg-gray-100 w-[280px] min-w-[280px] h-fit max-h-full min-h-auto border-[2px] select-none py-2 px-3 cursor-pointer me-4 box--style border-gray-600 shadow-gray-600
-                                ${snapshot.isDragging && 'opacity-80 bg-teal-100'} `}
+                    className='me-4 relative h-full'
                 >
+
+                    {
+                        openListMenu &&
+                        <ListMenu
+                            list={list}
+                            open={openListMenu}
+                            setOpen={setOpenListMenu}
+                            handleDelete={handleDeleteList}
+                            handleCopy={handleCopyList}
+                                processingList={processingList}
+                        />
+                    }
+
                     <div
-                        {...provided.dragHandleProps}
-                        className="relative w-full bg-inherit">
+                        className={`
+                            ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}
+                            list__item flex flex-col justify-start bg-gray-50 w-[290px] max-h-[100%] overflow-auto border-[2px] select-none pt-2 cursor-pointer border-gray-600 shadow-gray-600
+                        `}
+                    >
                         <div
-                            ref={titleRef}
-                            className="w-full font-semibold text-gray-600 break-words whitespace-pre-line"
-                            onMouseUp={handleMouseUp}
-                        >
-                            <p>{list.title}</p>
+                            {...provided.dragHandleProps}
+                            className="relative w-full bg-inherit">
+                            <div
+                                ref={titleRef}
+                                className="sm:w-[240px] w-[180px] font-semibold text-gray-600 break-words whitespace-pre-line px-3"
+                                onMouseUp={handleMouseUp}
+                            >
+                                <p>{list.title}</p>
+                            </div>
+
+                            <textarea
+                                className="hidden bg-gray-50 h-fit sm:w-[240px] w-[180px] focus:outline-none font-semibold px-3 text-gray-600 leading-normal overflow-y-hidden resize-none"
+                                value={list.title}
+                                ref={textAreaRef}
+                                onFocus={handleTextAreaOnFocus}
+                                onChange={handleTextAreaChanged}
+                                onBlur={handleTitleInputBlur}
+                                onKeyDown={handleTextAreaOnEnter}
+                            />
+
+                            <button
+                                className="absolute h-full -top-[0.4rem] right-3 text-[0.75rem] text-gray-600 font-bold"
+                                onClick={() => {
+                                    setOpenListMenu(prev => !prev);
+                                }}
+                            >
+                                ...
+                            </button>
+
+                            <div className="h-[1.5px] mt-1 mx-3 bg-gray-500"></div>
                         </div>
 
-                        <p className="absolute -top-2 right-4 text-[0.7rem]">{list.cards.length || ''}</p>
-                        <button
-                            onClick={handleDeleteList}
-                            className="absolute -top-3 -right-2 text-gray-500 hover:text-pink-500 transition-all">
-                            <FontAwesomeIcon icon={faDeleteLeft} />
-                        </button>
-                        {/* <p className="absolute -top-2 right-3 text-[0.7rem]">rank: {list.order}</p> */}
-
-                        <textarea
-                            className="hidden bg-gray-100 h-fit w-full focus:outline-none font-semibold text-gray-600 leading-normal overflow-y-hidden resize-none"
-                            value={list.title}
-                            ref={textAreaRef}
-                            onFocus={handleTextAreaOnFocus}
-                            onChange={handleTextAreaChanged}
-                            onBlur={handleTitleInputBlur}
-                            onKeyDown={handleTextAreaOnEnter}
-                        />
-
-                        <div className="mx-auto h-[1.5px] mt-1 w-[100%] bg-gray-500"></div>
-                    </div>
-
-                    <div className="max-h-full overflow-y-auto">
-                        <Droppable droppableId={list._id} type="CARD">
-                            {(provided) => (
-                                <div
-                                    {...provided.droppableProps}
-                                    ref={provided.innerRef}
-                                    ignoreContainerClipping={true}
-                                >
-                                    <div className="flex flex-col pb-1 items-start justify-start h-full">
-                                        {cards.map((card, index) => {
-                                            return <Card
-                                                key={card._id}
-                                                card={card}
-                                                index={index}
-                                            />
-                                        })}
-                                        {provided.placeholder}
+                        <div className="max-h-full overflow-y-auto px-3">
+                            <Droppable droppableId={list._id} type="CARD">
+                                {(provided) => (
+                                    <div
+                                        {...provided.droppableProps}
+                                        ref={provided.innerRef}
+                                        ignoreContainerClipping={true}
+                                    >
+                                        <div className="flex flex-col pb-1 items-start justify-start h-full">
+                                            {cards.map((card, idx) => {
+                                                return <Card
+                                                    key={idx}
+                                                    card={card}
+                                                    index={idx}
+                                                    listIndex={index}
+                                                />
+                                            })}
+                                            {provided.placeholder}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </Droppable>
+                                )}
+                            </Droppable>
+
+                            {
+                                openCardComposer === true &&
+                                <CardComposer
+                                    list={list}
+                                    open={openCardComposer}
+                                    setOpen={setOpenCardComposer}
+                                />
+                            }
+
+                        </div>
 
                         {
-                            openCardComposer === true &&
-                            <CardComposer
-                                list={list}
-                                open={openCardComposer}
-                                setOpen={setOpenCardComposer}
-                            />
+                            openCardComposer === false &&
+                            <button
+                                className="flex gap-2 group text-gray-400 mt-2 mx-3 p-2 text-[0.8rem] hover:bg-gray-200 font-semibold text-start"
+                                onClick={() => setOpenCardComposer(true)}
+                            >
+                                <span>
+                                    + new card
+                                </span>
+                            </button>
+                        }
+
+                        {
+                            <div className='flex items-center gap-1 ms-auto me-1 text-gray-500 text-[0.65rem] font-medium'>
+                                {
+                                    debugModeEnabled.enabled &&
+                                        <span>[r:{list.order}]</span>
+                                }
+
+                                <span>{list.cards.length}</span>
+                                {
+                                    hasFilter && (
+                                        <>
+                                            <span>{" "}</span>
+                                            <span>(found: {list.cards.filter(card => !card.hiddenByFilter).length})</span>
+                                        </>
+                                    )
+                                }
+                            </div>
                         }
 
                     </div>
-
-                    {
-                        openCardComposer === false &&
-                        <button
-                            className="flex gap-2 group text-gray-400 w-full mt-2 p-2 text-[0.8rem] hover:bg-gray-300 transition-all font-semibold text-start"
-                            onClick={() => setOpenCardComposer(true)}
-                        >
-                            <span>
-                                <FontAwesomeIcon className="group-hover:rotate-180 transition duration-300" icon={faPlus} />
-                            </span>
-                            <span>
-                                Add a card
-                            </span>
-                        </button>
-                    }
-
                 </div>
             )}
         </Draggable>

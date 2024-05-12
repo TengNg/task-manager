@@ -1,32 +1,54 @@
 import { useRef, useState, useEffect } from "react";
 import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import HighlightPicker from "./HighlightPicker";
+import QuickEditorHighlightPicker from "./QuickEditorHighlightPicker";
 
-const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, handleDeleteCard }) => {
+import { useSearchParams } from 'react-router-dom';
+
+const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCard }) => {
     const {
+        setOpenedCardQuickEditor,
         setCardTitle,
+        theme,
         socket,
     } = useBoardState();
 
     const axiosPrivate = useAxiosPrivate();
 
     const [initialTitle, setInitialTitle] = useState(card.title);
-    const [openHighlightPicker, setOpenHighlightPicker] = useState(false);
+    const [openHighlightPicker, setOpenHighlightPicker] = useState(true);
 
     const textAreaRef = useRef();
+    const quickEditorRef = useRef();
+
+    const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
-        if (textAreaRef.current && open === true) {
+        if (quickEditorRef.current && textAreaRef.current && open === true) {
             textAreaRef.current.focus();
             textAreaRef.current.selectionStart = textAreaRef.current.value.length;
+
+            const handleCloseOnKeydown = (e) => {
+                if (e.key == 'Escape') {
+                    e.preventDefault();
+                    close();
+                }
+            };
+
+            quickEditorRef.current.addEventListener('keydown', handleCloseOnKeydown);
         }
     }, [open]);
+
+    const close = () => {
+        setOpenedCardQuickEditor(prev => {
+            return { ...prev, open: false }
+        });
+    };
 
     const handleClose = (e) => {
         if (e.target === e.currentTarget) {
             setInitialTitle(textAreaRef.current.value);
-            setOpen(false);
+            close();
         }
     }
 
@@ -62,39 +84,40 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, ha
         if (e.key == 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleSetCardTitle();
-            setOpen(false);
+            close();
         }
     };
 
     const handleSaveButtonOnClick = () => {
         handleSetCardTitle();
-        setOpen(false);
+        close();
     };
 
     const handleOpenCardDetail = () => {
-        setOpen(false);
-        setOpenCardDetail(true);
-    };
-
-    const deleteCard = () => {
-        handleDeleteCard();
-        setOpen(false);
+        searchParams.set('card', card._id);
+        setSearchParams(searchParams);
+        close();
     };
 
     const handleToggleHighlightPicker = () => {
         setOpenHighlightPicker(prev => !prev);
     };
 
+    const deleteCard = () => {
+        handleDeleteCard(card);
+        close();
+    };
+
+    const copyCard = () => {
+        handleCopyCard(card);
+        close();
+    };
+
     return (
         <>
-
             <div
-                onClick={handleClose}
-                className="fixed top-0 left-0 text-gray-700 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-400 opacity-60 z-20 cursor-auto">
-            </div>
-
-            <div
-                className="absolute z-50"
+                ref={quickEditorRef}
+                className="absolute z-10"
                 style={{
                     top: `${attribute.top}px`,
                     left: `${attribute.left}px`,
@@ -106,7 +129,7 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, ha
                 <div className="flex h-full relative mb-2">
                     <textarea
                         ref={textAreaRef}
-                        className="text-[0.8rem] h-full bg-gray-50 border-[2px] py-4 px-4 text-gray-600 border-black shadow-[0_3px_0_0] shadow-black leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50"
+                        className={`${theme.itemTheme == 'rounded' ? 'rounded' : ''} text-sm h-full bg-gray-50 border-[2px] py-4 px-4 text-gray-600 border-black shadow-[0_3px_0_0] shadow-black leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50`}
                         style={{ boxShadow: `${card.highlight == null ? '0 3px 0 0 #4b5563' : `0 3px 0 0 ${card.highlight}`}`, borderColor: `${card.highlight == null ? '#4b5563' : `${card.highlight}`}` }}
                         placeholder='Title for this card'
                         onChange={handleTextAreaChanged}
@@ -114,39 +137,51 @@ const CardQuickEditor = ({ open, setOpen, card, attribute, setOpenCardDetail, ha
                         value={initialTitle}
                     />
                     <div className="flex flex-col gap-2 absolute top-0 -right-1 translate-x-[100%] justify-start items-start w-[200px]">
-                        {openHighlightPicker && <HighlightPicker card={card} />}
+                        {
+                            openHighlightPicker &&
+                            <QuickEditorHighlightPicker
+                                card={card}
+                                closeQuickEditor={close}
+                            />
+                        }
 
                         <button
                             onClick={() => handleOpenCardDetail()}
                             className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-800 px-3 py-1 flex--center opacity-80">
-                            Open Card
+                            open card
                         </button>
 
                         <button
                             onClick={() => handleToggleHighlightPicker()}
                             className={`${openHighlightPicker ? 'bg-gray-600' : 'bg-gray-800'} hover:ms-1 transition-all text-[0.75rem] text-white px-3 py-1 flex--center opacity-80 z-30`}
                         >
-                            Change highlight
+                            change highlight
+                        </button>
+
+                        <button
+                            onClick={() => copyCard()}
+                            className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-800 px-3 py-1 flex--center opacity-80">
+                            create a copy
                         </button>
 
                         <button
                             onClick={() => deleteCard()}
                             className="hover:ms-1 transition-all text-[0.75rem] relative text-white bg-gray-800 px-3 py-1 flex--center opacity-80 z-30"
                         >
-                            Delete card
+                            delete card
                         </button>
 
                         <button
-                            onClick={() => setOpen(false)}
+                            onClick={handleClose}
                             className="hover:ms-1 transition-all text-[0.75rem] text-white bg-gray-800 px-3 py-1 flex--center opacity-80 z-0"
                         >
-                            Close
+                            close
                         </button>
                     </div>
                 </div>
                 <button
                     onClick={handleSaveButtonOnClick}
-                    className="text-[0.75rem] text-white hover:bg-gray-700 bg-gray-800 px-4 py-1 flex--center opacity-80 z-0">
+                    className="text-[0.75rem] text-white hover:bg-gray-700 bg-gray-800 px-4 py-2 flex--center opacity-80 z-0">
                     Save
                 </button>
             </div>

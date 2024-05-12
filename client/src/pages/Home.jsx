@@ -1,29 +1,116 @@
-import { useNavigate } from "react-router-dom";
 import Title from "../components/ui/Title";
 
 const Home = () => {
-    const navigate = useNavigate();
+    return (<section className="w-full h-[calc(100%-75px)] overflow-auto pb-4">
 
-    return (
-        <>
-            <section className="w-full flex--center flex-col">
+        <div className='mx-auto sm:w-3/4 w-[90%]'>
+            <Title titleName={"home"} />
 
-                <section className="div--style h-[auto] w-fit p-9 text-justify flex flex-col justify-center gap-4 mb-[1rem] flex--center">
-                    <Title titleName={"work in progress"} />
-                    <p className="text-justify text-gray-500">
-                        Follow & Updates status: This page will display invitations + public boards which you can view
-                    </p>
-                </section>
+            <section className="flex flex-col gap-4 justify-between items-center">
+                <div className='text-[10px] md:text-[0.65rem] lg:text-sm text-gray-700'>
+                    <div className='border-[2px] border-dashed border-gray-500 md:p-6 p-3'>
+                        This project is a simple task management which you can create your own task-boards and collab with your friends (with a simple noting system).
+                    </div>
 
-                <div className='w-[10rem] h-[2rem] flex--center'>
-                    <button
-                        onClick={() => navigate("/boards")}
-                        className="button--style font-semibold text-gray-500 border-gray-500 text-[0.85rem]">Go to Boards</button>
+                    <br />
+
+                    <div className='border-[2px] border-dashed border-gray-500 md:p-6 p-3'>
+                        <div className='underline mb-2'>
+                            About this project:
+                        </div>
+                        <ul className='flex flex-col gap-3 ms-4'>
+                            <li>
+                                - Created from my own personal interest, and from everyday-workflow.
+                            </li>
+                            <li>
+                                - I want a task-management app with a simple notes system (+ keybinds).
+                            </li>
+                            <li>
+                                - Easy to collaborate with your friends.
+                            </li>
+                            <li>
+                                - Easy to track your progress &amp; activities.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <br />
+
+                    <div className='mb-1 w-full text-gray-500'>* Notes: Using keybinds for better workflow (Desktop users only)</div>
+                    <div className='border-[2px] border-dashed border-gray-500 md:p-6 p-3'>
+                        <div className='flex flex-wrap gap-6 lg:gap-12'>
+                            <div className="flex flex-col gap-2">
+                                <div className='underline'>Global Keybinds</div>
+                                <ul className='flex flex-col gap-4 ms-4 list-disc'>
+                                    <li>
+                                        <span className='key'>0</span> navigate to Profile
+                                    </li>
+                                    <li>
+                                        <span className='key'>1</span> navigate to Home
+                                    </li>
+                                    <li>
+                                        <span className='key'>2</span> navigate to Boards
+                                    </li>
+                                    <li>
+                                        <span className='key'>3</span> navigate to Writedown
+                                    </li>
+                                    <li>
+                                        <span className='key'>4</span> navigate to Activities
+                                    </li>
+                                    <li>
+                                        <span className='key'>5</span> navigate to Last Viewed Board
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div className="flex flex-col gap-2">
+                                <div>
+                                    <span className='underline'>In-Board Keybinds</span>
+                                </div>
+                                <ul className='flex flex-col gap-4 ms-4 list-disc'>
+                                    <li>
+                                        <span className='key'>?</span> show help
+                                    </li>
+                                    <li>
+                                        <span className='key'>a</span> scroll left
+                                    </li>
+                                    <li>
+                                        <span className='key'>d</span> scroll right
+                                    </li>
+                                    <li>
+                                        <span className='key'>Enter</span> confirm / send message
+                                    </li>
+                                    <li>
+                                        <span className='key'>Esc</span> close opened form / box
+                                    </li>
+                                    <li>
+                                        <span className='key'>Ctrl</span> + key combinations to quickly perform actions
+                                    </li>
+                                    <li>
+                                        See <span className='font-medium'>Help</span> in Board for better understanding :)
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <br />
+
                 </div>
-
             </section>
-        </>
-    )
+
+        </div>
+
+        <a
+            href='https://github.com/TengNg/task-manager'
+            className='fixed right-4 bottom-3 text-gray-700 text-[0.75rem] underline'
+            target="_blank"
+        >
+            Github
+        </a>
+
+    </section>)
 }
 
 export default Home

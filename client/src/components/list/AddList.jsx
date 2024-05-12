@@ -1,17 +1,15 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useState, useRef, useEffect } from "react"
 import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { lexorank } from '../../utils/class/Lexorank';
 
-const AddList = () => {
-    const [open, setOpen] = useState(false);
+const AddList = ({ open, setOpen }) => {
     const [listTitle, setListTitle] = useState("");
     const titleInputRef = useRef();
     const containerRef = useRef();
 
     const {
+        theme,
         boardState,
         addListToBoard,
         socket,
@@ -49,7 +47,8 @@ const AddList = () => {
             setListTitle("");
             titleInputRef.current.focus();
         } catch (err) {
-            console.log(err);
+            const errMsg = err?.response?.data?.errMsg || 'Failed to add new list';
+            alert(errMsg);
         }
     };
 
@@ -78,28 +77,25 @@ const AddList = () => {
     return (
         <div
             ref={containerRef}
-            className='box--style--sm overflow-hidden bg-gray-200 w-[250px] min-w-[250px] border-[2px] min-h-[3rem] select-none cursor-pointer me-3 border-gray-500 shadow-gray-500 text-[0.8rem] text-gray-500 font-semibold'>
+            className={`${theme.itemTheme == 'rounded' ? 'rounded-md' : ''} board--style--sm overflow-hidden bg-gray-100 text-[10px] sm:text-[0.75rem] sm:min-w-[250px] min-w-[225px] border-[2px] min-h-[3rem] select-none cursor-pointer me-3 border-gray-500 shadow-gray-500 text-gray-500 font-semibold`}>
             {
                 open === false &&
                 <button
-                    className="w-full h-full text-start px-4 py-3 flex gap-2"
+                    className="w-full h-full text-start p-3 flex gap-2"
                     onClick={handleOpenAddListForm}
                 >
-                    <span>
-                        <FontAwesomeIcon className="group-hover:rotate-180 transition duration-300" icon={faPlus} />
-                    </span>
-                    Add list
+                    + new list
                 </button>
             }
 
             <div
-                className={`flex-col flex py-2 px-2 min-w-[200px] h-[fit] gap-3 transition-all ${open ? 'mt-0' : 'h-[2rem] -mt-[100%] duration-300'}`}
+                className={`flex-col flex py-2 px-2 min-w-[200px] h-[fit] gap-3 -mt-[100%] ${open && 'mt-0'}`}
             >
                 <input
-                    className='border-[2px] border-gray-400 text-gray-500 p-1 font-semibold rounded-md text-[0.85rem] px-2 focus:outline-none'
+                    className='border-[1px] border-gray-500 text-gray-500 font-semibold text-[10px] sm:text-[0.85rem] p-2 focus:outline-none'
                     type="text"
                     autoComplete="off"
-                    placeholder="Your list title"
+                    placeholder="list title goes here..."
                     value={listTitle}
                     ref={titleInputRef}
                     onChange={handleInputChange}
@@ -107,13 +103,13 @@ const AddList = () => {
                     onKeyDown={handleKeyDown}
                 />
 
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                     <button
                         onClick={handleAddList}
-                        className="button--style--dark">Add list</button>
+                        className="button--style--dark w-[40px] h-[40px]">+</button>
                     <button
                         onClick={() => setOpen(false)}
-                        className="button--style border-gray-500 border-[2px]">Cancel</button>
+                        className="button--style border-gray-500 border-[2px] w-[40px] h-[40px]">x</button>
                 </div>
             </div>
         </div>

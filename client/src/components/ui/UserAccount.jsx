@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import dateFormatter from "../../utils/dateFormatter";
 
 const UserAccount = () => {
     const [collapse, setCollapse] = useState(true);
@@ -13,16 +14,6 @@ const UserAccount = () => {
 
     const userProfileImageRef = useRef();
     const userInfoRef = useRef();
-
-    useEffect(() => {
-        const getData = async () => {
-            const response = await axiosPrivate.get("/home");
-            setAuth(response.data.user);
-        }
-        getData().catch(_ => {
-            navigate("/login", { replace: true });
-        });
-    }, []);
 
     useEffect(() => {
         const closeUserInfoBox = (event) => {
@@ -59,50 +50,66 @@ const UserAccount = () => {
     };
 
     const handleOpenProfile = () => {
-        navigate(`/u/${auth.username}`);
+        navigate(`/u/${auth?.user?.username}`);
     };
 
+    if (Object.keys(auth).length === 0 || !auth.accessToken) {
+        return (
+            <button onClick={() => navigate('/login')}
+                className="border-[2px] border-gray-600 shadow-gray-600 shadow-[0_3px_0_0] bg-gray-100 p-1 px-3 text-[10px] sm:text-[0.75rem] font-medium text-gray-600"
+            >
+                Log in
+            </button>
+        )
+    }
+
     return (
-        <div className="absolute top-4 right-4 flex--center h-fit flex-col justify-start gap-2">
+        <div id='user-account' className="relative h-fit gap-2 z-30">
             <div
                 onClick={() => setCollapse(collapse => !collapse)}
                 ref={userProfileImageRef}
-                className='bg-blue-500 text-white flex--center ms-auto text-[0.8rem] w-[30px] h-[30px] rounded-full bg-center bg-cover overflow-hidden cursor-pointer'>
-                {
-                    auth?.profileImage === null
-                        ? <div className="font-bold flex--center select-none">{auth?.username.charAt(0).toUpperCase()}</div>
-                        : <img className="flex--center h-[100%] w-[100%]" />
-                }
+                className='bg-blue-500 text-white flex--center ms-auto text-[0.8rem] w-[35px] h-[35px] sm:w-[40px] sm:h-[40px] rounded-full bg-center bg-cover overflow-hidden cursor-pointer'
+            >
+                <div className="font-bold flex--center select-none">{auth?.user?.username?.charAt(0).toUpperCase()}</div>
             </div>
 
             {
                 collapse === false &&
                 <div
                     ref={userInfoRef}
-                    className='relative flex flex-col box--style shadow-gray-600 border-[2px] border-gray-600 p-3 select-none gap-4 bg-gray-100'
+                    className='absolute bottom-0 right-0 translate-y-[105%] flex flex-col box--style shadow-gray-600 border-[2px] border-gray-600 p-3 select-none gap-4 bg-gray-100'
                 >
-                    <button
-                        className="absolute top-0 right-1 text-[0.8rem] text-gray-600"
-                        onClick={() => setCollapse(true)}
-                    >
-                        <FontAwesomeIcon icon={faXmark} />
-                    </button>
+                    {
+                        Object.keys(auth).length > 0 && <>
+                            <button
+                                className="absolute right-3 top-3 text-[0.8rem] text-gray-600"
+                                onClick={() => setCollapse(true)}
+                            >
+                                <FontAwesomeIcon icon={faXmark} />
+                            </button>
+                            <div className="font-medium text-[0.8rem] text-gray-400">Account</div>
 
-                    <div className="font-bold text-gray-400">Account</div>
+                            <div className='select-none font-medium text-[0.8rem] max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis text-gray-700'>
+                                username: {auth?.user?.username}
+                            </div>
 
-                    <div className='select-none font-semibold text-[0.8rem] max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis text-gray-700'>
-                        Username: {auth?.username}
-                    </div>
+                            <div className='select-none font-medium text-[0.8rem] max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis text-gray-700'>
+                                joined at: {dateFormatter(auth?.user?.createdAt, { withTime: false })}
+                            </div>
 
-                    <button
-                            onClick={handleOpenProfile}
-                            className="button--style text-[0.75rem] font-bold">Edit account</button>
-                    <button
-                        onClick={handleLogout}
-                        className="button--style--dark text-[0.75rem] font-bold text-gray-200">Log out</button>
+                            <div className='flex flex-col gap-2'>
+                                <button
+                                    onClick={handleOpenProfile}
+                                    className="button--style text-[0.75rem] font-medium">Profile</button>
+                                <button
+                                    onClick={handleLogout}
+                                    className="button--style--dark text-[0.75rem] font-medium text-gray-200">Log out</button>
+                            </div>
+                        </>
+                    }
+
                 </div>
             }
-
         </div>
     )
 }
