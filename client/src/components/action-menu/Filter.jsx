@@ -150,25 +150,24 @@ const Filter = ({ open, setOpen }) => {
                         >
                             NONE
                         </div>
-                        {
 
+                        {
                             Object.values(PRIORITY_LEVELS).map(item => {
                                 const { title, color } = item;
-                                return (<>
-                                    <div
-                                        key={title}
-                                        className='text-[0.75rem] cursor-pointer w-full p-1 px-3 text-gray-50 font-semibold uppercase rounded-sm'
-                                        onClick={() => {
-                                            searchParams.set('priority', title);
-                                            setSearchParams(searchParams);
-                                        }}
-                                        style={{ backgroundColor: color.rgba, textDecoration: searchParams.get('priority') === title ? 'underline' : 'none' }}
-                                    >
-                                        {title}
-                                    </div>
-                                </>)
+                                return (<div
+                                    key={title}
+                                    className='text-[0.75rem] cursor-pointer w-full p-1 px-3 text-gray-50 font-semibold uppercase rounded-sm'
+                                    onClick={() => {
+                                        searchParams.set('priority', title);
+                                        setSearchParams(searchParams);
+                                    }}
+                                    style={{ backgroundColor: color.rgba, textDecoration: searchParams.get('priority') === title ? 'underline' : 'none' }}
+                                >
+                                    {title}
+                                </div>)
                             })
                         }
+
                     </div>
 
                     {

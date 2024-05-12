@@ -58,6 +58,8 @@ const Profile = () => {
             console.log(err);
             alert("Failed to get boards");
         })
+
+        document.title = `00 profile [${auth?.user?.username}]` || 'tamago-start';
     }, []);
 
     useEffect(() => {

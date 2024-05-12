@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { axiosPrivate } from '../api/axios';
 import Title from '../components/ui/Title';
 import Loading from '../components/ui/Loading';
@@ -18,8 +18,6 @@ export default function Login() {
     const usernameInputEl = useRef();
 
     const navigate = useNavigate();
-    const location = useLocation();
-    const from = location.state?.from?.pathname || "/";
 
     useEffect(() => {
         const isLoggedIn = async () => {
@@ -109,7 +107,7 @@ export default function Login() {
                 <div className='flex flex-col font-normal select-none mt-4'>
                     Don't have an account?
                     <Link className='text-black hover:text-black' to="/register">
-                        <button className='button--style'>Sign up</button>
+                        <button className='button--style mt-1'>Sign up</button>
                     </Link>
                 </div>
 

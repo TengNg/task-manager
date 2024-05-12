@@ -75,6 +75,8 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
 
                 searchParams.delete('card');
                 setSearchParams(searchParams);
+
+                document.title = boardState?.board?.title || 'tamago-start';
             };
 
             dialog.current.addEventListener('close', handleOnClose);

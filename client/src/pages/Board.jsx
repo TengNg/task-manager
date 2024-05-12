@@ -139,6 +139,9 @@ const Board = () => {
                 const response = await axiosPrivate.get(`/cards/${cardId}`, { signal: controller.signal });
                 const { card } = response.data;
                 setOpenedCard(card);
+
+                // set document title as board title
+                document.title = `[card] ${card.title}`;
             } catch (err) {
                 console.log(err);
                 setOpenCardDetail(false);
@@ -196,6 +199,9 @@ const Board = () => {
             const boardsResponse = await axiosPrivate.get(`/boards/${boardId}`);
             const chatsResponse = await axiosPrivate.get(`/chats/b/${boardId}?perPage=10&page=1`);
             const newMessages = chatsResponse.data.messages.reverse();
+
+            // set document title as board title
+            document.title = boardsResponse.data.board.title;
 
             setBoardState(boardsResponse.data);
             setTitle(boardsResponse.data.board.title);
@@ -290,7 +296,6 @@ const Board = () => {
 
     const handleBoardTitleInputOnKeyDown = (e) => {
         if (e.key == 'Enter' && !e.shiftKey) {
-            handleConfirmBoardTitle(e.target.value.trim());
             e.target.blur();
         }
     };

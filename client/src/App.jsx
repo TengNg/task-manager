@@ -1,5 +1,6 @@
 import './App.css'
 import './index.css'
+import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -15,8 +16,23 @@ import PersistLogin from './components/auth/PersistLogin'
 
 const noNavPaths = ["/login", "/register"];
 
+const titles = {
+    '/profile': '00 About',
+    '/': '01 home',
+    '/home': '01 home',
+    '/boards': '02 boards',
+    '/writedown': '03 writedown',
+    '/activities': '04 activities',
+}
+
 function App() {
-    const { pathname } = useLocation();
+    const location = useLocation()
+    const { pathname } = location;
+
+    useEffect(() => {
+        if (pathname.includes('/b/')) return;
+        document.title = titles[pathname] || 'tamago-start';
+    }, [location]);
 
     return (
         <>
@@ -27,6 +43,7 @@ function App() {
 
                 <Route element={<PersistLogin />}>
                     <Route path="/" element={<Home />} />
+                    <Route path="/home" element={<Home />} />
                     <Route path="/b/:boardId/" element={<Board />} />
                     <Route path="/boards" element={<Boards />} />
                     <Route path="/writedown" element={<Writedown />} />
