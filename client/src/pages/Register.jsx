@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { axiosPrivate } from '../api/axios';
 import Title from '../components/ui/Title';
 import Loading from '../components/ui/Loading';
@@ -23,8 +23,6 @@ export default function Register() {
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
-    const location = useLocation();
-    const from = location.state?.from?.pathname || "/";
 
     useEffect(() => {
         const isLoggedIn = async () => {
@@ -71,7 +69,7 @@ export default function Register() {
             } else if (err.response?.status === 409) {
                 setErrMsg('Username Taken');
             } else {
-                setErrMsg('Registration Failed')
+                setErrMsg(`${err?.response?.data?.error || 'Failed to Register'}`);
             }
         }
 
@@ -89,7 +87,7 @@ export default function Register() {
                     displayText={'please wait, creating account...'}
                 />
 
-                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 bg-gray-100'>
+                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 bg-gray-100 w-[325px]'>
                     <label htmlFor="username" >Username</label>
                     <input
                         className='border-[3px] border-black p-1 font-semibold select-none'
@@ -137,7 +135,7 @@ export default function Register() {
                 <div className='flex flex-col p-4 select-none'>
                     <p> Already have an account? </p>
                     <Link className='text-black hover:text-black' to="/login">
-                        <button className='button--style button--hover'>Log in</button>
+                        <button className='button--style mt-1'>Log in</button>
                     </Link>
                 </div>
 
