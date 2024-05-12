@@ -1,10 +1,19 @@
-## task-manager (wip)
+## task-manager (v0.1)
 
-Trello-like task-manager web application built with MERN stack and Socket.io (come with drag and drop lists/cards, chats,...).
+Task Manager application built with MERN stack and Socket.io (come with drag and drop lists/cards, chats, notes, and history tracking...).
 
-> Shout out to Trello - my favorite tool, I use it for every project I make. I want to build a web application like it but modify some stuff to fit my taste.
+> Inspired by Trello - my favorite tool for daily work.
+
+> I want to build something like it but modify some stuff to fit my taste.
 
 ![Board Screenshot](./media/screenshot1.png)
+![Writedown Screenshot](./media/screenshot2.png)
+![Board Activities Screenshot](./media/screenshot3.png)
+![Board Stats Screenshot](./media/screenshot4.png)
+
+---
+
+Demo: [https://task-manager-client-n3q2.onrender.com/](https://task-manager-client-n3q2.onrender.com/)
 
 ---
 
