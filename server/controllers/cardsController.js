@@ -38,7 +38,7 @@ const addCard = async (req, res) => {
     if (!foundList) return res.status(403).json({ msg: "list not found" });
 
     const { boardId } = foundList;
-    const { authorized } = await isActionAuthorized(boardId, req.user.username);
+    const { user, authorized } = await isActionAuthorized(boardId, req.user.username);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     const newCard = new Card({
@@ -50,6 +50,18 @@ const addCard = async (req, res) => {
     });
 
     await newCard.save();
+
+    await saveBoardActivity({
+        boardId,
+        userId: user._id,
+        cardId: newCard._id,
+        listId: foundList._id,
+        action: "add new card",
+        type: "card",
+        description: `created in list "${foundList.title}"`,
+        createdAt: newCard.updatedAt,
+    })
+
     return res.status(201).json({ msg: 'new card added', newCard });
 };
 
@@ -85,7 +97,7 @@ const reorder = async (req, res) => {
         listId: foundList._id,
         action: "update card position",
         type: "card",
-        description: `${currentCardListTitle} (${sourceIndex}) > ${updatedCardListTitle} (${destinationIndex})`,
+        description: `${currentCardListTitle} (${+sourceIndex + 1}) > ${updatedCardListTitle} (${+destinationIndex + 1})`,
         createdAt: foundCard.updatedAt,
     })
 
@@ -179,10 +191,18 @@ const deleteCard = async (req, res) => {
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
 
     const { boardId } = foundCard;
-    const { authorized } = await isActionAuthorized(boardId, req.user.username);
+    const { user, authorized } = await isActionAuthorized(boardId, req.user.username);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     await Card.findOneAndDelete({ _id: id });
+
+    await saveBoardActivity({
+        boardId,
+        userId: user._id,
+        action: "delete card",
+        type: "card",
+        description: `card with title "${foundCard.title}" deleted`,
+    });
 
     res.status(200).json({ message: 'Card removed successfully' });
 };

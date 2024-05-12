@@ -8,8 +8,6 @@ import { useSearchParams } from 'react-router-dom';
 const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCard }) => {
     const {
         setOpenedCardQuickEditor,
-        setOpenCardDetail,
-        setOpenedCard,
         setCardTitle,
         theme,
         socket,

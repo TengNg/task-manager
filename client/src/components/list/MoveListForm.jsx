@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { lexorank } from '../../utils/class/Lexorank';
@@ -11,8 +10,6 @@ const MoveListForm = () => {
     const [selectedBoardId, setSelectedBoardId] = useState();
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [listCount, setListCount] = useState(0);
-
-    const { boardId } = useParams();
 
     const {
         socket,
@@ -146,16 +143,17 @@ const MoveListForm = () => {
             // failed to reorder
             if (!ok) {
                 alert("Cannot move this list in current board, try again or enable #debug_mode to see what happened");
-                window.location.reload();
                 return;
             }
+
+            removed.order = rank;
 
             setBoardState(prev => {
                 return { ...prev, lists: newLists }
             });
 
             const removedId = removed._id;
-            await axiosPrivate.put(`/lists/${removedId}/reorder`, JSON.stringify({ rank }));
+            await axiosPrivate.put(`/lists/${removedId}/reorder`, JSON.stringify({ rank, sourceIndex: currentIndex, destinationIndex: selectedIndex }));
             socket.emit("moveList", { listId: removedId, fromIndex: +currentIndex, toIndex: +selectedIndex });
         } catch (err) {
             alert("Cannot move this list in current board, try again or enable #debug_mode to see what happened");
@@ -210,7 +208,7 @@ const MoveListForm = () => {
                                 listCount === 0 ? (
                                     <option value={0}>position: 1</option>
                                 ) : (
-                                    Array.from(Array(listCount + 1).keys()).map(count => {
+                                    Array.from(Array(listCount).keys()).map(count => {
                                         return <option key={count} value={count}>position: {count + 1}</option>
                                     })
                                 )

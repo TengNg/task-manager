@@ -12,8 +12,6 @@ import { useSearchParams } from 'react-router-dom';
 
 const Card = ({ index, card }) => {
     const {
-        setOpenCardDetail,
-        setOpenedCard,
         setOpenedCardQuickEditor,
         focusedCard,
         setFocusedCard,
@@ -65,8 +63,6 @@ const Card = ({ index, card }) => {
     const handleOpenCardDetail = () => {
         searchParams.set('card', card._id);
         setSearchParams(searchParams);
-        //setOpenedCard({ ...card, position: index });
-        //setOpenCardDetail(true);
     };
 
     const getStyle = (style, _) => {

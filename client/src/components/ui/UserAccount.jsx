@@ -56,9 +56,9 @@ const UserAccount = () => {
     if (Object.keys(auth).length === 0 || !auth.accessToken) {
         return (
             <button onClick={() => navigate('/login')}
-                className="border-[2px] border-gray-600 shadow-gray-600 shadow-[0_3px_0_0] bg-gray-100 p-1 px-3 text-[0.75rem] font-medium text-gray-600"
+                className="border-[2px] border-gray-600 shadow-gray-600 shadow-[0_3px_0_0] bg-gray-100 p-1 px-3 text-[10px] sm:text-[0.75rem] font-medium text-gray-600"
             >
-                Sign in
+                Log in
             </button>
         )
     }

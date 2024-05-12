@@ -9,14 +9,14 @@ const useRefreshToken = () => {
         const { user, accessToken } = response.data;
 
         if (!accessToken) {
-            return null;
+            await axiosPrivate.get('/logout');
+        } else {
+            setAuth(prev => {
+                return { ...prev, user, accessToken }
+            });
+
+            return accessToken;
         }
-
-        setAuth(prev => {
-            return { ...prev, user, accessToken: response.data.accessToken }
-        });
-
-        return response.data.accessToken;
     }
 
     return refresh;

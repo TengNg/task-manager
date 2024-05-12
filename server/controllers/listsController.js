@@ -23,7 +23,7 @@ const addList = async (req, res) => {
     const { username } = req.user;
     const { title, order, boardId } = req.body;
 
-    const { authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
+    const { user, authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     const newList = new List({
@@ -33,6 +33,16 @@ const addList = async (req, res) => {
     });
 
     await newList.save();
+
+    await saveBoardActivity({
+        boardId,
+        userId: user._id,
+        listId: newList._id,
+        action: "add new list",
+        type: "list",
+        description: '',
+    })
+
     return res.status(201).json({ msg: 'new list created', newList });
 }
 
@@ -57,7 +67,7 @@ const reorder = async (req, res) => {
         listId: foundList._id,
         action: "update list rank",
         type: "list",
-        description: `(${sourceIndex}) > (${destinationIndex})`,
+        description: `(${+sourceIndex + 1}) > (${+destinationIndex + 1})`,
         previousState: sourceIndex,
         updatedState: destinationIndex,
         createdAt: foundList.updatedAt,
@@ -93,10 +103,19 @@ const deleteList = async (req, res) => {
     if (!foundList) return res.status(403).json({ msg: "list not found" });
 
     const { boardId } = foundList;
-    const { authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
+    const { user, authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     await List.findByIdAndDelete(id);
+
+    await saveBoardActivity({
+        boardId,
+        userId: user._id,
+        action: "delete list",
+        type: "list",
+        description: `list with title "${foundList.title}" deleted`,
+    });
+
     res.status(200).json({ message: 'list deleted' });
 };
 

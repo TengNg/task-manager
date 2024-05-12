@@ -144,7 +144,7 @@ const CardComposer = ({ list, open, setOpen }) => {
             <textarea
                 disabled={isAddingCard}
                 ref={textAreaRef}
-                className="text-[0.8rem] h-fit bg-gray-50 border-[2px] py-4 px-4 text-gray-600 border-gray-500 shadow-[0_3px_0_0] shadow-gray-500 leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50"
+                className="text-sm h-fit bg-gray-50 border-[2px] py-4 px-4 text-gray-600 border-gray-500 shadow-[0_3px_0_0] shadow-gray-500 leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50"
                 placeholder='Title for this card'
                 onChange={handleTextAreaChanged}
                 onKeyDown={handleTextAreaOnEnter}

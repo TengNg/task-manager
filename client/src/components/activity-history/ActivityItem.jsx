@@ -7,9 +7,9 @@ const ActivityItem = ({ activity }) => {
 
     if (type === 'board') {
         return (
-            <div className='flex flex-col gap-3 text-[10px] sm:text-sm shadow-[0_3px_0_0] border-[2px] border-fuchsia-600 shadow-fuchsia-600 bg-fuchsia-50 p-4'>
+            <div className='flex flex-col gap-2 text-[10px] sm:text-sm shadow-[0_3px_0_0] border-[2px] border-yellow-600 shadow-yellow-600 bg-yellow-50 p-4'>
                 <div>
-                    <span>{action}:</span>
+                    <span className='font-medium text-yellow-800'>{action}:</span>
                 </div>
                 <div>
                     <span>information:</span>
@@ -29,11 +29,11 @@ const ActivityItem = ({ activity }) => {
 
     if (type === 'list') {
         return (
-            <div className='flex flex-col gap-3 text-[10px] sm:text-sm shadow-[0_3px_0_0] border-[2px] border-blue-600 shadow-blue-600 bg-blue-50 p-4'>
+            <div className='flex flex-col gap-2 text-[10px] sm:text-sm shadow-[0_3px_0_0] border-[2px] border-blue-700 shadow-blue-700 bg-blue-50 p-4'>
                 <div>
-                    <span>{action}:</span>
+                    <span className='font-medium text-blue-800'>{action}:</span>
                     <span>{" "}</span>
-                    <span className='font-semibold cursor-pointer'>
+                    <span className='font-semibold'>
                         {list?.title}
                     </span>
                     <span>{" "}</span>
@@ -55,9 +55,9 @@ const ActivityItem = ({ activity }) => {
     }
 
     return (
-        <div className='flex flex-col gap-3 text-[10px] sm:text-sm shadow-[0_3px_0_0] border-[2px] border-teal-600 shadow-teal-600 bg-teal-50 p-3'>
+        <div className='flex flex-col gap-2 text-[10px] sm:text-sm shadow-[0_3px_0_0] border-[2px] border-teal-600 shadow-teal-600 bg-teal-50 p-3'>
             <div>
-                <span>{action}:</span>
+                <span className='font-medium text-teal-700'>{action}:</span>
                 <span>{" "}</span>
                 <span
                     className='font-semibold underline cursor-pointer'

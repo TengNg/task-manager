@@ -125,16 +125,14 @@ const BoardActivities = ({ boardId, open, setOpen }) => {
                 }
 
                 {
-                    !allActivitiesFetched &&
+                    (!allActivitiesFetched || activities.length > ACTIVITIES_PER_PAGE) &&
                     <button
                         className="text-gray-600 flex justify-center items-center bg-gray-200 hover:bg-gray-300 p-2"
                         onClick={() => {
                             if (!loading) fetchBoardActivities()
                         }}
                     >
-                        {
-                            loading ? 'loading...' : 'load more'
-                        }
+                        {loading ? 'loading...' : 'load more'}
                     </button>
                 }
             </div>

@@ -54,7 +54,7 @@ const PersistLogin = () => {
                                 <br />
 
                                 <span className='text-[0.85rem] text-gray-500'>
-                                    Please wait or navigate to the sign-in page and try signing in again.
+                                    Please wait or clear the browser cache then try again.
                                 </span>
                             </div>
 

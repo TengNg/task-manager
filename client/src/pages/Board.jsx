@@ -331,6 +331,9 @@ const Board = () => {
         try {
             const { _id: cardId, listId: oldListId } = card;
 
+            const oldList = boardState.lists.find(list => list._id === oldListId);
+            const currentIndex = oldList.cards.findIndex(el => el._id == card._id);
+
             const currentList = boardState.lists.find(list => list._id === newListId);
             const cards = currentList.cards;
             const [rank, ok] = lexorank.insert(cards[cards.length - 1]?.order, undefined);
@@ -339,7 +342,7 @@ const Board = () => {
                 throw new Error('Failed to reorder card');
             }
 
-            const response = await axiosPrivate.put(`/cards/${cardId}/reorder`, JSON.stringify({ rank, listId: newListId }));
+            const response = await axiosPrivate.put(`/cards/${cardId}/reorder`, JSON.stringify({ rank, listId: newListId, sourceIndex: currentIndex, destinationIndex: cards.length - 1 }));
             const { newCard } = response.data;
 
             // delete card from old list, and add the current card to the new list
@@ -409,7 +412,7 @@ const Board = () => {
                 };
             });
 
-            await axiosPrivate.put(`/cards/${card._id}/reorder`, JSON.stringify({ rank, listId: card.listId }));
+            await axiosPrivate.put(`/cards/${card._id}/reorder`, JSON.stringify({ rank, listId: card.listId, sourceIndex: currentIndex, destinationIndex: insertedIndex }));
             socket.emit("moveCardByIndex", { cards, listId: card.listId });
         } catch (err) {
             console.log(err);

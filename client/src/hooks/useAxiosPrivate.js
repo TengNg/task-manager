@@ -22,7 +22,7 @@ const useAxiosPrivate = () => {
         const responseIntercept = axiosPrivate.interceptors.response.use(
             response => response, // every responses with status 2xx will trigger this
             async (error) => {
-                const prevRequest = error.config;
+                const prevRequest = error?.config;
                 if (error?.response?.status === 403 && !prevRequest?._retry) {
                     prevRequest._retry = true; // prevent infinite loop
                     const newAccessToken = await refresh();
