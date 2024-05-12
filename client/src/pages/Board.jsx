@@ -141,6 +141,7 @@ const Board = () => {
                 setOpenedCard(card);
             } catch (err) {
                 console.log(err);
+                setOpenCardDetail(false);
                 alert('Failed to get card data');
             }
         }

@@ -44,7 +44,7 @@ const KeyBindings = ({ open, setOpen }) => {
     return (
         <dialog
             ref={dialog}
-            className='z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 h-fit min-w-[350px] border-black border-[2px] bg-gray-200'
+            className='z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 h-fit min-w-[350px] w-[425px] border-black border-[2px] bg-gray-200'
             onClick={handleCloseOnOutsideClick}
         >
             <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
@@ -57,7 +57,7 @@ const KeyBindings = ({ open, setOpen }) => {
                 </button>
             </div>
 
-            <div className='p-4 text-gray-600 text-[0.65rem] sm:text-[0.75rem] font-medium'>
+            <div className='p-3 text-gray-600 text-[10px] sm:text-[0.75rem] font-medium'>
                 <ul className='flex flex-col gap-4 list-disc'>
                     <li>
                         <span className='key'>?</span> open help
@@ -84,15 +84,19 @@ const KeyBindings = ({ open, setOpen }) => {
                     </li>
 
                     <li>
+                        <span className='key'>Ctrl</span> + <span className='key'>.</span> open board activities
+                    </li>
+
+                    <li>
+                        <span className='key'>Ctrl</span> + <span className='key'>;</span> open new list composer
+                    </li>
+
+                    <li>
                         <span className='key'>Ctrl</span> + <span className='key'>/</span> focus card description
                     </li>
 
                     <li>
                         <span className='key'>Ctrl</span> + <span className='key'>x</span> open board configuration
-                    </li>
-
-                    <li>
-                        <span className='key'>Ctrl</span> + <span className='key'>;</span> open new list composer
                     </li>
 
                     <li>

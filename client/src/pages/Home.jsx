@@ -9,7 +9,7 @@ const Home = () => {
                     <Title titleName={"home"} />
 
                     <section className="flex flex-col gap-4 justify-between items-center">
-                        <div className='text-[10px] md:text-[0.65rem] lg:text-[0.85rem] text-gray-700'>
+                        <div className='text-[10px] md:text-[0.65rem] lg:text-sm text-gray-700'>
                             This project is a simple task management which you can create your own task-boards and collab with your friends (with a simple noting system).
 
                             <br />
@@ -35,6 +35,8 @@ const Home = () => {
                             <br />
 
                             <div className='border-[2px] border-dashed border-gray-500 md:p-4 p-2'>
+                                <div className='mb-6 w-full text-end'>* For desktop-users</div>
+
                                 <div className='w-fit mb-2 lg:float-left'>
                                     <span className='underline'>
                                         Keybinds:
@@ -43,7 +45,7 @@ const Home = () => {
 
                                 <div className='flex gap-4 justify-around'>
                                     <div className="flex flex-col gap-2">
-                                        <div className='underline'>Global Keybinds:</div>
+                                        <div className='underline'>Global Keybinds</div>
                                         <ul className='flex flex-col gap-2 ms-4 list-disc'>
                                             <li>
                                                 0: Navigate to Profile
@@ -67,8 +69,14 @@ const Home = () => {
                                     </div>
 
                                     <div className="flex flex-col gap-2">
-                                        <div className='underline'>
-                                            In-Board Keybinds:
+                                        <div>
+                                            <span className='underline'>
+                                                In-Board Keybinds
+                                            </span>
+                                            <span>{" "}</span>
+                                            <span className='opacity-50 italic text-[9px] lg:text-[0.75rem]'>
+                                                (some keybinds that will boost-up your productivity)
+                                            </span>
                                         </div>
                                         <ul className='flex flex-col gap-2 ms-4 list-disc'>
                                             <li>

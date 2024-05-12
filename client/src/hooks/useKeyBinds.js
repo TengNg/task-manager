@@ -53,6 +53,7 @@ const useKeyBinds = () => {
                     || key === 'k'
                     || key === 'l'
                     || key === ';'
+                    || key === '.'
 
                     || key === 'ArrowLeft'
                     || key === 'ArrowRight'
@@ -79,17 +80,27 @@ const useKeyBinds = () => {
                     return;
                 }
 
-                if (key === 'e') {
-                    setOpenPinnedBoards(prev => !prev);
-                    return;
-                }
-
                 if (key === 'm') {
                     setOpenMembers(prev => !prev);
                     return;
                 }
 
-                if (!formOpen && !isTextFieldFocused) {
+                if (key === 'x') {
+                    setOpenConfiguration(prev => !prev);
+                    return;
+                }
+
+                if (key === '.') {
+                    setOpenBoardActivities(prev => !prev);
+                    return;
+                }
+
+                if (!formOpen && !isTextFieldFocused && !isTextAreaFocused) {
+                    if (key === 'e') {
+                        setOpenPinnedBoards(prev => !prev);
+                        return;
+                    }
+
                     if (key === 'ArrowLeft' || key === 'h') {
                         setFocusedListIndex(prev => {
                             if (prev === 0) return prev;
@@ -122,41 +133,32 @@ const useKeyBinds = () => {
                 }
             }
 
-            if (openPinnedBoards && key === 'Escape') {
-                setOpenPinnedBoards(false);
-                return;
-            }
-
-            if (key === 'a' && !formOpen && !isTextFieldFocused && !isTextAreaFocused) {
-                const listContainer = document.querySelector('#list-container');
-                if (listContainer) {
-                    listContainer.scrollBy({ left: -400, top: 0 });
-                } else {
-                    console.log('cant scroll');
+            if (!formOpen && !isTextFieldFocused && !isTextAreaFocused) {
+                if (key === 'a') {
+                    const listContainer = document.querySelector('#list-container');
+                    if (listContainer) {
+                        listContainer.scrollBy({ left: -400, top: 0 });
+                    } else {
+                        console.log('cant scroll');
+                    }
+                    return;
                 }
-                return;
-            }
 
-            if (key === 'd' && !formOpen && !isTextFieldFocused && !isTextAreaFocused) {
-                const listContainer = document.querySelector('#list-container');
-                if (listContainer) {
-                    listContainer.scrollBy({ left: 400, top: 0 });
-                } else {
-                    console.log('cant scroll');
+                if (key === 'd') {
+                    const listContainer = document.querySelector('#list-container');
+                    if (listContainer) {
+                        listContainer.scrollBy({ left: 400, top: 0 });
+                    } else {
+                        console.log('cant scroll');
+                    }
+                    return;
                 }
-                return;
-            }
 
-            if (key === 'x' && !formOpen && !isTextFieldFocused && !isTextAreaFocused) {
-                setOpenConfiguration(prev => !prev);
-            }
+                if (key === '?') {
+                    setOpenKeyBindings(prev => !prev);
+                    return;
+                }
 
-            if (key === '?' && !isTextFieldFocused && !isTextAreaFocused) {
-                setOpenKeyBindings(prev => !prev);
-                return;
-            }
-
-            if (!isTextFieldFocused) {
                 if (key === '.') {
                     if (openFloatingChat) {
                         setOpenFloatingChat(false);
