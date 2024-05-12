@@ -17,6 +17,7 @@ const useKeyBinds = () => {
 
     const [openKeyBindings, setOpenKeyBindings] = useState(false);
     const [openConfiguration, setOpenConfiguration] = useState(false);
+    const [openBoardActivities, setOpenBoardActivities] = useState(false);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -210,7 +211,9 @@ const useKeyBinds = () => {
 
         openKeyBindings, setOpenKeyBindings,
 
-        openConfiguration, setOpenConfiguration
+        openConfiguration, setOpenConfiguration,
+
+        openBoardActivities, setOpenBoardActivities
     };
 }
 

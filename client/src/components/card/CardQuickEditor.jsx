@@ -3,6 +3,8 @@ import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import QuickEditorHighlightPicker from "./QuickEditorHighlightPicker";
 
+import { useSearchParams } from 'react-router-dom';
+
 const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCard }) => {
     const {
         setOpenedCardQuickEditor,
@@ -20,6 +22,8 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
 
     const textAreaRef = useRef();
     const quickEditorRef = useRef();
+
+    const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
         if (quickEditorRef.current && textAreaRef.current && open === true) {
@@ -92,8 +96,8 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
     };
 
     const handleOpenCardDetail = () => {
-        setOpenCardDetail(true);
-        setOpenedCard(card);
+        searchParams.set('card', card._id);
+        setSearchParams(searchParams);
         close();
     };
 
@@ -127,7 +131,7 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
                 <div className="flex h-full relative mb-2">
                     <textarea
                         ref={textAreaRef}
-                        className={`${theme.itemTheme == 'rounded' ? 'rounded' : ''} text-[0.8rem] h-full bg-gray-50 border-[2px] py-4 px-4 text-gray-600 border-black shadow-[0_3px_0_0] shadow-black leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50`}
+                        className={`${theme.itemTheme == 'rounded' ? 'rounded' : ''} text-sm h-full bg-gray-50 border-[2px] py-4 px-4 text-gray-600 border-black shadow-[0_3px_0_0] shadow-black leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50`}
                         style={{ boxShadow: `${card.highlight == null ? '0 3px 0 0 #4b5563' : `0 3px 0 0 ${card.highlight}`}`, borderColor: `${card.highlight == null ? '#4b5563' : `${card.highlight}`}` }}
                         placeholder='Title for this card'
                         onChange={handleTextAreaChanged}

@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleLeft, faCopy, faWrench, faGear, faCircleInfo, faCircleXmark, faLightbulb } from '@fortawesome/free-solid-svg-icons';
+import { faAngleLeft, faCopy, faGear, faClockRotateLeft, faCircleXmark, faLightbulb } from '@fortawesome/free-solid-svg-icons';
 import useAuth from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import useBoardState from "../../hooks/useBoardState";
 import { useNavigate } from "react-router-dom";
 import dateFormatter from "../../utils/dateFormatter";
 
-const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration }) => {
+const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration, setOpenBoardActivities }) => {
     const { auth } = useAuth();
     const {
         boardState,
@@ -102,6 +102,15 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration })
                         className="button--style--dark ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
                     >
                         <FontAwesomeIcon icon={faGear} /> configuration
+                    </button>
+                </div>
+
+                <div className='flex justify-start'>
+                    <button
+                        onClick={() => setOpenBoardActivities(true)}
+                        className="button--style--dark ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
+                    >
+                        <FontAwesomeIcon icon={faClockRotateLeft} /> board activities
                     </button>
                 </div>
 

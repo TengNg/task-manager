@@ -74,7 +74,7 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
                     return { ...prev, lists: newLists }
                 });
 
-                await axiosPrivate.put(`/lists/${removedId}/reorder`, JSON.stringify({ rank }));
+                await axiosPrivate.put(`/lists/${removedId}/reorder`, JSON.stringify({ rank, sourceIndex: srcIndex, destinationIndex: destIndex }));
                 socket.emit("moveList", { listId: removedId, fromIndex: srcIndex, toIndex: destIndex });
             } catch (err) {
                 alert("Failed to reorder list");
@@ -135,7 +135,13 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
                 return { ...prev, lists: currentLists };
             });
 
-            const response = await axiosPrivate.put(`/cards/${removedId}/reorder`, JSON.stringify({ rank, listId: removed.listId, timestamp: removed.updatedAt }));
+            const response = await axiosPrivate.put(`/cards/${removedId}/reorder`, JSON.stringify({
+                rank,
+                listId: removed.listId,
+                timestamp: removed.updatedAt,
+                sourceIndex: srcIndex,
+                destinationIndex: destIndex
+            }));
             const newCard = response.data.newCard;
 
             socket.emit("moveCardToList", {

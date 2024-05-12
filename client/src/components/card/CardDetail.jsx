@@ -9,7 +9,9 @@ import HighlightPicker from "./HighlightPicker";
 import CardDetailInfo from "./CardDetailInfo";
 import Loading from "../ui/Loading";
 
-const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCard, handleMoveCardToList, handleMoveCardByIndex }) => {
+import { useSearchParams } from "react-router-dom"
+
+const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCard, handleMoveCardToList, handleMoveCardByIndex, abortController }) => {
     const {
         openedCard: card,
         boardState,
@@ -33,21 +35,26 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
     const highlightPicker = useRef();
     const openHighlightPickerButton = useRef();
 
+    const [searchParams, setSearchParams] = useSearchParams();
+
     useEffect(() => {
         if (open) {
             dialog.current.showModal();
-            dialog.current.querySelector('.card__title__textarea').blur();
             dialog.current.focus();
+            const textarea = dialog.current.querySelector('.card__title__textarea')
+            if (textarea) {
+                textarea.blur();
+            }
 
             setTitle(card?.title);
             setDescription(card?.description);
 
-            const cards = boardState?.lists?.find(list => list._id === card.listId)?.cards;
+            const cards = boardState?.lists?.find(list => list._id === card?.listId)?.cards;
             const cardCount = cards?.length || 0;
             const position = cards?.findIndex(el => el._id === card._id) || 0;
             setCardCount(cardCount);
             setPosition(position);
-            setCardDescription(card.description);
+            setCardDescription(card?.description);
 
             const handleKeyDown = (e) => {
                 if (e.ctrlKey && e.key === '/') {
@@ -61,6 +68,13 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
             const handleOnClose = () => {
                 setOpen(false);
                 setOpenedCard(undefined);
+
+                if (abortController) {
+                    abortController.abort();
+                }
+
+                searchParams.delete('card');
+                setSearchParams(searchParams);
             };
 
             dialog.current.addEventListener('close', handleOnClose);
@@ -71,7 +85,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                 dialog.current.removeEventListener('keydown', handleKeyDown);
             };
         }
-    }, [open]);
+    }, [open, card]);
 
     const handleCloseOnOutsideClick = (e) => {
         if (e.target !== highlightPicker.current && e.target !== openHighlightPickerButton.current) {
@@ -187,7 +201,15 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         setPosition(insertedIndex);
     }
 
-    if (!card) return null;
+    if (card === undefined) {
+        return <dialog
+            ref={dialog}
+            className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style p-3 gap-3 pb-4 w-[350px] h-[350px] border-black border-[2px] bg-gray-200'
+            onClick={handleCloseOnOutsideClick}
+        >
+            getting card data...
+        </dialog>
+    }
 
     return (
         <>

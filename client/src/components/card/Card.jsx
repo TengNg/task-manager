@@ -8,6 +8,8 @@ import Loading from '../ui/Loading';
 import { highlightColorsRGBA } from "../../data/highlights";
 import PRIORITY_LEVELS from "../../data/priorityLevels";
 
+import { useSearchParams } from 'react-router-dom';
+
 const Card = ({ index, card }) => {
     const {
         setOpenCardDetail,
@@ -20,6 +22,8 @@ const Card = ({ index, card }) => {
     } = useBoardState();
 
     const cardRef = useRef();
+
+    const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
         if (cardRef && cardRef.current && focusedCard?.id === card._id && focusedCard?.highlight) {
@@ -58,9 +62,11 @@ const Card = ({ index, card }) => {
         }
     };
 
-    const handleOpenCardDetail = (e) => {
-        setOpenedCard({ ...card, position: index });
-        setOpenCardDetail(true);
+    const handleOpenCardDetail = () => {
+        searchParams.set('card', card._id);
+        setSearchParams(searchParams);
+        //setOpenedCard({ ...card, position: index });
+        //setOpenCardDetail(true);
     };
 
     const getStyle = (style, _) => {
