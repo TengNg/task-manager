@@ -1,144 +1,116 @@
 import Title from "../components/ui/Title";
 
 const Home = () => {
-    return (
-        <>
-            <section className="w-full h-[calc(100%-75px)] overflow-auto pb-4">
+    return (<section className="w-full h-[calc(100%-75px)] overflow-auto pb-4">
 
-                <div className='mx-auto sm:w-3/4 w-[90%]'>
-                    <Title titleName={"home"} />
+        <div className='mx-auto sm:w-3/4 w-[90%]'>
+            <Title titleName={"home"} />
 
-                    <section className="flex flex-col gap-4 justify-between items-center">
-                        <div className='text-[10px] md:text-[0.65rem] lg:text-sm text-gray-700'>
-                            This project is a simple task management which you can create your own task-boards and collab with your friends (with a simple noting system).
+            <section className="flex flex-col gap-4 justify-between items-center">
+                <div className='text-[10px] md:text-[0.65rem] lg:text-sm text-gray-700'>
+                    <div className='border-[2px] border-dashed border-gray-500 md:p-6 p-3'>
+                        This project is a simple task management which you can create your own task-boards and collab with your friends (with a simple noting system).
+                    </div>
 
-                            <br />
-                            <br />
+                    <br />
 
-                            <div className='border-[2px] border-dashed border-gray-500 md:p-4 p-2'>
-                                <div className='underline mb-2'>
-                                    About this project:
-                                </div>
-                                <ul className='flex flex-col gap-2 ms-4'>
+                    <div className='border-[2px] border-dashed border-gray-500 md:p-6 p-3'>
+                        <div className='underline mb-2'>
+                            About this project:
+                        </div>
+                        <ul className='flex flex-col gap-3 ms-4'>
+                            <li>
+                                - Created from my own personal interest, and from everyday-workflow.
+                            </li>
+                            <li>
+                                - I want a task-management app with a simple notes system (+ keybinds).
+                            </li>
+                            <li>
+                                - Easy to collaborate with your friends.
+                            </li>
+                            <li>
+                                - Easy to track your progress &amp; activities.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <br />
+
+                    <div className='mb-1 w-full text-gray-500'>* Notes: Using keybinds for better workflow (Desktop users only)</div>
+                    <div className='border-[2px] border-dashed border-gray-500 md:p-6 p-3'>
+                        <div className='flex flex-wrap gap-6 lg:gap-12'>
+                            <div className="flex flex-col gap-2">
+                                <div className='underline'>Global Keybinds</div>
+                                <ul className='flex flex-col gap-4 ms-4 list-disc'>
                                     <li>
-                                        - I want a task-management app with a simple notes system (+ keybinds)
+                                        <span className='key'>0</span> navigate to Profile
                                     </li>
                                     <li>
-                                        - Created from my own personal interest, and from everyday-workflow.
+                                        <span className='key'>1</span> navigate to Home
                                     </li>
                                     <li>
-                                        - Easy to use.
+                                        <span className='key'>2</span> navigate to Boards
+                                    </li>
+                                    <li>
+                                        <span className='key'>3</span> navigate to Writedown
+                                    </li>
+                                    <li>
+                                        <span className='key'>4</span> navigate to Activities
+                                    </li>
+                                    <li>
+                                        <span className='key'>5</span> navigate to Last Viewed Board
                                     </li>
                                 </ul>
                             </div>
 
-                            <br />
-
-                            <div className='border-[2px] border-dashed border-gray-500 md:p-4 p-2'>
-                                <div className='mb-6 w-full text-end'>* For desktop-users</div>
-
-                                <div className='w-fit mb-2 lg:float-left'>
-                                    <span className='underline'>
-                                        Keybinds:
-                                    </span>
+                            <div className="flex flex-col gap-2">
+                                <div>
+                                    <span className='underline'>In-Board Keybinds</span>
                                 </div>
-
-                                <div className='flex gap-4 justify-around'>
-                                    <div className="flex flex-col gap-2">
-                                        <div className='underline'>Global Keybinds</div>
-                                        <ul className='flex flex-col gap-2 ms-4 list-disc'>
-                                            <li>
-                                                0: Navigate to Profile
-                                            </li>
-                                            <li>
-                                                1: Navigate to Home
-                                            </li>
-                                            <li>
-                                                2: Navigate to Boards
-                                            </li>
-                                            <li>
-                                                3: Navigate to Writedown
-                                            </li>
-                                            <li>
-                                                4: Navigate to Activities
-                                            </li>
-                                            <li>
-                                                5: Navigate to Last Viewed Board
-                                            </li>
-                                        </ul>
-                                    </div>
-
-                                    <div className="flex flex-col gap-2">
-                                        <div>
-                                            <span className='underline'>
-                                                In-Board Keybinds
-                                            </span>
-                                            <span>{" "}</span>
-                                            <span className='opacity-50 italic text-[9px] lg:text-[0.75rem]'>
-                                                (some keybinds that will boost-up your productivity)
-                                            </span>
-                                        </div>
-                                        <ul className='flex flex-col gap-2 ms-4 list-disc'>
-                                            <li>
-                                                a: Scroll left
-                                            </li>
-                                            <li>
-                                                d: Scroll right
-                                            </li>
-                                            <li>
-                                                Ctrl + Arrow Keys: Navigate through task-cards
-                                            </li>
-                                            <li>
-                                                Ctrl + hjkl: Navigate through task-cards (for vim-users)
-                                            </li>
-                                            <li>
-                                                Ctrl + e: Open Pinned-board list
-                                            </li>
-                                            <li>
-                                                Ctrl + p: Open Filter form
-                                            </li>
-                                            <li>
-                                                Ctrl + i: Open Invitation form
-                                            </li>
-                                            <li>
-                                                Ctrl + m: Open Board Membership
-                                            </li>
-                                            <li>
-                                                Ctrl + /: Focus description field in opened task-card (Card Details)
-                                            </li>
-                                            <li>
-                                                Enter: Open focused task-card (Card Details)
-                                            </li>
-                                            <li>
-                                                Esc: Close floating forms
-                                            </li>
-                                            <li>
-                                                &lt;dot&gt;: Open Chat
-                                            </li>
-                                            <li>
-                                                Shift + &lt;dot&gt;: Open Chat (Floating mode)
-                                            </li>
-                                        </ul>
-                                    </div>
-
-                                </div>
+                                <ul className='flex flex-col gap-4 ms-4 list-disc'>
+                                    <li>
+                                        <span className='key'>?</span> show help
+                                    </li>
+                                    <li>
+                                        <span className='key'>a</span> scroll left
+                                    </li>
+                                    <li>
+                                        <span className='key'>d</span> scroll right
+                                    </li>
+                                    <li>
+                                        <span className='key'>Enter</span> confirm / send message
+                                    </li>
+                                    <li>
+                                        <span className='key'>Esc</span> close opened form / box
+                                    </li>
+                                    <li>
+                                        <span className='key'>Ctrl</span> + key combinations to quickly perform actions
+                                    </li>
+                                    <li>
+                                        See <span className='font-medium'>Help</span> in Board for better understanding :)
+                                    </li>
+                                </ul>
                             </div>
+
                         </div>
-                    </section>
+                    </div>
+
+                    <br />
 
                 </div>
+            </section>
 
-                <a
-                    href='https://github.com/TengNg/task-manager'
-                    className='fixed right-4 bottom-3 text-gray-700 text-[0.75rem] underline'
-                    target="_blank"
-                >
-                    Github
-                </a>
+        </div>
 
-            </section >
-        </>
-    )
+        <a
+            href='https://github.com/TengNg/task-manager'
+            className='fixed right-4 bottom-3 text-gray-700 text-[0.75rem] underline'
+            target="_blank"
+        >
+            Github
+        </a>
+
+    </section>)
 }
 
 export default Home
