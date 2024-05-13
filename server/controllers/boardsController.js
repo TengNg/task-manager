@@ -22,7 +22,7 @@ const getBoards = async (req, res) => {
             { createdBy: foundUser._id },
             { members: foundUser._id },
         ]
-    }).lean();
+    }).sort({ title: 'asc' }).lean();
 
     if (!foundUser.recentlyViewedBoardId) return res.json({ boards });
 
