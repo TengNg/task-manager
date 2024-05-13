@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import useRefreshToken from '../../hooks/useRefreshToken';
 import useAuth from '../../hooks/useAuth';
 import { useNavigate } from "react-router-dom";
+import { axiosPrivate } from "../../api/axios";
 
 const PersistLogin = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -30,6 +31,15 @@ const PersistLogin = () => {
 
         return () => isMounted = false;
     }, []);
+
+    const handleLogout = async () => {
+        try {
+            await axiosPrivate.get('/logout/');
+            navigate("/login");
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
     return (
         <>
@@ -63,9 +73,9 @@ const PersistLogin = () => {
 
                             <button
                                 className='mx-auto text-center text-[0.85rem] text-gray-500 underline'
-                                onClick={() => navigate('/login')}
+                                onClick={handleLogout}
                             >
-                                NAVIGATE TO SIGN IN
+                                Logout &amp; try again
                             </button>
                         </div>
                     )

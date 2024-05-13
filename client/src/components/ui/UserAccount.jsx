@@ -3,7 +3,7 @@ import useAuth from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import dateFormatter from "../../utils/dateFormatter";
 
 const UserAccount = () => {
@@ -56,9 +56,14 @@ const UserAccount = () => {
     if (Object.keys(auth).length === 0 || !auth.accessToken) {
         return (
             <button onClick={() => navigate('/login')}
-                className="border-[2px] border-gray-600 shadow-gray-600 shadow-[0_3px_0_0] bg-gray-100 p-1 px-3 text-[10px] sm:text-[0.75rem] font-medium text-gray-600"
+                className="border-[2px] border-gray-600 shadow-gray-600 shadow-[0_3px_0_0] bg-gray-100 py-1 px-2 text-[10px] sm:text-[0.75rem] font-medium text-gray-600"
             >
-                Log in
+                <div className="sm:hidden block">
+                    <FontAwesomeIcon icon={faArrowRightToBracket} />
+                </div>
+                <div className="sm:block hidden">
+                    Log in
+                </div>
             </button>
         )
     }

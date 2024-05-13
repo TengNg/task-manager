@@ -20,7 +20,7 @@ const getBoardActivities = async (req, res) => {
         .find({ board: boardId })
         .populate({
             path: 'user',
-            select: '-_id username'
+            select: '-_id username createdAt'
         })
         .populate({
             path: 'card',

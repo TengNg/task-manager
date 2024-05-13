@@ -771,7 +771,7 @@ const Board = () => {
 
                 <button
                     onClick={() => setOpenVisibilityConfig(prev => !prev)}
-                    className={`ms-2 w-[100px] ${openVisibilityConfig ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-2 py-2 text-[0.65rem] font-medium`}
+                    className={`ms-2 w-[100px] ${openVisibilityConfig ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 sm:px-2 py-2 text-[0.65rem] font-medium`}
                 >
                     visibility
                 </button>
@@ -792,7 +792,7 @@ const Board = () => {
                     </button>
 
                     <button
-                        className='w-[16px] h-[16px] bg-gray-500 hover:bg-gray-600 text-white rounded-full'
+                        className='sm:block hidden w-[16px] h-[16px] bg-gray-500 hover:bg-gray-600 text-white rounded-full'
                         onClick={() => {
                             setOpenKeyBindings(prev => !prev)
                         }}
