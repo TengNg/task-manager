@@ -38,7 +38,9 @@ const Board = () => {
         setBoardTitle,
         setChats,
 
+        // check if board is deleted or not
         isRemoved,
+        setIsRemoved,
 
         focusedCard: _focusedCard,
         setFocusedCard,
@@ -155,6 +157,7 @@ const Board = () => {
     useEffect(() => {
         if (isRemoved) {
             navigate('/notfound');
+            setIsRemoved(false);
         }
     }, [isRemoved])
 

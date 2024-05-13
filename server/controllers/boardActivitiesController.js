@@ -17,7 +17,7 @@ const getBoardActivities = async (req, res) => {
     page = +page || 1;
 
     const activities = await BoardActivity
-        .find({ boardId })
+        .find({ board: boardId })
         .populate({
             path: 'user',
             select: '-_id username'
