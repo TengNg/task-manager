@@ -15,21 +15,20 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
     const priorityLevel = card?.priorityLevel;
 
     return (
-        <div className='flex flex-col gap-3 text-[0.8rem] text-gray-700 p-4 border-[1px] border-gray-700'>
+        <div className='flex flex-col gap-4 text-[0.65rem] sm:text-[0.8rem] text-gray-700 p-4 border-[1px] border-gray-700'>
             <div className='flex flex-start items-center h-[30px] w-fit max-w-[30rem]'>
                 <span className='me-1'>priority: </span>
                 <select
                     value={priorityLevel}
                     onChange={(e) => handleCardPriorityLevelChange(e.target.value)}
-                    className={`${priorityLevel && priorityLevel !== "none" && 'text-gray-50 text-center'} font-medium max-w-[10rem] rounded-md px-2 py-1 text-[0.75rem] appearance-none hover:bg-gray-300`}
+                    className={`${priorityLevel && priorityLevel !== "none" && 'text-gray-50 text-center'} font-medium max-w-[10rem] rounded-md px-2 py-1 appearance-none hover:bg-gray-300`}
                     style={{ backgroundColor: priorityLevel ? PRIORITY_LEVELS[`${priorityLevel}`]?.color?.rgba : 'transparent' }}
                 >
-                    <option value="none" className='text-[0.75rem]'>...</option>
+                    <option value="none">...</option>
                     {
                         Object.values(PRIORITY_LEVELS).map((el, _) => {
                             return (
                                 <option
-                                    className='text-[0.75rem]'
                                     value={el.title}
                                     key={el.title}
                                 >
@@ -41,18 +40,18 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
                 </select>
             </div>
 
-            <div className='flex flex-start items-center h-[30px] w-fit max-w-[30rem]'>
+            <div className='flex flex-start items-center text-[0.65rem] sm:text-[0.8rem] h-[30px] w-fit max-w-[30rem]'>
                 <span className='me-1'>owner: </span>
                 <select
                     value={card.owner || ownerValue}
                     onChange={(e) => handleCardOwnerChange(e.target.value)}
-                    className={`font-medium max-w-[10rem] rounded-md px-2 py-1 text-[0.75rem] appearance-none hover:bg-gray-300`}
+                    className={`font-medium max-w-[10rem] rounded-md px-2 py-1 appearance-none hover:bg-gray-300`}
                     style={{ backgroundColor: highlightColorsRGBA[`${card.highlight}`] }}
                 >
                     <option value={ownerValue} className='text-[0.75rem] cursor-pointer'>
                         {ownerValue ? ownerValue : "..."}
                     </option>
-                    <option value={boardState.board.createdBy.username} className='text-[0.75rem]'>{boardState.board.createdBy.username}</option>
+                    <option value={boardState.board.createdBy.username}>{boardState.board.createdBy.username}</option>
                     {
                         boardState.board.members.map((member, _) => {
                             return (
@@ -99,11 +98,11 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
                 }
             </div>
 
-            <div className='text-[0.8rem]'>
+            <div className='text-[ .65rem] sm:text-[0.8rem] mt-1'>
                 <span>created: </span>{dateFormatter(card.createdAt)}
             </div>
 
-            <div className='text-[0.8rem]'>
+            <div className='text-[0.65rem] sm:text-[0.8rem] mt-1'>
                 <span>updated: </span>
                 {
                     card.updatedAt
