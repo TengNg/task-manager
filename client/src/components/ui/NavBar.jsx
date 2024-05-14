@@ -89,7 +89,7 @@ const NavBar = () => {
                     </button>
                 }
 
-                <nav className="h-full top-4 m-auto border-gray-700 border-[2px] bg-gray-100 px-2 z-30">
+                <nav className="h-full top-4 m-auto border-gray-700 border-[2px] bg-slate-50 px-2 z-30">
                     <ul className="w-[100%] h-[100%] flex justify-around items-center sm:gap-4 gap-2">
                         {
                             Object.values(PAGES).map((el, index) => {
