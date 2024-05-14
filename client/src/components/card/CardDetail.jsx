@@ -217,7 +217,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         <>
             <dialog
                 ref={dialog}
-                className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style p-3 gap-3 pb-4 w-[90%] xl:w-[800px] md:w-[80%] max-h-[80%] border-black border-[2px] bg-gray-200'
+                className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style p-3 gap-3 pb-4 w-[90%] xl:w-[800px] md:w-[80%] h-fit max-h-[90%] border-black border-[2px] bg-gray-200'
                 onClick={handleCloseOnOutsideClick}
             >
 

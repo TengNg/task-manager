@@ -15,7 +15,7 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
     const priorityLevel = card?.priorityLevel;
 
     return (
-        <div className='flex flex-col gap-4 text-[0.65rem] sm:text-[0.8rem] text-gray-700 p-4 border-[1px] border-gray-700'>
+        <div className='flex flex-col gap-5 text-[0.65rem] sm:text-[0.8rem] text-gray-700 p-4 border-[1px] border-gray-700'>
             <div className='flex flex-start items-center h-[30px] w-fit max-w-[30rem]'>
                 <span className='me-1'>priority: </span>
                 <select

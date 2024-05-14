@@ -9,6 +9,7 @@ import PinnedBoards from "../components/board/PinnedBoards";
 import Title from "../components/ui/Title";
 import JoinBoardRequestForm from "../components/board/JoinBoardRequestForm";
 import useAuth from "../hooks/useAuth";
+import BoardsHelp from "../components/ui/BoardsHelp";
 
 const FILTERS = Object.freeze({
     ALL: 'all',
@@ -26,6 +27,7 @@ const Boards = () => {
     const [ownedBoards, setOwnedBoards] = useState([]);
     const [joinedBoards, setJoinedBoards] = useState([]);
     const [boardFilter, setBoardFilter] = useState(FILTERS.ALL);
+    const [openHelp, setOpenHelp] = useState(false);
 
     const [recentlyViewedBoard, setRecentlyViewedBoard] = useState();
 
@@ -85,6 +87,11 @@ const Boards = () => {
         if (key === 'Escape') {
             setOpenBoardForm(false);
             setOpenJoinBoardRequestForm(false);
+            return;
+        }
+
+        if (key === '?') {
+            setOpenHelp(prev => !prev);
             return;
         }
 
@@ -177,6 +184,11 @@ const Boards = () => {
             <JoinBoardRequestForm
                 open={openJoinBoardRequestForm}
                 setOpen={setOpenJoinBoardRequestForm}
+            />
+
+            <BoardsHelp
+                open={openHelp}
+                setOpen={setOpenHelp}
             />
 
             <section
@@ -272,6 +284,17 @@ const Boards = () => {
                     }
 
                 </div>
+
+
+                <button
+                    className='fixed bottom-4 right-4 w-[20px] h-[20px] text-[12px] bg-gray-500 hover:bg-gray-600 text-white rounded-full'
+                    onClick={() => {
+                        setOpenHelp(prev => !prev)
+                    }}
+                    title='open help'
+                >
+                    ?
+                </button>
 
             </section>
         </>
