@@ -225,7 +225,7 @@ const Activities = () => {
 
                 {
                     !showInvitations && !showJoinBoardRequests &&
-                    <div className='absolute w-fit text-gray-400 text-[10px] sm:text-[0.8rem] top-1/2 left-1/2 -translate-x-[40%] -translate-y-1/2'>
+                    <div className='absolute w-fit text-gray-500 text-[10px] sm:text-[0.8rem] top-1/2 left-1/2 -translate-x-[40%] -translate-y-1/2'>
                         <span className='key opacity-45'>i</span> open inivitations
                         <br />
                         <br />

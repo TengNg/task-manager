@@ -77,9 +77,14 @@
     }
 }
 
+* {
+    box-sizing: border-box;
+}
+
 body,
 html {
   font-family: 'IBM Plex Mono', monospace;
+  box-sizing: border-box;
 }
 
 label {
@@ -133,6 +138,14 @@ div:focus, dialog:focus {
 
 *::-webkit-scrollbar-track {
     /* background: transparent; */
+}
+
+.card__item {
+    background: rgba(241, 241, 241, 0.55);
+}
+
+.list__item {
+    background: rgba(241, 241, 241, 0.55);
 }
 
 @media only screen and (max-width: 500px) {

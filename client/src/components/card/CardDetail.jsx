@@ -206,10 +206,28 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
     if (card === undefined) {
         return <dialog
             ref={dialog}
-            className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style p-3 gap-3 pb-4 w-[350px] h-[350px] border-black border-[2px] bg-gray-200'
+            className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style text-gray-600 p-3 gap-3 pb-4 w-[350px] h-[350px] border-gray-600 border-[2px] bg-gray-200'
             onClick={handleCloseOnOutsideClick}
         >
-            getting card data...
+            <div className='w-100 h-[300px] text-center grid items-center'>
+                <span>
+                    getting card data...
+                </span>
+            </div>
+        </dialog>
+    }
+
+    if (card?.failedToLoad && card?.errMsg) {
+        return <dialog
+            ref={dialog}
+            className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style text-gray-600 p-3 gap-3 pb-4 w-[350px] h-[350px] border-gray-600 border-[2px] bg-gray-200'
+            onClick={handleCloseOnOutsideClick}
+        >
+            <div className='w-100 h-[300px] text-center grid items-center'>
+                <span>
+                    {card?.errMsg}
+                </span>
+            </div>
         </dialog>
     }
 
@@ -217,7 +235,8 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         <>
             <dialog
                 ref={dialog}
-                className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style p-3 gap-3 pb-4 w-[90%] xl:w-[800px] md:w-[80%] h-fit max-h-[90%] border-black border-[2px] bg-gray-200'
+                className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style p-3 gap-3 pb-4 w-[90%] xl:w-[800px] md:w-[80%] h-fit max-h-[90%] border-black border-[2px]'
+                style={{ background: "rgb(235, 235, 235)" }}
                 onClick={handleCloseOnOutsideClick}
             >
 
@@ -229,7 +248,6 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                 />
 
                 <div className='w-full h-full flex flex-col gap-3'>
-
                     {
                         card.highlight != null &&
                         <div
@@ -241,7 +259,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                     <div className="flex justify-start items start">
                         <div className="flex flex-col flex-1">
                             <textarea
-                                className="card__title__textarea font-medium p-1 w-[98%] text-gray-600 bg-gray-200 leading-normal resize-none focus:bg-gray-100"
+                                className="card__title__textarea font-medium p-1 w-[98%] text-gray-600 bg-transparent leading-normal resize-none focus:bg-gray-100"
                                 value={title}
                                 onKeyDown={(e) => {
                                     if (e.key == 'Enter') {

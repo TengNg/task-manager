@@ -133,7 +133,7 @@ const Writedown = () => {
 
                         <button
                             onClick={handleCreateWritedown}
-                            className='grid place-items-center text-gray-400 border-[2px] border-gray-400 border-dashed p-4 hover:bg-gray-200 transition-all'
+                            className='grid place-items-center text-gray-400 border-[2px] border-gray-400 border-dashed p-4 hover:bg-gray-300 transition-all'
                         >
                             {isCreatingWritedown ? "creating writedown..." : "+ new writedown"}
                         </button>

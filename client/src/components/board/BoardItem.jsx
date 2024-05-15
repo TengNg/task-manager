@@ -16,7 +16,10 @@ const BoardItem = ({ item, handleOpenBoard }) => {
             className="w-[200px] sm:w-[250px] h-[100px] sm:h-[125px]"
         >
 
-            <div className="w-[200px] sm:w-[250px] h-[100px] sm:h-[125px] board--style board--hover md:border-[2.5px] border-[2px] border-gray-600 py-3 px-5 shadow-gray-600 select-none bg-gray-50 relative">
+            <div
+                className="w-[200px] sm:w-[250px] h-[100px] sm:h-[125px] board--style board--hover md:border-[2.5px] border-[2px] border-gray-600 py-3 px-5 shadow-gray-600 select-none relative"
+                style={{ backgroundColor: 'rgba(241, 241, 241, 0.5)' }}
+            >
 
                 {
                     auth?.user?._id === createdBy

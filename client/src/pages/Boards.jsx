@@ -254,9 +254,10 @@ const Boards = () => {
                             <div
                                 onClick={() => setOpenBoardForm(open => !open)}
                                 ref={createBoardButtonRef}
-                                className="h-full w-full border-[2px] border-gray-400 board--style shadow-gray-400 p-3 px-4 select-none bg-gray-200 cursor-pointer"
+                                className="h-full w-full border-[2px] border-gray-500 board--style shadow-gray-500 p-3 px-4 select-none cursor-pointer"
+                                style={{ backgroundColor: 'rgba(241, 241, 241, 0.4)' }}
                             >
-                                <div className="flex items-center gap-2 text-gray-400 font-medium sm:text-[0.925rem] text-[0.75rem]">
+                                <div className="flex items-center gap-2 text-gray-500 font-medium sm:text-[0.925rem] text-[0.75rem]">
                                     <span>+ new</span>
                                 </div>
                             </div>

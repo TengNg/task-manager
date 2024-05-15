@@ -21,7 +21,7 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
                 <select
                     value={priorityLevel}
                     onChange={(e) => handleCardPriorityLevelChange(e.target.value)}
-                    className={`${priorityLevel && priorityLevel !== "none" && 'text-gray-50 text-center'} font-medium max-w-[10rem] rounded-md px-2 py-1 appearance-none hover:bg-gray-300`}
+                    className={`${priorityLevel && priorityLevel !== "none" && 'text-gray-50 text-center'} font-medium max-w-[10rem] rounded-md px-2 py-1 appearance-none bg-transparent hover:bg-gray-300`}
                     style={{ backgroundColor: priorityLevel ? PRIORITY_LEVELS[`${priorityLevel}`]?.color?.rgba : 'transparent' }}
                 >
                     <option value="none">...</option>
@@ -45,7 +45,7 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
                 <select
                     value={card.owner || ownerValue}
                     onChange={(e) => handleCardOwnerChange(e.target.value)}
-                    className={`font-medium max-w-[10rem] rounded-md px-2 py-1 appearance-none hover:bg-gray-300`}
+                    className={`font-medium max-w-[10rem] rounded-md px-2 py-1 appearance-none bg-transparent hover:bg-gray-300`}
                     style={{ backgroundColor: highlightColorsRGBA[`${card.highlight}`] }}
                 >
                     <option value={ownerValue} className='text-[0.75rem] cursor-pointer'>

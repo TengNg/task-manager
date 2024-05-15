@@ -77,7 +77,10 @@ const AddList = ({ open, setOpen }) => {
     return (
         <div
             ref={containerRef}
-            className={`${theme.itemTheme == 'rounded' ? 'rounded-md' : ''} board--style--sm overflow-hidden bg-gray-100 text-[10px] sm:text-[0.75rem] sm:min-w-[250px] min-w-[225px] border-[2px] min-h-[3rem] select-none cursor-pointer me-3 border-gray-500 shadow-gray-500 text-gray-500 font-semibold`}>
+            className={`${theme.itemTheme == 'rounded' ? 'rounded-md' : ''} board--style--sm overflow-hidden bg-gray-100 text-[10px] sm:text-[0.75rem] sm:min-w-[250px] min-w-[225px] border-[2px] min-h-[3rem] select-none cursor-pointer me-3 border-gray-500 shadow-gray-500 text-gray-500 font-semibold`}
+            style={{ backgroundColor: 'rgba(241, 241, 241, 0.75)' }}
+        >
+
             {
                 open === false &&
                 <button
