@@ -22,216 +22,228 @@ export const BoardStateContextProvider = ({ children }) => {
     const [theme, setTheme] = useLocalStorage(LOCAL_STORAGE_KEYS.BOARD_ITEM_THEME, {});
     const [debugModeEnabled, setDebugModeEnabled] = useLocalStorage(LOCAL_STORAGE_KEYS.DEBUG_MODE_ENABLED, {});
 
+    const [isConnected, setIsConnected] = useState(false);
+
     useEffect(() => {
-        if (socket) {
-            const url = new URL(location.href);
-            const filter = url.searchParams.get("filter");
-            const priority = url.searchParams.get("priority");
+        const url = new URL(location.href);
+        const filter = url.searchParams.get("filter");
+        const priority = url.searchParams.get("priority");
 
-            socket.on("boardClosed", (_) => {
-                setIsRemoved(true);
+        const onConnect = async () => {
+            setIsConnected(true);
+        };
+
+        const onDisconnect = () => {
+            setIsConnected(false);
+        };
+
+        socket.on('connect', onConnect);
+        socket.on('disconnect', onDisconnect);
+
+        socket.on("boardClosed", (_) => {
+            setIsRemoved(true);
+        });
+
+        socket.on("memberKicked", (data) => {
+            const { userSocketId } = data;
+            if (socket.id === userSocketId) {
+                window.location.reload();
+            }
+        });
+
+        socket.on("memberLeaved", (data) => {
+            const { username } = data;
+            removeMemberFromBoard(username);
+        });
+
+        socket.on("cardOwnerUpdated", (data) => {
+            const { cardId, listId, username } = data;
+            setCardOwner(cardId, listId, username);
+        });
+
+        socket.on("cardPriorityLevelUpdated", (data) => {
+            const { cardId, listId, priorityLevel } = data;
+            setCardPriorityLevel(cardId, listId, priorityLevel);
+        });
+
+        socket.on("invitationAccepted", (data) => {
+            const { username, profileImage: _ } = data;
+            addMemberToBoard({ username });
+        });
+
+        socket.on("getBoardWithMovedListAdded", (data) => {
+            const { list, cards, index } = data;
+
+            setBoardState(prev => {
+                const newLists = [...prev.lists]
+                newLists.splice(index, 0, { ...list, cards });
+                return { ...prev, lists: newLists }
             });
+        });
 
-            socket.on("memberKicked", (data) => {
-                const { userSocketId } = data;
-                if (socket.id === userSocketId) {
-                    window.location.reload();
-                }
+        socket.on("listMoved", (data) => {
+            const { listId: _, fromIndex, toIndex } = data;
+            setBoardState(prev => {
+                const newLists = [...prev.lists]
+                const currentList = newLists.splice(fromIndex, 1)[0];
+                newLists.splice(toIndex, 0, currentList);
+                return { ...prev, lists: newLists }
             });
+        });
 
-            socket.on("memberLeaved", (data) => {
-                const { username } = data;
-                removeMemberFromBoard(username);
+        socket.on("getBoardWithUpdatedLists", (data) => {
+            setBoardState(prev => {
+                return { ...prev, lists: data }
             });
+        });
 
-            socket.on("cardOwnerUpdated", (data) => {
-                const { cardId, listId, username } = data;
-                setCardOwner(cardId, listId, username);
+        socket.on("getBoardWithUpdatedLists", (data) => {
+            setBoardState(prev => {
+                return { ...prev, lists: data }
             });
+        });
 
-            socket.on("cardPriorityLevelUpdated", (data) => {
-                const { cardId, listId, priorityLevel } = data;
-                setCardPriorityLevel(cardId, listId, priorityLevel);
+        socket.on("getBoardWithUpdatedTitle", (data) => {
+            setBoardState(prev => {
+                return { ...prev, board: { ...prev.board, title: data } }
             });
+        });
 
-            socket.on("invitationAccepted", (data) => {
-                const { username, profileImage: _ } = data;
-                addMemberToBoard({ username });
+        socket.on("getBoardWithUpdatedDescription", (data) => {
+            setBoardState(prev => {
+                return { ...prev, board: { ...prev.board, description: data } }
             });
+        });
 
-            socket.on("getBoardWithMovedListAdded", (data) => {
-                const { list, cards, index } = data;
+        socket.on("newList", (data) => {
+            const newList = { ...data, cards: [] };
+            addListToBoard(newList);
+        });
 
-                setBoardState(prev => {
-                    const newLists = [...prev.lists]
-                    newLists.splice(index, 0, { ...list, cards });
-                    return { ...prev, lists: newLists }
-                });
-            });
+        socket.on("deletedList", (listId) => {
+            deleteList(listId);
+        });
 
-            socket.on("listMoved", (data) => {
-                const { listId: _, fromIndex, toIndex } = data;
-                setBoardState(prev => {
-                    const newLists = [...prev.lists]
-                    const currentList = newLists.splice(fromIndex, 1)[0];
-                    newLists.splice(toIndex, 0, currentList);
-                    return { ...prev, lists: newLists }
-                });
-            });
+        socket.on("newCard", (data) => {
+            const card = data;
 
-            socket.on("getBoardWithUpdatedLists", (data) => {
-                setBoardState(prev => {
-                    return { ...prev, lists: data }
-                });
-            });
+            if (filter) {
+                const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                card["hiddenByFilter"] = !includesFilter;
+            }
 
-            socket.on("getBoardWithUpdatedLists", (data) => {
-                setBoardState(prev => {
-                    return { ...prev, lists: data }
-                });
-            });
+            if (priority) {
+                const includesFilter = card.priorityLevel === priority;
+                card["hiddenByFilter"] = !includesFilter;
+            }
 
-            socket.on("getBoardWithUpdatedTitle", (data) => {
-                setBoardState(prev => {
-                    return { ...prev, board: { ...prev.board, title: data } }
-                });
-            });
+            addCardToList(card.listId, card);
+        });
 
-            socket.on("getBoardWithUpdatedDescription", (data) => {
-                setBoardState(prev => {
-                    return { ...prev, board: { ...prev.board, description: data } }
-                });
-            });
+        socket.on("copyCard", (data) => {
+            const { card, index } = data;
 
-            socket.on("newList", (data) => {
-                const newList = { ...data, cards: [] };
-                addListToBoard(newList);
-            });
+            if (filter) {
+                const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                card["hiddenByFilter"] = !includesFilter;
+            }
 
-            socket.on("deletedList", (listId) => {
-                deleteList(listId);
-            });
+            if (priority) {
+                const includesFilter = card.priorityLevel === priority;
+                card["hiddenByFilter"] = !includesFilter;
+            }
 
-            socket.on("newCard", (data) => {
-                const card = data;
+            addCopiedCard(card, index);
+        });
 
-                if (filter) {
+        socket.on("deletedCard", (data) => {
+            deleteCard(data.listId, data.cardId);
+        });
+
+        socket.on("cardMoved", (data) => {
+            const { oldListId, newListId, cardId, newCard: card } = data;
+
+            if (filter) {
+                const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                card["hiddenByFilter"] = !includesFilter;
+            }
+
+            if (priority) {
+                const includesFilter = card.priorityLevel === priority;
+                card["hiddenByFilter"] = !includesFilter;
+            }
+
+            deleteCard(oldListId, cardId);
+            addCardToList(newListId, card);
+        });
+
+        socket.on("cardMovedByIndex", (data) => {
+            let { cards, listId } = data;
+
+            if (filter) {
+                cards = cards.map(card => {
                     const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
                     card["hiddenByFilter"] = !includesFilter;
-                }
-
-                if (priority) {
-                    const includesFilter = card.priorityLevel === priority;
-                    card["hiddenByFilter"] = !includesFilter;
-                }
-
-                addCardToList(card.listId, card);
-            });
-
-            socket.on("copyCard", (data) => {
-                const { card, index } = data;
-
-                if (filter) {
-                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
-                    card["hiddenByFilter"] = !includesFilter;
-                }
-
-                if (priority) {
-                    const includesFilter = card.priorityLevel === priority;
-                    card["hiddenByFilter"] = !includesFilter;
-                }
-
-                addCopiedCard(card, index);
-            });
-
-            socket.on("deletedCard", (data) => {
-                deleteCard(data.listId, data.cardId);
-            });
-
-            socket.on("cardMoved", (data) => {
-                const { oldListId, newListId, cardId, newCard: card } = data;
-
-                if (filter) {
-                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
-                    card["hiddenByFilter"] = !includesFilter;
-                }
-
-                if (priority) {
-                    const includesFilter = card.priorityLevel === priority;
-                    card["hiddenByFilter"] = !includesFilter;
-                }
-
-                deleteCard(oldListId, cardId);
-                addCardToList(newListId, card);
-            });
-
-            socket.on("cardMovedByIndex", (data) => {
-                let { cards, listId } = data;
-
-                if (filter) {
-                    cards = cards.map(card => {
-                        const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
-                        card["hiddenByFilter"] = !includesFilter;
-                        return card;
-                    });
-                }
-
-                setBoardState(prev => {
-                    return {
-                        ...prev,
-                        lists: prev.lists.map(list => list._id === listId ? { ...list, cards } : list)
-                    };
+                    return card;
                 });
+            }
+
+            setBoardState(prev => {
+                return {
+                    ...prev,
+                    lists: prev.lists.map(list => list._id === listId ? { ...list, cards } : list)
+                };
             });
+        });
 
-            socket.on("cardMovedToList", (data) => {
-                const { oldListId, newListId, insertedIndex, card } = data;
+        socket.on("cardMovedToList", (data) => {
+            const { oldListId, newListId, insertedIndex, card } = data;
 
-                if (filter) {
-                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
-                    card["hiddenByFilter"] = !includesFilter;
-                }
+            if (filter) {
+                const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                card["hiddenByFilter"] = !includesFilter;
+            }
 
-                if (priority) {
-                    const includesFilter = card.priorityLevel === priority;
-                    card["hiddenByFilter"] = !includesFilter;
-                }
+            if (priority) {
+                const includesFilter = card.priorityLevel === priority;
+                card["hiddenByFilter"] = !includesFilter;
+            }
 
-                const cardId = card._id;
-                deleteCard(oldListId, cardId);
-                addCardToListByIndex(newListId, card, insertedIndex);
+            const cardId = card._id;
+            deleteCard(oldListId, cardId);
+            addCardToListByIndex(newListId, card, insertedIndex);
+        });
+
+        socket.on("updatedListTitle", (data) => {
+            setListTitle(data.listId, data.title);
+        });
+
+        socket.on("updatedCardTitle", (data) => {
+            setCardTitle(data.id, data.listId, data.title);
+        });
+
+        socket.on("updatedCardDescription", (data) => {
+            setCardDescription(data.id, data.listId, data.description);
+        });
+
+        socket.on("updatedCardHighlight", (data) => {
+            setCardHighlight(data.id, data.listId, data.highlight);
+        });
+
+        socket.on("receiveMessage", (data) => {
+            setChats(prev => [...prev, data]);
+        });
+
+        socket.on("messageDeleted", (data) => {
+            setChats(prev => {
+                return prev.filter(chat => chat.trackedId !== data.trackedId);
             });
+        });
 
-            socket.on("updatedListTitle", (data) => {
-                setListTitle(data.listId, data.title);
-            });
+        socket.on("messagesCleared", (_) => {
+            setChats([]);
+        });
 
-            socket.on("updatedCardTitle", (data) => {
-                setCardTitle(data.id, data.listId, data.title);
-            });
-
-            socket.on("updatedCardDescription", (data) => {
-                setCardDescription(data.id, data.listId, data.description);
-            });
-
-            socket.on("updatedCardHighlight", (data) => {
-                setCardHighlight(data.id, data.listId, data.highlight);
-            });
-
-            socket.on("receiveMessage", (data) => {
-                setChats(prev => [...prev, data]);
-            });
-
-            socket.on("messageDeleted", (data) => {
-                setChats(prev => {
-                    return prev.filter(chat => chat.trackedId !== data.trackedId);
-                });
-            });
-
-            socket.on("messagesCleared", (_) => {
-                setChats([]);
-            });
-        }
         return () => {
             // socket.off('receiveMessage');
             socket.off();
@@ -512,6 +524,8 @@ export const BoardStateContextProvider = ({ children }) => {
                 debugModeEnabled, setDebugModeEnabled,
 
                 hasFilter, setHasFilter,
+
+                isConnected, setIsConnected,
 
                 socket,
             }}

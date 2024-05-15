@@ -192,7 +192,10 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect", (reason, details) => {
+        console.log('DisconnectReason', reason);
+        console.log('DisconnectDetails', details);
+
         const boardId = boardIdMap.get(socket.id);
         if (boardId) {
             socket.leave(boardId);
