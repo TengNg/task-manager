@@ -63,7 +63,7 @@ const Filter = ({ open, setOpen }) => {
                     const newCards = [...list.cards].map(card => {
                         if (!searchValue && !priorityValue) return { ...card, hiddenByFilter: false };
 
-                        const isFilteredByTitle = card.title.toLowerCase().includes(searchValue?.toLowerCase());
+                        const isFilteredByTitle = card.title.toLowerCase().includes(searchValue?.toLowerCase()) || card._id.toLowerCase().includes(searchValue?.toLowerCase());
                         const isFilteredByPriority = card.priorityLevel === priorityValue;
 
                         let hiddenByFilter = true;
