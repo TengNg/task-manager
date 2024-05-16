@@ -80,14 +80,14 @@ const ChatBox = ({
 
                 <button
                     onClick={handleOpenFloat}
-                    className="text-gray-600 hover:text-blue-400 transition-all"
+                    className="text-gray-600"
                 >
                     <FontAwesomeIcon icon={faExpand} size='lg' />
                 </button>
 
                 <button
                     onClick={() => setOpen(false)}
-                    className="text-gray-600 hover:text-red-400 transition-all"
+                    className="text-gray-600"
                 >
                     <FontAwesomeIcon icon={faXmark} size='lg' />
                 </button>

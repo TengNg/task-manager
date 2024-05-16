@@ -437,6 +437,7 @@ const Board = () => {
         const newMessage = {
             trackedId: msgTrackedId,
             content: value,
+            type: 'MESSAGE',
             sentBy: { username: auth?.user?.username },
         };
 
@@ -447,12 +448,14 @@ const Board = () => {
         try {
             const response = await axiosPrivate.post(`/chats/b/${boardState.board._id}`, JSON.stringify({ content: value, trackedId: newMessage.trackedId }));
             const chatMsg = response.data.chat;
-            const { trackedId, createdAt } = chatMsg;
+            const { type, trackedId, createdAt } = chatMsg;
             setChats(prev => {
-                return prev.map(chat => chat.trackedId === trackedId ? { ...chat, createdAt: createdAt } : chat);
+                return prev.map(chat => chat.trackedId === trackedId ? { ...chat, type, createdAt: createdAt } : chat);
             });
-            socket.emit("sendMessage", { ...newMessage, createdAt: chatMsg.createdAt, sentBy: { ...newMessage.sentBy, username: auth?.user?.username } });
+            socket.emit("sendMessage", { ...newMessage, type, createdAt: chatMsg.createdAt, sentBy: { ...newMessage.sentBy, username: auth?.user?.username } });
         } catch (err) {
+            console.log(err);
+
             setChats(prev => {
                 return prev.map(chat => chat.trackedId === msgTrackedId ? { ...chat, error: true } : chat);
             });

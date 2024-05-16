@@ -460,6 +460,11 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
+    const cardDetailUrl = (cardId) => {
+        const url = `${location.pathname}?card=${cardId}`
+        return url;
+    };
+
     return (
         <BoardStateContext.Provider
             value={{

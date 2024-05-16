@@ -3,7 +3,7 @@ import ModalDialog from './ModalDialog';
 const KeyBindings = ({ open, setOpen }) => {
     return (
         <ModalDialog
-            title={'keybindings'}
+            title={'help'}
             open={open}
             setOpen={setOpen}
         >
@@ -81,6 +81,33 @@ const KeyBindings = ({ open, setOpen }) => {
                     (vim-like)
                 </li>
             </ul>
+
+            <div className='h-[1px] bg-black w-full mt-4'></div>
+
+            <div className='pt-3 text-[12px] sm:text-[0.8rem] text-gray-500'>
+                tips (format chat messages):
+                <ul className='flex flex-col gap-3 list-disc ms-4 mt-2'>
+                    <li className='font-semibold'>
+                        <span className='py-1 px-2 bg-gray-500 rounded text-gray-50'>
+                            !c |card_code|
+                        </span>
+                        <span>{" "}</span>
+                        <span>
+                            card code format
+                        </span>
+                    </li>
+                    <li className='font-semibold'>
+                        <span className='py-1 px-2 bg-gray-500 rounded text-gray-50'>
+                            !b |board_code|
+                        </span>
+                        <span>{" "}</span>
+                        <span>
+                            board code format
+                        </span>
+                    </li>
+                </ul>
+            </div>
+
         </ModalDialog>
 
     )

@@ -1,6 +1,13 @@
 const mongoose = require('mongoose');
 
 const chatSchema = new mongoose.Schema({
+    type: {
+        type: String,
+        enum: ['MESSAGE', 'CARD_CODE', 'BOARD_CODE'],
+        default: 'MESSAGE',
+        required: true,
+    },
+
     content: {
         type: String,
         required: true,

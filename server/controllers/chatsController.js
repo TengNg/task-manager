@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const Chat = require("../models/Chat");
 const Board = require("../models/Board");
 const User = require("../models/User");
@@ -56,9 +58,17 @@ const sendMessage = async (req, res) => {
         trackedId,
         boardId,
         content,
-    })
+    });
+
+    const hasCardCodePreffix = chat.content.startsWith("!c ");
+    const hasBoardCodePreffix = chat.content.startsWith("!b ");
+    const type = hasCardCodePreffix ? 'CARD_CODE' : hasBoardCodePreffix ? 'BOARD_CODE' : 'MESSAGE';
+
+    const isValidCode = mongoose.Types.ObjectId.isValid(chat.content.split(" ")[1]);
+    if (isValidCode) chat.type = type;
 
     await chat.save();
+
     res.status(200).json({ msg: "message is sent", chat });
 };
 
