@@ -215,7 +215,7 @@ const copyCard = async (req, res) => {
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
 
     const { boardId } = foundCard;
-    const { authorized } = await isActionAuthorized(boardId, req.user.username);
+    const { user, authorized } = await isActionAuthorized(boardId, req.user.username);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     const newCard = new Card({
@@ -225,6 +225,15 @@ const copyCard = async (req, res) => {
     });
 
     await newCard.save();
+
+    await saveBoardActivity({
+        boardId,
+        userId: user._id,
+        cardId: foundCard._id,
+        action: "copy card",
+        type: "card",
+        description: `[important] create a copy of card with title "${foundCard.title}"`,
+    })
 
     res.status(200).json({ msg: 'Card copied successfully', newCard: newCard });
 };
