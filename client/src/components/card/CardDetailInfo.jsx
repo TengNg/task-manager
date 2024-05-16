@@ -15,7 +15,21 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
     const priorityLevel = card?.priorityLevel;
 
     return (
-        <div className='flex flex-col gap-5 text-[0.65rem] sm:text-[0.8rem] text-gray-700 p-4 border-[1px] border-gray-700'>
+        <div className='relative flex flex-col gap-5 text-[0.65rem] sm:text-[0.8rem] text-gray-700 p-4 border-[1px] border-gray-700'>
+
+            <button
+                className='absolute bottom-4 right-4 border-[1px] border-slate-600 border-dashed py-1 px-2 text-slate-500 text-[9px] sm:text-[12px] hover:bg-slate-300'
+                onClick={() => {
+                    navigator.clipboard.writeText(card?._id).then(() => {
+                        alert('card code copied to clipboard');
+                    });
+                }}
+                title='copy card code'
+            >
+                copy code
+            </button>
+
+
             <div className='flex flex-start items-center h-[30px] w-fit max-w-[30rem]'>
                 <span className='me-1'>priority: </span>
                 <select
@@ -106,8 +120,8 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
                 <span>updated: </span>
                 {
                     card.updatedAt
-                    ? dateFormatter(card.updatedAt)
-                    : 'not found'
+                        ? dateFormatter(card.updatedAt)
+                        : 'not found'
                 }
             </div>
 
