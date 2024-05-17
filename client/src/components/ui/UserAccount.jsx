@@ -3,17 +3,30 @@ import useAuth from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import dateFormatter from "../../utils/dateFormatter";
+import ThemesDialog from "./ThemesDialog";
+
+import useLocalStorage from "../../hooks/useLocalStorage";
+import LOCAL_STORAGE_KEYS from "../../data/localStorageKeys";
+import backgroundThemes from "../../data/backgroundThemes";
 
 const UserAccount = () => {
     const [collapse, setCollapse] = useState(true);
+    const [openThemesDialog, setOpenThemesDialog] = useState(false);
+
     const { auth, setAuth } = useAuth();
     const navigate = useNavigate();
     const axiosPrivate = useAxiosPrivate();
 
     const userProfileImageRef = useRef();
     const userInfoRef = useRef();
+
+    const [backgroundTheme, setBackgroundTheme] = useLocalStorage(LOCAL_STORAGE_KEYS.BACKGROUND_THEME, { theme: 'offwhite' });
+
+    useEffect(() => {
+        document.querySelector('#root').style.backgroundColor = backgroundThemes[backgroundTheme?.theme] || '#f1f1f1';
+    }, [backgroundTheme]);
 
     useEffect(() => {
         const closeUserInfoBox = (event) => {
@@ -53,17 +66,34 @@ const UserAccount = () => {
         navigate(`/u/${auth?.user?.username}`);
     };
 
+    const handleOpenThemesDialog = () => {
+        setOpenThemesDialog(prev => !prev);
+    };
+
     if (Object.keys(auth).length === 0 || !auth.accessToken) {
         return (
             <button onClick={() => navigate('/login')}
-                className="border-[2px] border-gray-600 shadow-gray-600 shadow-[0_3px_0_0] bg-gray-100 p-1 px-3 text-[10px] sm:text-[0.75rem] font-medium text-gray-600"
+                className="border-[2px] border-gray-600 shadow-gray-600 shadow-[0_3px_0_0] bg-gray-100 py-1 px-2 text-[10px] sm:text-[0.75rem] font-medium text-gray-600"
             >
-                Log in
+                <div className="sm:hidden block">
+                    <FontAwesomeIcon icon={faArrowRightToBracket} />
+                </div>
+                <div className="sm:block hidden">
+                    Log in
+                </div>
             </button>
         )
     }
 
-    return (
+    return (<>
+
+        <ThemesDialog
+            open={openThemesDialog}
+            setOpen={setOpenThemesDialog}
+            backgroundTheme={backgroundTheme}
+            setBackgroundTheme={setBackgroundTheme}
+        />
+
         <div id='user-account' className="relative h-fit gap-2 z-30">
             <div
                 onClick={() => setCollapse(collapse => !collapse)}
@@ -102,6 +132,9 @@ const UserAccount = () => {
                                     onClick={handleOpenProfile}
                                     className="button--style text-[0.75rem] font-medium">Profile</button>
                                 <button
+                                    onClick={handleOpenThemesDialog}
+                                    className="button--style text-[0.75rem] font-medium">Themes</button>
+                                <button
                                     onClick={handleLogout}
                                     className="button--style--dark text-[0.75rem] font-medium text-gray-200">Log out</button>
                             </div>
@@ -111,7 +144,8 @@ const UserAccount = () => {
                 </div>
             }
         </div>
-    )
+
+    </>)
 }
 
 export default UserAccount

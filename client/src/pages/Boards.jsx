@@ -9,6 +9,7 @@ import PinnedBoards from "../components/board/PinnedBoards";
 import Title from "../components/ui/Title";
 import JoinBoardRequestForm from "../components/board/JoinBoardRequestForm";
 import useAuth from "../hooks/useAuth";
+import BoardsHelp from "../components/ui/BoardsHelp";
 
 const FILTERS = Object.freeze({
     ALL: 'all',
@@ -26,6 +27,7 @@ const Boards = () => {
     const [ownedBoards, setOwnedBoards] = useState([]);
     const [joinedBoards, setJoinedBoards] = useState([]);
     const [boardFilter, setBoardFilter] = useState(FILTERS.ALL);
+    const [openHelp, setOpenHelp] = useState(false);
 
     const [recentlyViewedBoard, setRecentlyViewedBoard] = useState();
 
@@ -85,6 +87,11 @@ const Boards = () => {
         if (key === 'Escape') {
             setOpenBoardForm(false);
             setOpenJoinBoardRequestForm(false);
+            return;
+        }
+
+        if (key === '?') {
+            setOpenHelp(prev => !prev);
             return;
         }
 
@@ -179,6 +186,11 @@ const Boards = () => {
                 setOpen={setOpenJoinBoardRequestForm}
             />
 
+            <BoardsHelp
+                open={openHelp}
+                setOpen={setOpenHelp}
+            />
+
             <section
                 id="boards"
                 className="w-full h-[calc(100%-75px)] overflow-auto pb-4"
@@ -242,9 +254,10 @@ const Boards = () => {
                             <div
                                 onClick={() => setOpenBoardForm(open => !open)}
                                 ref={createBoardButtonRef}
-                                className="h-full w-full border-[2px] border-gray-400 board--style shadow-gray-400 p-3 px-4 select-none bg-gray-200 cursor-pointer"
+                                className="h-full w-full border-[2px] border-gray-500 board--style shadow-gray-500 p-3 px-4 select-none cursor-pointer"
+                                style={{ backgroundColor: 'rgba(241, 241, 241, 0.4)' }}
                             >
-                                <div className="flex items-center gap-2 text-gray-400 font-medium sm:text-[0.925rem] text-[0.75rem]">
+                                <div className="flex items-center gap-2 text-gray-500 font-medium sm:text-[0.925rem] text-[0.75rem]">
                                     <span>+ new</span>
                                 </div>
                             </div>
@@ -272,6 +285,17 @@ const Boards = () => {
                     }
 
                 </div>
+
+
+                <button
+                    className='fixed bottom-4 right-4 w-[20px] h-[20px] text-[12px] bg-gray-500 hover:bg-gray-600 text-white rounded-full'
+                    onClick={() => {
+                        setOpenHelp(prev => !prev)
+                    }}
+                    title='open help'
+                >
+                    ?
+                </button>
 
             </section>
         </>

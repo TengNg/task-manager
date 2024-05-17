@@ -5,6 +5,7 @@ import useAuth from '../hooks/useAuth';
 import Title from '../components/ui/Title';
 import Invitations from '../components/invitation/Invitations';
 import JoinBoardRequests from '../components/join-board-request/JoinRequests';
+import ActivitiesHelp from '../components/ui/ActivitiesHelp';
 
 const ACTIONS = Object.freeze({
     TOGGLE_INVITATIONS_SECTION: 'toggle_invitation_section',
@@ -50,6 +51,8 @@ const Activities = () => {
     const [joinBoardRequests, setJoinBoardRequests] = useState([]);
     const [loadingInvitations, setLoadingInvitations] = useState(false);
     const [loadingRequests, setLoadingRequests] = useState(false);
+    const [openHelp, setOpenHelp] = useState(false);
+
     const axiosPrivate = useAxiosPrivate();
 
     useEffect(() => {
@@ -66,6 +69,9 @@ const Activities = () => {
         const key = e.key;
 
         switch (key) {
+            case "?":
+                setOpenHelp(prev => !prev);
+                break;
             case "i":
                 dispatch({ type: ACTIONS.TOGGLE_INVITATIONS_SECTION });
                 break;
@@ -220,12 +226,17 @@ const Activities = () => {
 
     return (
         <>
+            <ActivitiesHelp
+                open={openHelp}
+                setOpen={setOpenHelp}
+            />
+
             <section className="w-full h-[calc(100%-75px)] overflow-auto pb-4">
                 <Title titleName="activities" />
 
                 {
                     !showInvitations && !showJoinBoardRequests &&
-                    <div className='absolute w-fit text-gray-400 text-[10px] sm:text-[0.8rem] top-1/2 left-1/2 -translate-x-[40%] -translate-y-1/2'>
+                    <div className='absolute w-fit text-gray-500 text-[10px] sm:text-[0.8rem] top-1/2 left-1/2 -translate-x-[40%] -translate-y-1/2'>
                         <span className='key opacity-45'>i</span> open inivitations
                         <br />
                         <br />
@@ -284,6 +295,16 @@ const Activities = () => {
                 />
 
             </section>
+
+            <button
+                className='fixed bottom-4 right-4 w-[20px] h-[20px] text-[12px] bg-gray-500 hover:bg-gray-600 text-white rounded-full'
+                onClick={() => {
+                    setOpenHelp(prev => !prev)
+                }}
+                title='open help'
+            >
+                ?
+            </button>
         </>
     )
 }

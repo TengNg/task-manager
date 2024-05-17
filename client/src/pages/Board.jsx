@@ -38,7 +38,9 @@ const Board = () => {
         setBoardTitle,
         setChats,
 
+        // check if board is deleted or not
         isRemoved,
+        setIsRemoved,
 
         focusedCard: _focusedCard,
         setFocusedCard,
@@ -66,6 +68,9 @@ const Board = () => {
 
         // for filter indicator
         hasFilter,
+
+        // socket connection state
+        isConnected,
 
         socket
     } = useBoardState();
@@ -140,12 +145,11 @@ const Board = () => {
                 const { card } = response.data;
                 setOpenedCard(card);
 
-                // set document title as board title
+                // set document title as card title
                 document.title = `[card] ${card.title}`;
             } catch (err) {
-                console.log(err);
-                setOpenCardDetail(false);
-                alert('Failed to get card data');
+                const errMsg = err?.response?.data?.msg || 'failed to get card data';
+                setOpenedCard({ failedToLoad: true, errMsg });
             }
         }
 
@@ -155,6 +159,7 @@ const Board = () => {
     useEffect(() => {
         if (isRemoved) {
             navigate('/notfound');
+            setIsRemoved(false);
         }
     }, [isRemoved])
 
@@ -432,6 +437,7 @@ const Board = () => {
         const newMessage = {
             trackedId: msgTrackedId,
             content: value,
+            type: 'MESSAGE',
             sentBy: { username: auth?.user?.username },
         };
 
@@ -442,12 +448,14 @@ const Board = () => {
         try {
             const response = await axiosPrivate.post(`/chats/b/${boardState.board._id}`, JSON.stringify({ content: value, trackedId: newMessage.trackedId }));
             const chatMsg = response.data.chat;
-            const { trackedId, createdAt } = chatMsg;
+            const { type, trackedId, createdAt } = chatMsg;
             setChats(prev => {
-                return prev.map(chat => chat.trackedId === trackedId ? { ...chat, createdAt: createdAt } : chat);
+                return prev.map(chat => chat.trackedId === trackedId ? { ...chat, type, createdAt: createdAt } : chat);
             });
-            socket.emit("sendMessage", { ...newMessage, createdAt: chatMsg.createdAt, sentBy: { ...newMessage.sentBy, username: auth?.user?.username } });
+            socket.emit("sendMessage", { ...newMessage, type, createdAt: chatMsg.createdAt, sentBy: { ...newMessage.sentBy, username: auth?.user?.username } });
         } catch (err) {
+            console.log(err);
+
             setChats(prev => {
                 return prev.map(chat => chat.trackedId === msgTrackedId ? { ...chat, error: true } : chat);
             });
@@ -521,6 +529,23 @@ const Board = () => {
                 </section>
             </>
         )
+    }
+
+    if (!isConnected) {
+        return <>
+                <section className='w-full flex flex-col justify-center items-center gap-4'>
+                    <p className="font-medium mx-auto text-center mt-20 text-gray-600">try to connect to the board...</p>
+
+                    <p className="font-medium mx-auto text-center text-[0.65rem] my-2 text-gray-600">if this takes too long, refresh the page and try again.</p>
+
+                    <button
+                        className='button--style opacity-70 text-[0.85rem] w-fit max-auto'
+                        onClick={() => navigate('/boards')}
+                    >
+                        Back to Boards
+                    </button>
+                </section>
+            </>
     }
 
     return (
@@ -679,7 +704,7 @@ const Board = () => {
                         <div>
                             <div
                                 onClick={() => setOpenChatBox(prev => !prev)}
-                                className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                className={`h-full flex--center cursor-pointer select-none opacity-[75%] hover:opacity-[90%] border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
                                         ${(openChatBox || openFloatingChat) ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                             >Chat</div>
                         </div>
@@ -687,7 +712,7 @@ const Board = () => {
                         <div>
                             <div
                                 onClick={() => setOpenFilter(prev => !prev)}
-                                className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                className={`h-full flex--center cursor-pointer select-none opacity-[75%] hover:opacity-[90%] border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
                                         ${openFilter ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'} ${hasFilter ? 'text-white bg-teal-600' : ''}`}
                             >Filter</div>
                         </div>
@@ -695,7 +720,7 @@ const Board = () => {
                         <div>
                             <div
                                 onClick={() => setOpenInvitationForm(true)}
-                                className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                className={`h-full flex--center cursor-pointer select-none opacity-[75%] hover:opacity-[90%] border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
                                         ${openInvitationForm ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                             >Invite</div>
                         </div>
@@ -707,7 +732,7 @@ const Board = () => {
                                         setOpenBoardMenu(prev => !prev);
                                     }
                                 }}
-                                className={`flex--center cursor-pointer select-none h-full border-gray-600 w-[80px] shadow-gray-600 px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                className={`flex--center cursor-pointer select-none opacity-[75%] hover:opacity-[90%] h-full border-gray-600 w-[80px] shadow-gray-600 px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
                                     ${openBoardMenu ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                             >
                                 Options
@@ -739,7 +764,11 @@ const Board = () => {
 
             <div id='bottom-buttons' className='flex items-center h-[50px]'>
                 <button
-                    className={`ms-4 w-[100px] ${openMembers ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium`}
+                    className={`
+                        ms-4 w-[100px] ${openMembers ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'}
+                        bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium
+                        opacity-[80%] hover:opacity-[100%]
+                    `}
                     onClick={() => {
                         setOpenMembers(prev => !prev);
                     }}
@@ -753,7 +782,11 @@ const Board = () => {
                         e.preventDefault();
                         setOpenPinnedBoards(true);
                     }}
-                    className={`ms-2 w-[100px] ${pinned ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-2 py-2 text-[0.65rem] font-medium`}
+                    className={`
+                        ms-4 w-[100px] ${pinned ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'}
+                        bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium
+                        opacity-[80%] hover:opacity-[100%]
+                    `}
                 >
                     {pinned ?
                         <div className='flex justify-center items-center gap-2'>
@@ -768,7 +801,11 @@ const Board = () => {
 
                 <button
                     onClick={() => setOpenVisibilityConfig(prev => !prev)}
-                    className={`ms-2 w-[100px] ${openVisibilityConfig ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-2 py-2 text-[0.65rem] font-medium`}
+                    className={`
+                        ms-4 w-[100px] ${openVisibilityConfig ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'}
+                        bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium
+                        opacity-[80%] hover:opacity-[100%]
+                    `}
                 >
                     visibility
                 </button>
@@ -789,7 +826,7 @@ const Board = () => {
                     </button>
 
                     <button
-                        className='w-[16px] h-[16px] bg-gray-500 hover:bg-gray-600 text-white rounded-full'
+                        className='sm:block hidden w-[16px] h-[16px] bg-gray-500 hover:bg-gray-600 text-white rounded-full'
                         onClick={() => {
                             setOpenKeyBindings(prev => !prev)
                         }}

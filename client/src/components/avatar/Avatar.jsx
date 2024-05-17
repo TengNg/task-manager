@@ -66,7 +66,7 @@ const Avatar = ({
                 className={`relative ${AVATAR_BG_COLORS[bgColor]} hover:opacity-[0.8] text-white flex--center text-[0.8rem] border-box ${withBorder && 'border-[4px] border-teal-600'} rounded-full bg-center bg-cover overflow-hidden ${clickable && 'cursor-pointer'} ${SIZE[size]}`}>
                 {
                     !profileImage
-                        ? <div className="font-bold flex--center select-none">{username?.charAt(0)?.toUpperCase()}</div>
+                        ? <div className={`font-bold flex--center select-none ${SIZE[size] && 'text-[11px]'}`}>{username?.charAt(0)?.toUpperCase()}</div>
                         : <img className="flex--center h-[100%] w-[100%]" />
                 }
             </div>

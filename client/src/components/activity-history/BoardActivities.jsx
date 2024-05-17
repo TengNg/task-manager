@@ -93,7 +93,7 @@ const BoardActivities = ({ boardId, open, setOpen }) => {
             onClick={handleCloseOnOutsideClick}
         >
 
-            <div className='flex w-full justify-between items-center border-black pb-3 p-3'>
+            <div className='flex w-full justify-between items-center border-black p-3'>
                 <p className="font-normal text-[1rem] text-gray-700">board activities</p>
                 <button
                     className="text-gray-600 flex justify-center items-center"
@@ -105,7 +105,7 @@ const BoardActivities = ({ boardId, open, setOpen }) => {
 
             <div className='border-b-[1px] border-black mx-3'></div>
 
-            <div className='relative flex flex-col gap-4 py-4 text-gray-600 text-[0.65rem] sm:text-[0.75rem] max-h-[600px] overflow-auto px-3'>
+            <div className='relative flex flex-col gap-4 pt-4 pb-5 px-3 text-gray-600 text-[0.65rem] sm:text-[0.75rem] max-h-[600px] overflow-auto'>
 
                 <Loading
                     loading={loading}
@@ -114,18 +114,24 @@ const BoardActivities = ({ boardId, open, setOpen }) => {
                 />
 
                 {
-                    activities.map((activity, index) => {
-                        return (
-                            <ActivityItem
-                                key={index}
-                                activity={activity}
-                            />
+                    activities.length > 0 ?
+                        activities.map((activity, index) => {
+                            return (
+                                <ActivityItem
+                                    key={index}
+                                    activity={activity}
+                                />
+                            )
+                        })
+                        : (
+                            <div>
+                                no activities found in this board.
+                            </div>
                         )
-                    })
                 }
 
                 {
-                    (!allActivitiesFetched || activities.length > ACTIVITIES_PER_PAGE) &&
+                    !allActivitiesFetched &&
                     <button
                         className="text-gray-600 flex justify-center items-center bg-gray-200 hover:bg-gray-300 p-2"
                         onClick={() => {

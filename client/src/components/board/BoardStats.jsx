@@ -84,7 +84,9 @@ const BoardStats = ({ boardStatsModal, setBoardStatsModal }) => {
                         members:
                         <span className='font-medium'>
                             {
-                                boardStatsModal.board?.members?.map(member => member.username).join(', ')
+                                boardStatsModal.board?.members?.length > 0
+                                ? boardStatsModal.board?.members?.map(member => member.username).join(', ')
+                                : '<none>'
                             }
                         </span>
                     </div>

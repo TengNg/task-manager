@@ -129,7 +129,7 @@ const copyList = async (req, res) => {
     if (!foundList) return res.status(403).json({ msg: "List not found" });
 
     const { title, boardId } = foundList;
-    const { authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
+    const { user, authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     const newListId = new mongoose.Types.ObjectId();
@@ -160,6 +160,15 @@ const copyList = async (req, res) => {
         }
 
         const cards = await Card.find({ listId: list._id }).sort({ order: 'asc' });
+
+        await saveBoardActivity({
+            boardId,
+            userId: user._id,
+            listId: foundList._id,
+            action: "copy list",
+            type: "list",
+            description: `[important] create a copy of list with title "${foundList.title}"`,
+        })
 
         res.status(200).json({ list, cards, message: 'list copied' });
     } catch (err) {

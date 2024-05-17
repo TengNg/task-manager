@@ -167,12 +167,12 @@ const List = ({ index, list, cards }) => {
                     <div
                         className={`
                             ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}
-                            list__item flex flex-col justify-start bg-gray-50 w-[290px] max-h-[100%] overflow-auto border-[2px] select-none pt-2 cursor-pointer border-gray-600 shadow-gray-600
+                            list__item flex flex-col justify-start w-[300px] max-h-[100%] overflow-auto border-[2px] select-none pt-2 cursor-pointer border-gray-600 shadow-gray-600
                         `}
                     >
                         <div
                             {...provided.dragHandleProps}
-                            className="relative w-full bg-inherit">
+                            className="relative w-full bg-transparent">
                             <div
                                 ref={titleRef}
                                 className="sm:w-[240px] w-[180px] font-semibold text-gray-600 break-words whitespace-pre-line px-3"
@@ -182,7 +182,7 @@ const List = ({ index, list, cards }) => {
                             </div>
 
                             <textarea
-                                className="hidden bg-gray-50 h-fit sm:w-[240px] w-[180px] focus:outline-none font-semibold px-3 text-gray-600 leading-normal overflow-y-hidden resize-none"
+                                className="hidden bg-transparent h-fit sm:w-[240px] w-[180px] focus:outline-none font-semibold px-3 text-gray-600 leading-normal overflow-y-hidden resize-none"
                                 value={list.title}
                                 ref={textAreaRef}
                                 onFocus={handleTextAreaOnFocus}

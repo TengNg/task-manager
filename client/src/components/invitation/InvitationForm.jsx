@@ -178,10 +178,8 @@ const InvitationForm = ({ open, setOpen }) => {
                     <div className="flex gap-1">
                         <Avatar
                             username={boardState.board.createdBy.username}
-                            profileImage={boardState.board.createdBy.profileImage}
                             size="md"
-                            isAdmin={true}
-                            createdAt={auth?.user?.createdAt}
+                            clickable={false}
                         />
 
                         <div className="flex flex-col justify-center">

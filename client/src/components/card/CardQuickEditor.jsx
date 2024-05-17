@@ -35,7 +35,19 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
                 }
             };
 
+            const handleClickOutside = (event) => {
+                if (quickEditorRef.current && !quickEditorRef.current.contains(event.target)) {
+                    close();
+                }
+            };
+
             quickEditorRef.current.addEventListener('keydown', handleCloseOnKeydown);
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        () => {
+            quickEditorRef.current.removeEventListener('keydown', handleCloseOnKeydown);
+            document.removeEventListener('mousedown', handleClickOutside);
         }
     }, [open]);
 

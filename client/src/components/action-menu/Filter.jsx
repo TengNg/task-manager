@@ -63,21 +63,20 @@ const Filter = ({ open, setOpen }) => {
                     const newCards = [...list.cards].map(card => {
                         if (!searchValue && !priorityValue) return { ...card, hiddenByFilter: false };
 
-                        const isFilteredByTitle = card.title.toLowerCase().includes(searchValue?.toLowerCase());
+                        const isFilteredByTitle = card.title.toLowerCase().includes(searchValue?.toLowerCase()) || card._id.toLowerCase().includes(searchValue?.toLowerCase());
                         const isFilteredByPriority = card.priorityLevel === priorityValue;
 
-                        if (searchValue && priorityValue) {
-                            if (isFilteredByTitle && isFilteredByPriority) {
-                                return { ...card, hiddenByFilter: false }
-                            }
-                        } else {
-                            if (card.title.toLowerCase().includes(searchValue?.toLowerCase()) ||
-                                card.priorityLevel === priorityValue) {
-                                return { ...card, hiddenByFilter: false }
-                            }
+                        let hiddenByFilter = true;
+
+                        if (searchValue && isFilteredByTitle) {
+                            hiddenByFilter = false;
                         }
 
-                        return { ...card, hiddenByFilter: true };
+                        if (priorityValue && isFilteredByPriority) {
+                            hiddenByFilter = false;
+                        }
+
+                        return { ...card, hiddenByFilter };
                     });
                     return { ...list, cards: newCards };
                 })

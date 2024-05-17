@@ -22,7 +22,7 @@ const getBoards = async (req, res) => {
             { createdBy: foundUser._id },
             { members: foundUser._id },
         ]
-    }).lean();
+    }).sort({ title: 'asc' }).lean();
 
     if (!foundUser.recentlyViewedBoardId) return res.json({ boards });
 
@@ -91,16 +91,61 @@ const getBoard = async (req, res) => {
     board.listCount = lists.length;
     await board.save();
 
-    const listsWithCardsPromises = lists.map(async (list) => {
-        const cards = await Card.find({ listId: list._id }).sort({ order: 'asc' }).lean();
+    //const listsWithCardsPromises = lists.map(async (list) => {
+    //    const cards = await Card.find({ listId: list._id }).select('-trackedId -updatedAt').sort({ order: 'asc' }).lean();
+    //
+    //    //const cards = await Card.aggregate([
+    //    //    { $match: { listId: list._id } },
+    //    //    { $sort: { order: 1 } },
+    //    //    {
+    //    //        $project: {
+    //    //            title: 1,
+    //    //            listId: 1,
+    //    //            order: 1,
+    //    //            higlight: 1,
+    //    //            priorityLevel: 1,
+    //    //            owner: 1,
+    //    //            createdAt: 1,
+    //    //            hasDescription: { $cond: { if: { $gt: [{ $strLenCP: "$description" }, 0] }, then: true, else: false } }
+    //    //        }
+    //    //    }
+    //    //]).exec();
+    //
+    //    return {
+    //        ...list.toObject(),
+    //        cards
+    //    }
+    //})
+    //
+    // const listsWithCards = await Promise.all(listsWithCardsPromises);
 
-        return {
-            ...list.toObject(),
-            cards
+    const listsWithCards = await List.aggregate([
+        {
+            $match: {
+                boardId: board._id
+            }
+        },
+        {
+            $lookup: {
+                from: 'cards',
+                let: { cardListId: '$_id' },
+                as: 'cards',
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ['$listId', '$$cardListId'] }
+                        }
+                    },
+                    {
+                        $sort: { order: 1 }
+                    }
+                ]
+            }
+        },
+        {
+            $sort: { order: 1 }
         }
-    })
-
-    const listsWithCards = await Promise.all(listsWithCardsPromises);
+    ]);
 
     const memberships = await BoardMembership
         .find({ boardId: board._id })

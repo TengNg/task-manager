@@ -73,7 +73,7 @@ const CardComposer = ({ list, open, setOpen }) => {
             boardId: boardId,
             listId: list._id,
             order: rank,
-            title: textAreaRef.current.value,
+            title: textAreaRef.current.value.trim(),
             createdAt: Date.now(),
         };
 

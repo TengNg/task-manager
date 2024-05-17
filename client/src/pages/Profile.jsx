@@ -226,15 +226,21 @@ const Profile = () => {
                     information
                 </span>
 
-                <div className='box--style border-[2px] border-gray-700 bg-gray-50 p-4 lg:w-1/3 sm:w-1/2 w-3/4'>
+                <div
+                    className='box--style border-[2px] border-gray-700 bg-gray-50 sm:p-4 p-2 lg:w-[450px] sm:w-[400px] w-3/4'
+                    style={{ backgroundColor: 'rgba(241, 241, 241, 0.75)' }}
+                >
 
-                    <form id='userInfoForm' className='w-[100%] flex flex-col h-fit gap-2 text-gray-700'>
+                    <form
+                        id='userInfoForm'
+                        className='w-[100%] flex flex-col h-fit gap-2 text-gray-700'
+                    >
                         <p className={`absolute top-0 right-1 text-[0.75rem] font-semibold ${msg.error ? 'text-red-600' : 'text-green-500'}`}>{msg.content}</p>
                         <div className='flex flex-col'>
                             <label htmlFor="username" className='label--style m-0 p-0'>Username:</label>
                             <input
                                 ref={usernameInputRef}
-                                className='border-[2px] border-black p-1 font-medium'
+                                className='border-[2px] border-black p-1 font-medium bg-transparent'
                                 type="text"
                                 id="username"
                                 autoComplete="off"
@@ -320,26 +326,31 @@ const Profile = () => {
                     owned boards
                 </span>
 
-                <div className='box--style relative border-[2px] border-gray-700 bg-gray-50 p-4 lg:w-1/3 sm:w-1/2 w-3/4'>
+                <div
+                    className='box--style relative border-[2px] border-gray-700 bg-gray-50 sm:p-4 p-2 lg:w-[450px] sm:w-[400px] w-3/4'
+                    style={{ backgroundColor: 'rgba(241, 241, 241, 0.75)' }}
+                >
                     <div className='absolute top-1 right-1 text-[0.75rem] font-medium text-gray-700'>
                         [{ownedBoards.length}]
                     </div>
                     <div className='flex flex-col items-center mt-3 gap-4 pb-4 px-4 lg:px-2 max-h-[450px] overflow-auto'>
-                        {ownedBoards.map(item => {
+                        {
+                            ownedBoards.length === 0 ? <p className='text-[0.75rem] text-gray-600 mt-2'>you currently have no owned boards.</p> :
+                            ownedBoards.map(item => {
                             const { _id, title, description: _description, members, createdBy: _createdBy, createdAt } = item;
                             return (
                                 <div
                                     key={_id}
                                     onClick={() => handleOpenBoardStats(_id)}
-                                    className="w-full h-[150px]"
+                                    className="w-full h-[150px] bg-transparent"
                                 >
 
-                                    <div className="w-full h-[150px] board--style board--hover border-[2px] md:border-[2.5px] border-gray-600 py-3 px-3 shadow-gray-600 select-none bg-gray-50 relative">
+                                    <div className="w-full h-[150px] board--style board--hover border-[2px] md:border-[2.5px] border-gray-600 py-3 px-3 shadow-gray-600 select-none bg-transparent relative">
                                         <p className="text-[12px] sm:text-[1rem] font-semibold text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
 
                                         <div className="h-[1px] w-full bg-black my-2"></div>
 
-                                        <p className="text-[10px] sm:text-[0.85rem] mt-1">
+                                        <p className="text-[10px] sm:text-[0.85rem] mt-3">
                                             lists: {item.listCount}
                                         </p>
 

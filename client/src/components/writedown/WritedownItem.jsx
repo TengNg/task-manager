@@ -58,10 +58,10 @@ const WritedownItem = ({ writedown, open, remove }) => {
                         {title}
                     </p>
                     : <div
-                        className='p-2 flex justify-center items-center rounded bg-gray-200 hover:bg-gray-300 cursor-pointer'
+                        className='p-2 flex justify-center items-center rounded bg-gray-300 opacity-45 hover:bg-gray-400 cursor-pointer'
                         onClick={() => open(id)}
                     >
-                        <span className='text-[0.75rem] text-gray-400 font-medium tracking-wider'>
+                        <span className='text-[0.75rem] text-gray-600 font-medium tracking-wider'>
                             empty
                         </span>
                     </div>

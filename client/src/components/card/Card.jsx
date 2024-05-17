@@ -113,12 +113,12 @@ const Card = ({ index, card }) => {
                                 return;
                             };
                         }}
-                        className={`card__item ${card.hiddenByFilter && 'hidden'} ${theme.itemTheme == 'rounded' ? 'rounded' : ''} bg-gray-50 w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative`}
+                        className={`card__item ${card.hiddenByFilter && 'hidden'} ${theme.itemTheme == 'rounded' ? 'rounded' : ''} w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative`}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >
 
-                        <p className="w-full h-full bg-inherit font-semibold text-gray-600 rounded-md py-1 px-2 focus:outline-none text-sm break-words whitespace-pre-line" >
+                        <p className="w-full h-full bg-transparent font-semibold text-gray-600 rounded-md py-1 px-2 focus:outline-none text-sm break-words whitespace-pre-line" >
                             {card.title}
                         </p>
 
@@ -140,10 +140,10 @@ const Card = ({ index, card }) => {
                             {
                                 card.owner &&
                                 <div
-                                    className='p-2 bg-gray-200 flex justify-center items-center rounded'
+                                    className='p-2 bg-slate-300 text-gray-700 border-slate-400 flex justify-center items-center rounded'
                                     style={{ backgroundColor: highlightColorsRGBA[`${card.highlight}`] }}
                                 >
-                                    <span className='text-[0.55rem] sm:text-[0.65rem] text-gray-700 font-medium'>
+                                    <span className='text-[0.55rem] sm:text-[0.65rem] font-medium'>
                                         {card.owner}
                                     </span>
                                 </div>
@@ -198,7 +198,7 @@ const Card = ({ index, card }) => {
                             onClick={(e) => {
                                 handleOpenQuickEditor(e);
                             }}
-                            className="absolute hidden sm:block right-2 top-2 font-bold text-[0.75rem] text-transparent hover:bg-gray-100 group-hover:text-gray-600 w-[25px] h-[25px] d-flex justify-center items-center rounded-sm">
+                            className="absolute hidden sm:block right-2 top-2 font-bold text-[0.75rem] text-transparent hover:bg-zinc-300 group-hover:text-gray-600 w-[25px] h-[25px] d-flex justify-center items-center rounded-sm">
                             ...
                         </button>
                     </div>
