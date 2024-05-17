@@ -40,14 +40,14 @@ const CopyBoardForm = ({ setOpen }) => {
                 className="fixed box-border top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-500 opacity-40 z-30 cursor-auto">
             </div>
 
-            <Loading
-                displayText={'Please wait, creating board...'}
-                loading={loading}
-                position={'absolute'}
-                fontSize={'0.75rem'}
-            />
-
             <div className="fixed box--style flex flex-col items-start py-3 px-3 top-[5rem] right-0 left-[50%] -translate-x-[50%] w-fit min-w-[300px] h-[300px] min-h-[300px] border-black border-[2px] z-40 cursor-auto bg-gray-200">
+                <Loading
+                    displayText={'creating board...'}
+                    loading={loading}
+                    position={'absolute'}
+                    fontSize={'0.75rem'}
+                />
+
                 <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-2 mb-5'>
                     <p className="font-normal text-[0.75rem] text-gray-700">create a copy from this board</p>
                     <button

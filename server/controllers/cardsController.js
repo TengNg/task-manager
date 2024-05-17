@@ -115,7 +115,7 @@ const updateTitle = async (req, res) => {
     const { authorized } = await isActionAuthorized(boardId, req.user.username);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
-    foundCard.title = title;
+    foundCard.title = title.trim();
     await foundCard.save();
 
     res.status(200).json({ message: 'card updated', newCard: foundCard });

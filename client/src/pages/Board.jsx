@@ -145,7 +145,7 @@ const Board = () => {
                 const { card } = response.data;
                 setOpenedCard(card);
 
-                // set document title as board title
+                // set document title as card title
                 document.title = `[card] ${card.title}`;
             } catch (err) {
                 const errMsg = err?.response?.data?.msg || 'failed to get card data';

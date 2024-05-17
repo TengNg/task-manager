@@ -26,7 +26,7 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
                 }}
                 title='copy card code'
             >
-                copy code
+                code
             </button>
 
 
