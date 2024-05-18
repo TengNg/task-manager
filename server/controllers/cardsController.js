@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Card = require('../models/Card.js');
 
 const { isActionAuthorized } = require('../services/boardActionAuthorizeService');
@@ -200,7 +201,7 @@ const copyCard = async (req, res) => {
     const { id } = req.params;
     const { rank } = req.body;
 
-    const foundCard = await cardById(id, { lean: false });
+    const foundCard = await cardById(id, { lean: true });
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
 
     const { boardId } = foundCard;
@@ -209,7 +210,8 @@ const copyCard = async (req, res) => {
 
     const newCard = new Card({
         ...foundCard,
-        order: rank
+        _id: new mongoose.Types.ObjectId(),
+        order: rank,
     });
 
     await newCard.save();
