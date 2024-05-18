@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 
 const cardSchema = new mongoose.Schema({
     trackedId: {

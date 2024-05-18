@@ -18,7 +18,6 @@ const PORT = process.env.PORT || 3001;
 mongoose.set("strictQuery", true);
 mongoose
     .connect(process.env.DB_CONNECTION)
-    .then(() => console.log('connected'))
     .catch((err) => console.log(err));
 
 app.use(credentials);
@@ -56,4 +55,8 @@ app.use("/board_activities", require("./routes/api/boardActivities"));
 
 app.use(errorHandler);
 
-app.listen(PORT, () => console.log(`app is listening on PORT ${PORT}`));
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => console.log(`app is listening on PORT ${PORT}`));
+}
+
+module.exports = app;

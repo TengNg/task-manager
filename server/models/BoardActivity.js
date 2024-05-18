@@ -30,7 +30,6 @@ const boardActivitySchema = new mongoose.Schema({
 
     action: {
         type: String,
-        required: true,
     },
 
     description: {

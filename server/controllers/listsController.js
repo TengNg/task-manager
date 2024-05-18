@@ -68,8 +68,6 @@ const reorder = async (req, res) => {
         action: "update list rank",
         type: "list",
         description: `(${+sourceIndex + 1}) > (${+destinationIndex + 1})`,
-        previousState: sourceIndex,
-        updatedState: destinationIndex,
         createdAt: foundList.updatedAt,
     })
 
