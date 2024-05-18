@@ -1,22 +1,11 @@
 const Card = require('../models/Card.js');
-const List = require('../models/List.js');
-const mongoose = require('mongoose');
 
 const { isActionAuthorized } = require('../services/boardActionAuthorizeService');
 const { userByUsername } = require('../services/userService');
 const saveBoardActivity = require('../services/saveBoardActivity');
 
-const listById = (id, option = { lean: true }) => {
-    const foundList = List.findById(id);
-    if (option.lean) foundList.lean();
-    return foundList;
-};
-
-const cardById = (id, option = { lean: true }) => {
-    const foundCard = Card.findById(id);
-    if (option.lean) foundCard.lean();
-    return foundCard;
-};
+const { listById } = require('../services/listService');
+const { cardById } = require('../services/cardService');
 
 const getCard = async (req, res) => {
     const { username } = req.user;
@@ -62,7 +51,7 @@ const addCard = async (req, res) => {
         createdAt: newCard.updatedAt,
     })
 
-    return res.status(201).json({ msg: 'new card added', newCard });
+    return res.status(201).json({ newCard });
 };
 
 const reorder = async (req, res) => {
@@ -101,7 +90,7 @@ const reorder = async (req, res) => {
         createdAt: foundCard.updatedAt,
     })
 
-    res.status(200).json({ message: 'card updated', newCard: foundCard });
+    res.status(200).json({ newCard: foundCard });
 };
 
 const updateTitle = async (req, res) => {
@@ -135,7 +124,7 @@ const updateDescription = async (req, res) => {
     foundCard.description = description;
     await foundCard.save();
 
-    res.status(200).json({ message: 'card updated', newCard: foundCard });
+    res.status(200).json({ newCard: foundCard });
 };
 
 const updateHighlight = async (req, res) => {
@@ -152,7 +141,7 @@ const updateHighlight = async (req, res) => {
     foundCard.highlight = highlight;
     await foundCard.save();
 
-    res.status(200).json({ message: 'card updated', newCard: foundCard });
+    res.status(200).json({ newCard: foundCard });
 };
 
 const updatePriorityLevel = async (req, res) => {
@@ -181,13 +170,13 @@ const updatePriorityLevel = async (req, res) => {
         createdAt: foundCard.updatedAt,
     })
 
-    res.status(200).json({ message: 'card updated', newCard: foundCard });
+    res.status(200).json({ newCard: foundCard });
 };
 
 const deleteCard = async (req, res) => {
     const { id } = req.params;
 
-    const foundCard = await cardById(id, { lean: false });
+    const foundCard = await cardById(id, { lean: true });
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
 
     const { boardId } = foundCard;
@@ -211,7 +200,7 @@ const copyCard = async (req, res) => {
     const { id } = req.params;
     const { rank } = req.body;
 
-    const foundCard = await cardById(id, { lean: true });
+    const foundCard = await cardById(id, { lean: false });
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
 
     const { boardId } = foundCard;
@@ -220,7 +209,6 @@ const copyCard = async (req, res) => {
 
     const newCard = new Card({
         ...foundCard,
-        _id: new mongoose.Types.ObjectId(),
         order: rank
     });
 
@@ -235,7 +223,7 @@ const copyCard = async (req, res) => {
         description: `[important] create a copy of card with title "${foundCard.title}"`,
     })
 
-    res.status(200).json({ msg: 'Card copied successfully', newCard: newCard });
+    return res.status(200).json({ newCard });
 };
 
 const updateOwner = async (req, res) => {
@@ -253,7 +241,7 @@ const updateOwner = async (req, res) => {
     foundCard.owner = ownerName;
     await foundCard.save();
 
-    res.status(200).json({ msg: 'Update member successfully', newCard: foundCard });
+    res.status(200).json({ newCard: foundCard });
 };
 
 module.exports = {
