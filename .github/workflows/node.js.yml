@@ -5,12 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "test" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "test" ]
-
-env:
-  ACCESS_TOKEN: ${{ vars.ACCESS_TOKEN }}
+    branches: [ "master" ]
 
 jobs:
   build:
@@ -50,6 +47,9 @@ jobs:
           npm install
 
       - name: Run tests
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          DB_CONNECTION: ${{ secrets.DB_CONNECTION }}
         run: |
           cd server
           npm test
