@@ -20,6 +20,8 @@ Demo: [https://task-manager-client-n3q2.onrender.com/](https://task-manager-clie
 
 ### Quickstart
 
+> Dependencies: node version >= 21.x
+
 1. Clone this repo
 2. Create database in mongodb (with your_database_name)
 3. At `server` folder - create `.env` file with content like the example below
@@ -46,3 +48,13 @@ Demo: [https://task-manager-client-n3q2.onrender.com/](https://task-manager-clie
    npm run dev
    ```
 5. Open http://localhost:5173/
+
+---
+
+#### Run Tests
+
+```bash
+cd server && npm test
+```
+
+For tests coverage visualization, run: `cd server && npm test -- --coverage`, then open `server/coverage/lcov-report/index.html`
