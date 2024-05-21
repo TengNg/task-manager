@@ -144,6 +144,10 @@ div:focus, dialog:focus {
     background: rgba(241, 241, 241, 0.55);
 }
 
+.card__item.focused {
+    background: rgba(226, 232, 240, 0.75);
+}
+
 .list__item {
     background: rgba(241, 241, 241, 0.55);
 }

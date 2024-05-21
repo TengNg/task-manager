@@ -113,7 +113,10 @@ const Card = ({ index, card }) => {
                                 return;
                             };
                         }}
-                        className={`card__item ${card.hiddenByFilter && 'hidden'} ${theme.itemTheme == 'rounded' ? 'rounded' : ''} w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative`}
+                        className={`card__item
+                            ${focusedCard?.id === card._id && focusedCard?.highlight && 'focused'}
+                            ${card.hiddenByFilter && 'hidden'} ${theme.itemTheme == 'rounded' ? 'rounded' : ''} w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative
+                        `}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
                     >
