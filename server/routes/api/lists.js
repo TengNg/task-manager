@@ -62,6 +62,6 @@ router.route("/copy/:id")
     .post(withLock("copy", copyList))
 
 router.route("/move/:id/b/:boardId/i/:index")
-    .post(moveList)
+    .put(moveList)
 
 module.exports = router;

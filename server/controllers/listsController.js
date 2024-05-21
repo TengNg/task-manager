@@ -143,6 +143,8 @@ const copyList = async (req, res) => {
         const list = await newList.save();
 
         const copiedCards = await Card.find({ listId: id });
+        const newCards = [];
+
         for (const card of copiedCards) {
             const { title, description, order, highlight } = card;
             const newCard = new Card({
@@ -155,9 +157,10 @@ const copyList = async (req, res) => {
             });
 
             await newCard.save();
+            newCards.push(newCard);
         }
 
-        const cards = await Card.find({ listId: list._id }).sort({ order: 'asc' });
+        newCards.sort((a, b) => a.order - b.order);
 
         await saveBoardActivity({
             boardId,
@@ -168,7 +171,7 @@ const copyList = async (req, res) => {
             description: `[important] create a copy of list with title "${foundList.title}"`,
         })
 
-        res.status(200).json({ list, cards, message: 'list copied' });
+        res.status(200).json({ list, cards: newCards, message: 'list copied' });
     } catch (err) {
         console.log(err);
         res.status(500).json({ msg: err.message });

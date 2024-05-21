@@ -110,7 +110,7 @@ const MoveListForm = () => {
         if (list.boardId !== selectedBoardId) {
 
             try {
-                const response = await axiosPrivate.post(`/lists/move/${listToMove._id}/b/${selectedBoardId}/i/${selectedIndex}`);
+                const response = await axiosPrivate.put(`/lists/move/${listToMove._id}/b/${selectedBoardId}/i/${selectedIndex}`);
                 const { list, cards } = response.data;
 
                 setBoardState(prev => {
