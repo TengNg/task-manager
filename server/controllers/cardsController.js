@@ -246,6 +246,23 @@ const updateOwner = async (req, res) => {
     res.status(200).json({ newCard: foundCard });
 };
 
+const toggleVerified = async (req, res) => {
+    const { username } = req.user;
+    const { id } = req.params;
+
+    const foundCard = await cardById(id, { lean: false });
+    if (!foundCard) return res.status(404).json({ error: 'Card not found' });
+
+    const { boardId } = foundCard;
+    const { authorized } = await isActionAuthorized(boardId, username);
+    if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
+
+    foundCard.verified = !foundCard.verified;
+    await foundCard.save();
+
+    res.status(200).json({ verified: foundCard.verified });
+};
+
 module.exports = {
     getCard,
     addCard,
@@ -257,4 +274,5 @@ module.exports = {
     reorder,
     copyCard,
     updateOwner,
+    toggleVerified,
 }

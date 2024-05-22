@@ -162,6 +162,12 @@ io.on('connection', (socket) => {
         socket.to(boardId).emit("updatedCardDescription", data);
     });
 
+    socket.on("updateCardVerifiedStatus", (data) => {
+        const boardId = boardIdMap.get(socket.id);
+        if (!boardId) return;
+        socket.to(boardId).emit("updatedCardVerifiedStatus", data);
+    });
+
     socket.on("sendMessage", (data) => {
         const boardId = boardIdMap.get(socket.id);
         if (!boardId) return;

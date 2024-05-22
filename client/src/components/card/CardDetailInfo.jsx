@@ -17,6 +17,13 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
     return (
         <div className='relative flex flex-col gap-5 text-[0.65rem] sm:text-[0.8rem] text-gray-700 p-4 border-[1px] border-gray-700'>
 
+            {
+                card?.verified &&
+                    <div className="absolute top-4 right-4 text-[10px] sm:text-[0.8rem] w-fit text-green-600 opacity-80 border-[2px] border-green-600 border-dashed p-2 cursor-not-allowed font-medium">
+                        verified
+                    </div>
+            }
+
             <button
                 className='absolute bottom-4 right-4 border-[1px] border-slate-600 border-dashed py-1 px-2 text-slate-500 text-[9px] sm:text-[12px] hover:bg-slate-300'
                 onClick={() => {

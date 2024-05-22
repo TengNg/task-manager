@@ -121,11 +121,26 @@ const Card = ({ index, card }) => {
                         onClick={handleOpenCardDetail}
                     >
 
-                        <p className="w-full h-full bg-transparent font-semibold text-gray-600 rounded-md py-1 px-2 focus:outline-none text-sm break-words whitespace-pre-line" >
+                        <p
+                            className="w-full h-full bg-transparent font-semibold text-gray-600 rounded-md py-1 px-2 focus:outline-none text-sm break-words whitespace-pre-line"
+                            style={{ textDecoration: card.verified ? 'line-through' : 'none' }}
+                        >
                             {card.title}
                         </p>
 
+                        {
+                            card.verified &&
+                                <div
+                                    className='absolute bottom-2 right-2 w-[18px] h-[18px] p-2 bg-emerald-700 opacity-40 text-gray-50 flex justify-center items-center rounded-sm'
+                                >
+                                    <span className='font-medium'>
+                                        ✓
+                                    </span>
+                                </div>
+                        }
+
                         <div className='flex justify-start items-center ms-2 text-gray-500 gap-2 mt-1'>
+
                             {
                                 card.priorityLevel &&
                                     card.priorityLevel !== "none" &&
@@ -138,7 +153,6 @@ const Card = ({ index, card }) => {
                                         </span>
                                     </div>
                             }
-
 
                             {
                                 card.owner &&

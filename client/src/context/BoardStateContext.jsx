@@ -230,6 +230,10 @@ export const BoardStateContextProvider = ({ children }) => {
             setCardHighlight(data.id, data.listId, data.highlight);
         });
 
+        socket.on("updatedCardVerifiedStatus", (data) => {
+            setCardVerifiedStatus(data.id, data.listId, data.verified);
+        });
+
         socket.on("receiveMessage", (data) => {
             setChats(prev => [...prev, data]);
         });
@@ -355,6 +359,18 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
+    const setCardVerifiedStatus = (cardId, listId, value) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.map(list => list._id === listId ? {
+                    ...list,
+                    cards: list.cards.map(card => card._id === cardId ? { ...card, verified: value } : card)
+                } : list)
+            }
+        });
+    };
+
     const addListToBoard = (list) => {
         setBoardState(prev => {
             return {
@@ -460,11 +476,6 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
-    const cardDetailUrl = (cardId) => {
-        const url = `${location.pathname}?card=${cardId}`
-        return url;
-    };
-
     return (
         <BoardStateContext.Provider
             value={{
@@ -483,6 +494,7 @@ export const BoardStateContextProvider = ({ children }) => {
                 setCardHighlight,
                 setCardOwner,
                 setCardPriorityLevel,
+                setCardVerifiedStatus,
 
                 deleteCard,
 
