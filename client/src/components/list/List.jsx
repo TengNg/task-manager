@@ -167,7 +167,7 @@ const List = ({ index, list, cards }) => {
                     <div
                         className={`
                             ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}
-                            list__item flex flex-col justify-start w-[300px] max-h-[100%] overflow-auto border-[2px] select-none pt-2 cursor-pointer border-gray-600 shadow-gray-600
+                            list__item flex flex-col justify-start w-[300px] max-h-[100%] overflow-auto border-[2px] select-none pt-2 cursor-pointer border-gray-700 shadow-gray-700
                         `}
                     >
                         <div
@@ -200,7 +200,7 @@ const List = ({ index, list, cards }) => {
                                 ...
                             </button>
 
-                            <div className="h-[1.5px] mt-1 mx-3 bg-gray-500"></div>
+                            <div className="h-[1.5px] mt-1 mx-3 bg-gray-600"></div>
                         </div>
 
                         <div className="max-h-full overflow-y-auto px-3">
@@ -253,7 +253,7 @@ const List = ({ index, list, cards }) => {
                             <div className='flex items-center gap-1 ms-auto me-1 text-gray-500 text-[0.65rem] font-medium'>
                                 {
                                     debugModeEnabled.enabled &&
-                                        <span>[r:{list.order}]</span>
+                                        <span>[rank: {list.order}]</span>
                                 }
 
                                 <span>{list.cards.length}</span>

@@ -18,6 +18,8 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
 
     const [initialTitle, setInitialTitle] = useState(card.title);
     const [openHighlightPicker, setOpenHighlightPicker] = useState(true);
+    const [isVerifying, setIsVerifying] = useState(false);
+
     const cardVerifiedStatus = card.verified;
 
     const textAreaRef = useRef();
@@ -84,7 +86,12 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
     };
 
     const handleToggleVerified = async () => {
+        if (isVerifying) {
+            return;
+        }
+
         try {
+            setIsVerifying(true);
             const response = await axiosPrivate.put(`/cards/${card._id}/toggle-verified`);
             const { verified } = response.data;
             card.verified = verified;
@@ -93,6 +100,8 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
         } catch (err) {
             console.log(err);
             alert('Failed to toggle verified');
+        } finally {
+            setIsVerifying(false);
         }
     };
 
@@ -212,14 +221,17 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
                 <div className='flex gap-2'>
                     <button
                         onClick={handleSaveButtonOnClick}
-                        className="w-[100px] text-[0.75rem] text-white hover:bg-gray-700 bg-gray-800 px-4 py-2 flex--center opacity-80 z-0">
+                        className="w-[110px] text-[0.75rem] text-white hover:bg-gray-700 bg-gray-800 px-4 py-2 flex--center opacity-80 z-0">
                         Save
                     </button>
 
                     <button
                         onClick={handleVerifyButtonOnClick}
-                        className="w-[100px] text-[0.75rem] text-white hover:bg-teal-700 bg-teal-800 px-4 py-2 flex--center opacity-80 z-0">
-                        { cardVerifiedStatus ? 'Verfied' : 'Verify' }
+                        className="w-[110px] text-[0.75rem] text-white hover:bg-teal-700 bg-teal-800 px-4 py-2 flex--center opacity-80 z-0"
+                    >
+                        {
+                            isVerifying ? '...' : cardVerifiedStatus ? '✓ Verified' : 'Verify'
+                        }
                     </button>
                 </div>
             </div>

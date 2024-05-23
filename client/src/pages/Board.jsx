@@ -667,7 +667,7 @@ const Board = () => {
             {
                 boardState?.board?.visibility === 'private' &&
                 <div
-                    className="md:block hidden absolute left-4 top-4 text-[0.65rem] md:text-[0.75rem] text-gray-600 hover:text-gray-800 select-none"
+                    className="md:block hidden absolute left-4 top-4 text-[0.65rem] md:text-[0.75rem] font-medium text-gray-700 hover:text-gray-800 select-none"
                     title="this board is in private mode"
                 >
                     [private]
@@ -810,12 +810,12 @@ const Board = () => {
                     visibility
                 </button>
 
-                <div className='flex gap-3 absolute right-2 bottom-4 sm:right-4 text-[0.65rem] text-gray-500'>
+                <div className='flex gap-3 absolute right-2 bottom-4 sm:right-4 text-[0.65rem] text-gray-700'>
                     <p className='md:block hidden select-none'>
                         lists: {boardState?.board?.listCount || 0} / 20
                     </p>
                     <button
-                        className='w-[16px] h-[16px] bg-pink-200 hover:bg-pink-300 rounded-full'
+                        className='w-[16px] h-[16px] bg-pink-400 hover:bg-pink-500 rounded-full'
                         onClick={() => {
                             navigator.clipboard.writeText(boardState?.board?._id).then(() => {
                                 alert('copied board code to clipboard');
@@ -826,7 +826,7 @@ const Board = () => {
                     </button>
 
                     <button
-                        className='sm:block hidden w-[16px] h-[16px] bg-gray-500 hover:bg-gray-600 text-white rounded-full'
+                        className='sm:block hidden w-[16px] h-[16px] bg-gray-600 hover:bg-gray-700 text-white rounded-full'
                         onClick={() => {
                             setOpenKeyBindings(prev => !prev)
                         }}

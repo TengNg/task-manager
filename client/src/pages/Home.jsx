@@ -7,14 +7,14 @@ const Home = () => {
             <Title titleName={"home"} />
 
             <section className="flex flex-col gap-4 justify-between items-center">
-                <div className='text-[10px] md:text-[0.65rem] lg:text-sm text-gray-700'>
-                    <div className='border-[2px] border-dashed border-gray-500 md:p-6 p-3'>
+                <div className='text-[10px] md:text-[0.65rem] lg:text-sm text-gray-800'>
+                    <div className='border-[2px] border-dashed border-gray-700 md:p-6 p-3'>
                         This project is a simple task management which you can create your own task-boards and collab with your friends (with a simple noting system).
                     </div>
 
                     <br />
 
-                    <div className='border-[2px] border-dashed border-gray-500 md:p-6 p-3'>
+                    <div className='border-[2px] border-dashed border-gray-700 md:p-6 p-3'>
                         <div className='underline mb-2'>
                             About this project:
                         </div>
@@ -36,8 +36,8 @@ const Home = () => {
 
                     <br />
 
-                    <div className='mb-1 w-full text-gray-500'>* Notes: Using keybinds for better workflow (Desktop users only)</div>
-                    <div className='border-[2px] border-dashed border-gray-500 md:p-6 p-3'>
+                    <div className='mb-1 w-full text-gray-700'>* Notes: Using keybinds for better workflow (Desktop users only)</div>
+                    <div className='border-[2px] border-dashed border-gray-700 md:p-6 p-3'>
                         <div className='flex flex-wrap gap-6 lg:gap-12'>
                             <div className="flex flex-col gap-2">
                                 <div className='underline'>Global Keybinds</div>

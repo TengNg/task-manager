@@ -3,29 +3,58 @@ import useBoardState from "../../hooks/useBoardState";
 import dateFormatter from "../../utils/dateFormatter"
 import highlightColors, { highlightColorsRGBA } from "../../data/highlights";
 import PRIORITY_LEVELS from "../../data/priorityLevels";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelChange }) => {
     const {
         boardState,
+        setCardVerifiedStatus,
+        socket,
     } = useBoardState();
+
+    const axiosPrivate = useAxiosPrivate();
 
     const [ownerValue, setOwnerValue] = useState(card.owner || "");
     const [openOwnerInput, setOpenOwnerInput] = useState(false);
+    const [isVerifying, setIsVerifying] = useState(false);
 
     const priorityLevel = card?.priorityLevel;
+
+    const handleToggleVerified = async () => {
+        if (isVerifying) {
+            return;
+        }
+
+        try {
+            setIsVerifying(true);
+            const response = await axiosPrivate.put(`/cards/${card._id}/toggle-verified`);
+            const { verified } = response.data;
+            card.verified = verified;
+            setCardVerifiedStatus(card._id, card.listId, verified);
+            socket.emit("updateCardVerifiedStatus", { id: card._id, listId: card.listId, verified });
+        } catch (err) {
+            console.log(err);
+            alert('Failed to toggle verified');
+        } finally {
+            setIsVerifying(false);
+        }
+    };
 
     return (
         <div className='relative flex flex-col gap-5 text-[0.65rem] sm:text-[0.8rem] text-gray-700 p-4 border-[1px] border-gray-700'>
 
-            {
-                card?.verified &&
-                    <div className="absolute top-4 right-4 text-[10px] sm:text-[0.8rem] w-fit text-green-600 opacity-80 border-[2px] border-green-600 border-dashed p-2 cursor-not-allowed font-medium">
-                        verified
-                    </div>
-            }
+            <button
+                className="w-[80px] sm:w-[110px] absolute top-4 right-4 text-[10px] sm:text-[0.8rem] text-green-700 border-green-700 opacity-80 border-[2px] border-dashed p-2 font-medium hover:underline"
+                onClick={handleToggleVerified}
+                title={card.verified ? 'click to unverify' : 'click to verify'}
+            >
+                {
+                    isVerifying ? '...' : card.verified ? '✓ Verified' : 'Verify'
+                }
+            </button>
 
             <button
-                className='absolute bottom-4 right-4 border-[1px] border-slate-600 border-dashed py-1 px-2 text-slate-500 text-[9px] sm:text-[12px] hover:bg-slate-300'
+                className='absolute bottom-4 right-4 border-[1px] border-slate-600 border-dashed py-1 px-2 text-slate-500 text-[9px] sm:text-[12px] hover:underline'
                 onClick={() => {
                     navigator.clipboard.writeText(card?._id).then(() => {
                         alert('card code copied to clipboard');

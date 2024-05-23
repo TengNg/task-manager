@@ -89,7 +89,7 @@ const NavBar = () => {
                         </button>
                         <div
                             title='Go to last viewed board'
-                            className='absolute hidden lg:block cursor-pointer top-3 left-3 bg-transparent hover:bg-slate-400 hover:text-gray-50 text-gray-500 border-slate-500 border-[2px] border-dashed text-[0.8rem] p-2 font-medium'
+                            className='absolute hidden lg:block cursor-pointer top-3 left-3 bg-transparent hover:bg-slate-400 hover:text-gray-50 text-slate-600 border-slate-600 border-[2px] border-dashed text-[0.75rem] p-2 font-medium'
                             onClick={() => {
                                 const recentlyViewedBoardId = auth?.user?.recentlyViewedBoardId;
                                 if (recentlyViewedBoardId) {
@@ -102,7 +102,7 @@ const NavBar = () => {
                     </>)
                 }
 
-                <nav className="h-full top-4 m-auto border-gray-700 border-[2px] bg-transparent px-2 z-30">
+                <nav className="h-full top-4 m-auto border-gray-700 border-[2px] bg-transparent px-2 z-30 drop-shadow-sm">
                     <ul className="w-[100%] h-[100%] flex justify-around items-center sm:gap-4 gap-2">
                         {
                             Object.values(PAGES).map((el, index) => {

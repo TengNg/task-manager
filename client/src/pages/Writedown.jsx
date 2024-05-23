@@ -123,7 +123,7 @@ const Writedown = () => {
                 <div className='mx-auto sm:w-3/4 w-[90%]'>
                     <Title titleName={"writedown"} />
 
-                    <div className='flex flex-col justify-center items-center gap-4 text-sm text-gray-400'>
+                    <div className='flex flex-col justify-center items-center gap-4 text-sm text-gray-600'>
                         {
                             writedowns.length === 0 &&
                             <p className='text-[12px] sm:text-[0.85rem]'>
@@ -133,7 +133,7 @@ const Writedown = () => {
 
                         <button
                             onClick={handleCreateWritedown}
-                            className='grid place-items-center text-gray-400 border-[2px] border-gray-400 border-dashed p-4 hover:bg-gray-300 transition-all'
+                            className='grid place-items-center text-gray-600 border-[2px] border-gray-600 border-dashed p-4 hover:bg-gray-300 transition-all'
                         >
                             {isCreatingWritedown ? "creating writedown..." : "+ new writedown"}
                         </button>

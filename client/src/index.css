@@ -13,7 +13,7 @@
     }
 
     .underline--style {
-        @apply before:content-[''] before:absolute before:w-[50%] before:h-[10%] before:bg-gray-500 before:bottom-[-0.5rem] before:mx-auto before:left-0 before:right-0 before:transition-all before:duration-500
+        @apply before:content-[''] before:absolute before:w-[50%] before:h-[10%] before:bg-gray-600 before:bottom-[-0.5rem] before:mx-auto before:left-0 before:right-0 before:transition-all before:duration-500
     }
 
     .underline--hover {
@@ -61,7 +61,7 @@
     }
 
     .anchor--style {
-        @apply hover:bg-gray-300 flex justify-center items-center py-1 px-2 text-gray-600
+        @apply flex justify-center items-center py-1 px-2 text-gray-700 hover:underline
     }
 
     .anchor--style--selected {
