@@ -12,6 +12,7 @@ const {
     reorder,
     copyCard,
     updateOwner,
+    toggleVerified,
 } = require('../../controllers/cardsController');
 
 let cardActionLocks = {};
@@ -73,5 +74,8 @@ router.route("/:id/member/update")
 
 router.route("/:id/priority/update")
     .put(updatePriorityLevel)
+
+router.route("/:id/toggle-verified")
+    .put(withLock("toggleVerified", toggleVerified))
 
 module.exports = router;

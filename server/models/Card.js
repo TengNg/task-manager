@@ -46,6 +46,11 @@ const cardSchema = new mongoose.Schema({
         default: 'none',
     },
 
+    verified: {
+        type: Boolean,
+        default: false,
+    },
+
     owner: {
         type: String,
         default: null,

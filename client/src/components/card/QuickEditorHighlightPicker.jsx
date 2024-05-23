@@ -4,7 +4,7 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
-const QuickEditorHighlightPicker = ({ card, closeQuickEditor }) => {
+const QuickEditorHighlightPicker = ({ card }) => {
     const {
         setCardQuickEditorHighlight,
         setCardHighlight,
@@ -21,7 +21,6 @@ const QuickEditorHighlightPicker = ({ card, closeQuickEditor }) => {
             setCardHighlight(card._id, card.listId, value);
             await axiosPrivate.put(`/cards/${card._id}/new-highlight`, { highlight: value });
             socket.emit("updateCardHighlight", { id: card._id, listId: card.listId, highlight: value });
-            closeQuickEditor();
         } catch (err) {
             console.log(err);
         }

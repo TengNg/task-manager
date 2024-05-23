@@ -9,6 +9,7 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
     const {
         setOpenedCardQuickEditor,
         setCardTitle,
+        setCardVerifiedStatus,
         theme,
         socket,
     } = useBoardState();
@@ -17,6 +18,7 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
 
     const [initialTitle, setInitialTitle] = useState(card.title);
     const [openHighlightPicker, setOpenHighlightPicker] = useState(true);
+    const cardVerifiedStatus = card.verified;
 
     const textAreaRef = useRef();
     const quickEditorRef = useRef();
@@ -74,12 +76,23 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
             const newTitle = textAreaRef.current.value;
             setCardTitle(card._id, card.listId, newTitle);
             setInitialTitle(newTitle);
-
             await axiosPrivate.put(`/cards/${card._id}/new-title`, JSON.stringify({ title: newTitle }));
-
             socket.emit("updateCardTitle", { id: card._id, listId: card.listId, title: newTitle });
         } catch (err) {
             console.log(err);
+        }
+    };
+
+    const handleToggleVerified = async () => {
+        try {
+            const response = await axiosPrivate.put(`/cards/${card._id}/toggle-verified`);
+            const { verified } = response.data;
+            card.verified = verified;
+            setCardVerifiedStatus(card._id, card.listId, verified);
+            socket.emit("updateCardVerifiedStatus", { id: card._id, listId: card.listId, verified });
+        } catch (err) {
+            console.log(err);
+            alert('Failed to toggle verified');
         }
     };
 
@@ -103,6 +116,11 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
     const handleSaveButtonOnClick = () => {
         handleSetCardTitle();
         close();
+    };
+
+    const handleVerifyButtonOnClick = () => {
+        handleToggleVerified();
+        // close();
     };
 
     const handleOpenCardDetail = () => {
@@ -153,7 +171,6 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
                             openHighlightPicker &&
                             <QuickEditorHighlightPicker
                                 card={card}
-                                closeQuickEditor={close}
                             />
                         }
 
@@ -191,11 +208,20 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
                         </button>
                     </div>
                 </div>
-                <button
-                    onClick={handleSaveButtonOnClick}
-                    className="text-[0.75rem] text-white hover:bg-gray-700 bg-gray-800 px-4 py-2 flex--center opacity-80 z-0">
-                    Save
-                </button>
+
+                <div className='flex gap-2'>
+                    <button
+                        onClick={handleSaveButtonOnClick}
+                        className="w-[100px] text-[0.75rem] text-white hover:bg-gray-700 bg-gray-800 px-4 py-2 flex--center opacity-80 z-0">
+                        Save
+                    </button>
+
+                    <button
+                        onClick={handleVerifyButtonOnClick}
+                        className="w-[100px] text-[0.75rem] text-white hover:bg-teal-700 bg-teal-800 px-4 py-2 flex--center opacity-80 z-0">
+                        { cardVerifiedStatus ? 'Verfied' : 'Verify' }
+                    </button>
+                </div>
             </div>
         </>
     )
