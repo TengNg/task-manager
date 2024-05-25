@@ -122,7 +122,7 @@ const Card = ({ index, card }) => {
                     >
 
                         <p
-                            className="w-full h-full bg-transparent font-semibold text-gray-600 rounded-md py-1 px-2 focus:outline-none text-sm break-words whitespace-pre-line"
+                            className="w-full h-full bg-transparent font-semibold text-gray-600 rounded-md px-2 focus:outline-none text-sm break-words whitespace-pre-line"
                             style={{ textDecoration: card.verified ? 'line-through' : 'none' }}
                         >
                             {card.title}
@@ -131,7 +131,7 @@ const Card = ({ index, card }) => {
                         {
                             card.verified &&
                                 <div
-                                    className='absolute bottom-2 right-2 w-[18px] h-[18px] p-2 bg-emerald-700 opacity-40 text-gray-50 flex justify-center items-center rounded-sm'
+                                    className='absolute bottom-[0.1rem] right-[0.1rem] sm:bottom-2 sm:right-2 w-[10px] h-[10px] sm:w-[18px] sm:h-[18px] p-1 sm:p-2 bg-emerald-700 opacity-40 text-gray-50 flex justify-center items-center rounded-sm'
                                 >
                                     <span className='font-medium'>
                                         ✓
@@ -169,7 +169,7 @@ const Card = ({ index, card }) => {
                             {card.description != "" && <FontAwesomeIcon icon={faAlignLeft} size='xs' />}
                         </div>
 
-                        <div className='sm:text-[0.65rem] text-[0.75rem] text-gray-700 font-medium mt-3 ms-[0.6rem]'>
+                        <div className='text-[0.65rem] text-gray-700 font-medium mt-1 sm:mt-3 ms-[0.5rem]'>
                             {
                                 card.createdAt
                                     ? <span>
@@ -183,14 +183,14 @@ const Card = ({ index, card }) => {
 
                         {
                             debugModeEnabled.enabled &&
-                            <div className='sm:text-[0.65rem] text-[0.75rem] text-gray-700 font-medium mt-1 ms-[0.6rem]'>rank: {card.order}</div>
+                            <div className='text-[0.65rem] text-gray-700 font-medium mt-1 ms-[0.5rem]'>rank: {card.order}</div>
                         }
 
                         {
                             (focusedCard?.id === card._id && focusedCard?.highlight)
                             && (
                                 <>
-                                    <div className='text-[0.8rem]' style={{ color: `${card.highlight == null ? '#4b5563' : `${card.highlight}`}` }} >
+                                    <div className='text-[0.85rem]' style={{ color: `${card.highlight == null ? '#4b5563' : `${card.highlight}`}` }} >
                                         <div className='absolute top-0 left-1 rotate-45'>
                                             <FontAwesomeIcon icon={faAngleLeft} />
                                         </div>

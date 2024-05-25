@@ -4,6 +4,7 @@ const Card = require('../models/Card.js');
 const Board = require('../models/Board.js');
 const { lexorank } = require('../lib/lexorank.js');
 
+const { saveList } = require('../services/listService');
 const { isActionAuthorized } = require('../services/boardActionAuthorizeService');
 const saveBoardActivity = require('../services/saveBoardActivity');
 
@@ -132,50 +133,43 @@ const copyList = async (req, res) => {
 
     const newListId = new mongoose.Types.ObjectId();
 
-    const newList = new List({
+    const listData = {
         _id: newListId,
         title,
         order: rank,
         boardId,
-    });
+    };
 
-    try {
-        const list = await newList.save();
+    const list = await saveList(listData);
 
-        const copiedCards = await Card.find({ listId: id });
-        const newCards = [];
+    const copiedCards = await Card.find({ listId: id });
+    const newCards = [];
 
-        for (const card of copiedCards) {
-            const { title, description, order, highlight } = card;
-            const newCard = new Card({
-                title,
-                description,
-                order,
-                highlight,
-                listId: list._id,
-                boardId: list.boardId
-            });
+    for (const card of copiedCards) {
+        const { title, description, order, highlight } = card;
+        const newCard = new Card({
+            title,
+            description,
+            order,
+            highlight,
+            listId: list._id,
+            boardId: list.boardId
+        });
 
-            await newCard.save();
-            newCards.push(newCard);
-        }
-
-        newCards.sort((a, b) => a.order - b.order);
-
-        await saveBoardActivity({
-            boardId,
-            userId: user._id,
-            listId: foundList._id,
-            action: "copy list",
-            type: "list",
-            description: `[important] create a copy of list with title "${foundList.title}"`,
-        })
-
-        res.status(200).json({ list, cards: newCards, message: 'list copied' });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ msg: err.message });
+        await newCard.save();
+        newCards.push(newCard);
     }
+
+    await saveBoardActivity({
+        boardId,
+        userId: user._id,
+        listId: foundList._id,
+        action: "copy list",
+        type: "list",
+        description: `[important] create a copy of list with title "${foundList.title}"`,
+    })
+
+    res.status(200).json({ list, cards: newCards, message: 'list copied' });
 };
 
 const moveList = async (req, res) => {

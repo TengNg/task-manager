@@ -56,9 +56,6 @@ router.route("/:id/pinned")
     .put(togglePinBoard)
     .delete(deletePinnedBoard)
 
-router.route("/pinned/save")
-    .put(updatePinnedBoardsCollection)
-
 router.route("/pinned/clean")
     .put(cleanPinnedBoardsCollection)
 

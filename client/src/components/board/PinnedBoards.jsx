@@ -90,28 +90,12 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
         }
     };
 
-    const handleSavePinnedBoards = async () => {
-        if (saved || cleaned) return;
-
-        try {
-            setLoading(true);
-            const boards = auth?.user?.pinnedBoardIdCollection;
-            await axiosPrivate.put(`/boards/pinned/save`, JSON.stringify({ pinnedBoardIdCollection: boards }));
-            setLoading(false);
-            setSaved(true);
-        } catch (err) {
-            console.log(err);
-            setLoading(false);
-            alert('Failed to save');
-        }
-    }
-
     const handleCleanPinnedBoards = async () => {
         if (cleaned) return;
 
         try {
             setLoading(true);
-            const res = await axiosPrivate.put(`/boards/pinned/clean`);
+            await axiosPrivate.put(`/boards/pinned/clean`);
 
             setAuth(prev => {
                 return { ...prev, user: { ...prev.user, pinnedBoardIdCollection: {} } }
@@ -144,15 +128,6 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
             <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
                 <div className='flex items-center gap-2'>
                     <span className="font-normal text-[0.85rem] text-gray-700">pinned boards</span>
-                    <div>
-                        <button
-                            onClick={handleSavePinnedBoards}
-                            className={`button--style--sm text-[0.85rem] w-[20px] h-[20px] hover:bg-gray-300 rounded ${saved ? 'text-blue-600' : 'text-gray-600'}`}
-                        >
-                            <FontAwesomeIcon icon={faFloppyDisk} />
-                        </button>
-                        {saved && <span className='text-[0.65rem] text-blue-600'>saved!</span>}
-                    </div>
 
                     {
                         pinnedBoards.length > 0

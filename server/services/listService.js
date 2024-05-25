@@ -6,6 +6,12 @@ const listById = (id, option = { lean: true }) => {
     return foundList;
 };
 
+const saveList = (listData) => {
+    const newList = new List(listData);
+    return newList.save();
+};
+
 module.exports = {
-    listById
+    listById,
+    saveList,
 }

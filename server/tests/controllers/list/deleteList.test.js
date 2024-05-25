@@ -29,6 +29,18 @@ describe('DELETE /lists/:id', () => {
         expect(res.statusCode).toEqual(403);
     });
 
+    it('should return 403 if not authorized', async () => {
+        const mockUser = { _id: new mongoose.Types.ObjectId().toString(), username: 'testuser' };
+        const listId = new mongoose.Types.ObjectId().toString();
+        const mockList = { _id: listId, boardId: new mongoose.Types.ObjectId().toString(), save: jest.fn() };
+        List.findById = jest.fn().mockImplementation(() => mockList);
+        isActionAuthorized.mockResolvedValue({ authorized: false, user: mockUser });
+        const res = await request(app)
+            .delete(`/lists/${mockList._id}`)
+            .set('Authorization', `Bearer ${token}`);
+        expect(res.statusCode).toEqual(403);
+    });
+
     it('should return 403 if user is not found', async () => {
         const listId = new mongoose.Types.ObjectId().toString();
         const mockList = { _id: listId, save: jest.fn() };
