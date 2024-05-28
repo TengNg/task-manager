@@ -1,44 +1,13 @@
-const mongoose = require('mongoose');
-
 const Writedown = require("../models/Writedown");
 
 const { userByUsername: getUser } = require('../services/userService');
-
-const findWritedown = async (writedownId, option = { lean: true }) => {
-    const foundWritedown = Writedown.findById(writedownId);
-    if (option.lean) foundWritedown.lean();
-    return foundWritedown;
-};
-
-const isActionAuthorized = async (writedownId, username) => {
-    const foundUser = await getUser(username);
-    if (!foundUser) return { authorized: false, error: 'user not found' }
-
-    const foundWritedown = await findWritedown(writedownId, { lean: false });
-    if (!foundWritedown) return { authorized: false, error: 'writedown not found' }
-
-    return {
-        authorized: true,
-        writedown: foundWritedown
-    }
-};
-
-const handleAuthorizationAndGetWritedown = async (req, res) => {
-    const { writedownId } = req.params;
-    const { username } = req.user;
-
-    const { authorized, error, writedown } = await isActionAuthorized(writedownId, username);
-
-    if (!authorized) return res.status(403).json({ msg: error || "unauthorized" });
-
-    return { writedown };
-};
+const { saveNewWritedown, writedownsByUserId, handleAuthorizationAndGetWritedown } = require('../services/writedownService');
 
 const getWritedowns = async (req, res) => {
     const { username } = req.user;
     const foundUser = await getUser(username);
     if (!foundUser) return res.status(403).json({ msg: "user not found" });
-    const writedowns = await Writedown.find({ owner: foundUser._id }).select('-content').sort({ pinned: -1, content: -1, createdAt: -1 }).lean();
+    const writedowns = await writedownsByUserId(foundUser._id);
     return res.status(200).json({ writedowns });
 };
 
@@ -53,13 +22,9 @@ const createWritedown = async (req, res) => {
     const foundUser = await getUser(username);
     if (!foundUser) return res.status(403).json({ msg: "user not found" });
 
-    const newWritedown = new Writedown({
-        owner: foundUser._id
-    });
+    const newWritedown = await saveNewWritedown({ owner: foundUser._id });
 
-    await newWritedown.save();
-
-    return res.status(201).json({ msg: 'new writedown added', newWritedown });
+    return res.status(200).json({ msg: 'new writedown added', newWritedown });
 };
 
 const saveWritedown = async (req, res) => {

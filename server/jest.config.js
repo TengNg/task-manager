@@ -1,4 +1,8 @@
 module.exports = {
     testMatch: ['**/tests/controllers/**/*.test.js', '**/tests/controllers/*.test.js'],
-    testTimeout: 20000
+    testTimeout: 20000,
+    coveragePathIgnorePatterns: [
+        "/lib/",
+        "/models/"
+    ],
 };
