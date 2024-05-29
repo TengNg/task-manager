@@ -47,8 +47,8 @@ const PersistLogin = () => {
                 ? <Outlet />
                 : isLoading
                     ? (
-                        <div className="flex flex-col gap-4 font-semibold mx-auto mt-20 text-gray-600 px-20">
-                            <p className="text-center">
+                        <div className="flex flex-col gap-4 font-semibold mx-auto mt-20 text-gray-700 px-4 sm:px-8 md:px-20">
+                            <p className="text-[0.75rem] sm:text-[1rem] text-center">
                                 Loading profile data...
                             </p>
 
@@ -56,14 +56,15 @@ const PersistLogin = () => {
                             <br />
                             <br />
 
-                            <div className='text-gray-400 hover:text-gray-600'>
-                                <span className='text-[0.85rem] text-gray-500'>
+                            <div className='text-[10px] text-center sm:text-[1rem] text-gray-500 hover:text-gray-600'>
+                                <span>
                                     If the page takes too long to load, this might be probably due to a slow connecting time from the server.
                                 </span>
 
                                 <br />
+                                <br />
 
-                                <span className='text-[0.85rem] text-gray-500'>
+                                <span>
                                     Please wait or clear the browser cache then try again.
                                 </span>
                             </div>
@@ -72,7 +73,7 @@ const PersistLogin = () => {
                             <br />
 
                             <button
-                                className='mx-auto text-center text-[0.85rem] text-gray-500 underline'
+                                className='mx-auto text-center text-[0.75rem] sm:text-[1rem] text-gray-500 underline'
                                 onClick={handleLogout}
                             >
                                 Logout &amp; try again

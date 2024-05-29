@@ -3,7 +3,7 @@ import Loading from '../ui/Loading';
 
 import dateFormatter from '../../utils/dateFormatter';
 
-const Editor = ({ writedown, setWritedown, saveWritedown, pinWritedown }) => {
+const Editor = ({ writedown, setWritedown, saveWritedown }) => {
     const dialog = useRef();
     const textarea = useRef();
 
@@ -53,7 +53,7 @@ const Editor = ({ writedown, setWritedown, saveWritedown, pinWritedown }) => {
     return (
         <dialog
             ref={dialog}
-            className='z-40 backdrop:bg-black/15 min-w-[350px] overflow-y-hidden w-[90%] lg:w-[60%] h-[85vh] border-gray-500 border-[2.5px] border-dashed'
+            className='z-40 backdrop:bg-black/15 min-w-[350px] overflow-y-hidden w-[90%] lg:w-[60%] h-[60vh] md:h-[85vh] border-gray-500 border-[2.5px] border-dashed'
             style={{
                 backgroundColor: 'rgba(235, 235, 235, 0.9)'
             }}
