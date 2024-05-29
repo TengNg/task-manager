@@ -16,7 +16,6 @@ const {
     copyBoard,
     togglePinBoard,
     deletePinnedBoard,
-    updatePinnedBoardsCollection,
     cleanPinnedBoardsCollection,
 } = require('../../controllers/boardsController');
 
