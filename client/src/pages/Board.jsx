@@ -326,15 +326,13 @@ const Board = () => {
     };
 
     const handleDeleteCard = withCardProcessWrapper(async (card) => {
-        if (confirm('Delete this card, are you sure?')) {
-            try {
-                await axiosPrivate.delete(`/cards/${card._id}`);
-                deleteCard(card.listId, card._id);
-                socket.emit('deleteCard', { listId: card.listId, cardId: card._id });
-            } catch (err) {
-                console.log(err);
-                alert('Failed to delete card');
-            }
+        try {
+            await axiosPrivate.delete(`/cards/${card._id}`);
+            deleteCard(card.listId, card._id);
+            socket.emit('deleteCard', { listId: card.listId, cardId: card._id });
+        } catch (err) {
+            console.log(err);
+            alert('Failed to delete card');
         }
     });
 

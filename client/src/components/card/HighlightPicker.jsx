@@ -1,11 +1,10 @@
-import { forwardRef } from "react";
 import highlightColors from "../../data/highlights";
 import useBoardState from '../../hooks/useBoardState';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
-const HighlightPicker = forwardRef(({ setOpen, card }, ref) => {
+const HighlightPicker = ({ setOpen, card }) => {
     const {
         setCardDetailHighlight,
         setCardHighlight,
@@ -33,8 +32,9 @@ const HighlightPicker = forwardRef(({ setOpen, card }, ref) => {
 
     return (
         <div
-            ref={ref}
-            className="absolute top-0 left-0 -translate-x-[105%] flex flex-col gap-1 items-center justify-center bg-gray-200 p-2 border-[2px] border-black shadow-black shadow-[4px_5px_0_0] w-[200px]">
+            id="card__detail__highlight__picker"
+            className="absolute top-0 left-0 translate-x-[25%] sm:-translate-x-[105%] flex flex-col gap-1 items-center justify-center bg-gray-200 p-2 border-[2px] border-black shadow-black shadow-[4px_5px_0_0] w-[200px]"
+        >
             {
                 Object.keys(highlightColors).map((item, index) => {
                     return <div
@@ -56,6 +56,6 @@ const HighlightPicker = forwardRef(({ setOpen, card }, ref) => {
 
         </div>
     )
-});
+};
 
 export default HighlightPicker

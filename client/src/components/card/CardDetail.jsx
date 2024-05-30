@@ -3,7 +3,7 @@ import TextArea from "../ui/TextArea";
 import useBoardState from "../../hooks/useBoardState";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark, faDroplet, faCopy, faEraser } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faDroplet, faCopy } from '@fortawesome/free-solid-svg-icons';
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HighlightPicker from "./HighlightPicker";
 import CardDetailInfo from "./CardDetailInfo";
@@ -20,6 +20,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         setCardPriorityLevel,
         setCardTitle,
         setCardOwner,
+        setCardVerifiedStatus,
         socket,
     } = useBoardState();
 
@@ -28,23 +29,26 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
     const [description, setDescription] = useState(card?.description);
     const [cardCount, setCardCount] = useState(0);
     const [position, setPosition] = useState(0);
+    const [isVerifying, setIsVerifying] = useState(false);
+    const [openCardDeleteConfirm, setOpenCardDeleteConfirm] = useState(false);
 
     const axiosPrivate = useAxiosPrivate();
 
     const dialog = useRef();
-    const highlightPicker = useRef();
-    const openHighlightPickerButton = useRef();
 
     const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
-        if (open) {
+        if (open && card) {
             dialog.current.showModal();
             dialog.current.focus();
-            const textarea = dialog.current.querySelector('.card__title__textarea')
-            if (textarea) {
-                textarea.blur();
-            }
+
+            //const textarea = dialog.current.querySelector('#card__title__textarea')
+            //if (textarea) {
+            //    textarea.blur();
+            //}
+
+            setOpenCardDeleteConfirm(false);
 
             setTitle(card?.title);
             setDescription(card?.description);
@@ -90,9 +94,15 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
     }, [open, card]);
 
     const handleCloseOnOutsideClick = (e) => {
-        if (e.target !== highlightPicker.current && e.target !== openHighlightPickerButton.current) {
+        const hlPicker = dialog.current.querySelector('#card__detail__highlight__picker');
+        if (hlPicker && e.target != hlPicker) {
             setOpenHighlightPicker(false);
-        }
+        };
+
+        const deleteConfirm = dialog.current.querySelector('#card__detail__delete__confirm');
+        if (deleteConfirm && e.target != deleteConfirm) {
+            setOpenCardDeleteConfirm(false);
+        };
 
         if (e.target === dialog.current) {
             dialog.current.close();
@@ -144,10 +154,32 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         setPosition(cards?.length);
     };
 
+    const handleToggleVerified = async () => {
+        if (isVerifying) {
+            return;
+        }
+
+        try {
+            setIsVerifying(true);
+            const response = await axiosPrivate.put(`/cards/${card._id}/toggle-verified`);
+            const { verified } = response.data;
+            card.verified = verified;
+            setCardVerifiedStatus(card._id, card.listId, verified);
+            socket.emit("updateCardVerifiedStatus", { id: card._id, listId: card.listId, verified });
+        } catch (err) {
+            console.log(err);
+            alert('Failed to toggle verified');
+        } finally {
+            setIsVerifying(false);
+        }
+    };
+
     const confirmDescription = async (e) => {
         if (card.description === e.target.value.trim()) {
             return;
         }
+
+        console.log(e.target.value);
 
         try {
             if (!e.target.value) {
@@ -318,9 +350,10 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                         </div>
                     </div>
 
-                    <div className="w-full flex border-b-[1px] border-t-[1px] py-4 gap-3 border-black">
+                    <div className="w-full flex flex-wrap border-b-[1px] border-t-[1px] py-4 gap-3 border-black z-20">
                         <TextArea
-                            className="card__detail__description__textarea overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[175px] max-h-[400px] break-words box-border text-[0.65rem] sm:text-[0.85rem] py-2 px-3 w-[95%] text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
+                            id="card__detail__description__textarea"
+                            className="overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[175px] max-h-[400px] break-words box-border text-[0.65rem] sm:text-[0.85rem] py-2 px-3 w-full text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
                             autoFocus={true}
                             onBlur={(e) => {
                                 confirmDescription(e)
@@ -331,51 +364,88 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                             minHeight={'250px'}
                         />
 
-                        <div className="relative flex flex-col gap-3">
-
-                            {
-                                openHighlightPicker &&
-                                <HighlightPicker
-                                    ref={highlightPicker}
-                                    setOpen={setOpenHighlightPicker}
-                                    card={card}
-                                />
-                            }
+                        <div className="relative flex flex-row justify-end w-full gap-3">
 
                             {/* change highlight button */}
-                            <button
-                                title="change highlight color"
-                                ref={openHighlightPickerButton}
-                                onClick={() => setOpenHighlightPicker(prev => !prev)}
-                                className={`flex sm:w-full sm:h-auto w-[35px] h-[35px] justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white text-[0.75rem] p-2 font-semibold ${openHighlightPicker && 'bg-gray-600 shadow-black text-white'}`}
-                            >
-                                <FontAwesomeIcon icon={faDroplet} />
-                            </button>
+                            <div className='relative h-[40px]'>
+                                <button
+                                    title="change highlight color"
+                                    onClick={() => setOpenHighlightPicker(prev => !prev)}
+                                    className={`card--details--button border-gray-600 text-gray-600 ${openHighlightPicker && 'bg-slate-500 shadow-black text-white'}`}
+                                >
+                                    <FontAwesomeIcon icon={faDroplet} />
+                                    <span>{" "}</span>
+                                    <span className="hidden sm:inline-block">
+                                        hl
+                                    </span>
+                                </button>
 
-                            <div>
+                                {
+                                    openHighlightPicker &&
+                                    <HighlightPicker
+                                        setOpen={setOpenHighlightPicker}
+                                        card={card}
+                                    />
+                                }
+                            </div>
+
+                            <div className='h-[40px]'>
                                 <button
                                     title="create a copy of this card"
                                     onClick={copyCard}
-                                    className={`flex sm:w-full sm:h-auto w-[35px] h-[35px] justify-center items-center gap-1 border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white text-[0.75rem] p-2 font-semibold`}
+                                    className={`card--details--button border-gray-600 text-gray-600`}
                                 >
                                     <FontAwesomeIcon icon={faCopy} />
-                                    <span className="hidden sm:block">
+                                    <span>{" "}</span>
+                                    <span className="hidden sm:inline-block">
                                         copy
                                     </span>
                                 </button>
                             </div>
 
-                            <div>
+                            <div className='h-[40px]'>
+                                <button
+                                    className={`card--details--button border-green-700 min-w-[80px] text-green-700 ${card.verified ? 'bg-teal-100' : ''}`}
+                                    onClick={handleToggleVerified}
+                                    title={card.verified ? 'click to unverify' : 'click to verify'}
+                                >
+                                    {
+                                        isVerifying ? '...' : card.verified ? '✓ verified' : '✓ verify'
+                                    }
+                                </button>
+                            </div>
+
+                            <div className='relative h-[40px]'>
                                 <button
                                     title="delete this card"
-                                    onClick={() => deleteCard()}
-                                    className={`flex sm:w-full sm:h-auto w-[35px] h-[35px] justify-center items-center gap-1 border-2 border-pink-800 text-pink-800 hover:bg-pink-600 hover:text-white text-[0.75rem] p-2 font-semibold`}
+                                    onClick={() => setOpenCardDeleteConfirm(prev => !prev)}
+                                    className={`card--details--button border-rose-700 text-rose-700 ${openCardDeleteConfirm && 'bg-rose-100'}`}
                                 >
-                                    <FontAwesomeIcon icon={faEraser} />
-                                    <span className="hidden sm:block">
-                                        delete
-                                    </span>
+                                    - delete
                                 </button>
+
+                                {
+                                    openCardDeleteConfirm &&
+                                    <div
+                                        id="card__detail__delete__confirm"
+                                        className='bg-gray-100 border-[2px] shadow-[0_3px_0_0] border-gray-700 shadow-gray-700 absolute text-[10px] sm:text-[0.75rem] w-[200px] left-0 top-0 -translate-x-[140px] sm:-translate-x-[125px] translate-y-[30%] p-2'
+                                    >
+                                        This action cannot be undone. Are you sure you want to delete this card?
+                                        <button
+                                            className="bg-rose-800 text-white font-medium p-2 w-full mt-1 hover:bg-rose-700"
+                                            onClick={deleteCard}
+                                        >
+                                            confirm delete
+                                        </button>
+
+                                        <button
+                                            className="bg-gray-600 text-white font-medium p-2 w-full mt-1 hover:bg-gray-500"
+                                            onClick={() => setOpenCardDeleteConfirm(false)}
+                                        >
+                                            cancel
+                                        </button>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>

@@ -143,8 +143,10 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
     };
 
     const deleteCard = () => {
-        handleDeleteCard(card);
-        close();
+        if (confirm('Delete this card, are you sure?')) {
+            handleDeleteCard(card);
+            close();
+        }
     };
 
     const copyCard = () => {

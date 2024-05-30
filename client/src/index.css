@@ -75,6 +75,10 @@
     .key {
         @apply bg-gray-100 border-[1.5px] border-gray-600 shadow-[0_2px_0_0] shadow-gray-600 p-1 px-2 text-[10px] text-gray-600 font-medium hover:bg-slate-400 hover:text-white select-none
     }
+
+    .card--details--button {
+        @apply w-fit min-w-[40px] border-2 shadow-[0_2px_0_0] bg-gray-100 text-[9px] sm:text-[0.75rem] p-2 font-semibold hover:shadow-[0_1px_0_0] hover:mt-[1px]
+    }
 }
 
 * {
