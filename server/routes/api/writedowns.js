@@ -5,6 +5,7 @@ const {
     getWritedowns,
     getWritedown,
     createWritedown,
+    updateTitle,
     saveWritedown,
     pinWritedown,
     deleteWritedown,
@@ -21,5 +22,8 @@ router.route("/:writedownId")
 
 router.route("/:writedownId/pin")
     .put(pinWritedown)
+
+router.route("/:writedownId/update-title")
+    .put(updateTitle);
 
 module.exports = router;

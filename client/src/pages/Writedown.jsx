@@ -110,12 +110,22 @@ const Writedown = () => {
         }
     };
 
+    async function handleUpdateWritedownTitle(id, newTitle) {
+        try {
+            await axiosPrivate.put(`/personal_writedowns/${id}/update-title`, { title: newTitle });
+        } catch (err) {
+            console.log(err);
+            alert('Failed to delete writedown');
+        }
+    };
+
     return (
         <>
             <Editor
                 writedown={writedown}
                 setWritedown={setWritedown}
                 saveWritedown={handleSaveWritedown}
+                updateTitle={handleUpdateWritedownTitle}
             />
 
             <section className="w-full h-[calc(100%-75px)] overflow-auto pb-4">

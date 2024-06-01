@@ -6,7 +6,7 @@ import Loading from '../ui/Loading';
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const WritedownItem = ({ writedown, open, remove }) => {
-    const { _id: id, title, pinned, createdAt } = writedown;
+    const { _id: id, title, content, pinned, createdAt } = writedown;
     const [isPinned, setIsPinned] = useState(pinned);
     const [loading, setLoading] = useState(false);
     const axiosPrivate = useAxiosPrivate();
@@ -50,14 +50,30 @@ const WritedownItem = ({ writedown, open, remove }) => {
             </div>
 
             {
-                title ?
+                title ? (
                     <p
                         className='max-w-[200px] max-h-[100px] overflow-hidden text-gray-700 whitespace-pre-wrap hover:underline cursor-pointer'
                         onClick={() => open(id)}
                     >
-                        {title}
+                        <span className='font-medium'>
+                            &#128205; title:
+                        </span>
+                        <span>
+                            {" "}
+                        </span>
+                        <span>
+                            {title}
+                        </span>
                     </p>
-                    : <div
+                ) : content ? (
+                    <p
+                        className='max-w-[200px] max-h-[100px] overflow-hidden text-gray-700 whitespace-pre-wrap hover:underline cursor-pointer'
+                        onClick={() => open(id)}
+                    >
+                        {content.substring(0, 30) + '...'}
+                    </p>
+                ) : (
+                    <div
                         className='p-2 flex justify-center items-center rounded bg-gray-300 opacity-45 hover:bg-gray-400 cursor-pointer'
                         onClick={() => open(id)}
                     >
@@ -65,6 +81,7 @@ const WritedownItem = ({ writedown, open, remove }) => {
                             empty
                         </span>
                     </div>
+                )
             }
 
             <div className='mt-auto p-2 flex justify-center items-center rounded bg-gray-400'>
@@ -72,7 +89,7 @@ const WritedownItem = ({ writedown, open, remove }) => {
                     {dateFormatter(createdAt, { weekdayFormat: true })}
                 </span>
             </div>
-        </div>
+        </div >
     )
 }
 

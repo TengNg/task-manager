@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faCircleUser } from '@fortawesome/free-solid-svg-icons';
 
 import { useNavigate, useSearchParams } from "react-router-dom";
-import useBoardState from "../../hooks/useBoardState";
 
 const MESSAGE_PADDING = {
     x: {

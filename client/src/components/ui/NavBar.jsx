@@ -78,7 +78,7 @@ const NavBar = () => {
                     (!pathname.includes('/b/') && auth?.user?.recentlyViewedBoardId) && (<>
                         <button
                             title='Go to last viewed board'
-                            className='absolute lg:hidden block lg:top-5 sm:top-4 left-[0.3rem] sm:left-4 w-[11px] h-[11px] sm:w-[14px] sm:h-[14px] bg-pink-400 hover:bg-pink-500 rounded-full'
+                            className='absolute lg:hidden block lg:top-5 sm:top-4 top-4 left-2 sm:left-4 w-[11px] h-[11px] sm:w-[14px] sm:h-[14px] bg-pink-400 hover:bg-pink-500 rounded-full'
                             onClick={() => {
                                 const recentlyViewedBoardId = auth?.user?.recentlyViewedBoardId;
                                 if (recentlyViewedBoardId) {

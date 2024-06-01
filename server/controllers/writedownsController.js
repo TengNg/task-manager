@@ -31,14 +31,11 @@ const saveWritedown = async (req, res) => {
     const { writedown } = await handleAuthorizationAndGetWritedown(req, res);
     const { content } = req.body;
 
-    const contentFirst20Chars = content.substring(0, 25);
     writedown.content = content;
-    writedown.title = content.length > 25 ? contentFirst20Chars + "..." : contentFirst20Chars;
-
     await writedown.save();
 
     const { _id, title, createdAt } = writedown;
-    const updatedWritedown = { _id, title, createdAt }
+    const updatedWritedown = { _id, title, content: content.substring(0, 30), createdAt }
 
     return res.status(200).json({ msg: 'writedown updated', updatedWritedown });
 };
@@ -48,6 +45,14 @@ const pinWritedown = async (req, res) => {
     writedown.pinned = !writedown.pinned;
     await writedown.save();
     return res.status(200).json({ message: 'writedown pinned', pinned: writedown.pinned });
+};
+
+const updateTitle = async (req, res) => {
+    const { writedown } = await handleAuthorizationAndGetWritedown(req, res);
+    const { title } = req.body;
+    writedown.title = title;
+    await writedown.save();
+    return res.status(200).json({ message: 'writedown updated', newTitle: writedown.title });
 };
 
 const deleteWritedown = async (req, res) => {
@@ -62,5 +67,6 @@ module.exports = {
     createWritedown,
     saveWritedown,
     pinWritedown,
+    updateTitle,
     deleteWritedown,
 };

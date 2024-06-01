@@ -179,8 +179,6 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
             return;
         }
 
-        console.log(e.target.value);
-
         try {
             if (!e.target.value) {
                 await axiosPrivate.put(`/cards/${card._id}/new-description`, JSON.stringify({ description: '' }));
