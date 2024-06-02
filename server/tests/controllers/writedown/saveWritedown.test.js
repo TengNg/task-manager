@@ -28,7 +28,7 @@ describe('PUT /personal_writedowns/:id', () => {
 
         const updatedWritedown = {
             _id: 'writedownId',
-            title: 'Testing',
+            content: 'Testing',
         }
 
         expect(res.statusCode).toEqual(200);
