@@ -83,12 +83,16 @@ const Writedown = () => {
 
         try {
             const response = await axiosPrivate.put(`/personal_writedowns/${id}`, JSON.stringify({ content: value }));
+
             const { updatedWritedown } = response.data;
+
+            console.log(updatedWritedown);
 
             setWritedowns(prev => {
                 return prev.map(writedown => writedown._id === updatedWritedown._id ? updatedWritedown : writedown);
             });
         } catch (err) {
+            console.log(err);
             alert('Failed to save writedown');
         } finally {
             setWritedown(prev => {

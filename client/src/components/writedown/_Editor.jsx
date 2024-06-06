@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import Loading from '../ui/Loading';
-import Editor from 'react-simple-wysiwyg';
 
 import dateFormatter from '../../utils/dateFormatter';
 
-const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
+const Editor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
     const dialog = useRef();
     const setTitleDialog = useRef();
     const setTitleInput = useRef();
@@ -13,11 +12,7 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
     const { title, content, createdAt, updatedAt } = writedown?.data;
     const [writedownTitle, setWritedownTitle] = useState(title);
 
-    const [html, setHtml] = useState('');
-
     useEffect(() => {
-        setHtml(writedown?.content);
-
         if (writedown.open) {
             dialog.current.showModal();
             textarea.current.value = content || "";
@@ -40,7 +35,7 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
         } else {
             dialog.current.close();
         }
-    }, [writedown]);
+    }, [writedown.open, writedown.data]);
 
     const handleCloseOnOutsideClick = (e) => {
         if (e.target === dialog.current) {
@@ -54,7 +49,7 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
     const handleClose = () => {
         const { _id } = writedown.data;
         try {
-            saveWritedown(_id, html);
+            saveWritedown(_id, textarea.current.value);
         } catch (err) {
             alert('Failed to save writedown');
         }
@@ -170,18 +165,11 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
             <div className="w-full h-[97%] pt-8 pb-4 px-8">
                 <textarea
                     ref={textarea}
-                    className="hidden font-medium w-full max-h-full overflow-y-scroll bg-transparent focus:bg-transparent text-[11px] px-2 sm:text-sm text-gray-600 leading-6 resize-none focus:outline-none"
+                    className="font-medium w-full max-h-full overflow-y-scroll bg-transparent focus:bg-transparent text-[11px] px-2 sm:text-sm text-gray-600 leading-6 resize-none focus:outline-none"
                     placeholder="writedown something..."
                     onChange={(e) => {
                         e.target.style.height = 'auto';
                         e.target.style.height = `${e.target.scrollHeight}px`;
-                    }}
-                />
-
-                <Editor
-                    value={html}
-                    onChange={(e) => {
-                        setHtml(e.target.value);
                     }}
                 />
             </div>
@@ -196,5 +184,4 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
     </>)
 }
 
-export default REditor
-
+export default Editor
