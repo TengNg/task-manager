@@ -35,3 +35,12 @@ export const formatDateToYYYYMMDD = (miliseconds) => {
 
     return `${year}-${month}-${day}`;
 }
+
+export const dateToCompare = (miliseconds) => {
+    if (!miliseconds) return '';
+
+    const date = new Date(miliseconds);
+    const today = new Date();
+
+    return date.getTime() <= today.getTime();
+};

@@ -3,7 +3,7 @@ import { Draggable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAlignLeft, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from '../../hooks/useBoardState';
-import dateFormatter from '../../utils/dateFormatter';
+import dateFormatter, { dateToCompare } from '../../utils/dateFormatter';
 import Loading from '../ui/Loading';
 import { highlightColorsRGBA } from "../../data/highlights";
 import PRIORITY_LEVELS from "../../data/priorityLevels";
@@ -116,6 +116,7 @@ const Card = ({ index, card }) => {
                         className={`card__item
                             ${focusedCard?.id === card._id && focusedCard?.highlight && 'focused'}
                             ${card.hiddenByFilter && 'hidden'} ${theme.itemTheme == 'rounded' ? 'rounded' : ''} w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative
+                            ${dateToCompare(card?.dueDate) ? 'past__due__card' : '' }
                         `}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}

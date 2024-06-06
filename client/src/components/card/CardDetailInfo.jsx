@@ -6,6 +6,8 @@ import PRIORITY_LEVELS from "../../data/priorityLevels";
 
 import { formatDateToYYYYMMDD } from "../../utils/dateFormatter";
 
+import { dateToCompare } from '../../utils/dateFormatter';
+
 const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelChange, handleChangeDueDate }) => {
     const {
         boardState,
@@ -115,10 +117,10 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
                 }
             </div>
 
-            <div className='mt-1'>
+            <div className={`mt-1 ${dateToCompare(dueDate) && 'text-red-700'}`}>
                 <label htmlFor="due-date" className='font-normal'>due date: </label>
                 <input
-                    className='bg-transparent' type="date" id="due-date"
+                    className={`bg-transparent`} type="date" id="due-date"
                     value={dueDate}
                     onChange={(e) => {
                         handleChangeDueDate(e.target.value);

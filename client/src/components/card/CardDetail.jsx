@@ -21,6 +21,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         setCardTitle,
         setCardOwner,
         setCardVerifiedStatus,
+        setCardDueDate,
         socket,
     } = useBoardState();
 
@@ -179,13 +180,14 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
             const response = await axiosPrivate.put(`/cards/${card._id}/due-date/update`, JSON.stringify({ dueDate: value }));
             const { dueDate } = response.data;
 
-            console.log(response);
-
             setOpenedCard(prev => {
                 return { ...prev, dueDate };
             });
 
             card.dueDate = dueDate;
+
+            setCardDueDate(card._id, card.listId, dueDate);
+            socket.emit("updateCardDueDate", { id: card._id, listId: card.listId, dueDate });
         } catch (err) {
             console.log(err);
             alert('Failed to toggle verified');
