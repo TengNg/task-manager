@@ -56,6 +56,10 @@ const cardSchema = new mongoose.Schema({
         default: null,
     },
 
+    dueDate: {
+        type: Date,
+    },
+
     updatedAt: {
         type: Date,
         default: Date.now,

@@ -4,7 +4,11 @@ import dateFormatter from "../../utils/dateFormatter"
 import highlightColors, { highlightColorsRGBA } from "../../data/highlights";
 import PRIORITY_LEVELS from "../../data/priorityLevels";
 
-const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelChange }) => {
+import { formatDateToYYYYMMDD } from "../../utils/dateFormatter";
+
+import { dateToCompare } from '../../utils/dateFormatter';
+
+const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelChange, handleChangeDueDate }) => {
     const {
         boardState,
     } = useBoardState();
@@ -13,6 +17,7 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
     const [openOwnerInput, setOpenOwnerInput] = useState(false);
 
     const priorityLevel = card?.priorityLevel;
+    const dueDate = card?.dueDate ? formatDateToYYYYMMDD(card.dueDate) : "";
 
     return (
         <div className='relative flex flex-col gap-5 text-[0.65rem] sm:text-[0.8rem] text-gray-700 p-4 border-[1px] border-gray-700'>
@@ -110,6 +115,17 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
                         }}
                     />
                 }
+            </div>
+
+            <div className={`mt-1 ${dateToCompare(dueDate) && 'text-red-700'}`}>
+                <label htmlFor="due-date" className='font-normal'>due date: </label>
+                <input
+                    className={`bg-transparent`} type="date" id="due-date"
+                    value={dueDate}
+                    onChange={(e) => {
+                        handleChangeDueDate(e.target.value);
+                    }}
+                />
             </div>
 
             <div className='text-[ .65rem] sm:text-[0.8rem] mt-1'>

@@ -3,7 +3,7 @@ import { Draggable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAlignLeft, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from '../../hooks/useBoardState';
-import dateFormatter from '../../utils/dateFormatter';
+import dateFormatter, { dateToCompare } from '../../utils/dateFormatter';
 import Loading from '../ui/Loading';
 import { highlightColorsRGBA } from "../../data/highlights";
 import PRIORITY_LEVELS from "../../data/priorityLevels";
@@ -116,6 +116,7 @@ const Card = ({ index, card }) => {
                         className={`card__item
                             ${focusedCard?.id === card._id && focusedCard?.highlight && 'focused'}
                             ${card.hiddenByFilter && 'hidden'} ${theme.itemTheme == 'rounded' ? 'rounded' : ''} w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative
+                            ${dateToCompare(card?.dueDate) ? 'past__due__card' : '' }
                         `}
                         style={getStyle(provided.draggableProps.style, snapshot)}
                         onClick={handleOpenCardDetail}
@@ -130,28 +131,28 @@ const Card = ({ index, card }) => {
 
                         {
                             card.verified &&
-                                <div
-                                    className='absolute bottom-[0.1rem] right-[0.1rem] sm:bottom-2 sm:right-2 w-[10px] h-[10px] sm:w-[18px] sm:h-[18px] p-1 sm:p-2 bg-emerald-700 opacity-40 text-gray-50 flex justify-center items-center rounded-sm'
-                                >
-                                    <span className='font-medium'>
-                                        ✓
-                                    </span>
-                                </div>
+                            <div
+                                className='absolute bottom-[0.1rem] right-[0.1rem] sm:bottom-2 sm:right-2 w-[10px] h-[10px] sm:w-[18px] sm:h-[18px] p-1 sm:p-2 bg-emerald-700 opacity-40 text-gray-50 flex justify-center items-center rounded-sm'
+                            >
+                                <span className='font-medium'>
+                                    ✓
+                                </span>
+                            </div>
                         }
 
                         <div className='flex justify-start items-center ms-2 text-gray-500 gap-2 mt-1'>
 
                             {
                                 card.priorityLevel &&
-                                    card.priorityLevel !== "none" &&
-                                    <div
-                                        className='p-2 bg-gray-200 flex justify-center items-center rounded'
-                                        style={{ backgroundColor: PRIORITY_LEVELS[`${card.priorityLevel}`]?.color?.rgba }}
-                                    >
-                                        <span className='text-[0.55rem] sm:text-[0.65rem] text-gray-50 font-medium tracking-wider'>
-                                            {card.priorityLevel.toUpperCase()}
-                                        </span>
-                                    </div>
+                                card.priorityLevel !== "none" &&
+                                <div
+                                    className='p-2 bg-gray-200 flex justify-center items-center rounded'
+                                    style={{ backgroundColor: PRIORITY_LEVELS[`${card.priorityLevel}`]?.color?.rgba }}
+                                >
+                                    <span className='text-[0.55rem] sm:text-[0.65rem] text-gray-50 font-medium tracking-wider'>
+                                        {card.priorityLevel.toUpperCase()}
+                                    </span>
+                                </div>
                             }
 
                             {
@@ -180,6 +181,11 @@ const Card = ({ index, card }) => {
                                     </span>
                             }
                         </div>
+
+                        {
+                            card?.dueDate &&
+                            <div className='text-[0.65rem] text-gray-700 font-medium mt-1 ms-[0.5rem]'>due date: {dateFormatter(card?.dueDate, { withWeekday: true })}</div>
+                        }
 
                         {
                             debugModeEnabled.enabled &&

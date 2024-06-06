@@ -5,6 +5,7 @@ const {
     getCard,
     addCard,
     updateTitle,
+    updateDueDate,
     updateDescription,
     updateHighlight,
     updatePriorityLevel,
@@ -77,5 +78,8 @@ router.route("/:id/priority/update")
 
 router.route("/:id/toggle-verified")
     .put(withLock("toggleVerified", toggleVerified))
+
+router.route("/:id/due-date/update")
+    .put(updateDueDate)
 
 module.exports = router;

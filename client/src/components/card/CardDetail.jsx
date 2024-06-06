@@ -21,6 +21,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         setCardTitle,
         setCardOwner,
         setCardVerifiedStatus,
+        setCardDueDate,
         socket,
     } = useBoardState();
 
@@ -93,6 +94,10 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         }
     }, [open, card]);
 
+    const listSelectOptions = useMemo(() => {
+        return boardState?.lists?.map(list => { return { value: list._id, title: list.title } }) || []
+    });
+
     const handleCloseOnOutsideClick = (e) => {
         const hlPicker = dialog.current.querySelector('#card__detail__highlight__picker');
         if (hlPicker && e.target != hlPicker) {
@@ -141,10 +146,6 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         }
     };
 
-    const listSelectOptions = useMemo(() => {
-        return boardState?.lists?.map(list => { return { value: list._id, title: list.title } }) || []
-    });
-
     const handleMoveCardOnListOptionChanged = (e) => {
         const newListId = e.target.value;
         handleMoveCardToList(card, newListId);
@@ -172,6 +173,28 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         } finally {
             setIsVerifying(false);
         }
+    };
+
+    const handleChangeDueDate = async (value) => {
+        try {
+            const response = await axiosPrivate.put(`/cards/${card._id}/due-date/update`, JSON.stringify({ dueDate: value }));
+            const { dueDate } = response.data;
+
+            setOpenedCard(prev => {
+                return { ...prev, dueDate };
+            });
+
+            card.dueDate = dueDate;
+
+            setCardDueDate(card._id, card.listId, dueDate);
+            socket.emit("updateCardDueDate", { id: card._id, listId: card.listId, dueDate });
+        } catch (err) {
+            console.log(err);
+            alert('Failed to toggle verified');
+        } finally {
+            setIsVerifying(false);
+        }
+
     };
 
     const confirmDescription = async (e) => {
@@ -453,6 +476,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                         listSelectOptions={listSelectOptions}
                         handleCardOwnerChange={handleCardOwnerChange}
                         handleCardPriorityLevelChange={handleCardPriorityLevelChange}
+                        handleChangeDueDate={handleChangeDueDate}
                     />
 
                 </div>

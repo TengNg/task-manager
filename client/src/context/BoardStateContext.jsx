@@ -234,6 +234,10 @@ export const BoardStateContextProvider = ({ children }) => {
             setCardVerifiedStatus(data.id, data.listId, data.verified);
         });
 
+        socket.on("updatedCardDueDate", (data) => {
+            setCardDueDate(data.id, data.listId, data.dueDate);
+        });
+
         socket.on("receiveMessage", (data) => {
             setChats(prev => [...prev, data]);
         });
@@ -371,6 +375,18 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
+    const setCardDueDate = (cardId, listId, value) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.map(list => list._id === listId ? {
+                    ...list,
+                    cards: list.cards.map(card => card._id === cardId ? { ...card, dueDate: value } : card)
+                } : list)
+            }
+        });
+    };
+
     const addListToBoard = (list) => {
         setBoardState(prev => {
             return {
@@ -495,6 +511,7 @@ export const BoardStateContextProvider = ({ children }) => {
                 setCardOwner,
                 setCardPriorityLevel,
                 setCardVerifiedStatus,
+                setCardDueDate,
 
                 deleteCard,
 
