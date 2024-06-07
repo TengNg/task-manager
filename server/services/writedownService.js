@@ -7,7 +7,7 @@ const saveNewWritedown = async (writedownData) => {
 };
 
 const writedownsByUserId = async (userId) => {
-    const result = await Writedown.find({ owner: userId }).sort({ pinned: -1, content: -1, createdAt: -1 }).lean();
+    const result = await Writedown.find({ owner: userId }).sort({ pinned: -1, createdAt: -1 }).lean();
     return result;
 };
 

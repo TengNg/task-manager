@@ -65,12 +65,12 @@ const WritedownItem = ({ writedown, open, remove }) => {
                             {title}
                         </span>
                     </p>
-                ) : content ? (
+                ) : !title && content ? (
                     <p
                         className='max-w-[200px] max-h-[100px] overflow-hidden text-gray-700 whitespace-pre-wrap hover:underline cursor-pointer'
                         onClick={() => open(id)}
                     >
-                        {content.substring(0, 30) + '...'}
+                        [untitled]
                     </p>
                 ) : (
                     <div

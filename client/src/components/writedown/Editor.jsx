@@ -11,13 +11,11 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
     const textarea = useRef();
 
     const { title, content, createdAt, updatedAt } = writedown?.data;
-    const [writedownTitle, setWritedownTitle] = useState(title);
+    const [writedownTitle, setWritedownTitle] = useState('');
 
     const [html, setHtml] = useState('');
 
     useEffect(() => {
-        setHtml(writedown?.content);
-
         if (writedown.open) {
             dialog.current.showModal();
             textarea.current.value = content || "";
@@ -25,6 +23,7 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
             textarea.current.focus();
 
             setWritedownTitle(title);
+            setHtml(content);
 
             const handleOnClose = () => {
                 setWritedown(prev => {
@@ -40,7 +39,7 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
         } else {
             dialog.current.close();
         }
-    }, [writedown]);
+    }, [writedown.open, writedown.data]);
 
     const handleCloseOnOutsideClick = (e) => {
         if (e.target === dialog.current) {
@@ -111,7 +110,7 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
 
         <dialog
             ref={dialog}
-            className='z-40 backdrop:bg-black/15 min-w-[350px] overflow-y-hidden w-[90%] lg:w-[60%] h-[60vh] md:h-[85vh] border-gray-500 border-[2.5px] border-dashed'
+            className='z-40 backdrop:bg-black/15 min-w-[350px] overflow-y-hidden w-[90%] lg:w-[60%] h-[75vh] md:h-[90vh] border-gray-500 border-[2.5px] border-dashed'
             style={{
                 backgroundColor: 'rgba(235, 235, 235, 0.9)'
             }}
@@ -139,7 +138,7 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
                 fontSize='1rem'
             />
 
-            <div className='font-medium text-[12px] absolute top-2 left-2 max-w-[300px] max-h-[100px] overflow-hidden text-slate-500 whitespace-nowrap text-ellipsis'>
+            <div className='font-medium text-[12px] absolute top-3 left-2 max-w-[300px] max-h-[100px] overflow-hidden text-slate-500 whitespace-nowrap text-ellipsis'>
                 <span>
                     &#128205; title:
                 </span>
@@ -153,7 +152,7 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
 
             <button
                 title='set title for this writedown'
-                className="absolute bg-teal-600 w-[12px] h-[12px] rounded-full right-[36px] top-3 z-20 opacity-[65%]"
+                className="absolute bg-teal-600 w-[12px] h-[12px] rounded-full right-[36px] top-4 z-20 opacity-[65%]"
                 onClick={() => {
                     setTitleDialog.current.showModal();
                 }}
@@ -162,7 +161,7 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
 
             <button
                 title='save & close'
-                className="absolute bg-rose-600 w-[12px] h-[12px] rounded-full right-3 top-3 z-20 opacity-[65%]"
+                className="absolute bg-rose-600 w-[12px] h-[12px] rounded-full right-3 top-4 z-20 opacity-[65%]"
                 onClick={handleClose}
             >
             </button>
@@ -177,6 +176,8 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
                         e.target.style.height = `${e.target.scrollHeight}px`;
                     }}
                 />
+
+                <div className='h-[1px] bg-transparent my-2'></div>
 
                 <Editor
                     value={html}

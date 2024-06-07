@@ -26,7 +26,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
     } = useBoardState();
 
     const [openHighlightPicker, setOpenHighlightPicker] = useState(false);
-    const [title, setTitle] = useState(card?.title);
+    const [title, setTitle] = useState('');
     const [description, setDescription] = useState(card?.description);
     const [cardCount, setCardCount] = useState(0);
     const [position, setPosition] = useState(0);
@@ -316,10 +316,10 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                                 value={title}
                                 onKeyDown={(e) => {
                                     if (e.key == 'Enter') {
-                                        e.target.blur();
+                                        confirmTitle(e);
                                     }
                                 }}
-                                onBlur={(e) => confirmTitle(e)}
+                                //onBlur={(e) => confirmTitle(e)}
                                 onChange={(e) => {
                                     setTitle(e.target.value)
                                     e.target.style.height = 'auto';
