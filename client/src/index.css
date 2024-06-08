@@ -160,6 +160,25 @@ div:focus, dialog:focus {
     background: rgba(241, 241, 241, 0.55);
 }
 
+.rsw-ce ul {
+    list-style: disc;
+    padding-left: 2em;
+}
+
+.rsw-ce ol {
+    list-style: decimal;
+    padding-left: 2em;
+}
+
+.rsw-toolbar {
+    background-color: transparent !important;
+
+}
+
+.rsw-ce {
+    overflow: scroll;
+}
+
 @media only screen and (max-width: 500px) {
     #root {
         position: relative;

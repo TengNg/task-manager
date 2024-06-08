@@ -42,6 +42,9 @@ const NavBar = () => {
             const isTextFieldFocused = document.querySelector('input:focus, textarea:focus');
             if (isTextFieldFocused || e.ctrlKey) return;
 
+            const activeElement = document.activeElement;
+            if (activeElement && activeElement.getAttribute('contenteditable') === 'true') return;
+
             if (e.key === '5') {
                 const recentlyViewedBoardId = auth?.user?.recentlyViewedBoardId;
                 if (recentlyViewedBoardId) {

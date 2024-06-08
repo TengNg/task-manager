@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from '../../hooks/useBoardState';
 import { useSearchParams } from 'react-router-dom';
+
+import { dateToCompare } from '../../utils/dateFormatter';
 import PRIORITY_LEVELS from '../../data/priorityLevels';
 
 const Filter = ({ open, setOpen }) => {
@@ -55,16 +57,18 @@ const Filter = ({ open, setOpen }) => {
     useEffect(() => {
         const searchValue = searchParams.get('filter');
         const priorityValue = searchParams.get('priority');
+        const stale = searchParams.get('stale');
 
         setBoardState(prev => {
             return {
                 ...prev,
                 lists: prev.lists.map(list => {
                     const newCards = [...list.cards].map(card => {
-                        if (!searchValue && !priorityValue) return { ...card, hiddenByFilter: false };
+                        if (!searchValue && !priorityValue && !stale) return { ...card, hiddenByFilter: false };
 
                         const isFilteredByTitle = card.title.toLowerCase().includes(searchValue?.toLowerCase()) || card._id.toLowerCase().includes(searchValue?.toLowerCase());
                         const isFilteredByPriority = card.priorityLevel === priorityValue;
+                        const isFilteredByStale = dateToCompare(card.dueDate);
 
                         let hiddenByFilter = true;
 
@@ -73,6 +77,10 @@ const Filter = ({ open, setOpen }) => {
                         }
 
                         if (priorityValue && isFilteredByPriority) {
+                            hiddenByFilter = false;
+                        }
+
+                        if (stale && isFilteredByStale) {
                             hiddenByFilter = false;
                         }
 
@@ -169,8 +177,21 @@ const Filter = ({ open, setOpen }) => {
 
                     </div>
 
+                    <div className='h-[1px] bg-black w-full'></div>
+
+                    <div
+                        className='text-[0.75rem] cursor-pointer w-full py-1 px-3 text-gray-50 font-semibold bg-gray-400 border-[2px] border-slate-600 rounded-sm'
+                        style={{ textDecoration: searchParams.get('stale') === "true" ? 'underline' : 'none' }}
+                        onClick={() => {
+                            searchParams.set('stale', true);
+                            setSearchParams(searchParams, { replace: true });
+                        }}
+                    >
+                        Stale Cards
+                    </div>
+
                     {
-                        (searchParams.get('filter') || searchParams.get('priority')) &&
+                        (searchParams.get('filter') || searchParams.get('priority') || searchParams.get('stale')) &&
                         <button
                             type="button"
                             className="button--style border-[2px] py-2 text-[0.75rem] transition-all shadow-[0_3px_0_0] shadow-gray-600 bg-gray-100"

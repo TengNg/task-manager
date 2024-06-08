@@ -35,7 +35,7 @@ const saveWritedown = async (req, res) => {
     await writedown.save();
 
     const { _id, title, createdAt } = writedown;
-    const updatedWritedown = { _id, title, content: content.substring(0, 30), createdAt }
+    const updatedWritedown = { _id, title, content, createdAt }
 
     return res.status(200).json({ msg: 'writedown updated', updatedWritedown });
 };
