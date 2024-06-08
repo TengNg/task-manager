@@ -146,7 +146,17 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration, s
                     <div className="font-medium text-gray-600 my-3 border-b-gray-400 flex--center">information</div>
 
                     <p className="font-normal text-start text-[0.75rem]">created by: <span className='font-medium underline'>{auth?.user?.username}</span></p>
-                    <p className="font-normal text-[0.75rem] text-start">created at: {dateFormatter(boardState.board.createdAt)}</p>
+                    <p className="font-normal text-[0.75rem] text-start mt-2">created at: {dateFormatter(boardState.board.createdAt)}</p>
+                    <p
+                        className="font-normal text-[0.75rem] text-start mt-2 cursor-pointer hover:opacity-[75%]"
+                        onClick={() => {
+                            navigator.clipboard.writeText(boardState?.board?._id).then(() => {
+                                alert('copied board code to clipboard');
+                            })
+                        }}
+                    >
+                        code: {boardState.board._id}
+                    </p>
 
                     <textarea
                         className="border-gray-600 text-[0.75rem] mt-4 shadow-[0_3px_0_0] h-[80px] overflow-auto border-[2px] px-3 py-2 shadow-gray-600 bg-gray-100 w-full focus:outline-none font-semibold text-gray-600 leading-normal"
