@@ -127,7 +127,7 @@ const Board = () => {
         return boardState?.board?.visibility || 'private'
     }, [boardState?.board?.visibility]);
 
-    const [searchParams, _] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
         const cardId = searchParams.get('card');
@@ -810,10 +810,14 @@ const Board = () => {
 
                 <div
                     className='group relative w-[20px] h-[20px] text-[10px] font-bold text-red-700 border-red-400 border-[2px] rounded-full ms-4 mt-1 text-center cursor-pointer'
+                    onClick={() => {
+                        searchParams.set('stale', true);
+                        setSearchParams(searchParams);
+                    }}
                 >
                     !
-                    <div className='absolute top-0 left-0 -translate-y-[120%] -translate-x-[20px] w-[200px] font-medium hidden group-hover:block'>
-                        this board has stale cards
+                    <div className='absolute top-0 left-0 -translate-y-[120%] -translate-x-[20px] w-[300px] font-medium hidden group-hover:block'>
+                        this board has stale cards (click to filter)
                     </div>
                 </div>
 
