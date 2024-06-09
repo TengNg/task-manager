@@ -151,10 +151,17 @@ const getBoard = async (req, res) => {
         .find({ boardId: board._id })
         .lean();
 
+    const today = new Date();
+    const staleCard = await Card.exists({
+        boardId: id,
+        dueDate: { $lt: today }
+    });
+
     return res.json({
         board,
         lists: listsWithCards,
         memberships,
+        hasStaleCard: staleCard ? true : false,
     });
 }
 

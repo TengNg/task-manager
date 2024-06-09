@@ -130,6 +130,13 @@ const Board = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
+        if (isRemoved) {
+            navigate('/notfound');
+            setIsRemoved(false);
+        }
+    }, [isRemoved])
+
+    useEffect(() => {
         const cardId = searchParams.get('card');
         if (!cardId) {
             return;
@@ -155,13 +162,6 @@ const Board = () => {
 
         getCardData();
     }, [searchParams]);
-
-    useEffect(() => {
-        if (isRemoved) {
-            navigate('/notfound');
-            setIsRemoved(false);
-        }
-    }, [isRemoved])
 
     useEffect(() => {
         if (!isDataLoaded) return;
@@ -221,6 +221,8 @@ const Board = () => {
         }
 
         fetchData().catch(err => {
+            console.log(err);
+
             const errMsg = err?.response?.data?.msg || 'Failed to load board';
             setError({ msg: errMsg });
             setIsDataLoaded(true);
@@ -531,19 +533,19 @@ const Board = () => {
 
     if (!isConnected) {
         return <>
-                <section className='w-full flex flex-col justify-center items-center gap-4'>
-                    <p className="font-medium mx-auto text-center mt-20 text-gray-600">try to connect to the board...</p>
+            <section className='w-full flex flex-col justify-center items-center gap-4'>
+                <p className="font-medium mx-auto text-center mt-20 text-gray-600">try to connect to the board...</p>
 
-                    <p className="font-medium mx-auto text-center text-[0.65rem] my-2 text-gray-600">if this takes too long, refresh the page and try again.</p>
+                <p className="font-medium mx-auto text-center text-[0.65rem] my-2 text-gray-600">if this takes too long, refresh the page and try again.</p>
 
-                    <button
-                        className='button--style opacity-70 text-[0.85rem] w-fit max-auto'
-                        onClick={() => navigate('/boards')}
-                    >
-                        Back to Boards
-                    </button>
-                </section>
-            </>
+                <button
+                    className='button--style opacity-70 text-[0.85rem] w-fit max-auto'
+                    onClick={() => navigate('/boards')}
+                >
+                    Back to Boards
+                </button>
+            </section>
+        </>
     }
 
     return (
@@ -808,18 +810,21 @@ const Board = () => {
                     visibility
                 </button>
 
-                <div
-                    className='group relative w-[20px] h-[20px] text-[10px] font-bold text-red-700 border-red-400 border-[2px] rounded-full ms-4 mt-1 text-center cursor-pointer'
-                    onClick={() => {
-                        searchParams.set('stale', true);
-                        setSearchParams(searchParams);
-                    }}
-                >
-                    !
-                    <div className='absolute top-0 left-0 -translate-y-[120%] -translate-x-[20px] w-[300px] font-medium hidden group-hover:block'>
-                        this board has stale cards (click to filter)
+                {
+                    boardState?.hasStaleCard &&
+                    <div
+                        className='group relative w-[20px] h-[20px] text-[10px] font-bold text-red-700 border-red-400 border-[2px] rounded-full ms-4 mt-1 text-center cursor-pointer'
+                        onClick={() => {
+                            searchParams.set('stale', true);
+                            setSearchParams(searchParams);
+                        }}
+                    >
+                        !
+                        <div className='absolute top-0 left-0 -translate-y-[120%] -translate-x-[20px] w-[300px] font-medium hidden group-hover:block'>
+                            this board has stale cards (click to filter)
+                        </div>
                     </div>
-                </div>
+                }
 
                 <div className='flex gap-3 absolute right-2 bottom-4 sm:right-4 text-[0.65rem] text-gray-700'>
                     <p className='md:block hidden select-none'>
