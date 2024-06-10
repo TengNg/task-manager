@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef, useMemo } from "react";
-import TextArea from "../ui/TextArea";
 import useBoardState from "../../hooks/useBoardState";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -36,11 +35,16 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
     const axiosPrivate = useAxiosPrivate();
 
     const dialog = useRef();
+    const cardDescriptionInput = useRef();
 
     const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
-        if (open && card) {
+        if (open && card && cardDescriptionInput.current) {
+            cardDescriptionInput.current.value = card?.description;
+        }
+
+        if (open) {
             dialog.current.showModal();
             dialog.current.focus();
 
@@ -63,7 +67,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
 
             const handleKeyDown = (e) => {
                 if (e.ctrlKey && e.key === '/') {
-                    let descTextArea = dialog.current.querySelector('.card__detail__description__textarea');
+                    let descTextArea = dialog.current.querySelector('#card__detail__description__textarea');
                     if (descTextArea) {
                         descTextArea.focus();
                     }
@@ -198,20 +202,13 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
     };
 
     const confirmDescription = async (e) => {
-        if (card.description === e.target.value.trim()) {
-            return;
-        }
-
         try {
-            if (!e.target.value) {
-                await axiosPrivate.put(`/cards/${card._id}/new-description`, JSON.stringify({ description: '' }));
-                setCardDescription(card._id, card.listId, "");
-            } else {
-                await axiosPrivate.put(`/cards/${card._id}/new-description`, JSON.stringify({ description: e.target.value.trim() }));
-                setCardDescription(card._id, card.listId, e.target.value.trim());
-            }
+            const value = cardDescriptionInput.current.value;
 
-            socket.emit("updateCardDescription", { id: card._id, listId: card.listId, description: e.target.value.trim() });
+            await axiosPrivate.put(`/cards/${card._id}/new-description`, JSON.stringify({ description: value }));
+            setCardDescription(card._id, card.listId, e.target.value.trim());
+
+            socket.emit("updateCardDescription", { id: card._id, listId: card.listId, description: value });
         } catch (err) {
             console.log(err);
         }
@@ -372,18 +369,29 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                     </div>
 
                     <div className="w-full flex flex-wrap border-b-[1px] border-t-[1px] py-4 gap-3 border-black z-20">
-                        <TextArea
-                            id="card__detail__description__textarea"
-                            className="overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[175px] max-h-[400px] break-words box-border text-[0.65rem] sm:text-[0.85rem] py-2 px-3 w-full text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
-                            autoFocus={true}
-                            onBlur={(e) => {
-                                confirmDescription(e)
-                            }}
-                            placeholder={"add description..."}
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            minHeight={'250px'}
-                        />
+
+                        <div className='relative w-full'>
+
+                            <Loading
+                                position={'absolute'}
+                                fontSize={'0.85rem'}
+                                loading={!card && !cardDescriptionInput.current}
+                                displayText={'loading...'}
+                            />
+
+                            <textarea
+                                ref={cardDescriptionInput}
+                                id="card__detail__description__textarea"
+                                className="overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[250px] max-h-[400px] break-words box-border text-[0.65rem] sm:text-[0.85rem] py-2 px-3 w-full text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
+                                autoFocus={true}
+                                onBlur={(e) => {
+                                    confirmDescription(e)
+                                }}
+                                placeholder={"add description..."}
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                            />
+                        </div>
 
                         <div className="relative flex flex-row justify-end w-full gap-3">
 

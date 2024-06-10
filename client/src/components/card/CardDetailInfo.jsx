@@ -24,9 +24,11 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
 
             <button
                 className='absolute bottom-4 right-4 border-[1px] border-slate-600 border-dashed py-1 px-2 text-slate-500 text-[9px] sm:text-[12px] hover:underline'
-                onClick={() => {
+                onClick={(e) => {
+                    const button = e.currentTarget;
+                    if (button.textContent === '✓ copied') return;
                     navigator.clipboard.writeText(card?._id).then(() => {
-                        alert('card code copied to clipboard');
+                        button.textContent = '✓ copied'
                     });
                 }}
                 title='copy card code'
