@@ -110,7 +110,7 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
 
         <dialog
             ref={dialog}
-            className='z-40 backdrop:bg-black/15 min-w-[350px] overflow-y-hidden w-[90%] lg:w-[60%] h-[75vh] md:h-[90vh] border-gray-500 border-[2.5px] border-dashed'
+            className='z-40 backdrop:bg-black/15 min-w-[350px] overflow-y-hidden w-[90%] lg:w-[65%] h-[90vh] border-gray-500 border-[2.5px] border-dashed'
             style={{
                 backgroundColor: 'rgba(235, 235, 235, 0.9)'
             }}
