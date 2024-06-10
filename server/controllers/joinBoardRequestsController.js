@@ -72,7 +72,9 @@ const getBoardRequests = async (req, res) => {
 const sendRequest = async (req, res) => {
     const { foundUser, foundBoard } = await findUserAndBoard(req, res);
 
-    if (foundBoard.members.includes(foundUser._id)) return res.status(409).json({ msg: 'already a member' });
+    if (foundBoard.createdBy.toString() === foundUser._id.toString() || foundBoard.members.includes(foundUser._id)) {
+        return res.status(409).json({ msg: "you're already a member of this board" });
+    }
 
     const joinRequestExists = await JoinBoardRequest.findOne({
         boardId: foundBoard._id,
