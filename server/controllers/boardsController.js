@@ -152,6 +152,7 @@ const getBoard = async (req, res) => {
         .lean();
 
     const today = new Date();
+    today.setHours(0, 0, 0, 0)
     const staleCard = await Card.exists({
         boardId: id,
         dueDate: { $lt: today }

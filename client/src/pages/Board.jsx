@@ -704,7 +704,7 @@ const Board = () => {
                         <div>
                             <div
                                 onClick={() => setOpenChatBox(prev => !prev)}
-                                className={`h-full flex--center cursor-pointer select-none opacity-[75%] hover:opacity-[90%] border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
                                         ${(openChatBox || openFloatingChat) ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                             >Chat</div>
                         </div>
@@ -712,7 +712,7 @@ const Board = () => {
                         <div>
                             <div
                                 onClick={() => setOpenFilter(prev => !prev)}
-                                className={`h-full flex--center cursor-pointer select-none opacity-[75%] hover:opacity-[90%] border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
                                         ${openFilter ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'} ${hasFilter ? 'text-white bg-teal-600' : ''}`}
                             >Filter</div>
                         </div>
@@ -720,7 +720,7 @@ const Board = () => {
                         <div>
                             <div
                                 onClick={() => setOpenInvitationForm(true)}
-                                className={`h-full flex--center cursor-pointer select-none opacity-[75%] hover:opacity-[90%] border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
                                         ${openInvitationForm ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                             >Invite</div>
                         </div>
@@ -732,7 +732,7 @@ const Board = () => {
                                         setOpenBoardMenu(prev => !prev);
                                     }
                                 }}
-                                className={`flex--center cursor-pointer select-none opacity-[75%] hover:opacity-[90%] h-full border-gray-600 w-[80px] shadow-gray-600 px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                className={`flex--center cursor-pointer select-none h-full border-gray-600 w-[80px] shadow-gray-600 px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
                                     ${openBoardMenu ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                             >
                                 Options
@@ -767,7 +767,6 @@ const Board = () => {
                     className={`
                         ms-4 w-[100px] ${openMembers ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'}
                         bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium
-                        opacity-[80%] hover:opacity-[100%]
                     `}
                     onClick={() => {
                         setOpenMembers(prev => !prev);
@@ -785,7 +784,6 @@ const Board = () => {
                     className={`
                         ms-4 w-[100px] ${pinned ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'}
                         bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium
-                        opacity-[80%] hover:opacity-[100%]
                     `}
                 >
                     {pinned ?
@@ -804,7 +802,6 @@ const Board = () => {
                     className={`
                         ms-4 w-[100px] ${openVisibilityConfig ? 'mt-1 text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'}
                         bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium
-                        opacity-[80%] hover:opacity-[100%]
                     `}
                 >
                     visibility
@@ -815,8 +812,13 @@ const Board = () => {
                     <div
                         className='group relative w-[20px] h-[20px] text-[10px] font-bold text-red-700 border-red-400 border-[2px] rounded-full ms-4 mt-1 text-center cursor-pointer'
                         onClick={() => {
-                            searchParams.set('stale', true);
-                            setSearchParams(searchParams);
+                            if (searchParams.get('stale')) {
+                                searchParams.delete('stale');
+                                setSearchParams(searchParams);
+                            } else {
+                                searchParams.set('stale', true);
+                                setSearchParams(searchParams);
+                            }
                         }}
                     >
                         !

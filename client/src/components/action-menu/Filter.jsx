@@ -19,7 +19,7 @@ const Filter = ({ open, setOpen }) => {
     const cardTitleInput = useRef();
 
     useEffect(() => {
-        if (searchParams.get('filter') || searchParams.get('priority')) {
+        if (searchParams.get('filter') || searchParams.get('priority') || searchParams.get('stale')) {
             setHasFilter(true);
         } else {
             setHasFilter(false);
@@ -180,7 +180,7 @@ const Filter = ({ open, setOpen }) => {
                     <div className='h-[1px] bg-black w-full'></div>
 
                     <div
-                        className='text-[0.75rem] cursor-pointer w-full py-1 px-3 text-gray-50 font-semibold bg-gray-400 border-[2px] border-slate-600 rounded-sm'
+                        className='text-[0.75rem] cursor-pointer w-full py-1 px-3 text-pink-800 font-semibold bg-pink-100 border-[2px] border-pink-800 rounded-sm'
                         style={{ textDecoration: searchParams.get('stale') === "true" ? 'underline' : 'none' }}
                         onClick={() => {
                             searchParams.set('stale', true);
@@ -190,11 +190,13 @@ const Filter = ({ open, setOpen }) => {
                         Stale Cards
                     </div>
 
+                    <div className='h-[1px] bg-black w-full'></div>
+
                     {
                         (searchParams.get('filter') || searchParams.get('priority') || searchParams.get('stale')) &&
                         <button
                             type="button"
-                            className="button--style border-[2px] py-2 text-[0.75rem] transition-all shadow-[0_3px_0_0] shadow-gray-600 bg-gray-100"
+                            className="mx-auto w-full button--style border-[2px] py-2 text-[0.75rem] transition-all shadow-[0_3px_0_0] shadow-gray-600 bg-gray-100 hover:bg-gray-200"
                             onClick={() => {
                                 setSearchParams({})
                                 setOpen(false);

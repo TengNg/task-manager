@@ -86,8 +86,6 @@ const Writedown = () => {
 
             const { updatedWritedown } = response.data;
 
-            console.log(updatedWritedown);
-
             setWritedowns(prev => {
                 return prev.map(writedown => writedown._id === updatedWritedown._id ? updatedWritedown : writedown);
             });

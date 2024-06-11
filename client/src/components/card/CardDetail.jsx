@@ -405,7 +405,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                                     <FontAwesomeIcon icon={faDroplet} />
                                     <span>{" "}</span>
                                     <span className="hidden sm:inline-block">
-                                        hl
+                                        highlight
                                     </span>
                                 </button>
 

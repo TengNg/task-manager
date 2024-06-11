@@ -94,6 +94,11 @@ cardSchema.pre('save', function(next) {
     if (!this.isNew) {
         this.updatedAt = Date.now();
     }
+
+    if (this.dueDate) {
+        this.dueDate.setHours(0, 0, 0, 0);
+    }
+
     next();
 });
 
