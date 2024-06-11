@@ -185,7 +185,7 @@ const Profile = () => {
             setBoardStatsModal({ board: {}, stats: [], open: true, loadingData: true });
 
             const response = await fetchBoardStats(boardId);
-            const { board, priorityLevelStats } = response.data;
+            const { board, priorityLevelStats, staleCardCount } = response.data;
 
             const priorityOrder = ['none', 'low', 'medium', 'high', 'critical'];
             priorityLevelStats.sort((a, b) => {
@@ -199,6 +199,7 @@ const Profile = () => {
                     ...prev,
                     board,
                     stats: priorityLevelStats,
+                    staleCardCount,
                     loadingData: false
                 }
             })

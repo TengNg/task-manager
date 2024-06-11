@@ -211,7 +211,14 @@ const getBoardStats = async (req, res) => {
         }
     ]);
 
-    res.status(200).json({ board: foundBoard, priorityLevelStats });
+    const today = new Date();
+    today.setHours(0, 0, 0, 0)
+    const staleCardCount = await Card.countDocuments({
+        boardId: id,
+        dueDate: { $lt: today }
+    });
+
+    res.status(200).json({ board: foundBoard, priorityLevelStats, staleCardCount });
 };
 
 const createBoard = async (req, res) => {

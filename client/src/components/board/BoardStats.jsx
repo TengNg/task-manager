@@ -112,7 +112,7 @@ const BoardStats = ({ boardStatsModal, setBoardStatsModal }) => {
                     </p>
                 </div>
 
-                <div className='relative w-full flex flex-col gap-2 text-gray-700 text-[0.65rem] sm:text-[0.75rem] border-[1px] border-dashed border-gray-700 p-4'>
+                <div className='relative w-full flex flex-col gap-2 text-gray-700 text-[0.65rem] sm:text-[0.75rem] border-[1px] border-dashed border-gray-700 px-4 pb-4 pt-3'>
                     <p>stats:</p>
 
                     <div className='flex items-center absolute right-2 top-2 gap-2'>
@@ -165,6 +165,19 @@ const BoardStats = ({ boardStatsModal, setBoardStatsModal }) => {
                             </>)
                         })
                     }
+
+                </div>
+
+                <div
+                    className='w-full gap-2 text-gray-700 text-[0.65rem] sm:text-[0.75rem] border-[1px] border-dashed border-gray-700 py-2 px-4 cursor-pointer'
+                    onClick={() => {
+                        navigate({
+                            pathname: `/b/${boardStatsModal?.board?._id}`,
+                            search: '?stale=true',
+                        })
+                    }}
+                >
+                    stale cards: <span className='font-medium'>{boardStatsModal?.staleCardCount || '0' }</span>
                 </div>
             </div>
 
