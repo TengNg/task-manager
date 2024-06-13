@@ -6,6 +6,13 @@ import LOCAL_STORAGE_KEYS from "../data/localStorageKeys";
 
 const BoardStateContext = createContext({});
 
+const filterParams = () => {
+    const url = new URL(location.href);
+    const filter = url.searchParams.get("filter");
+    const priority = url.searchParams.get("priority");
+    return { filter, priority }
+};
+
 export const BoardStateContextProvider = ({ children }) => {
     const [boardState, setBoardState] = useState({});
     const [pendingInvitations, setPendingInvitations] = useState(0);
@@ -125,6 +132,8 @@ export const BoardStateContextProvider = ({ children }) => {
         });
 
         socket.on("newCard", (data) => {
+            const { filter, priority } = filterParams();
+
             const card = data;
 
             if (filter) {
@@ -141,6 +150,8 @@ export const BoardStateContextProvider = ({ children }) => {
         });
 
         socket.on("copyCard", (data) => {
+            const { filter, priority } = filterParams();
+
             const { card, index } = data;
 
             if (filter) {
@@ -161,6 +172,8 @@ export const BoardStateContextProvider = ({ children }) => {
         });
 
         socket.on("cardMoved", (data) => {
+            const { filter, priority } = filterParams();
+
             const { oldListId, newListId, cardId, newCard: card } = data;
 
             if (filter) {
@@ -178,11 +191,21 @@ export const BoardStateContextProvider = ({ children }) => {
         });
 
         socket.on("cardMovedByIndex", (data) => {
+            const { filter, priority } = filterParams();
+
             let { cards, listId } = data;
 
             if (filter) {
                 cards = cards.map(card => {
                     const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                    card["hiddenByFilter"] = !includesFilter;
+                    return card;
+                });
+            }
+
+            if (priority) {
+                cards = cards.map(card => {
+                    const includesFilter = card.priorityLevel === priority;
                     card["hiddenByFilter"] = !includesFilter;
                     return card;
                 });
@@ -197,6 +220,8 @@ export const BoardStateContextProvider = ({ children }) => {
         });
 
         socket.on("cardMovedToList", (data) => {
+            const { filter, priority } = filterParams();
+
             const { oldListId, newListId, insertedIndex, card } = data;
 
             if (filter) {
