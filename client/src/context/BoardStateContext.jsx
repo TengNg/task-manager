@@ -32,10 +32,6 @@ export const BoardStateContextProvider = ({ children }) => {
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
-        const url = new URL(location.href);
-        const filter = url.searchParams.get("filter");
-        const priority = url.searchParams.get("priority");
-
         const onConnect = async () => {
             setIsConnected(true);
         };
