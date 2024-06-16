@@ -1,7 +1,5 @@
 import { useRef, useEffect } from 'react';
 import { Draggable } from "react-beautiful-dnd";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAlignLeft, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import useBoardState from '../../hooks/useBoardState';
 import dateFormatter, { dateToCompare } from '../../utils/dateFormatter';
 import Loading from '../ui/Loading';
@@ -167,7 +165,7 @@ const Card = ({ index, card }) => {
                                 </div>
                             }
 
-                            {card.description != "" && <FontAwesomeIcon icon={faAlignLeft} size='xs' />}
+                            {card.description != "" && <div className='font-bold sm:text-[1.25rem]'>&#x1F4DD;</div>}
                         </div>
 
                         <div className='text-[0.65rem] text-gray-700 font-medium mt-1 sm:mt-3 ms-[0.5rem]'>
@@ -190,31 +188,6 @@ const Card = ({ index, card }) => {
                         {
                             debugModeEnabled.enabled &&
                             <div className='text-[0.65rem] text-gray-700 font-medium mt-1 ms-[0.5rem]'>rank: {card.order}</div>
-                        }
-
-                        {
-                            (focusedCard?.id === card._id && focusedCard?.highlight)
-                            && (
-                                <>
-                                    <div className='text-[0.85rem]' style={{ color: `${card.highlight == null ? '#4b5563' : `${card.highlight}`}` }} >
-                                        <div className='absolute top-0 left-1 rotate-45'>
-                                            <FontAwesomeIcon icon={faAngleLeft} />
-                                        </div>
-
-                                        <div className='absolute top-0 right-1 rotate-[135deg]'>
-                                            <FontAwesomeIcon icon={faAngleLeft} />
-                                        </div>
-
-                                        <div className='absolute bottom-0 left-1 -rotate-45'>
-                                            <FontAwesomeIcon icon={faAngleLeft} />
-                                        </div>
-
-                                        <div className='absolute bottom-0 right-1 -rotate-[135deg]'>
-                                            <FontAwesomeIcon icon={faAngleLeft} />
-                                        </div>
-                                    </div>
-                                </>
-                            )
                         }
 
                         <button
