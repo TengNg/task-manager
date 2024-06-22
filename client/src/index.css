@@ -82,19 +82,7 @@
 }
 
 * {
-    box-sizing: border-box;
-}
-
-body,
-html {
     font-family: 'Roboto Mono', monospace;
-    box-sizing: border-box;
-}
-
-label {
-    margin-top: 0.5rem;
-    font-weight: 500;
-    font-size: 0.8rem;
 }
 
 #root {
@@ -119,6 +107,12 @@ a {
 
 h1 {
     font-size: 3.5rem;
+}
+
+label {
+    margin-top: 0.5rem;
+    font-weight: 500;
+    font-size: 0.8rem;
 }
 
 div:focus, dialog:focus {

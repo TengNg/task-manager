@@ -102,7 +102,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         return boardState?.lists?.map(list => { return { value: list._id, title: list.title } }) || []
     });
 
-    const handleCloseOnOutsideClick = (e) => {
+    const handleClick = (e) => {
         const hlPicker = dialog.current.querySelector('#card__detail__highlight__picker');
         if (hlPicker && e.target != hlPicker) {
             setOpenHighlightPicker(false);
@@ -114,8 +114,21 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         };
 
         if (e.target === dialog.current) {
+            if (card?.description !== description) {
+                confirmDescription(description);
+            }
             dialog.current.close();
         }
+    };
+
+    const handleCancel = (e) => {
+        e.preventDefault();
+
+        if (card?.description !== description) {
+            confirmDescription(description);
+        }
+
+        dialog.current.close();
     };
 
     const handleCardOwnerChange = async (memberName) => {
@@ -201,16 +214,14 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
 
     };
 
-    const confirmDescription = async (e) => {
+    const confirmDescription = async (value) => {
         try {
-            const value = cardDescriptionInput.current.value;
-
             await axiosPrivate.put(`/cards/${card._id}/new-description`, JSON.stringify({ description: value }));
-            setCardDescription(card._id, card.listId, e.target.value.trim());
-
+            setCardDescription(card._id, card.listId, value);
             socket.emit("updateCardDescription", { id: card._id, listId: card.listId, description: value });
         } catch (err) {
             console.log(err);
+            alert('Failed to save description');
         }
     };
 
@@ -257,7 +268,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         return <dialog
             ref={dialog}
             className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style text-gray-600 p-3 gap-3 pb-4 w-[350px] h-[350px] border-gray-600 border-[2px] bg-gray-200'
-            onClick={handleCloseOnOutsideClick}
+            onClick={handleClick}
         >
             <div className='w-100 h-[300px] text-center grid items-center'>
                 <span>
@@ -271,7 +282,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         return <dialog
             ref={dialog}
             className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style text-gray-600 p-3 gap-3 pb-4 w-[350px] h-[350px] border-gray-600 border-[2px] bg-gray-200'
-            onClick={handleCloseOnOutsideClick}
+            onClick={handleClick}
         >
             <div className='w-100 h-[300px] text-center grid items-center'>
                 <span>
@@ -287,7 +298,8 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                 ref={dialog}
                 className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style p-3 gap-3 pb-4 min-w-[350px] w-[90%] xl:w-[800px] md:w-[80%] h-fit max-h-[90%] border-black border-[2px]'
                 style={{ background: "rgb(235, 235, 235)" }}
-                onClick={handleCloseOnOutsideClick}
+                onClick={handleClick}
+                onCancel={handleCancel}
             >
 
                 <Loading
@@ -314,9 +326,9 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                                 onKeyDown={(e) => {
                                     if (e.key == 'Enter') {
                                         confirmTitle(e);
+                                        e.target.blur();
                                     }
                                 }}
-                                //onBlur={(e) => confirmTitle(e)}
                                 onChange={(e) => {
                                     setTitle(e.target.value)
                                     e.target.style.height = 'auto';
@@ -384,9 +396,6 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                                 id="card__detail__description__textarea"
                                 className="overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[250px] max-h-[400px] break-words box-border text-[0.65rem] sm:text-[0.85rem] py-2 px-3 w-full text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
                                 autoFocus={true}
-                                onBlur={(e) => {
-                                    confirmDescription(e)
-                                }}
                                 placeholder={"add description..."}
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
