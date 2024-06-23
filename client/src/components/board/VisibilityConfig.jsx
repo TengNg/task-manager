@@ -86,13 +86,13 @@ const VisibilityConfig = ({ open, setOpen, visibility }) => {
                 </button>
             </div>
 
-            <div className="w-full relative flex flex-col items-start gap-3 py-2 mt-2">
+            <div className="w-full relative flex flex-col items-start gap-4 py-2 mt-2">
                 {
                     visiblityOptions.map((option, index) => {
                         return (
                             <button
                                 key={index}
-                                className={`button--style flex justify-between w-full ${visibility == option ? 'bg-gray-500 text-gray-50' : ''}`}
+                                className={`button--style shadow-[0_2px_0_0] shadow-gray-700 text-sm flex justify-between w-full ${visibility == option ? 'bg-gray-500 text-gray-50' : ''}`}
                                 onClick={() => {
                                     handleSetBoardVisibility(option);
                                 }}
@@ -101,7 +101,7 @@ const VisibilityConfig = ({ open, setOpen, visibility }) => {
                                     {option}
                                 </div>
                                 <div>
-                                    [{VISIBILITY_MAP[option]}]
+                                    {VISIBILITY_MAP[option]}
                                 </div>
                             </button>
                         )

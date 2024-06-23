@@ -665,12 +665,21 @@ const Board = () => {
             />
 
             {
-                boardState?.board?.visibility === 'private' &&
+                boardState?.board?.visibility &&
                 <div
-                    className="md:block hidden absolute left-4 top-4 text-[0.65rem] md:text-[0.75rem] font-medium text-gray-700 hover:text-gray-800 select-none"
-                    title="this board is in private mode"
+                    className="sm:block hidden absolute sm:left-4 sm:top-3 cursor-pointer"
+                    title={`this board is in ${boardState.board.visibility === 'private' ? 'private' : 'public'} mode`}
+                    onClick={setOpenVisibilityConfig}
                 >
-                    [private]
+                    {
+                        boardState.board.visibility === 'private'
+                            ? <span className='sm:text-[14px] text-gray-700 font-medium'>
+                                [private]
+                            </span>
+                            : <span className='sm:text-[20px]'>
+                                🌐
+                            </span>
+                    }
                 </div>
             }
 

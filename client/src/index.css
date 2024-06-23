@@ -236,11 +236,11 @@ div:focus, dialog:focus {
         padding: 0.5rem;
     }
 
-    .list__item, .list__item * {
+    .list__item, .list__item *:not(.icon) {
         font-size: 9px;
     }
 
-    .card__item, .card__item * {
+    .card__item, .card__item *:not(.icon) {
         font-size: 9px;
     }
 

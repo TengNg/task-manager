@@ -165,7 +165,7 @@ const Card = ({ index, card }) => {
                                 </div>
                             }
 
-                            {card.description != "" && <div className='font-bold sm:text-[1.25rem]'>&#x1F4DD;</div>}
+                            {card.description != "" && <div className='icon font-bold text-[20px]'>📝</div>}
                         </div>
 
                         <div className='text-[0.65rem] text-gray-700 font-medium mt-1 sm:mt-3 ms-[0.5rem]'>
