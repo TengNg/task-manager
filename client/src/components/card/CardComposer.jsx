@@ -62,7 +62,10 @@ const CardComposer = ({ list, open, setOpen }) => {
     const handleAddCard = async () => {
         setIsAddingCard(true);
 
-        if (!text || text.trim() === "") return;
+        if (!text || text.trim() === "") {
+            setOpen(false);
+            return;
+        }
 
         const currentList = [...boardState.lists].find(el => el._id === list._id);
 

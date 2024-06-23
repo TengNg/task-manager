@@ -105,7 +105,7 @@ const BoardActivities = ({ boardId, open, setOpen }) => {
 
             <div className='border-b-[1px] border-black mx-3'></div>
 
-            <div className='relative flex flex-col gap-4 pt-4 pb-5 px-3 text-gray-600 text-[0.65rem] sm:text-[0.75rem] max-h-[600px] overflow-auto'>
+            <div className='relative flex flex-col gap-3 p-3 text-gray-600 text-[0.65rem] sm:text-[0.75rem] max-h-[600px] overflow-auto'>
 
                 <Loading
                     loading={loading}

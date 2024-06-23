@@ -254,11 +254,22 @@ const toggleVerified = async (req, res) => {
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
 
     const { boardId } = foundCard;
-    const { authorized } = await isActionAuthorized(boardId, username);
+    const { user, authorized } = await isActionAuthorized(boardId, username);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     foundCard.verified = !foundCard.verified;
     await foundCard.save();
+
+    const action = foundCard.verified ? 'verify card' : 'unverified card';
+
+    await saveBoardActivity({
+        boardId,
+        userId: user._id,
+        cardId: foundCard._id,
+        action: action,
+        type: "card",
+        createdAt: foundCard.updatedAt,
+    })
 
     res.status(200).json({ verified: foundCard.verified });
 };
