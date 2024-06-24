@@ -84,11 +84,12 @@ export default function Register() {
                 <Loading
                     position={'absolute'}
                     loading={loading}
-                    displayText={'please wait, creating account...'}
+                    fontSize='0.8rem'
+                    displayText={'please wait, creating new account...'}
                 />
 
                 <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 bg-gray-100 w-[325px]'>
-                    <label htmlFor="username" >Username</label>
+                    <label htmlFor="username">Username</label>
                     <input
                         className='border-[3px] border-black p-1 font-semibold select-none'
                         type="text"

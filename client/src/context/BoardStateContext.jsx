@@ -1,8 +1,11 @@
-import { createContext, useEffect, useState } from "react";
-import socket from "../services/socket";
+import io from 'socket.io-client';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
+
+import { createContext, useEffect, useMemo, useState } from "react";
 
 import useLocalStorage from "../hooks/useLocalStorage";
 import LOCAL_STORAGE_KEYS from "../data/localStorageKeys";
+import useAuth from "../hooks/useAuth";
 
 const BoardStateContext = createContext({});
 
@@ -15,7 +18,6 @@ const filterParams = () => {
 
 export const BoardStateContextProvider = ({ children }) => {
     const [boardState, setBoardState] = useState({});
-    const [pendingInvitations, setPendingInvitations] = useState(0);
     const [chats, setChats] = useState([]);
     const [isRemoved, setIsRemoved] = useState(false);
     const [openMoveListForm, setOpenMoveListForm] = useState(false);
@@ -30,6 +32,15 @@ export const BoardStateContextProvider = ({ children }) => {
     const [debugModeEnabled, setDebugModeEnabled] = useLocalStorage(LOCAL_STORAGE_KEYS.DEBUG_MODE_ENABLED, {});
 
     const [isConnected, setIsConnected] = useState(false);
+
+    const { auth } = useAuth();
+
+    const socket = useMemo(() => {
+        if (!auth?.accessToken) {
+            return null;
+        }
+        return io(SOCKET_URL);
+    }, [auth?.accessToken]);
 
     useEffect(() => {
         const onConnect = async () => {
@@ -539,9 +550,6 @@ export const BoardStateContextProvider = ({ children }) => {
                 addListToBoard,
                 addCardToList,
                 addCopiedCard,
-
-                pendingInvitations,
-                setPendingInvitations,
 
                 removeMemberFromBoard,
                 addMemberToBoard,

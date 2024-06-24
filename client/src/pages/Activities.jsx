@@ -1,5 +1,4 @@
 import { useReducer, useState, useEffect } from 'react';
-import useBoardState from '../hooks/useBoardState';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import useAuth from '../hooks/useAuth';
 import Title from '../components/ui/Title';
@@ -30,11 +29,6 @@ const reducer = (state, action) => {
 };
 
 const Activities = () => {
-    const {
-        socket,
-        setPendingInvitations
-    } = useBoardState();
-
     const { auth } = useAuth();
 
     const [state, dispatch] = useReducer(
@@ -90,7 +84,6 @@ const Activities = () => {
             const response = await axiosPrivate.get("/invitations");
             // await new Promise(resolve => setTimeout(resolve, 1000))
             setInvitations(response.data.invitations);
-            setPendingInvitations(response.data.invitations.filter(item => item.status === 'pending'));
         } catch (err) {
             console.log(err);
             alert('Failed to load invitations, please try again');

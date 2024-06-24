@@ -13,6 +13,7 @@ import Profile from './pages/Profile'
 import NotFound from './pages/NotFound'
 import Writedown from './pages/Writedown'
 import PersistLogin from './components/auth/PersistLogin'
+import { BoardStateContextProvider } from './context/BoardStateContext'
 
 const noNavPaths = ["/login", "/register"];
 
@@ -44,7 +45,11 @@ function App() {
                 <Route element={<PersistLogin />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/home" element={<Home />} />
-                    <Route path="/b/:boardId/" element={<Board />} />
+                    <Route path="/b/:boardId/" element={
+                        <BoardStateContextProvider>
+                            <Board />
+                        </BoardStateContextProvider>
+                    } />
                     <Route path="/boards" element={<Boards />} />
                     <Route path="/writedown" element={<Writedown />} />
                     <Route path="/activities" element={<Activities />} />
