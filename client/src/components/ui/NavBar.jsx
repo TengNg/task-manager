@@ -92,7 +92,7 @@ const NavBar = () => {
                         </button>
                         <div
                             title='Go to last viewed board'
-                            className='absolute hidden lg:block cursor-pointer top-3 left-3 bg-transparent hover:bg-slate-400 hover:text-gray-50 text-slate-600 border-slate-600 border-[2px] border-dashed text-[0.75rem] p-2 font-medium'
+                            className='absolute hidden lg:block cursor-pointer top-3 left-3 bg-transparent hover:bg-slate-500 hover:text-gray-50 text-slate-600 border-slate-600 border-[2px] border-dashed text-[0.75rem] p-2 font-medium'
                             onClick={() => {
                                 const recentlyViewedBoardId = auth?.user?.recentlyViewedBoardId;
                                 if (recentlyViewedBoardId) {

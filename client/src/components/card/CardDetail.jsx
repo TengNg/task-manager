@@ -270,10 +270,11 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
             className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style text-gray-600 p-3 gap-3 pb-4 w-[350px] h-[350px] border-gray-600 border-[2px] bg-gray-200'
             onClick={handleClick}
         >
-            <div className='w-100 h-[300px] text-center grid items-center'>
+            <div className='w-100 h-[300px] text-center flex flex-col items-center justify-center'>
                 <span>
-                    getting card data...
+                    getting card data
                 </span>
+                <div className="loader mx-auto mt-8"></div>
             </div>
         </dialog>
     }

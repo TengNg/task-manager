@@ -52,11 +52,13 @@ const PersistLogin = () => {
                                 Loading profile data...
                             </p>
 
+                            <div className="loader mx-auto my-4"></div>
+
                             <br />
                             <br />
                             <br />
 
-                            <div className='text-[10px] text-center sm:text-[1rem] text-gray-500 hover:text-gray-600'>
+                            <div className='text-[10px] text-center sm:text-sm text-gray-500 hover:text-gray-600'>
                                 <span>
                                     If the page takes too long to load, this might be probably due to a slow connecting time from the server.
                                 </span>
