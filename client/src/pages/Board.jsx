@@ -510,16 +510,11 @@ const Board = () => {
         });
     };
 
-    if (isDataLoaded === false) {
-        return <div className="font-semibold mx-auto text-center mt-20 text-gray-600">getting board data...</div>
-    }
-
     if (error?.msg) {
         return (
             <>
                 <section className='w-full flex flex-col justify-center items-center gap-4'>
                     <p className="font-medium mx-auto text-center mt-20 text-gray-600">{error.msg}.</p>
-
                     <button
                         className='button--style opacity-70 text-[0.85rem] w-fit max-auto'
                         onClick={() => navigate('/boards')}
@@ -531,10 +526,19 @@ const Board = () => {
         )
     }
 
+    if (isDataLoaded === false) {
+        return <>
+            <div className="font-semibold mx-auto text-center mt-20 text-gray-600">getting board data</div>
+            <div className="loader mx-auto my-8"></div>
+        </>
+    }
+
     if (!isConnected) {
         return <>
             <section className='w-full flex flex-col justify-center items-center gap-4'>
-                <p className="font-medium mx-auto text-center mt-20 text-gray-600">try to connect to the board...</p>
+                <p className="font-medium mx-auto text-center mt-20 text-gray-600">connecting to board</p>
+
+                <div className="loader mx-auto my-8"></div>
 
                 <p className="font-medium mx-auto text-center text-[0.65rem] my-2 text-gray-600">if this takes too long, refresh the page and try again.</p>
 

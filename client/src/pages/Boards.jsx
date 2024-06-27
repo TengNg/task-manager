@@ -166,7 +166,8 @@ const Boards = () => {
                         titleName="boards"
                     />
                 </div>
-                <div className="font-semibold mx-auto text-center mt-20 text-gray-600">getting boards...</div>
+                <div className="font-semibold mx-auto text-center mt-20 text-gray-600">getting boards</div>
+                <div className="loader mx-auto my-8"></div>
             </section>
         )
     }

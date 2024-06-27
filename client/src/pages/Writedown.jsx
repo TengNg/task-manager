@@ -168,8 +168,13 @@ const Writedown = () => {
                     </div>
 
                     {
-                        !isDataLoaded ? (
-                            <div className="font-medium mx-auto text-center mt-10 text-gray-400">getting writedowns...</div>
+                        !isDataLoaded ? (<>
+                            <div className="font-medium text-sm mx-auto text-center mt-10 text-gray-600">
+                                getting writedowns
+                            </div>
+
+                            <div className="loader mx-auto mt-8"></div>
+                        </>
                         ) : (
                             <div className="flex flex-wrap gap-4 justify-center items-center mt-4">
                                 {writedowns.map(w => {
