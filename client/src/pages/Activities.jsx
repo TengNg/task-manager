@@ -1,6 +1,5 @@
 import { useReducer, useState, useEffect } from 'react';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
-import useAuth from '../hooks/useAuth';
 import Title from '../components/ui/Title';
 import Invitations from '../components/invitation/Invitations';
 import JoinBoardRequests from '../components/join-board-request/JoinRequests';
@@ -29,8 +28,6 @@ const reducer = (state, action) => {
 };
 
 const Activities = () => {
-    const { auth } = useAuth();
-
     const [state, dispatch] = useReducer(
         reducer,
         {
@@ -116,16 +113,10 @@ const Activities = () => {
 
     const handleAcceptInvitation = async (invitationId) => {
         try {
-            const response = await axiosPrivate.put(`/invitations/${invitationId}/accept`, JSON.stringify({ id: invitationId }));
-            const boardId = response.data.invitation.boardId;
-
+            await axiosPrivate.put(`/invitations/${invitationId}/accept`, JSON.stringify({ id: invitationId }));
             setInvitations(prev => {
                 return prev.map(item => item._id === invitationId ? { ...item, status: 'accepted' } : item);
             });
-
-            socket.emit('acceptInvitation', { username: auth?.user?.username, boardId, profileImage: auth?.user?.profileImage });
-
-            setPendingInvitations(prev => prev - 1)
         } catch (err) {
             console.log(err);
             if (err?.response?.status === 409) {
@@ -142,8 +133,6 @@ const Activities = () => {
             setInvitations(prev => {
                 return prev.map(item => item._id === invitationId ? { ...item, status: 'rejected' } : item);
             });
-
-            setPendingInvitations(prev => prev - 1)
         } catch (err) {
             alert('Failed to accept invitation');
         }
@@ -155,11 +144,9 @@ const Activities = () => {
             setInvitations(prev => {
                 return prev.filter(item => item._id !== invitationId);
             });
-
-            setPendingInvitations(prev => prev - 1)
         } catch (err) {
             console.log(err);
-            alert('Failed to reject invitation');
+            alert('Failed to remove invitation');
         }
     };
 
