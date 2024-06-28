@@ -138,10 +138,6 @@ const Boards = () => {
         fetchBoards();
     }
 
-    const handleOpenBoard = (boardId) => {
-        navigate(`/b/${boardId}`);
-    }
-
     const filteredBoards = (filterValue) => {
         switch (filterValue) {
             case FILTERS.ALL:
@@ -245,13 +241,12 @@ const Boards = () => {
                                     <BoardItem
                                         key={item._id}
                                         item={item}
-                                        handleOpenBoard={handleOpenBoard}
                                     />
                                 )
                             })
                         }
 
-                        <div className="relative w-[200px] sm:w-[250px] h-[100px] sm:h-[125px]">
+                        <div className="relative w-[200px] sm:w-[250px] h-[120px] sm:h-[135px]">
                             <div
                                 onClick={() => setOpenBoardForm(open => !open)}
                                 ref={createBoardButtonRef}
@@ -279,7 +274,6 @@ const Boards = () => {
                                 <p className="text-gray-600 text-[0.75rem] font-medium ms-1 my-1">last viewed board</p>
                                 <BoardItem
                                     item={recentlyViewedBoard}
-                                    handleOpenBoard={handleOpenBoard}
                                 />
                             </div>
                         </div>

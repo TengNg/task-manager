@@ -39,7 +39,7 @@ const BoardForm = forwardRef(({}, ref) => {
                     className='border-[2px] border-gray-400 text-gray-600 text-[10px] sm:text-[0.85rem] font-semibold p-2'
                     type="text"
                     autoComplete="off"
-                    placeholder="Title (required)"
+                    placeholder="title (required)"
                     value={title}
                     onChange={e => setTitle(e.target.value)}
                     required
@@ -50,7 +50,7 @@ const BoardForm = forwardRef(({}, ref) => {
                     onKeyDown={handleInputOnEnter}
                     type="text"
                     autoComplete="off"
-                    placeholder="Description (optional)"
+                    placeholder="description (optional)"
                     value={description}
                     onChange={e => setDescription(e.target.value)}
                     required

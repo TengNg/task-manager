@@ -1,23 +1,21 @@
 import useAuth from "../../hooks/useAuth";
 import dateFormatter from "../../utils/dateFormatter";
+import { Link } from "react-router-dom";
+import { pluralizeString } from "../../utils/pluralize";
 
-const BoardItem = ({ item, handleOpenBoard }) => {
+const BoardItem = ({ item }) => {
     const { _id, title, description, members, createdBy, createdAt } = item;
 
     const { auth } = useAuth();
 
-    const openBoard = () => {
-        handleOpenBoard(_id);
-    }
-
     return (
-        <div
-            onClick={openBoard}
-            className="w-[200px] sm:w-[250px] h-[100px] sm:h-[125px]"
+        <Link
+            to={`/b/${_id}`}
+            className="w-[200px] sm:w-[250px] h-[120px] sm:h-[135px] text-gray-600"
         >
 
             <div
-                className="w-[200px] sm:w-[250px] h-[100px] sm:h-[125px] board--style board--hover md:border-[2.5px] border-[2px] border-gray-600 py-3 px-5 shadow-gray-600 select-none relative"
+                className="w-[200px] sm:w-[250px] h-[120px] sm:h-[135px] board--style board--hover md:border-[2px] border-[2px] border-gray-600 py-3 px-5 shadow-gray-600 select-none relative"
                 style={{ backgroundColor: 'rgba(241, 241, 241, 0.5)' }}
             >
 
@@ -26,22 +24,23 @@ const BoardItem = ({ item, handleOpenBoard }) => {
                     && <div className="absolute top-0 right-0 w-[10px] h-[10px] bg-gray-600 z-20"></div>
                 }
 
-                <p className="text-[12px] sm:text-[1rem] font-semibold text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
+                <p className="text-[12px] sm:text-[1rem] font-semibold overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
 
                 <p className="text-[10px] sm:text-[0.75rem] mt-1">{dateFormatter(createdAt)}</p>
 
                 <div className="h-[1px] w-full bg-black my-2"></div>
 
-                <p className="text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis text-[10px] sm:text-[0.75rem]">
-                    {description}
+                <p className={`overflow-hidden whitespace-nowrap text-ellipsis text-[10px] sm:text-[11px] font-normal mb-1`}>
+                    {description ? description : '(no description)'}
                 </p>
 
-                <div className='absolute text-gray-600 bottom-0 right-1 text-[10px] sm:text-[0.75rem]'>
-                    {members.length + 1}
+                <div className='text-[9px] sm:text-[10px] font-normal'>
+                    {pluralizeString(members.length + 1, 'member')}
                 </div>
             </div>
-        </div>
+        </Link>
     )
 }
 
 export default BoardItem
+
