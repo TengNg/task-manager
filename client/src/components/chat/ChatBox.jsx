@@ -65,7 +65,7 @@ const ChatBox = ({
     return (
         <div
             id="chat-box"
-            className={`${open ? 'flex' : 'hidden'} fixed flex-col border-[2px] border-black right-0 bottom-0 sm:right-1 sm:bottom-1 bg-gray-50 w-[300px] h-[400px] overflow-auto z-30`}
+            className={`${open ? 'flex' : 'hidden'} fixed flex-col border-[2px] border-black right-0 bottom-0 sm:right-1 sm:bottom-1 bg-slate-100 w-[300px] h-[400px] overflow-auto z-30`}
         >
 
             <div className='relative flex items-center gap-3 border-b-2 border-black px-3 py-2'>
@@ -113,6 +113,7 @@ const ChatBox = ({
                             chat={item}
                             deleteMessage={deleteMessage}
                             highlightOwnMessages={true}
+                            inMiniChat={true}
                         />
                     })
                 }

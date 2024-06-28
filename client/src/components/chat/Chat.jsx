@@ -4,7 +4,7 @@ import useAuth from "../../hooks/useAuth";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faCircleUser } from '@fortawesome/free-solid-svg-icons';
 
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 
 const MESSAGE_PADDING = {
     x: {
@@ -28,16 +28,18 @@ const Chat = ({
     withUserIcon = false,
     withSeparator = false,
     highlightOwnMessages = false,
+    inMiniChat,
     padding = {
         x: MESSAGE_PADDING.x.sm,
         y: MESSAGE_PADDING.y.sm
     },
 }) => {
-    const { auth } = useAuth();
-    const { trackedId, content, sentBy, createdAt, error, type } = chat;
+    const location = useLocation();
+    const { pathname } = location;
 
-    const [searchParams, setSearchParams] = useSearchParams();
-    const navigate = useNavigate();
+    const { auth } = useAuth();
+
+    const { trackedId, content, sentBy, createdAt, error, type } = chat;
 
     const chatContent = type !== 'MESSAGE' ? content.split(' ')[1] : content;
 
@@ -73,24 +75,20 @@ const Chat = ({
                     // render message content by message type ==========================================================
 
                     type === 'MESSAGE' ? (
-                        <div className={`max-w-[95%] w-fit flex justify-center items-center ${highlightOwnMessages && chat.sentBy.username === auth?.user?.username ? 'bg-teal-50 border-[1px] border-teal-600' : 'bg-slate-100'} rounded-md ${padding.x} ${padding.y}`}>
-                            <div className="w-full break-words whitespace-pre-line text-[0.75rem] p-[0.1rem] text-gray-600 font-semibold border-teal-200">
+                        <div className={`max-w-[95%] w-fit flex justify-center items-center ${highlightOwnMessages && chat.sentBy.username === auth?.user?.username ? 'bg-teal-50 border-[1px] border-teal-600' : `bg-slate-100 ${inMiniChat && 'bg-slate-50 border-[1px] border-gray-500'}`} rounded-md ${padding.x} ${padding.y}`}>
+                            <div className="w-full break-words whitespace-pre-line text-[0.75rem] px-[1px] text-gray-600 font-semibold border-teal-200">
                                 {chatContent}
                             </div>
                         </div>
                     ) : type === 'CARD_CODE' ? (
-                        <div
-                            className={`max-w-[95%] p-2 w-fit flex justify-center items-center bg-pink-50 text-pink-600 border-[1px] border-dashed border-pink-600 rounded ${padding.x} ${padding.y}`}>
+                        <div className={`max-w-[95%] px-1 py-2 w-fit flex justify-center items-center bg-pink-50 text-pink-600 border-[1px] border-dashed border-pink-600 rounded`}>
                             <div className="w-full break-words whitespace-pre-line text-[0.75rem] p-[0.1rem] font-semibold">
-                                <span
-                                    className='p-1 bg-pink-400 text-gray-50 cursor-pointer rounded'
-                                    onClick={() => {
-                                        searchParams.set('card', content.split(' ')[1]);
-                                        setSearchParams(searchParams);
-                                    }}
+                                <Link
+                                    to={`${pathname}?card=${chatContent}`}
+                                    className='px-2 py-1 bg-pink-400 text-gray-50 cursor-pointer rounded'
                                 >
                                     CARD
-                                </span>
+                                </Link>
                                 <span>{" "}</span>
                                 <span>
                                     {chatContent}
@@ -98,16 +96,14 @@ const Chat = ({
                             </div>
                         </div>
                     ) : type === 'BOARD_CODE' ? (
-                        <div className={`max-w-[95%] p-2 w-fit flex justify-center items-center bg-violet-50 text-violet-700 border-[1px] border-dashed border-violet-600 rounded ${padding.x} ${padding.y}`}>
+                        <div className={`max-w-[95%] px-1 py-2 w-fit flex justify-center items-center bg-violet-50 text-violet-700 border-[1px] border-dashed border-violet-600 rounded`}>
                             <div className="w-full break-words whitespace-pre-line text-[0.75rem] p-[0.1rem] font-semibold">
-                                <span
-                                    className='p-1 bg-violet-400 text-gray-50 cursor-pointer rounded'
-                                    onClick={() => {
-                                        navigate(`/b/${content.split(' ')[1]}`);
-                                    }}
+                                <Link
+                                    to={`/b/${chatContent}`}
+                                    className='px-2 py-1 bg-violet-400 text-gray-50 cursor-pointer rounded'
                                 >
                                     BOARD
-                                </span>
+                                </Link>
                                 <span>{" "}</span>
                                 <span>
                                     {chatContent}

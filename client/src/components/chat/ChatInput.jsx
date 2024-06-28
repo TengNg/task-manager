@@ -1,8 +1,6 @@
 import { useRef, useState, useEffect } from "react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeftLong } from '@fortawesome/free-solid-svg-icons';
 
-const ChatInput = ({ sendMessage, withSentButton = false, setIsFetchingMore, setScrollToBottom }) => {
+const ChatInput = ({ sendMessage, withSentButton = false, setScrollToBottom }) => {
     const [message, setMessage] = useState("");
     const textAreaRef = useRef();
 
@@ -41,9 +39,9 @@ const ChatInput = ({ sendMessage, withSentButton = false, setIsFetchingMore, set
     };
 
     return (
-        <div className="flex w-full py-2 gap-1 bg-transparent justify-start items-start">
+        <div className="flex w-full py-2 gap-1 bg-slate-100 justify-start items-start">
             <textarea
-                className="text-[0.75rem] bg-gray-100 min-h-[2.35rem] max-h-[100px] border border-gray-400 leading-normal overflow-y-auto resize-none w-full py-2 px-3 font-medium placeholder-gray-500 focus:outline-none focus:bg-white"
+                className="text-[0.75rem] text-gray-700 bg-gray-100 min-h-[2.35rem] max-h-[100px] border border-gray-400 leading-normal overflow-y-auto resize-none w-full py-2 px-3 font-medium placeholder-gray-500 focus:outline-none focus:bg-white"
                 placeholder='Write something...'
                 ref={textAreaRef}
                 value={message}
@@ -56,10 +54,10 @@ const ChatInput = ({ sendMessage, withSentButton = false, setIsFetchingMore, set
             {
                 withSentButton &&
                 <button
-                    className="d-flex h-100 justify-center items-center h-[2.35rem] text-gray-500 border-[2px] border-gray-500 px-3 hover:text-white hover:bg-gray-500 transition-all"
+                    className="d-flex h-100 justify-center items-center h-[2.35rem] text-[11px] text-gray-500 border-[1px] border-gray-500 px-3 hover:text-white hover:bg-gray-500 transition-all"
                     onClick={handleSentButtonOnClick}
                 >
-                    <FontAwesomeIcon icon={faArrowLeftLong} size='sm' />
+                        send
                 </button>
             }
         </div>
