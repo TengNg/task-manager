@@ -33,6 +33,10 @@ const KeyBindings = ({ open, setOpen }) => {
                 </li>
 
                 <li>
+                    <span className='key'>q</span> open quick editor of a selected card
+                </li>
+
+                <li>
                     <span className='key'>Ctrl</span> + <span className='key'>.</span> open board activities
                 </li>
 
@@ -85,11 +89,11 @@ const KeyBindings = ({ open, setOpen }) => {
             <div className='h-[1px] bg-black w-full mt-4'></div>
 
             <div className='pt-3 text-[12px] sm:text-[0.8rem] text-gray-500'>
-                tips (format chat messages):
+                format chat message:
                 <ul className='flex flex-col gap-3 list-disc ms-4 mt-2'>
                     <li className='font-semibold'>
                         <span className='py-1 px-2 bg-gray-500 rounded text-gray-50'>
-                            !c |card_code|
+                            !c [card_code] [?message]
                         </span>
                         <span>{" "}</span>
                         <span>
@@ -98,7 +102,7 @@ const KeyBindings = ({ open, setOpen }) => {
                     </li>
                     <li className='font-semibold'>
                         <span className='py-1 px-2 bg-gray-500 rounded text-gray-50'>
-                            !b |board_code|
+                            !b [board_code] [?message]
                         </span>
                         <span>{" "}</span>
                         <span>

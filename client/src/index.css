@@ -134,9 +134,9 @@ div:focus, dialog:focus {
     border-radius: 4px;
 }
 
-*::-webkit-scrollbar-track {
-    /* background: transparent; */
-}
+/**::-webkit-scrollbar-track {*/
+/*    background: transparent; */
+/*}*/
 
 .card__item {
     background: rgba(241, 241, 241, 0.55);
@@ -147,7 +147,7 @@ div:focus, dialog:focus {
 }
 
 .card__item.focused {
-    outline: 3px solid blue;
+    background: rgba(173, 216, 230, 0.55);
 }
 
 .list__item {

@@ -110,14 +110,23 @@ const Card = ({ index, card }) => {
                                 handleOpenCardDetail();
                                 return;
                             };
+                            if (e.key == 'q') {
+                                e.preventDefault();
+                                handleOpenQuickEditor(e);
+                                return;
+                            }
                         }}
+                        onContextMenu={(e) => {
+                            e.preventDefault();
+                            handleOpenQuickEditor(e);
+                        }}
+                        onClick={handleOpenCardDetail}
                         className={`card__item
                             ${focusedCard?.id === card._id && focusedCard?.highlight && 'focused'}
                             ${card.hiddenByFilter && 'hidden'} ${theme.itemTheme == 'rounded' ? 'rounded' : ''} w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative
                             ${dateToCompare(card?.dueDate) ? 'past__due__card' : '' }
                         `}
                         style={getStyle(provided.draggableProps.style, snapshot)}
-                        onClick={handleOpenCardDetail}
                     >
 
                         <p

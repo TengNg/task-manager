@@ -49,7 +49,7 @@ const PersistLogin = () => {
                     ? (
                         <div className="flex flex-col gap-4 font-semibold mx-auto mt-20 text-gray-700 px-4 sm:px-8 md:px-20">
                             <p className="text-[0.75rem] sm:text-[1rem] text-center">
-                                Loading profile data...
+                                Loading profile data
                             </p>
 
                             <div className="loader mx-auto my-4"></div>
