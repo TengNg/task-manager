@@ -6,15 +6,21 @@ export default function NotFound() {
     const navigate = useNavigate();
     return (
         <>
-            <section className='absoulute flex-col flex--center w-full mt-8'>
-                <Title titleName={"page not found"} />
-                <p className='my-4 ms-3 text-gray-400 text-center'>Oops, looks like you are lost...</p>
-                <button
-                    className='button--style opacity-70 text-[0.85rem]'
-                    onClick={() => navigate('/boards')}
-                >
-                    Back to Boards
-                </button>
+
+            <section
+                id="boards"
+                className="w-full h-[calc(100%-75px)] overflow-auto pb-4"
+            >
+                <div className='flex flex-col items-center mx-auto sm:w-3/4 w-[90%]'>
+                    <Title titleName={"page not found"} />
+                    <p className='my-4 ms-3 text-gray-600 text-center'>Oops, looks like you are lost...</p>
+                    <button
+                        className='button--style text-sm hover:bg-gray-600 hover:text-gray-50'
+                        onClick={() => navigate('/boards')}
+                    >
+                        Back to Boards
+                    </button>
+                </div>
             </section>
         </>
     )

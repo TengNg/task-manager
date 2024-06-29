@@ -516,7 +516,7 @@ const Board = () => {
                 <section className='w-full flex flex-col justify-center items-center gap-4'>
                     <p className="font-medium mx-auto text-center mt-20 text-gray-600">{error.msg}.</p>
                     <button
-                        className='button--style opacity-70 text-[0.85rem] w-fit max-auto'
+                        className='button--style text-sm hover:bg-gray-600 hover:text-gray-100'
                         onClick={() => navigate('/boards')}
                     >
                         Back to Boards
@@ -540,10 +540,10 @@ const Board = () => {
 
                 <div className="loader mx-auto my-8"></div>
 
-                <p className="font-medium mx-auto text-center text-[0.65rem] my-2 text-gray-600">if this takes too long, refresh the page and try again.</p>
+                <p className="font-medium mx-auto text-center text-sm my-2 text-gray-600">if this takes too long, refresh the page and try again.</p>
 
                 <button
-                    className='button--style opacity-70 text-[0.85rem] w-fit max-auto'
+                    className='button--style text-sm hover:bg-gray-600 hover:text-gray-100'
                     onClick={() => navigate('/boards')}
                 >
                     Back to Boards

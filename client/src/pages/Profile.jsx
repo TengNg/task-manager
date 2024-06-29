@@ -221,7 +221,7 @@ const Profile = () => {
             id="profile"
             className="w-full h-[calc(100%-75px)] overflow-auto pb-4"
         >
-            <Title titleName={'Profile'} />
+            <Title titleName={'profile'} />
 
             <div className='mx-auto sm:w-3/4 w-[90%] flex flex-col items-center'>
                 <Loading loading={loading} position={'absolute'} />
