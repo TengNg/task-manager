@@ -231,10 +231,9 @@ const Profile = () => {
                 </span>
 
                 <div
-                    className='box--style border-[2px] border-gray-700 bg-gray-50 sm:p-4 p-2 lg:w-[450px] sm:w-[400px] w-3/4'
+                    className='box--style border-[2px] border-gray-700 shadow-gray-700 bg-gray-100 sm:p-4 p-2 lg:w-[450px] sm:w-[400px] w-3/4'
                     style={{ backgroundColor: 'rgba(241, 241, 241, 0.75)' }}
                 >
-
                     <form
                         id='userInfoForm'
                         className='w-[100%] flex flex-col h-fit gap-2 text-gray-700'
@@ -332,7 +331,7 @@ const Profile = () => {
                 </span>
 
                 <div
-                    className='box--style relative border-[2px] border-gray-700 bg-gray-50 sm:p-4 p-2 lg:w-[450px] sm:w-[400px] w-3/4'
+                    className='box--style relative border-[2px] border-gray-700 shadow-gray-700 bg-gray-100 sm:p-4 p-2 lg:w-[450px] sm:w-[400px] w-3/4'
                     style={{ backgroundColor: 'rgba(241, 241, 241, 0.75)' }}
                 >
                     <div className='absolute top-1 right-1 text-[0.75rem] font-medium text-gray-700'>

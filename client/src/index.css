@@ -60,7 +60,7 @@
     }
 
     .anchor--style--selected {
-        @apply text-gray-50 bg-gray-500 flex justify-center items-center py-1 px-2
+        @apply text-gray-50 bg-gray-600 flex justify-center items-center py-1 px-2
     }
 
     .card--detail--button {
