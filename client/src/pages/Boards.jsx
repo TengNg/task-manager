@@ -233,7 +233,7 @@ const Boards = () => {
                         </div>
                     </div>
 
-                    <div className="relative flex flex-col mx-auto sm:m-0 sm:justify-start sm:items-start sm:flex-row sm:flex-wrap gap-4 px-10 p-6 sm:p-8 border-[2px] box--style shadow-gray-500 border-gray-500 w-fit sm:w-full">
+                    <div className="relative flex flex-col mx-auto sm:m-0 sm:justify-start sm:items-start sm:flex-row sm:flex-wrap gap-4 px-10 p-6 sm:p-8 border-[2px] box--style shadow-gray-600 border-gray-600 w-fit sm:w-full">
 
                         {
                             filteredBoards(boardFilter).map(item => {
@@ -250,8 +250,7 @@ const Boards = () => {
                             <div
                                 onClick={() => setOpenBoardForm(open => !open)}
                                 ref={createBoardButtonRef}
-                                className="h-full w-full border-[2px] border-gray-500 board--style shadow-gray-500 p-3 px-4 select-none cursor-pointer"
-                                style={{ backgroundColor: 'rgba(241, 241, 241, 0.4)' }}
+                                className="h-full w-full border-[2px] border-gray-500 board--style shadow-gray-500 p-3 px-4 select-none cursor-pointer bg-transparent hover:bg-gray-50"
                             >
                                 <div className="flex items-center gap-2 text-gray-500 font-medium sm:text-[0.925rem] text-[0.75rem]">
                                     <span>+ new</span>
@@ -270,7 +269,7 @@ const Boards = () => {
                     {
                         recentlyViewedBoard &&
                         <div className='w-full sm:w-fit sm:block flex justify-center'>
-                            <div className="w-[280px] sm:w-fit flex flex-col flex-wrap gap-1 px-8 pt-3 pb-8 mt-8 box--style justify-start items-start box--style border-[2px] shadow-gray-500 border-gray-500">
+                            <div className="w-[280px] sm:w-fit flex flex-col flex-wrap gap-1 px-8 pt-3 pb-8 mt-8 box--style justify-start items-start box--style border-[2px] shadow-gray-600 border-gray-600">
                                 <p className="text-gray-600 text-[0.75rem] font-medium ms-1 my-1">last viewed board</p>
                                 <BoardItem
                                     item={recentlyViewedBoard}
