@@ -133,7 +133,7 @@ const Writedown = () => {
             <section className="w-full h-[calc(100%-75px)] overflow-auto pb-4">
 
                 <div className='mx-auto sm:w-3/4 w-[90%]'>
-                    <Title titleName={"writedown"} />
+                    <Title titleName={"writedowns"} />
 
                     <div className='flex flex-col justify-center items-center gap-4 text-sm text-gray-600'>
                         {
@@ -145,10 +145,11 @@ const Writedown = () => {
 
                         <button
                             onClick={handleCreateWritedown}
-                            className='grid place-items-center text-gray-600 border-[2px] border-gray-600 border-dashed p-4 hover:bg-gray-300 transition-all'
+                            className='grid place-items-center text-gray-600 text-sm border-[2px] border-gray-600 border-dashed py-4 px-6 hover:bg-gray-600 hover:text-gray-100'
                         >
                             {isCreatingWritedown ? "creating writedown..." : "+ new writedown"}
                         </button>
+
                         {
                             writedowns.length === 0 &&
                             <p>

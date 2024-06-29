@@ -11,7 +11,7 @@ import Board from './pages/Board'
 import Activities from './pages/Activities'
 import Profile from './pages/Profile'
 import NotFound from './pages/NotFound'
-import Writedown from './pages/Writedown'
+import Writedowns from './pages/Writedowns'
 import PersistLogin from './components/auth/PersistLogin'
 import { BoardStateContextProvider } from './context/BoardStateContext'
 
@@ -51,7 +51,7 @@ function App() {
                         </BoardStateContextProvider>
                     } />
                     <Route path="/boards" element={<Boards />} />
-                    <Route path="/writedown" element={<Writedown />} />
+                    <Route path="/writedowns" element={<Writedowns />} />
                     <Route path="/activities" element={<Activities />} />
                     <Route path="/u/:username" element={<Profile />} />
                     <Route path="*" element={<NotFound />} />
