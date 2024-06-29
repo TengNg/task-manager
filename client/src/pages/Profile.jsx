@@ -18,7 +18,10 @@ const Profile = () => {
     const [confirmedPassword, setConfirmedPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const [ownedBoards, setOwnedBoards] = useState([]);
+    const [ownedBoards, setOwnedBoards] = useState({
+        fetching: true,
+        boards: [],
+    });
 
     const [boardStatsModal, setBoardStatsModal] = useState({
         stats: [],
@@ -50,8 +53,8 @@ const Profile = () => {
 
         const getBoards = async () => {
             const response = await axiosPrivate.get(`/boards/owned`);
-            const { boards, recentlyViewedBoard: _recentlyViewedBoard } = response.data;
-            setOwnedBoards(boards);
+            const { boards } = response.data;
+            setOwnedBoards({ fetching: false, boards: boards });
         };
 
         getBoards().catch(err => {
@@ -322,6 +325,7 @@ const Profile = () => {
                 </div>
             </div>
 
+            {/* Owned Boards section */}
             <div className='mx-auto sm:w-3/4 w-[90%] flex flex-col items-center mt-6'>
                 <span className='text-gray-600'>
                     owned boards
@@ -332,40 +336,42 @@ const Profile = () => {
                     style={{ backgroundColor: 'rgba(241, 241, 241, 0.75)' }}
                 >
                     <div className='absolute top-1 right-1 text-[0.75rem] font-medium text-gray-700'>
-                        [{ownedBoards.length}]
+                        {ownedBoards.boards.length > 0 && `[${ownedBoards.boards.length}]`}
                     </div>
                     <div className='flex flex-col items-center mt-3 gap-4 pb-4 px-4 lg:px-2 max-h-[450px] overflow-auto'>
-                        {
-                            ownedBoards.length === 0 ? <p className='text-[0.75rem] text-gray-600 mt-2'>you currently have no owned boards.</p> :
-                            ownedBoards.map(item => {
-                            const { _id, title, description: _description, members, createdBy: _createdBy, createdAt } = item;
-                            return (
-                                <div
-                                    key={_id}
-                                    onClick={() => handleOpenBoardStats(_id)}
-                                    className="w-full h-[150px] bg-transparent"
-                                >
+                        {ownedBoards.fetching
+                            ? <div className="loader mx-auto"></div>
+                            : ownedBoards.boards.length === 0
+                                ? <p className='text-[0.75rem] text-gray-600 mt-2'>you currently have no owned boards.</p>
+                                : ownedBoards.boards.map(item => {
+                                    const { _id, title, description: _description, members, createdBy: _createdBy, createdAt } = item;
+                                    return (
+                                        <div
+                                            key={_id}
+                                            onClick={() => handleOpenBoardStats(_id)}
+                                            className="w-full h-[150px] bg-transparent"
+                                        >
 
-                                    <div className="w-full h-[150px] board--style board--hover border-[2px] md:border-[2.5px] border-gray-600 py-3 px-3 shadow-gray-600 select-none bg-transparent relative">
-                                        <p className="text-[12px] sm:text-[1rem] font-semibold text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
+                                            <div className="w-full h-[150px] board--style board--hover border-[2px] md:border-[2.5px] border-gray-600 py-3 px-3 shadow-gray-600 select-none bg-transparent relative">
+                                                <p className="text-[12px] sm:text-[1rem] font-semibold text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
 
-                                        <div className="h-[1px] w-full bg-black my-2"></div>
+                                                <div className="h-[1px] w-full bg-black my-2"></div>
 
-                                        <p className="text-[10px] sm:text-[0.85rem] mt-3">
-                                            lists: {item.listCount}
-                                        </p>
+                                                <p className="text-[10px] sm:text-[0.85rem] mt-3">
+                                                    lists: {item.listCount}
+                                                </p>
 
-                                        <p className="text-[10px] sm:text-[0.85rem] mt-1">
-                                            members: {members.length + 1}
-                                        </p>
+                                                <p className="text-[10px] sm:text-[0.85rem] mt-1">
+                                                    members: {members.length + 1}
+                                                </p>
 
-                                        <p className="text-[10px] sm:text-[0.85rem] mt-1">
-                                            created: {dateFormatter(createdAt)}
-                                        </p>
-                                    </div>
-                                </div>
-                            )
-                        })}
+                                                <p className="text-[10px] sm:text-[0.85rem] mt-1">
+                                                    created: {dateFormatter(createdAt)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
                     </div>
 
                 </div>
