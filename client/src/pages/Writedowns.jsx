@@ -136,13 +136,6 @@ const Writedown = () => {
                     <Title titleName={"writedowns"} />
 
                     <div className='flex flex-col justify-center items-center gap-4 text-sm text-gray-600'>
-                        {
-                            writedowns.length === 0 &&
-                            <p className='text-[12px] sm:text-[0.85rem]'>
-                                [personal workspace] take notes or write down anything.
-                            </p>
-                        }
-
                         <button
                             onClick={handleCreateWritedown}
                             className='grid place-items-center text-gray-600 text-sm border-[2px] border-gray-600 border-dashed py-4 px-6 hover:bg-gray-600 hover:text-gray-100'
@@ -152,9 +145,14 @@ const Writedown = () => {
 
                         {
                             writedowns.length === 0 &&
-                            <p>
-                                create your first writedown.
-                            </p>
+                                <div className='flex flex-col justify-center items-center gap-3 py-3'>
+                                    <p className='text-[12px] sm:text-[0.85rem]'>
+                                        [personal workspace] take notes or write down anything.
+                                    </p>
+                                    <p>
+                                        create your first writedown.
+                                    </p>
+                                </div>
                         }
 
                         {
