@@ -1,14 +1,13 @@
 import { Outlet } from "react-router-dom";
-import { useState, useEffect } from "react";
 import useRefreshToken from '../../hooks/useRefreshToken';
+import { useState, useEffect } from "react";
 import useAuth from '../../hooks/useAuth';
 import { useNavigate } from "react-router-dom";
-import { axiosPrivate } from "../../api/axios";
 
 const PersistLogin = () => {
     const [isLoading, setIsLoading] = useState(true);
-    const refresh = useRefreshToken();
     const { auth } = useAuth();
+    const refresh = useRefreshToken();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -32,15 +31,6 @@ const PersistLogin = () => {
         return () => isMounted = false;
     }, []);
 
-    const handleLogout = async () => {
-        try {
-            await axiosPrivate.get('/logout/');
-            navigate("/login");
-        } catch (err) {
-            console.log(err);
-        }
-    };
-
     return (
         <>
             {auth?.accessToken
@@ -58,7 +48,7 @@ const PersistLogin = () => {
                             <br />
                             <br />
 
-                            <div className='text-[10px] text-center sm:text-sm text-gray-500 hover:text-gray-600'>
+                            <div className='text-[10px] text-center sm:text-sm text-gray-500'>
                                 <span>
                                     If the page takes too long to load, this might be probably due to a slow connecting time from the server.
                                 </span>
@@ -67,19 +57,13 @@ const PersistLogin = () => {
                                 <br />
 
                                 <span>
-                                    Please wait or clear the browser cache then try again.
+                                    [Slow server connection] Please wait...
                                 </span>
                             </div>
 
                             <br />
                             <br />
 
-                            <button
-                                className='mx-auto text-center text-[0.75rem] sm:text-[1rem] text-gray-500 underline'
-                                onClick={handleLogout}
-                            >
-                                Logout &amp; try again
-                            </button>
                         </div>
                     )
                     : (
