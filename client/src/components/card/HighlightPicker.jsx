@@ -33,7 +33,7 @@ const HighlightPicker = ({ setOpen, card }) => {
     return (
         <div
             id="card__detail__highlight__picker"
-            className="absolute top-0 left-0 translate-x-[25%] sm:-translate-x-[105%] flex flex-col gap-1 items-center justify-center bg-gray-200 p-2 border-[2px] border-black shadow-black shadow-[4px_5px_0_0] w-[200px]"
+            className="absolute z-10 top-0 left-0 translate-x-[25%] sm:-translate-x-[105%] flex flex-col gap-1 items-center justify-center bg-gray-200 p-2 border-[2px] border-black shadow-black shadow-[4px_5px_0_0] w-[200px]"
         >
             {
                 Object.keys(highlightColors).map((item, index) => {
