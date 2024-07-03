@@ -60,7 +60,7 @@ const Card = ({ index, card }) => {
 
     const handleOpenCardDetail = () => {
         searchParams.set('card', card._id);
-        setSearchParams(searchParams);
+        setSearchParams(searchParams, { replace: true });
     };
 
     const getStyle = (style, _) => {
@@ -130,8 +130,7 @@ const Card = ({ index, card }) => {
                     >
 
                         <p
-                            className="w-full h-full bg-transparent font-semibold text-gray-600 rounded-md px-2 focus:outline-none text-sm break-words whitespace-pre-line"
-                            style={{ textDecoration: card.verified ? 'line-through' : 'none' }}
+                            className="group-hover:underline w-full h-full bg-transparent font-semibold text-gray-600 rounded-md px-2 focus:outline-none text-sm break-words whitespace-pre-line"
                         >
                             {card.title}
                         </p>

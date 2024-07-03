@@ -134,7 +134,7 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
 
     const handleOpenCardDetail = () => {
         searchParams.set('card', card._id);
-        setSearchParams(searchParams);
+        setSearchParams(searchParams, { replace: true });
         close();
     };
 
