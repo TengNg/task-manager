@@ -84,6 +84,7 @@ const Chat = ({
                         <div className={`max-w-[95%] px-1 py-2 w-fit flex justify-center items-center bg-pink-50 text-pink-600 border-[1px] border-dashed border-pink-600 rounded`}>
                             <div className="w-full break-words whitespace-pre-line text-[0.75rem] p-[0.1rem] font-semibold">
                                 <Link
+                                    replace={true}
                                     to={`${pathname}?card=${chatContent}`}
                                     className='px-2 py-1 bg-pink-400 text-gray-50 cursor-pointer rounded'
                                 >

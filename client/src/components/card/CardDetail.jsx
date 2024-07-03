@@ -83,7 +83,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                 }
 
                 searchParams.delete('card');
-                setSearchParams(searchParams);
+                setSearchParams(searchParams, { replace: true });
 
                 document.title = boardState?.board?.title || 'tamago-start';
             };

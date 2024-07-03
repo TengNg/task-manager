@@ -109,13 +109,13 @@ const Filter = ({ open, setOpen }) => {
         if (!searchValue) {
             if (searchParams.has('filter')) {
                 searchParams.delete('filter');
-                setSearchParams(searchParams);
+                setSearchParams(searchParams, { replace: true });
                 return;
             }
         };
 
         searchParams.set('filter', searchValue);
-        setSearchParams(searchParams);
+        setSearchParams(searchParams, { replace: true });
     };
 
     return (
@@ -148,11 +148,11 @@ const Filter = ({ open, setOpen }) => {
 
                     <div className='w-full flex flex-col gap-2'>
                         <div
-                            className='text-[0.75rem] cursor-pointer w-full p-1 px-3 text-gray-50 font-semibold bg-gray-400 rounded-sm'
+                            className='text-[0.75rem] cursor-pointer w-full p-1 px-3 text-gray-50 font-semibold bg-gray-400 rounded-sm hover:brightness-105'
                             style={{ textDecoration: searchParams.get('priority') === 'none' ? 'underline' : 'none' }}
                             onClick={() => {
                                 searchParams.set('priority', 'none');
-                                setSearchParams(searchParams);
+                                setSearchParams(searchParams, { replace: true });
                             }}
                         >
                             NONE
@@ -163,10 +163,10 @@ const Filter = ({ open, setOpen }) => {
                                 const { title, color } = item;
                                 return (<div
                                     key={title}
-                                    className='text-[0.75rem] cursor-pointer w-full p-1 px-3 text-gray-50 font-semibold uppercase rounded-sm'
+                                    className='text-[0.75rem] cursor-pointer w-full p-1 px-3 text-gray-50 font-semibold uppercase rounded-sm hover:brightness-105'
                                     onClick={() => {
                                         searchParams.set('priority', title);
-                                        setSearchParams(searchParams);
+                                        setSearchParams(searchParams, { replace: true });
                                     }}
                                     style={{ backgroundColor: color.rgba, textDecoration: searchParams.get('priority') === title ? 'underline' : 'none' }}
                                 >
@@ -180,7 +180,7 @@ const Filter = ({ open, setOpen }) => {
                     <div className='h-[1px] bg-black w-full'></div>
 
                     <div
-                        className='text-[0.75rem] cursor-pointer w-full py-1 px-3 text-pink-800 font-semibold bg-pink-100 border-[2px] border-pink-800 rounded-sm'
+                        className='text-[0.75rem] cursor-pointer w-full py-1 px-3 text-pink-800 font-semibold bg-pink-100 border-[2px] border-pink-800 hover:brightness-105'
                         style={{ textDecoration: searchParams.get('stale') === "true" ? 'underline' : 'none' }}
                         onClick={() => {
                             searchParams.set('stale', true);
@@ -190,21 +190,21 @@ const Filter = ({ open, setOpen }) => {
                         Stale Cards
                     </div>
 
-                    <div className='h-[1px] bg-black w-full'></div>
 
-                    {
-                        (searchParams.get('filter') || searchParams.get('priority') || searchParams.get('stale')) &&
-                        <button
-                            type="button"
-                            className="mx-auto w-full button--style border-[2px] py-2 text-[0.75rem] transition-all shadow-[0_3px_0_0] shadow-gray-600 bg-gray-100 hover:bg-gray-200"
-                            onClick={() => {
-                                setSearchParams({})
-                                setOpen(false);
-                            }}
-                        >
-                            clear filter
-                        </button>
-                    }
+                    {(searchParams.get('filter') || searchParams.get('priority') || searchParams.get('stale')) && (
+                        <>
+                            <div className='h-[1px] bg-black w-full'></div>
+                            <button
+                                type="button"
+                                className="mx-auto w-full button--style border-[2px] py-2 text-[0.75rem] transition-all shadow-[0_3px_0_0] shadow-gray-600 bg-gray-100"
+                                onClick={() => {
+                                    setSearchParams({}, { replace: true });
+                                }}
+                            >
+                                clear filter
+                            </button>
+                        </>
+                    )}
 
                 </div>
             </form>
