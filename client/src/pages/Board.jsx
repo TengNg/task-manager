@@ -170,7 +170,7 @@ const Board = () => {
         const totalList = boardState.lists.length;
 
         if (focusedListIndex > totalList - 1) {
-            setFocusedListIndex(totalList - 2);
+            setFocusedListIndex(totalList - 1);
             return;
         }
 

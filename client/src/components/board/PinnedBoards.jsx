@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark, faFloppyDisk, faBroom } from '@fortawesome/free-solid-svg-icons';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import useAuth from '../../hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -8,11 +8,10 @@ import Loading from '../ui/Loading';
 import { DragDropContext, Draggable } from 'react-beautiful-dnd';
 import { StrictModeDroppable as Droppable } from '../../helpers/StrictModeDroppable';
 
-const PinnedBoards = ({ open, setOpen, setPinned }) => {
+const PinnedBoards = ({ setOpen, setPinned }) => {
     const { auth, setAuth } = useAuth();
 
     const [pinnedBoards, setPinnedBoards] = useState([]);
-    const [saved, setSaved] = useState(false);
     const [cleaned, setCleaned] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -127,7 +126,7 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
 
             <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
                 <div className='flex items-center gap-2'>
-                    <span className="font-normal text-[0.85rem] text-gray-700">pinned boards</span>
+                    <span className="font-normal text-gray-700">pinned boards</span>
 
                     {
                         pinnedBoards.length > 0
@@ -135,7 +134,7 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
                             onClick={handleCleanPinnedBoards}
                             className={`button--style--sm text-[0.75rem] px-1 underline hover:bg-pink-200 rounded ${cleaned ? 'text-blue-600' : 'text-pink-600'}`}
                         >
-                            {cleaned ? 'cleaned!' : 'clean'}
+                            clean
                         </button>
                     }
                 </div>
@@ -167,7 +166,7 @@ const PinnedBoards = ({ open, setOpen, setPinned }) => {
                                                 ref={provided2.innerRef}
                                                 key={boardId}
                                                 index={index}
-                                                className='relative max-w-[300px] overflow-hidden whitespace-nowrap text-ellipsis top-left-auto mb-3 board--style--sm bg-gray-50 text-[0.75rem] flex-1 border-[2px] border-gray-600 shadow-gray-600 p-3'
+                                                className='relative max-w-[300px] overflow-hidden whitespace-nowrap text-ellipsis top-left-auto mb-3 board--style--sm bg-gray-50 text-[0.75rem] flex-1 border-[2px] border-gray-700 shadow-gray-700 p-3'
                                                 onClick={() => handleOpenBoard(boardId)}
                                             >
                                                 {boardTitle}
