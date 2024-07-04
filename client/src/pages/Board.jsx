@@ -827,10 +827,10 @@ const Board = () => {
                         onClick={() => {
                             if (searchParams.get('stale')) {
                                 searchParams.delete('stale');
-                                setSearchParams(searchParams);
+                                setSearchParams(searchParams, { replace: true });
                             } else {
                                 searchParams.set('stale', true);
-                                setSearchParams(searchParams);
+                                setSearchParams(searchParams, { replace: true });
                             }
                         }}
                     >

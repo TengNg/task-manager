@@ -16,7 +16,7 @@ const CardActivityItem = ({ activity }) => {
                     className='font-semibold underline cursor-pointer'
                     onClick={() => {
                         searchParams.set('card', card?._id);
-                        setSearchParams(searchParams);
+                        setSearchParams(searchParams, { replace: true });
                     }}
                 >
                     {card?.title}
