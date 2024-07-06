@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import useBoardState from '../../hooks/useBoardState';
 import useAuth from '../../hooks/useAuth';
 
@@ -20,12 +20,16 @@ const FloatingChat = ({
 
     fetchMessages,
     isFetchingMore,
-    setIsFetchingMore,
     allMessagesFetched,
+
+    hasReceivedNewMessage,
+    setHasReceivedNewMessage,
 }) => {
     const {
         chats,
         boardState,
+        isAtBottomOfChat,
+        setIsAtBottomOfChat,
     } = useBoardState();
 
     const {
@@ -34,18 +38,17 @@ const FloatingChat = ({
 
     const messageEndRef = useRef();
 
-    const [scrollToBottom, setScrollToBottom] = useState(false);
-
     useEffect(() => {
-        messageEndRef.current.scrollIntoView({ block: 'end' });
+        if (open) {
+            messageEndRef.current.scrollIntoView({ block: 'end' });
+        }
     }, [open]);
 
     useEffect(() => {
-        if (scrollToBottom) {
+        if (hasReceivedNewMessage && isAtBottomOfChat) {
             messageEndRef.current.scrollIntoView({ block: 'end' });
-            setScrollToBottom(false);
         }
-    }, [scrollToBottom]);
+    }, [hasReceivedNewMessage, chats.length]);
 
     const handleClose = () => {
         setOpen(false);
@@ -61,11 +64,15 @@ const FloatingChat = ({
     };
 
     const handleLoadMoreOnScroll = (e) => {
-        const { scrollTop } = e.currentTarget;
+        const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+
+        const offset = 15;
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - offset;
+
+        setIsAtBottomOfChat(isAtBottom);
+
         if (scrollTop === 0 && !allMessagesFetched) {
-            setIsFetchingMore(true);
             fetchMessages();
-            setScrollToBottom(false);
         }
     };
 
@@ -136,8 +143,8 @@ const FloatingChat = ({
                 <div className='px-3'>
                     <ChatInput
                         withSentButton={true}
+                        setHasReceivedNewMessage={setHasReceivedNewMessage}
                         sendMessage={sendMessage}
-                        setScrollToBottom={setScrollToBottom}
                     />
                 </div>
             </div>
