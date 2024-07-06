@@ -395,7 +395,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                             <textarea
                                 ref={cardDescriptionInput}
                                 id="card__detail__description__textarea"
-                                className="overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[250px] max-h-[400px] break-words box-border text-[0.65rem] sm:text-[0.85rem] py-2 px-3 w-full text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
+                                className="font-text-composer overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[250px] max-h-[400px] break-words box-border text-[0.65rem] sm:text-[0.85rem] py-2 px-3 w-full text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
                                 autoFocus={true}
                                 placeholder={"add description..."}
                                 value={description}
