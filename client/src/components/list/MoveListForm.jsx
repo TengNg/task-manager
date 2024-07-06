@@ -246,7 +246,7 @@ const MoveListForm = () => {
                                 listCount === 0 ? (
                                     <option value={0}>position: 1</option>
                                 ) : (
-                                    Array.from(Array(listCount).keys()).map(count => {
+                                    Array.from(Array(listCount + 1).keys()).map(count => {
                                         return <option key={count} value={count}>position: {count + 1}</option>
                                     })
                                 )
