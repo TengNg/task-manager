@@ -39,7 +39,6 @@ const useKeyBinds = () => {
 
             const formOpen = openFilter || openPinnedBoards || openFloatingChat || openInvitationForm || openAddList;
 
-
             if (event.ctrlKey) {
                 if (
                     key === 'e'
@@ -160,6 +159,7 @@ const useKeyBinds = () => {
                 }
 
                 if (key === '.') {
+                    event.preventDefault();
                     if (openFloatingChat) {
                         setOpenFloatingChat(false);
                     }
@@ -168,6 +168,7 @@ const useKeyBinds = () => {
                 }
 
                 if (key === '>') {
+                    event.preventDefault();
                     if (openChatBox) {
                         setOpenChatBox(false);
                     }

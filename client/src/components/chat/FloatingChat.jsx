@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import useBoardState from '../../hooks/useBoardState';
 import useAuth from '../../hooks/useAuth';
 
@@ -20,12 +20,16 @@ const FloatingChat = ({
 
     fetchMessages,
     isFetchingMore,
-    setIsFetchingMore,
     allMessagesFetched,
+
+    hasReceivedNewMessage,
+    setHasReceivedNewMessage,
 }) => {
     const {
         chats,
         boardState,
+        isAtBottomOfChat,
+        setIsAtBottomOfChat,
     } = useBoardState();
 
     const {
@@ -33,19 +37,23 @@ const FloatingChat = ({
     } = useAuth();
 
     const messageEndRef = useRef();
-
-    const [scrollToBottom, setScrollToBottom] = useState(false);
+    const chatContainer = useRef();
 
     useEffect(() => {
-        messageEndRef.current.scrollIntoView({ block: 'end' });
+        if (open) {
+            messageEndRef.current.scrollIntoView({ block: 'end' });
+            if (chatContainer.current) {
+                const chatInput = chatContainer.current.querySelector('#chat-input');
+                chatInput.focus();
+            }
+        }
     }, [open]);
 
     useEffect(() => {
-        if (scrollToBottom) {
+        if (hasReceivedNewMessage && isAtBottomOfChat) {
             messageEndRef.current.scrollIntoView({ block: 'end' });
-            setScrollToBottom(false);
         }
-    }, [scrollToBottom]);
+    }, [hasReceivedNewMessage, chats.length]);
 
     const handleClose = () => {
         setOpen(false);
@@ -61,11 +69,15 @@ const FloatingChat = ({
     };
 
     const handleLoadMoreOnScroll = (e) => {
-        const { scrollTop } = e.currentTarget;
+        const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+
+        const offset = 15;
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - offset;
+
+        setIsAtBottomOfChat(isAtBottom);
+
         if (scrollTop === 0 && !allMessagesFetched) {
-            setIsFetchingMore(true);
             fetchMessages();
-            setScrollToBottom(false);
         }
     };
 
@@ -76,7 +88,9 @@ const FloatingChat = ({
                 className={`fixed ${!open ? 'hidden' : 'block'} box-border top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-500 opacity-40 z-50 cursor-auto`}>
             </div>
 
-            <div className={`fixed ${!open ? 'hidden' : 'block'} box--style flex pt-1 flex-col top-[5rem] right-0 left-[50%] overflow-auto -translate-x-[50%] w-[90%] md:w-[80%] lg:w-[80%] xl:w-[50%] 2xl:w-[50%] h-[75%] border-[2px] border-black z-50 cursor-auto bg-slate-100`}>
+            <div
+                ref={chatContainer}
+                className={`fixed ${!open ? 'hidden' : 'block'} box--style flex pt-1 flex-col top-[5rem] right-0 left-[50%] overflow-auto -translate-x-[50%] w-[90%] md:w-[80%] lg:w-[80%] xl:w-[50%] 2xl:w-[50%] h-[75%] border-[2px] border-black z-50 cursor-auto bg-slate-100`}>
 
                 <div className="flex justify-between items-center pb-2 mx-3">
                     <div>Chat</div>
@@ -136,8 +150,8 @@ const FloatingChat = ({
                 <div className='px-3'>
                     <ChatInput
                         withSentButton={true}
+                        setHasReceivedNewMessage={setHasReceivedNewMessage}
                         sendMessage={sendMessage}
-                        setScrollToBottom={setScrollToBottom}
                     />
                 </div>
             </div>

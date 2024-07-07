@@ -176,6 +176,7 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
                         onChange={handleTextAreaChanged}
                         onKeyDown={handleTextAreaOnEnter}
                         value={initialTitle}
+                        maxLength={200}
                     />
                     <div className="flex flex-col gap-2 absolute top-0 -right-1 translate-x-[100%] justify-start items-start w-[200px]">
                         {

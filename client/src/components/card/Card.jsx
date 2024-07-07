@@ -109,7 +109,7 @@ const Card = ({ index, card }) => {
                                 e.preventDefault();
                                 handleOpenCardDetail();
                                 return;
-                            };
+                            }
                             if (e.key == 'q') {
                                 e.preventDefault();
                                 handleOpenQuickEditor(e);
@@ -173,7 +173,7 @@ const Card = ({ index, card }) => {
                                 </div>
                             }
 
-                            {card.description != "" && <div className='icon font-bold text-[20px]'>📝</div>}
+                            {card.description != "" && <div className='icon font-bold text-[24px]'>📝</div>}
                         </div>
 
                         <div className='text-[0.65rem] text-gray-700 font-medium mt-1 sm:mt-3 ms-[0.5rem]'>

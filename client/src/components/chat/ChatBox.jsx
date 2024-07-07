@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import useBoardState from '../../hooks/useBoardState';
 import useAuth from '../../hooks/useAuth';
 
@@ -19,30 +19,38 @@ const ChatBox = ({
 
     fetchMessages,
     isFetchingMore,
-    setIsFetchingMore,
     allMessagesFetched,
+
+    hasReceivedNewMessage,
+    setHasReceivedNewMessage,
 }) => {
     const {
         boardState,
         chats,
+        isAtBottomOfChat,
+        setIsAtBottomOfChat,
     } = useBoardState();
 
     const { auth } = useAuth();
 
     const messageEndRef = useRef();
-
-    const [scrollToBottom, setScrollToBottom] = useState(false);
+    const chatContainer = useRef();
 
     useEffect(() => {
-        messageEndRef.current.scrollIntoView({ block: 'end' });
+        if (open) {
+            messageEndRef.current.scrollIntoView({ block: 'end' });
+            if (chatContainer.current) {
+                const chatInput = chatContainer.current.querySelector('#chat-input');
+                chatInput.focus();
+            }
+        }
     }, [open]);
 
     useEffect(() => {
-        if (scrollToBottom) {
+        if (hasReceivedNewMessage && isAtBottomOfChat) {
             messageEndRef.current.scrollIntoView({ block: 'end' });
-            setScrollToBottom(false);
         }
-    }, [scrollToBottom])
+    }, [hasReceivedNewMessage, chats.length]);
 
     const handleOpenFloat = () => {
         setOpen(false);
@@ -54,17 +62,22 @@ const ChatBox = ({
     };
 
     const handleLoadMoreOnScroll = (e) => {
-        const { scrollTop } = e.currentTarget;
+        const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+
+        const offset = 15;
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - offset;
+
+        setIsAtBottomOfChat(isAtBottom);
+
         if (scrollTop === 0 && !allMessagesFetched) {
-            setIsFetchingMore(true);
             fetchMessages();
-            setScrollToBottom(false);
         }
     };
 
     return (
         <div
             id="chat-box"
+            ref={chatContainer}
             className={`${open ? 'flex' : 'hidden'} fixed flex-col border-[2px] border-black right-0 bottom-0 sm:right-1 sm:bottom-1 bg-slate-100 w-[300px] h-[400px] overflow-auto z-30`}
         >
 
@@ -105,7 +118,6 @@ const ChatBox = ({
                     displayText={'getting messages...'}
                 />
 
-
                 {
                     chats.map((item, index) => {
                         return <Chat
@@ -122,9 +134,9 @@ const ChatBox = ({
 
             <div className='bg-gray-100 px-2 mt-2'>
                 <ChatInput
-                    setIsFetchingMore={setIsFetchingMore}
                     sendMessage={sendMessage}
-                    setScrollToBottom={setScrollToBottom}
+                    setHasReceivedNewMessage={setHasReceivedNewMessage}
+                    setIsAtBottomOfChat={setIsAtBottomOfChat}
                 />
             </div>
         </div>

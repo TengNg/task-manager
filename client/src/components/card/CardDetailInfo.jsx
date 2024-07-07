@@ -50,10 +50,10 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
                         Object.values(PRIORITY_LEVELS).map((el, _) => {
                             return (
                                 <option
-                                    value={el.title}
-                                    key={el.title}
+                                    value={el.value}
+                                    key={el.value}
                                 >
-                                    {el.title.toUpperCase()}
+                                    {el.icon} {el.title}
                                 </option>
                             )
                         })

@@ -27,8 +27,9 @@ import Filter from "../components/action-menu/Filter";
 import VisibilityConfig from "../components/board/VisibilityConfig";
 import KeyBindings from "../components/ui/KeyBindings";
 import BoardActivities from "../components/activity-history/BoardActivities";
+import Toast from "../components/ui/Toast";
 
-const chatsPerPage = 10;
+const chatsPerPage = 50;
 
 const Board = () => {
     const {
@@ -71,6 +72,13 @@ const Board = () => {
 
         // socket connection state
         isConnected,
+
+        toast, setToast,
+
+        setIsAtBottomOfChat,
+
+        hasReceivedNewMessage,
+        setHasReceivedNewMessage,
 
         socket
     } = useBoardState();
@@ -236,6 +244,7 @@ const Board = () => {
 
     // fetching chat messages from current board =======================================================================
     const fetchMessages = async () => {
+        setHasReceivedNewMessage(false);
         setIsFetchingMoreMessages(true);
 
         try {
@@ -432,6 +441,8 @@ const Board = () => {
     });
 
     const handleSendMessage = async (value) => {
+        setIsAtBottomOfChat(true);
+
         const msgTrackedId = crypto.randomUUID();
 
         const newMessage = {
@@ -453,6 +464,7 @@ const Board = () => {
                 return prev.map(chat => chat.trackedId === trackedId ? { ...chat, type, createdAt: createdAt } : chat);
             });
             socket.emit("sendMessage", { ...newMessage, type, createdAt: chatMsg.createdAt, sentBy: { ...newMessage.sentBy, username: auth?.user?.username } });
+            setHasReceivedNewMessage(true);
         } catch (err) {
             console.log(err);
 
@@ -645,11 +657,13 @@ const Board = () => {
                 clearMessages={handleClearChatMessages}
 
                 isFetchingMore={isFetchingMoreMessages}
-                setIsFetchingMore={setIsFetchingMoreMessages}
                 allMessagesFetched={allMessagesFetched}
 
                 isFetching={isDataLoaded}
                 fetchMessages={fetchMessages}
+
+                hasReceivedNewMessage={hasReceivedNewMessage}
+                setHasReceivedNewMessage={setHasReceivedNewMessage}
             />
 
             <FloatingChat
@@ -661,11 +675,13 @@ const Board = () => {
                 clearMessages={handleClearChatMessages}
 
                 isFetchingMore={isFetchingMoreMessages}
-                setIsFetchingMore={setIsFetchingMoreMessages}
                 allMessagesFetched={allMessagesFetched}
 
                 isFetching={isDataLoaded}
                 fetchMessages={fetchMessages}
+
+                hasReceivedNewMessage={hasReceivedNewMessage}
+                setHasReceivedNewMessage={setHasReceivedNewMessage}
             />
 
             {
@@ -869,6 +885,14 @@ const Board = () => {
                 </div>
             </div>
 
+            <Toast
+                toast={toast}
+                setToast={setToast}
+                isChatOpen={openFloatingChat}
+                setOpenChatBox={setOpenChatBox}
+                setOpenFloatingChat={setOpenFloatingChat}
+                hasReceivedNewMessage={hasReceivedNewMessage}
+            />
         </>
     )
 }
