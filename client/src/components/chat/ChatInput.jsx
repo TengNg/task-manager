@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 
-const ChatInput = ({ sendMessage, withSentButton = false, setScrollToBottom }) => {
+const ChatInput = ({ sendMessage, withSentButton = false, setHasReceivedNewMessage }) => {
     const [message, setMessage] = useState("");
     const textAreaRef = useRef();
 
@@ -28,12 +28,12 @@ const ChatInput = ({ sendMessage, withSentButton = false, setScrollToBottom }) =
             if (e.target.value.trim() === "") return;
             e.preventDefault();
             send(e);
-            setScrollToBottom(true)
         }
     };
 
     const handleSentButtonOnClick = () => {
         if (message) {
+            setHasReceivedNewMessage(true);
             send(message);
         }
     };

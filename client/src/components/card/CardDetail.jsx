@@ -322,6 +322,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                     <div className="flex justify-start items start">
                         <div className="flex flex-col flex-1">
                             <textarea
+                                rows="1"
                                 className="card__title__textarea font-medium p-1 w-[98%] text-gray-600 bg-transparent leading-normal resize-none focus:bg-gray-100"
                                 value={title}
                                 onKeyDown={(e) => {
@@ -330,10 +331,14 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                                         e.target.blur();
                                     }
                                 }}
-                                onChange={(e) => {
-                                    setTitle(e.target.value)
+                                onFocus={(e) => {
                                     e.target.style.height = 'auto';
                                     e.target.style.height = `${e.target.scrollHeight}px`;
+                                }}
+                                onChange={(e) => {
+                                    setTitle(e.target.value)
+                                    //e.target.style.height = 'auto';
+                                    //e.target.style.height = `${e.target.scrollHeight}px`;
                                 }}
                                 maxLength={200}
                             />

@@ -153,6 +153,7 @@ const CardComposer = ({ list, open, setOpen }) => {
                 onKeyDown={handleTextAreaOnEnter}
                 onBlur={handleInputBlur}
                 value={text}
+                maxLength={200}
             >
             </textarea>
             <div className="flex gap-1">

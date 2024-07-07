@@ -6,6 +6,7 @@ import { createContext, useEffect, useMemo, useState } from "react";
 import useLocalStorage from "../hooks/useLocalStorage";
 import LOCAL_STORAGE_KEYS from "../data/localStorageKeys";
 import useAuth from "../hooks/useAuth";
+import dateFormatter from "../utils/dateFormatter";
 
 const BoardStateContext = createContext({});
 
@@ -31,6 +32,16 @@ export const BoardStateContextProvider = ({ children }) => {
     const [theme, setTheme] = useLocalStorage(LOCAL_STORAGE_KEYS.BOARD_ITEM_THEME, {});
     const [debugModeEnabled, setDebugModeEnabled] = useLocalStorage(LOCAL_STORAGE_KEYS.DEBUG_MODE_ENABLED, {});
 
+    const [hasReceivedNewMessage, setHasReceivedNewMessage] = useState(true);
+    const [isAtBottomOfChat, setIsAtBottomOfChat] = useState(true);
+    const [toast, setToast] = useState({
+        open: false,
+        message: '',
+        duration: null,
+        timeSent: null,
+        from: null,
+    });
+
     const [isConnected, setIsConnected] = useState(false);
 
     const { auth } = useAuth();
@@ -41,6 +52,10 @@ export const BoardStateContextProvider = ({ children }) => {
         }
         return io(SOCKET_URL);
     }, [auth?.accessToken]);
+
+    const notify = ({ message, timeSent, duration, from }) => {
+        setToast({ open: true, message, timeSent, duration, from });
+    };
 
     useEffect(() => {
         const onConnect = async () => {
@@ -63,6 +78,12 @@ export const BoardStateContextProvider = ({ children }) => {
             if (socket.id === userSocketId) {
                 window.location.reload();
             }
+        });
+
+        socket.once("memberJoined", (data) => {
+            const { username } = data;
+            const timestamp = Date.now();
+            console.log(`${username} joined the board, at ${dateFormatter(timestamp)}`);
         });
 
         socket.on("memberLeaved", (data) => {
@@ -272,6 +293,14 @@ export const BoardStateContextProvider = ({ children }) => {
 
         socket.on("receiveMessage", (data) => {
             setChats(prev => [...prev, data]);
+            notify({
+                from: { username: data.sentBy.username },
+                message: data.content,
+                timeSent: data.createdAt,
+                duration: null,
+            });
+
+            setHasReceivedNewMessage(true);
         });
 
         socket.on("messageDeleted", (data) => {
@@ -589,6 +618,11 @@ export const BoardStateContextProvider = ({ children }) => {
                 hasFilter, setHasFilter,
 
                 isConnected, setIsConnected,
+
+                toast, setToast,
+
+                hasReceivedNewMessage, setHasReceivedNewMessage,
+                isAtBottomOfChat, setIsAtBottomOfChat,
 
                 socket,
             }}

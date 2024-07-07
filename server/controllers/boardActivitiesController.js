@@ -38,6 +38,25 @@ const getBoardActivities = async (req, res) => {
     return res.json({ activities });
 };
 
+const deleteAllBoardActivities = async (req, res) => {
+    const { username } = req.user;
+
+    const foundUser = User.findOne({ username }).lean();
+    if (!foundUser) return res.status(403).json({ msg: "user not found" });
+
+    const { boardId } = req.params;
+    const foundBoard = await Board.findById(boardId).lean();
+    if (!foundBoard) return res.status(404).json({ msg: "board not found" });
+
+    if (foundBoard.createdBy.toString() !== foundUser._id.toString()) {
+        return res.status(401).json({ msg: 'Not authorize' });
+    }
+
+    await BoardActivity.deleteMany({ board: boardId });
+    return res.status(200).json({ msg: "activities deleted" });
+};
+
 module.exports = {
-    getBoardActivities
+    getBoardActivities,
+    deleteAllBoardActivities
 };
