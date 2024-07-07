@@ -25,24 +25,26 @@ const Toast = ({ toast, setToast, isChatOpen, setOpenChatBox, setOpenFloatingCha
     return (
         <div
             className={`${toast.open && !isChatOpen ? 'flex' : 'hidden'} fixed flex-col border-[3px] border-rose-400 right-3 top-3 bg-gray-800 text-gray-50 w-[300px] overflow-auto z-30 opacity-80`}
-            onClick={(e) => {
-                e.stopPropagation();
-                if (!isChatOpen) {
-                    setOpenChatBox(true)
-                }
-                setToast({ ...toast, open: false });
-            }}
-            onContextMenu={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (!isChatOpen) {
-                    setOpenFloatingChat(true)
-                }
-                setToast({ ...toast, open: false });
-            }}
         >
             <div className='flex w-full justify-between items-center border-b-[1px] border-gray-600 p-3'>
-                <p className="font-text-composer text-sm">
+                <div
+                    className="font-text-composer text-sm cursor-pointer"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (!isChatOpen) {
+                            setOpenChatBox(true)
+                        }
+                        setToast({ ...toast, open: false });
+                    }}
+                    onContextMenu={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (!isChatOpen) {
+                            setOpenFloatingChat(true)
+                        }
+                        setToast({ ...toast, open: false });
+                    }}
+                >
                     📮 message
                     {
                         toast.from && (<>
@@ -54,7 +56,7 @@ const Toast = ({ toast, setToast, isChatOpen, setOpenChatBox, setOpenFloatingCha
                             </span>
                         </>)
                     }
-                </p>
+                </div>
                 <button
                     className="flex justify-center items-center text-sm"
                     onClick={() => setToast({ ...toast, open: false })}
@@ -65,6 +67,9 @@ const Toast = ({ toast, setToast, isChatOpen, setOpenChatBox, setOpenFloatingCha
             <div className='text-sm text-wrap break-words flex flex-col gap-1 px-3 pt-2'>
                 <div
                     className='font-text-composer font-medium max-h-[120px] overflow-auto'
+                    onClick={() => {
+                        setToast({ ...toast, open: false });
+                    }}
                 >
                     -&gt; {toast.message}
                 </div>

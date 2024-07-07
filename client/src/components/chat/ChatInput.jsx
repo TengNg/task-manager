@@ -41,13 +41,13 @@ const ChatInput = ({ sendMessage, withSentButton = false, setHasReceivedNewMessa
     return (
         <div className="flex w-full py-2 gap-1 bg-slate-100 justify-start items-start">
             <textarea
+                id='chat-input'
                 className="text-[0.75rem] text-gray-700 bg-gray-100 min-h-[2.35rem] max-h-[100px] border border-gray-400 leading-normal overflow-y-auto resize-none w-full py-2 px-3 font-medium placeholder-gray-500 focus:outline-none focus:bg-white"
                 placeholder='Write something...'
                 ref={textAreaRef}
                 value={message}
                 onChange={handleTextAreaChanged}
                 onKeyDown={handleKeyDown}
-                required
             >
             </textarea>
 

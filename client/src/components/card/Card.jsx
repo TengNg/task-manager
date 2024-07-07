@@ -109,7 +109,7 @@ const Card = ({ index, card }) => {
                                 e.preventDefault();
                                 handleOpenCardDetail();
                                 return;
-                            };
+                            }
                             if (e.key == 'q') {
                                 e.preventDefault();
                                 handleOpenQuickEditor(e);

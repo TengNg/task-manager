@@ -34,10 +34,15 @@ const ChatBox = ({
     const { auth } = useAuth();
 
     const messageEndRef = useRef();
+    const chatContainer = useRef();
 
     useEffect(() => {
         if (open) {
             messageEndRef.current.scrollIntoView({ block: 'end' });
+            if (chatContainer.current) {
+                const chatInput = chatContainer.current.querySelector('#chat-input');
+                chatInput.focus();
+            }
         }
     }, [open]);
 
@@ -72,6 +77,7 @@ const ChatBox = ({
     return (
         <div
             id="chat-box"
+            ref={chatContainer}
             className={`${open ? 'flex' : 'hidden'} fixed flex-col border-[2px] border-black right-0 bottom-0 sm:right-1 sm:bottom-1 bg-slate-100 w-[300px] h-[400px] overflow-auto z-30`}
         >
 
