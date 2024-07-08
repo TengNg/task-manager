@@ -160,15 +160,15 @@ const Filter = ({ open, setOpen }) => {
 
                         {
                             Object.values(PRIORITY_LEVELS).map(item => {
-                                const { title, color } = item;
+                                const { title, value, color } = item;
                                 return (<div
                                     key={title}
                                     className='text-[0.75rem] cursor-pointer w-full p-1 px-3 text-gray-50 font-semibold uppercase rounded-sm hover:brightness-105'
                                     onClick={() => {
-                                        searchParams.set('priority', title);
+                                        searchParams.set('priority', value);
                                         setSearchParams(searchParams, { replace: true });
                                     }}
-                                    style={{ backgroundColor: color.rgba, textDecoration: searchParams.get('priority') === title ? 'underline' : 'none' }}
+                                    style={{ backgroundColor: color.rgba, textDecoration: searchParams.get('priority') === value ? 'underline' : 'none' }}
                                 >
                                     {title}
                                 </div>)
