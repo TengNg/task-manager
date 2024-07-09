@@ -75,7 +75,7 @@ const Chat = ({
                     // render message content by message type ==========================================================
 
                     type === 'MESSAGE' ? (
-                        <div className={`max-w-[95%] w-fit flex justify-center items-center ${highlightOwnMessages && chat.sentBy.username === auth?.user?.username ? 'bg-teal-50 border-[1px] border-teal-600' : `bg-slate-100 ${inMiniChat && 'bg-slate-50 border-[1px] border-gray-500'}`} rounded-md ${padding.x} ${padding.y}`}>
+                        <div className={`max-w-[95%] w-fit flex justify-center items-center ${highlightOwnMessages && chat.sentBy.username === auth?.user?.username ? 'bg-teal-50 border-[1px] border-teal-600' : `bg-slate-100 ${inMiniChat && 'bg-slate-50 border-[1px] border-gray-500'}`} rounded ${padding.x} ${padding.y}`}>
                             <div className="w-full break-words whitespace-pre-line text-[0.75rem] px-[1px] text-gray-600 font-semibold">
                                 {chatContent}
                             </div>

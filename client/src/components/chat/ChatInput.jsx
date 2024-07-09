@@ -54,10 +54,10 @@ const ChatInput = ({ sendMessage, withSentButton = false, setHasReceivedNewMessa
             {
                 withSentButton &&
                 <button
-                    className="d-flex h-100 justify-center items-center h-[2.35rem] text-[11px] text-gray-500 border-[1px] border-gray-500 px-3 hover:text-white hover:bg-gray-500 transition-all"
+                    className="d-flex h-100 justify-center items-center h-[2.35rem] text-[11px] text-gray-500 border-[1px] border-gray-500 px-3 hover:text-white hover:bg-gray-500"
                     onClick={handleSentButtonOnClick}
                 >
-                        send
+                    send
                 </button>
             }
         </div>

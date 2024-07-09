@@ -7,9 +7,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import Loading from '../ui/Loading';
 
-const ACTIVITIES_PER_PAGE = 10;
+import useAuth from '../../hooks/useAuth';
+import useBoardState from '../../hooks/useBoardState';
+
+const ACTIVITIES_PER_PAGE = 50;
 
 const BoardActivities = ({ boardId, open, setOpen }) => {
+    const { auth } = useAuth();
+    const { boardState } = useBoardState();
+
     const dialog = useRef();
 
     const axiosPrivate = useAxiosPrivate();
@@ -76,6 +82,17 @@ const BoardActivities = ({ boardId, open, setOpen }) => {
         }
     };
 
+    const handleCleanBoardActivities = async () => {
+        try {
+            if (confirm('Are you sure you want to clear all board activities ?')) {
+                await axiosPrivate.delete(`/board_activities/${boardId}`);
+                setActivities([]);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     const handleCloseOnOutsideClick = (e) => {
         if (e.target === dialog.current) {
             dialog.current.close();
@@ -94,7 +111,26 @@ const BoardActivities = ({ boardId, open, setOpen }) => {
         >
 
             <div className='flex w-full justify-between items-center border-black p-3'>
-                <p className="font-normal text-[1rem] text-gray-700">board activities</p>
+                <div className='flex justify-center gap-3'>
+                    <div className="font-normal text-[1rem] text-gray-700">board activities</div>
+
+                    <div className='text-[0.75rem] text-teal-600 bg-blue-100 py-1 px-2 rounded font-bold'>
+                        {activities.length}
+                    </div>
+
+                    {
+                        boardState?.board?.createdBy?._id === auth?.user?._id &&
+                        <div
+                            className='text-[0.75rem] text-red-600 hover:underline cursor-pointer bg-rose-100 py-1 px-2 rounded'
+                            onClick={() => {
+                                handleCleanBoardActivities();
+                            }}
+                            title='remove all activities'
+                        >
+                            clear
+                        </div>
+                    }
+                </div>
                 <button
                     className="text-gray-600 flex justify-center items-center"
                     onClick={handleClose}
@@ -131,7 +167,7 @@ const BoardActivities = ({ boardId, open, setOpen }) => {
                 }
 
                 {
-                    !allActivitiesFetched &&
+                    (!allActivitiesFetched && activities.length > 0) &&
                     <button
                         className="text-gray-600 flex justify-center items-center bg-gray-200 hover:bg-gray-300 p-2"
                         onClick={() => {
