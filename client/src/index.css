@@ -7,6 +7,10 @@
         @apply flex justify-center items-center
     }
 
+    .badge {
+        @apply text-[0.75rem] py-1 px-2 rounded hover:brightness-105 font-medium
+    }
+
     .underline--style {
         @apply before:content-[''] before:absolute before:w-[50%] before:h-[10%] before:bg-gray-600 before:bottom-[-0.5rem] before:mx-auto before:left-0 before:right-0 before:transition-all before:duration-500
     }
@@ -111,6 +115,10 @@ label {
     margin-top: 0.5rem;
     font-weight: 500;
     font-size: 0.8rem;
+}
+
+input {
+    border-radius: 0;
 }
 
 div:focus, dialog:focus {
