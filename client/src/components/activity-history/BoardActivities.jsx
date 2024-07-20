@@ -114,14 +114,14 @@ const BoardActivities = ({ boardId, open, setOpen }) => {
                 <div className='flex justify-center gap-3'>
                     <div className="font-normal text-[1rem] text-gray-700">board activities</div>
 
-                    <div className='text-[0.75rem] text-teal-600 bg-blue-100 py-1 px-2 rounded font-bold'>
+                    <div className='badge text-teal-600 bg-blue-100'>
                         {activities.length}
                     </div>
 
                     {
                         boardState?.board?.createdBy?._id === auth?.user?._id &&
                         <div
-                            className='text-[0.75rem] text-red-600 hover:underline cursor-pointer bg-rose-100 py-1 px-2 rounded'
+                            className='badge text-red-500 bg-rose-100 cursor-pointer'
                             onClick={() => {
                                 handleCleanBoardActivities();
                             }}
