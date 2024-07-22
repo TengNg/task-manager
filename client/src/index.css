@@ -185,6 +185,11 @@ div:focus, dialog:focus {
     overflow: auto;
 }
 
+.rsw-btn[type='button'][title='Link'] {
+    display: none;
+    visibility: hidden;
+}
+
 
 /* Loader ==================================================================================================== */
 
