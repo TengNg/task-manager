@@ -35,7 +35,7 @@ const JoinRequests = ({
                     </button>
                 </div>
 
-                <div className='relative box--style border-[2px] border-gray-600 shadow-gray-600 min-h-[350px] max-h-[600px] mx-auto overflow-auto p-4 md:p-8 bg-gray-50 flex flex-col gap-4'>
+                <div className='relative box--style border-[2px] border-gray-600 shadow-gray-600 min-h-[350px] max-h-[600px] mx-auto overflow-auto p-4 md:p-8 bg-gray-100 flex flex-col gap-4'>
                     <Loading
                         position='absolute'
                         loading={loading}
@@ -52,7 +52,7 @@ const JoinRequests = ({
                         return <div
                             key={index}
                             className={`button--style--rounded rounded-none border-gray-700 shadow-gray-700 flex justify-between flex-wrap sm:flex-nowrap items-center p-4
-                                                        ${status === "accepted" ? 'bg-blue-100' : status === "rejected" ? 'bg-red-100' : 'bg-gray-50'}`}
+                                                        ${status === "accepted" ? 'bg-blue-100' : status === "rejected" ? 'bg-red-100' : 'bg-slate-100'}`}
                         >
                             <div className='flex gap-2 mb-4 sm:mb-0'>
                                 <div className="sm:mt-1 sm:block hidden">

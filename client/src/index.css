@@ -52,7 +52,7 @@
     }
 
     .button--style--dark {
-        @apply px-3 py-2 bg-gray-600 text-white hover:bg-gray-500 transition-all
+        @apply px-3 py-2 bg-gray-600 text-white hover:bg-gray-500
     }
 
     .button--style--rounded {
@@ -117,7 +117,7 @@ label {
     font-size: 0.8rem;
 }
 
-input {
+input, textarea {
     border-radius: 0;
 }
 
@@ -265,22 +265,6 @@ div:focus, dialog:focus {
 
     #activity-item {
         text: 0.5rem;
-    }
-
-    .list__item {
-        width: 240px;
-    }
-
-    .card__item {
-        padding: 0.5rem;
-    }
-
-    .list__item, .list__item *:not(.icon) {
-        font-size: 9px;
-    }
-
-    .card__item, .card__item *:not(.icon) {
-        font-size: 9px;
     }
 
     #bottom-buttons > button {

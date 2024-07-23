@@ -62,7 +62,7 @@ export default function ListMenu({ list, setOpen, handleDelete, handleCopy, proc
 
             <div className='border-b-[1px] border-b-black pb-2'>
                 <div className='text-[9px] sm:text-[0.8rem]'>title: <span className='font-medium underline'>{list.title}</span></div>
-                <div className='text-[9px] sm:text-[0.8rem] mt-1'>created at: {dateFormatter(list.createdAt)}</div>
+                <div className='text-[9px] sm:text-[0.8rem] mt-1'>created: {dateFormatter(list.createdAt, { weekdayFormat: true })}</div>
             </div>
             <div className='flex flex-col gap-3 mt-3'>
                 <button

@@ -9,7 +9,7 @@ const ThemesDialog = ({ open, setOpen, backgroundTheme, setBackgroundTheme }) =>
             setOpen={setOpen}
         >
 
-            <div className='flex flex-col gap-3'>
+            <div className='flex flex-col gap-3 h-[420px]'>
                 {
                     Object.entries(backgroundThemes).map(el => {
                         const [title, color] = el;

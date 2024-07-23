@@ -3,28 +3,40 @@ export default function dateFormatter(miliseconds, option = { weekdayFormat: fal
 
     const date = new Date(miliseconds);
 
-    if (option.weekdayFormat) {
+    const year = date.getFullYear();
+    const currentYear = new Date().getFullYear();
+
+    if (option.weekdayFormat && year === currentYear) {
         const options = {
             weekday: 'short',
             month: 'short',
             day: '2-digit'
         };
+
         const formattedDate = date.toLocaleDateString('en-US', options);
-        const time = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-        return `${formattedDate} ${time}`;
+
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const time = hours + ':' + minutes;
+
+        return `${formattedDate}, ${time}`;
     }
 
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const weekday = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+    const wday = date.getDay();
+
+    const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const m = date.getMonth();
+
     const day = String(date.getDate()).padStart(2, '0');
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const seconds = String(date.getSeconds()).padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    return option.withTime ? `${year}-${month}-${day}, ${hours}:${minutes}:${seconds} ${ampm}` : `${year}-${month}-${day}`;
+
+    return option.withTime ? `${weekday[wday]}, ${day} ${month[m]} ${year} - ${hours}:${minutes}:${seconds}` : `${weekday[wday]}, ${month[m]} ${day}, ${year}`;
 }
 
-export const formatDateToYYYYMMDD = (miliseconds) => {
+export const formatDateToYYYYMMDD = (miliseconds, option = { withTime: false }) => {
     if (!miliseconds) return '';
 
     const date = new Date(miliseconds);
@@ -32,6 +44,13 @@ export const formatDateToYYYYMMDD = (miliseconds) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
+
+    if (option.withTime) {
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
 
     return `${year}-${month}-${day}`;
 }

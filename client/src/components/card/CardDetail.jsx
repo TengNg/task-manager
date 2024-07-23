@@ -310,11 +310,11 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                     displayText={'processing...'}
                 />
 
-                <div className='w-full h-full flex flex-col gap-3'>
+                <div className='w-full h-full flex flex-col gap-3 min-h-[600px] md:min-h-[700px]'>
                     {
                         card.highlight != null &&
                         <div
-                            className="w-full h-[1.25rem]"
+                            className="w-full h-[10px] sm:h-[15px]"
                             style={{ backgroundColor: `${card.highlight}` }}
                         ></div>
                     }

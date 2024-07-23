@@ -5,7 +5,7 @@ import useAuth from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import useBoardState from "../../hooks/useBoardState";
 import { useNavigate } from "react-router-dom";
-import dateFormatter from "../../utils/dateFormatter";
+import { formatDateToYYYYMMDD } from "../../utils/dateFormatter";
 
 const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration, setOpenBoardActivities }) => {
     const { auth } = useAuth();
@@ -146,7 +146,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration, s
                     <div className="font-medium text-gray-600 my-3 border-b-gray-400 flex--center">information</div>
 
                     <p className="font-normal text-start text-[0.75rem]">created by: <span className='font-medium underline'>{auth?.user?.username}</span></p>
-                    <p className="font-normal text-[0.75rem] text-start mt-2">created at: {dateFormatter(boardState.board.createdAt)}</p>
+                    <p className="font-normal text-[0.75rem] text-start mt-2">created at: {formatDateToYYYYMMDD(boardState.board.createdAt, { withTime: true })}</p>
                     <p
                         className="font-normal text-[0.75rem] text-start mt-2 cursor-pointer hover:opacity-[75%]"
                         onClick={() => {
