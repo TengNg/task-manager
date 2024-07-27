@@ -29,7 +29,7 @@ const BoardForm = forwardRef(({}, ref) => {
         <>
             <div
                 ref={ref}
-                className="absolute board--style border-[2px] border-gray-600 shadow-gray-600 px-4 py-4 w-[200px] sm:w-[300px] flex flex-col gap-3 bg-gray-100 z-20 top-0"
+                className="absolute board--style border-[2px] border-gray-600 shadow-gray-600 px-4 py-4 w-[210px] sm:w-[300px] flex flex-col gap-3 bg-gray-100 z-20 top-0"
             >
                 <p className="text-[12px] sm:text-[0.85rem] text-gray-600 font-medium">new board</p>
 

@@ -15,7 +15,7 @@ const BoardItem = ({ item }) => {
         >
 
             <div
-                className="w-[200px] sm:w-[250px] h-[120px] sm:h-[135px] board--style board--hover md:border-[2px] border-[2px] border-gray-600 py-3 px-5 shadow-gray-600 select-none relative"
+                className="w-[210px] sm:w-[250px] h-[120px] sm:h-[135px] board--style board--hover md:border-[2px] border-[2px] border-gray-600 py-3 px-5 shadow-gray-600 select-none relative"
                 style={{ backgroundColor: 'rgba(241, 241, 241, 0.5)' }}
             >
 
@@ -24,7 +24,7 @@ const BoardItem = ({ item }) => {
                     && <div className="absolute top-0 right-0 w-[10px] h-[10px] bg-gray-600 z-20"></div>
                 }
 
-                <p className="text-[12px] sm:text-[1rem] font-semibold overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
+                <p className="text-[12px] sm:text-[1rem] font-medium sm:font-semibold overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
 
                 <p className="text-[10px] sm:text-[0.75rem] mt-1">{dateFormatter(createdAt)}</p>
 

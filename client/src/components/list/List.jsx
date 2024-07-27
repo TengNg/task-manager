@@ -175,14 +175,14 @@ const List = ({ index, list, cards }) => {
                             className="relative w-full bg-transparent">
                             <div
                                 ref={titleRef}
-                                className="sm:w-[240px] w-[180px] font-semibold text-gray-600 break-words whitespace-pre-line px-3"
+                                className="sm:w-[240px] w-[180px] font-medium sm:font-semibold text-gray-700 break-words whitespace-pre-line px-3"
                                 onMouseUp={handleMouseUp}
                             >
                                 <p>{list.title}</p>
                             </div>
 
                             <textarea
-                                className="hidden bg-transparent h-fit sm:w-[240px] w-[180px] focus:outline-none font-semibold px-3 text-gray-600 leading-normal overflow-y-hidden resize-none"
+                                className="hidden bg-transparent h-fit sm:w-[240px] w-[180px] focus:outline-none font-medium sm:font-semibold px-3 text-gray-600 leading-normal overflow-y-hidden resize-none"
                                 value={list.title}
                                 ref={textAreaRef}
                                 onFocus={handleTextAreaOnFocus}
@@ -240,7 +240,7 @@ const List = ({ index, list, cards }) => {
                         {
                             openCardComposer === false &&
                             <button
-                                className="flex gap-2 group text-gray-400 mt-2 mx-3 p-2 text-[0.8rem] hover:bg-gray-200 font-semibold text-start"
+                                className="flex gap-2 group text-gray-400 mt-2 mx-3 p-2 text-[0.8rem] hover:bg-gray-200 font-medium sm:font-semibold text-start"
                                 onClick={() => setOpenCardComposer(true)}
                             >
                                 <span>
@@ -250,7 +250,7 @@ const List = ({ index, list, cards }) => {
                         }
 
                         {
-                            <div className='flex items-center gap-1 ms-auto me-1 text-gray-500 text-[0.65rem] font-medium'>
+                            <div className='flex items-center gap-1 ms-auto me-1 text-gray-500 text-[0.65rem] font-medium sm:font-semibold'>
                                 {
                                     debugModeEnabled.enabled &&
                                         <span>[rank: {list.order}]</span>

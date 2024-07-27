@@ -120,9 +120,9 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
             </div>
 
             <div className={`mt-1 ${dateToCompare(dueDate) && 'text-red-700'}`}>
-                <label htmlFor="due-date" className='font-normal'>due date: </label>
+                <label htmlFor="due-date" className='font-normal text-[0.65rem] sm:text-[0.8rem]'>due date: </label>
                 <input
-                    className={`bg-transparent`} type="date" id="due-date"
+                    className='bg-transparent text-[0.65rem] sm:text-[0.8rem]' type="date" id="due-date"
                     value={dueDate}
                     onChange={(e) => {
                         handleChangeDueDate(e.target.value);

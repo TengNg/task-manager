@@ -233,7 +233,7 @@ const Boards = () => {
                         </div>
                     </div>
 
-                    <div className="relative flex flex-col mx-auto sm:m-0 sm:justify-start sm:items-start sm:flex-row sm:flex-wrap gap-4 px-10 p-6 sm:p-8 border-[2px] box--style shadow-gray-600 border-gray-600 w-fit sm:w-full">
+                    <div className="relative flex flex-col items-center mx-auto sm:m-0 sm:justify-start sm:items-start sm:flex-row sm:flex-wrap gap-4 p-6 sm:p-8 border-[2px] box--style shadow-gray-600 border-gray-600 w-[280px] sm:w-full">
 
                         {
                             filteredBoards(boardFilter).map(item => {
@@ -246,7 +246,7 @@ const Boards = () => {
                             })
                         }
 
-                        <div className="relative w-[200px] sm:w-[250px] h-[120px] sm:h-[135px]">
+                        <div className="relative ms-2 sm:ms-0 w-[210px] sm:w-[250px] h-[120px] sm:h-[135px]">
                             <div
                                 onClick={() => setOpenBoardForm(open => !open)}
                                 ref={createBoardButtonRef}
@@ -282,7 +282,7 @@ const Boards = () => {
 
 
                 <button
-                    className='fixed bottom-4 right-4 w-[20px] h-[20px] text-[12px] bg-gray-500 hover:bg-gray-600 text-white rounded-full'
+                    className='fixed hidden sm:block bottom-4 right-4 w-[20px] h-[20px] text-[12px] bg-gray-500 hover:bg-gray-600 text-white rounded-full'
                     onClick={() => {
                         setOpenHelp(prev => !prev)
                     }}

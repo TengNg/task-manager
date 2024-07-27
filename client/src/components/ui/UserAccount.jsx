@@ -107,7 +107,7 @@ const UserAccount = () => {
                 collapse === false &&
                 <div
                     ref={userInfoRef}
-                    className='absolute bottom-0 right-0 translate-y-[105%] flex flex-col box--style shadow-gray-600 border-[2px] border-gray-600 p-3 select-none gap-4 bg-gray-100'
+                    className='absolute bottom-0 right-0 translate-y-[105%] flex flex-col box--style shadow-gray-600 border-[2px] border-gray-600 p-3 select-none gap-4 bg-gray-100 min-w-[220px]'
                 >
                     {
                         Object.keys(auth).length > 0 && <>
@@ -124,16 +124,16 @@ const UserAccount = () => {
                             </div>
 
                             <div className='select-none font-medium text-[0.8rem] max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis text-gray-700'>
-                                joined at: {dateFormatter(auth?.user?.createdAt, { withTime: false })}
+                                {dateFormatter(auth?.user?.createdAt, { withTime: false })}
                             </div>
 
                             <div className='flex flex-col gap-2'>
                                 <button
                                     onClick={handleOpenProfile}
-                                    className="button--style text-[0.75rem] font-medium">Profile</button>
+                                    className="button--style text-[0.75rem] font-medium hover:underline">Profile</button>
                                 <button
                                     onClick={handleOpenThemesDialog}
-                                    className="button--style text-[0.75rem] font-medium">Themes</button>
+                                    className="button--style text-[0.75rem] font-medium hover:underline">Themes</button>
                                 <button
                                     onClick={handleLogout}
                                     className="button--style--dark text-[0.75rem] font-medium text-gray-200">Log out</button>

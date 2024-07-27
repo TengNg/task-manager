@@ -130,7 +130,7 @@ const Card = ({ index, card }) => {
                     >
 
                         <p
-                            className="group-hover:underline w-full h-full bg-transparent font-semibold text-gray-600 rounded-md px-2 focus:outline-none text-sm break-words whitespace-pre-line"
+                            className="group-hover:underline w-full h-full bg-transparent font-medium sm:font-semibold text-gray-700 rounded-md px-2 focus:outline-none text-sm break-words whitespace-pre-line"
                         >
                             {card.title}
                         </p>
@@ -138,7 +138,7 @@ const Card = ({ index, card }) => {
                         {
                             card.verified &&
                             <div
-                                className='absolute bottom-[0.1rem] right-[0.1rem] sm:bottom-2 sm:right-2 w-[10px] h-[10px] sm:w-[18px] sm:h-[18px] p-1 sm:p-2 bg-emerald-700 opacity-40 text-gray-50 flex justify-center items-center rounded-sm'
+                                className='absolute bottom-1 right-1 w-[18px] h-[18px] p-2 bg-green-800 opacity-45 text-gray-50 flex justify-center items-center rounded-sm'
                             >
                                 <span className='font-medium'>
                                     ✓
@@ -176,11 +176,11 @@ const Card = ({ index, card }) => {
                             {card.description != "" && <div className='icon font-bold text-[24px]'>📝</div>}
                         </div>
 
-                        <div className='text-[0.65rem] text-gray-700 font-medium mt-1 sm:mt-3 ms-[0.5rem]'>
+                        <div className='text-[12px] text-gray-700 font-medium mt-3 ms-[0.5rem]'>
                             {
                                 card.createdAt
                                     ? <span>
-                                        created: {dateFormatter(card.createdAt)}
+                                        created: {dateFormatter(card.createdAt, { weekdayFormat: true, withTime: false })}
                                     </span>
                                     : <span className='text-red-600'>
                                         error
@@ -190,7 +190,7 @@ const Card = ({ index, card }) => {
 
                         {
                             card?.dueDate &&
-                            <div className='text-[0.65rem] text-gray-700 font-medium mt-1 ms-[0.5rem]'>due date: {dateFormatter(card?.dueDate, { withWeekday: true })}</div>
+                            <div className='text-[12px] text-gray-700 font-medium mt-1 ms-[0.5rem]'>due date: {dateFormatter(card?.dueDate, { weekdayFormat: true })}</div>
                         }
 
                         {
