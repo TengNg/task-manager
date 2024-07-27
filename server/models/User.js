@@ -53,7 +53,18 @@ const UserSchema = new mongoose.Schema({
         //     },
         //     message: 'max 4 pinned boards'
         // }
+
     },
+
+    following: {
+        type: [ { type: mongoose.Schema.Types.ObjectId, ref: 'User' } ],
+        default: []
+    },
+
+    followers: {
+        type: [ { type: mongoose.Schema.Types.ObjectId, ref: 'User' } ],
+        default: []
+    }
 });
 
 module.exports = mongoose.model('User', UserSchema);
