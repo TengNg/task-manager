@@ -172,8 +172,6 @@ const Card = ({ index, card }) => {
                                     </span>
                                 </div>
                             }
-
-                            {card.description != "" && <div className='icon font-bold text-[24px]'>📝</div>}
                         </div>
 
                         <div className='text-[12px] text-gray-700 font-medium mt-3 ms-[0.5rem]'>

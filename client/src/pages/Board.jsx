@@ -209,15 +209,15 @@ const Board = () => {
         setIsDataLoaded(false);
 
         const fetchData = async () => {
-            const boardsResponse = await axiosPrivate.get(`/boards/${boardId}`);
+            const boardResponse = await axiosPrivate.get(`/boards/${boardId}`);
             const chatsResponse = await axiosPrivate.get(`/chats/b/${boardId}?perPage=10&page=1`);
             const newMessages = chatsResponse.data.messages.reverse();
 
             // set document title as board title
-            document.title = boardsResponse.data.board.title;
+            document.title = boardResponse.data.board.title;
 
-            setBoardState(boardsResponse.data);
-            setTitle(boardsResponse.data.board.title);
+            setBoardState(boardResponse.data);
+            setTitle(boardResponse.data.board.title);
 
             setChats(newMessages);
             setChatsPage(2);
@@ -526,7 +526,7 @@ const Board = () => {
         return (
             <>
                 <section className='w-full flex flex-col justify-center items-center gap-4'>
-                    <p className="font-medium mx-auto text-center mt-20 text-gray-600">{error.msg}.</p>
+                    <p className="font-medium mx-auto text-center mt-20 text-gray-600">{error.msg}</p>
                     <button
                         className='button--style text-sm hover:bg-gray-600 hover:text-gray-100'
                         onClick={() => navigate('/boards')}
@@ -540,7 +540,7 @@ const Board = () => {
 
     if (isDataLoaded === false) {
         return <>
-            <div className="font-semibold mx-auto text-center mt-20 text-gray-600">getting board data</div>
+            <div className="font-medium mx-auto text-center mt-20 text-gray-600">getting board data</div>
             <div className="loader mx-auto my-8"></div>
         </>
     }
@@ -711,7 +711,7 @@ const Board = () => {
                     <div>
                         <input
                             maxLength={70}
-                            className={`flex-1 bg-transparent overflow-hidden text-gray-700 whitespace-nowrap text-ellipsis border-b-[3px] bg-gray-100 border-gray-700 py-1 font-bold select-none font-mono mb-2 focus:outline-none`}
+                            className={`flex-1 bg-transparent overflow-hidden text-gray-700 whitespace-nowrap text-ellipsis border-b-[2px] bg-gray-100 border-gray-700 py-1 font-medium sm:font-bold select-none mb-2 focus:outline-none`}
                             id="board-title-input"
                             style={{
                                 width: `${boardState.board.title.length}ch`,
@@ -719,7 +719,6 @@ const Board = () => {
                                 maxWidth: '400px',
                             }}
                             onKeyDown={(e) => handleBoardTitleInputOnKeyDown(e)}
-                            onFocus={(e) => e.target.select()}
                             onChange={(e) => setBoardTitle(e.target.value)}
                             onBlur={(e) => handleBoardTitleInputOnBlur(e)}
                             value={boardState.board.title}
@@ -733,7 +732,7 @@ const Board = () => {
                         <div>
                             <div
                                 onClick={() => setOpenChatBox(prev => !prev)}
-                                className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-medium
                                         ${(openChatBox || openFloatingChat) ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                             >Chat</div>
                         </div>
@@ -741,7 +740,7 @@ const Board = () => {
                         <div>
                             <div
                                 onClick={() => setOpenFilter(prev => !prev)}
-                                className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-medium
                                         ${openFilter ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'} ${hasFilter ? 'text-white bg-teal-600' : ''}`}
                             >Filter</div>
                         </div>
@@ -749,7 +748,7 @@ const Board = () => {
                         <div>
                             <div
                                 onClick={() => setOpenInvitationForm(true)}
-                                className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                className={`h-full flex--center cursor-pointer select-none border-gray-600 shadow-gray-600 w-[80px] px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-medium
                                         ${openInvitationForm ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                             >Invite</div>
                         </div>
@@ -761,7 +760,7 @@ const Board = () => {
                                         setOpenBoardMenu(prev => !prev);
                                     }
                                 }}
-                                className={`flex--center cursor-pointer select-none h-full border-gray-600 w-[80px] shadow-gray-600 px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-bold
+                                className={`flex--center cursor-pointer select-none h-full border-gray-600 w-[80px] shadow-gray-600 px-4 bg-sky-100 border-[2px] text-[0.75rem] text-gray-600 font-medium
                                     ${openBoardMenu ? 'shadow-[0_1px_0_0] mt-[2px]' : 'shadow-[0_3px_0_0]'}`}
                             >
                                 Options

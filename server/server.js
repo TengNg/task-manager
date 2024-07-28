@@ -31,10 +31,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json())
 
-app.get("/", (_, res) => {
-    res.json({ msg: "home page" });
-});
-
 app.use("/home", require("./routes/home"));
 app.use("/register", require("./routes/register"));
 app.use("/login", require("./routes/login"));

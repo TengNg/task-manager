@@ -18,13 +18,13 @@ const handleLogin = async (req, res) => {
     const accessToken = jwt.sign(
         { "username": foundUser.username },
         process.env.ACCESS_TOKEN,
-        { expiresIn: '600s' }
+        { expiresIn: '300s' }
     );
 
     const refreshToken = jwt.sign(
         { "username": foundUser.username },
         process.env.REFRESH_TOKEN,
-        { expiresIn: '1d' }
+        { expiresIn: '12h' }
     );
 
     const currentUser = await User.findOneAndUpdate({ username }, { refreshToken }, { new: true }).select('-password -refreshToken');
@@ -36,14 +36,9 @@ const handleLogin = async (req, res) => {
             httpOnly: true,
             sameSite: 'None',
             secure: true,
-            maxAge: 24 * 60 * 60 * 1000
+            maxAge: 12 * 60 * 60 * 1000
         }
     );
-
-    // const userData = {
-    //     profileImage: currentUser.profileImage,
-    //     username: currentUser.username,
-    // };
 
     return res.status(200).json({
         user: currentUser,

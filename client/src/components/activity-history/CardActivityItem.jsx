@@ -8,12 +8,12 @@ const CardActivityItem = ({ activity }) => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     return (
-        <div className='flex flex-col gap-2 text-[10px] sm:text-sm shadow-[0_3px_0_0] border-[2px] border-teal-600 shadow-teal-600 bg-teal-50 p-3'>
+        <div className='flex flex-col gap-2 text-[12px] sm:text-sm shadow-[0_3px_0_0] border-[2px] border-teal-600 shadow-teal-600 bg-teal-50 p-3'>
             <div>
                 <span className='font-medium text-teal-700'>{action}:</span>
                 <span>{" "}</span>
                 <span
-                    className='font-semibold underline cursor-pointer'
+                    className='font-medium underline cursor-pointer'
                     onClick={() => {
                         searchParams.set('card', card?._id);
                         setSearchParams(searchParams, { replace: true });
@@ -26,7 +26,7 @@ const CardActivityItem = ({ activity }) => {
             <div>
                 <span>information:</span>
                 <span>{" "}</span>
-                <span className='font-semibold'>{description || "<empty>"}</span>
+                <span className='font-medium'>{description || "<empty>"}</span>
             </div>
             <div>
                 <span>by</span>
@@ -41,7 +41,7 @@ const CardActivityItem = ({ activity }) => {
                         />
                     </div>
                     <span>{" "}</span>
-                    <span className='font-semibold'>
+                    <span className='font-medium'>
                         {user?.username}
                     </span>
                 </div>

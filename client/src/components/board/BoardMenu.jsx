@@ -159,7 +159,7 @@ const BoardMenu = ({ setOpen, setOpenCopyBoardForm, setOpenBoardConfiguration, s
                     </p>
 
                     <textarea
-                        className="border-gray-600 text-[0.75rem] mt-4 shadow-[0_3px_0_0] h-[80px] overflow-auto border-[2px] px-3 py-2 shadow-gray-600 bg-gray-100 w-full focus:outline-none font-semibold text-gray-600 leading-normal"
+                        className="border-gray-600 mt-4 shadow-[0_3px_0_0] h-[80px] overflow-auto border-[2px] px-3 py-2 shadow-gray-600 bg-gray-100 w-full focus:outline-none font-medum sm:text-[0.75rem] text-gray-600 leading-normal"
                         placeholder="Write a short description..."
                         onBlur={handleUpdateDescription}
                         defaultValue={boardState.board.description}

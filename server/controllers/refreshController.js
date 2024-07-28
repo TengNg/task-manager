@@ -20,7 +20,7 @@ const handleRefresh = async (req, res) => {
             const accessToken = jwt.sign(
                 { "username": decoded.username },
                 process.env.ACCESS_TOKEN,
-                { expiresIn: '600s' }
+                { expiresIn: '300s' }
             );
             res.json({ user: foundUser, accessToken })
         }

@@ -68,23 +68,17 @@ const AddList = ({ open, setOpen }) => {
         setListTitle(e.target.value)
     };
 
-    const handleInputBlur = (e) => {
-        if (!containerRef.current.contains(e.relatedTarget) && open === true) {
-            setOpen(false);
-        }
-    };
-
     return (
         <div
             ref={containerRef}
-            className={`${theme.itemTheme == 'rounded' ? 'rounded-md' : ''} board--style--sm overflow-hidden bg-gray-100 text-[10px] sm:text-[0.75rem] sm:min-w-[250px] min-w-[225px] border-[2px] min-h-[3rem] select-none cursor-pointer me-3 border-gray-500 shadow-gray-500 text-gray-500 font-semibold`}
+            className={`${theme.itemTheme == 'rounded' ? 'rounded-md' : ''} board--style--sm overflow-hidden bg-gray-100 text-[10px] sm:text-[0.75rem] sm:min-w-[250px] min-w-[300px] border-[2px] min-h-[3rem] select-none cursor-pointer me-3 border-gray-500 shadow-gray-500 text-gray-500 font-medium`}
             style={{ backgroundColor: 'rgba(241, 241, 241, 0.75)' }}
         >
 
             {
                 open === false &&
                 <button
-                    className="w-full h-full text-start p-3 flex gap-2"
+                    className="w-full h-full text-start p-3 flex gap-2 text-sm"
                     onClick={handleOpenAddListForm}
                 >
                     + new list
@@ -95,24 +89,23 @@ const AddList = ({ open, setOpen }) => {
                 className={`flex-col flex py-2 px-2 min-w-[200px] h-[fit] gap-3 -mt-[100%] ${open && 'mt-0'}`}
             >
                 <input
-                    className='border-[1px] border-gray-500 text-gray-500 font-semibold text-[10px] sm:text-[0.85rem] p-2 focus:outline-none'
+                    className='border-[1px] border-gray-500 text-gray-500 font-medium text-[1rem] sm:text-[0.85rem] p-2 focus:outline-none'
                     type="text"
                     autoComplete="off"
                     placeholder="list title goes here..."
                     value={listTitle}
                     ref={titleInputRef}
                     onChange={handleInputChange}
-                    onBlur={handleInputBlur}
                     onKeyDown={handleKeyDown}
                 />
 
-                <div className="flex gap-1">
+                <div className="flex gap-1 w-full">
                     <button
                         onClick={handleAddList}
-                        className="button--style--dark w-[40px] h-[40px]">+</button>
+                        className="button--style--dark w-1/2">+ add</button>
                     <button
                         onClick={() => setOpen(false)}
-                        className="button--style border-gray-500 border-[2px] w-[40px] h-[40px]">x</button>
+                        className="button--style w-1/2 border-gray-500 border-[2px] hover:underline">cancel</button>
                 </div>
             </div>
         </div>

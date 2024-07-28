@@ -157,7 +157,7 @@ const InvitationForm = ({ open, setOpen }) => {
                 <div className="w-full relative flex flex-col justify-center gap-3 py-2 my-3">
                     <input
                         ref={usernameInputRef}
-                        className={`p-3 w-full overflow-hidden shadow-[0_3px_0_0] shadow-gray-600 text-[0.75rem] whitespace-nowrap text-ellipsis border-[2px] bg-gray-100 border-gray-600 text-gray-600 font-bold select-none font-mono focus:outline-none`}
+                        className={`p-3 w-full overflow-hidden shadow-[0_3px_0_0] shadow-gray-600 sm:text-[0.75rem] whitespace-nowrap text-ellipsis border-[2px] bg-gray-100 border-gray-600 text-gray-600 font-bold select-none font-mono focus:outline-none`}
                         placeholder="Enter username..."
                         onChange={(e) => setUsername(e.target.value)}
                         onKeyDown={handleInputOnEnter}

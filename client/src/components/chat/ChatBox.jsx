@@ -78,7 +78,7 @@ const ChatBox = ({
         <div
             id="chat-box"
             ref={chatContainer}
-            className={`${open ? 'flex' : 'hidden'} fixed flex-col border-[2px] border-black right-0 bottom-0 sm:right-1 sm:bottom-1 bg-slate-100 w-[300px] h-[400px] overflow-auto z-30`}
+            className={`${open ? 'flex' : 'hidden'} fixed flex-col border-[2px] border-black right-0 bottom-0 sm:right-1 sm:bottom-1 bg-slate-100 w-[325px] h-[400px] overflow-auto z-30`}
         >
 
             <div className='relative flex items-center gap-3 border-b-2 border-black px-3 py-2'>
@@ -134,6 +134,7 @@ const ChatBox = ({
 
             <div className='bg-gray-100 px-2 mt-2'>
                 <ChatInput
+                    withSentButton={true}
                     sendMessage={sendMessage}
                     setHasReceivedNewMessage={setHasReceivedNewMessage}
                     setIsAtBottomOfChat={setIsAtBottomOfChat}

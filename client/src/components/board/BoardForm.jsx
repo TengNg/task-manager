@@ -9,7 +9,11 @@ const BoardForm = forwardRef(({}, ref) => {
     const navigate = useNavigate();
 
     const handleCreateBoard = async () => {
-        if (!title) return;
+        if (!title) {
+            alert("Title is required");
+            return;
+        }
+
         try {
             const response = await axiosPrivate.post("/boards", JSON.stringify({ title, description }));
             navigate(`/b/${response.data.newBoard._id}`);
@@ -29,28 +33,28 @@ const BoardForm = forwardRef(({}, ref) => {
         <>
             <div
                 ref={ref}
-                className="absolute board--style border-[2px] border-gray-600 shadow-gray-600 px-4 py-4 w-[210px] sm:w-[300px] flex flex-col gap-3 bg-gray-100 z-20 top-0"
+                className="absolute board--style border-[2px] border-gray-600 shadow-gray-600 px-4 py-3 w-[210px] sm:w-[300px] flex flex-col gap-3 bg-gray-100 z-20 top-0"
             >
-                <p className="text-[12px] sm:text-[0.85rem] text-gray-600 font-medium">new board</p>
+                <p className="text-gray-600 font-medium">+ new board</p>
 
                 <input
                     autoFocus={true}
                     onKeyDown={handleInputOnEnter}
-                    className='border-[2px] border-gray-400 text-gray-600 text-[10px] sm:text-[0.85rem] font-semibold p-2'
+                    className='border-[2px] border-gray-400 text-gray-600 font-semibold p-2'
                     type="text"
                     autoComplete="off"
-                    placeholder="title (required)"
+                    placeholder="title..."
                     value={title}
                     onChange={e => setTitle(e.target.value)}
                     required
                 />
 
                 <input
-                    className='border-[2px] border-gray-400 text-gray-600 text-[10px] sm:text-[0.85rem] font-semibold p-2'
+                    className='border-[2px] border-gray-400 text-gray-600 font-semibold p-2'
                     onKeyDown={handleInputOnEnter}
                     type="text"
                     autoComplete="off"
-                    placeholder="description (optional)"
+                    placeholder="description..."
                     value={description}
                     onChange={e => setDescription(e.target.value)}
                     required
@@ -58,7 +62,7 @@ const BoardForm = forwardRef(({}, ref) => {
 
                 <button
                     onClick={handleCreateBoard}
-                    className="button--style--dark text-[10px] sm:text-[0.85rem]">create</button>
+                    className="button--style--dark">create</button>
             </div>
         </>
     )
