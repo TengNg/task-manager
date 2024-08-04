@@ -6,6 +6,25 @@ const userByUsername = (username, option = { lean: true }) => {
     return foundUser;
 };
 
+const sanitizeUser = (user) => {
+    const {
+        _id,
+        username,
+        createdAt,
+        recentlyViewedBoardId,
+        pinnedBoardIdCollection
+    } = user;
+
+    return {
+        _id,
+        username,
+        createdAt,
+        recentlyViewedBoardId,
+        pinnedBoardIdCollection
+    };
+};
+
 module.exports = {
-   userByUsername
+   userByUsername,
+   sanitizeUser,
 };
