@@ -63,7 +63,7 @@ const ModalDialog = ({ children, ...props }) => {
                 </button>
             </div>
 
-            <div className='flex flex-col h-full p-3 text-gray-600 text-[10px] sm:text-[0.75rem] font-medium'>
+            <div className='flex flex-col p-3 text-gray-600 text-[10px] sm:text-[0.75rem] font-medium'>
                 {children}
             </div>
         </dialog>

@@ -138,6 +138,9 @@ const getBoard = async (req, res) => {
                     },
                     {
                         $sort: { order: 1 }
+                    },
+                    {
+                        $project: { description: 0, updatedAt: 0 }
                     }
                 ]
             }

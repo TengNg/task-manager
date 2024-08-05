@@ -48,7 +48,6 @@ const UserAccount = () => {
         return () => {
             document.removeEventListener('click', closeUserInfoBox);
         };
-
     }, [collapse])
 
     const handleLogout = async () => {
@@ -57,8 +56,8 @@ const UserAccount = () => {
             setAuth({});
             navigate("/login");
         } catch (err) {
-            setAuth({});
-            navigate('/login');
+            console.log(err);
+            alert('Failed to logout. Please try again.');
         }
     };
 

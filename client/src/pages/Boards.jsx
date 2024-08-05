@@ -162,7 +162,7 @@ const Boards = () => {
                         titleName="boards"
                     />
                 </div>
-                <div className="font-semibold mx-auto text-center mt-20 text-gray-600">getting boards</div>
+                <div className="font-medium mx-auto text-center mt-20 text-gray-600">getting boards</div>
                 <div className="loader mx-auto my-8"></div>
             </section>
         )
@@ -250,10 +250,10 @@ const Boards = () => {
                             <div
                                 onClick={() => setOpenBoardForm(open => !open)}
                                 ref={createBoardButtonRef}
-                                className="h-full w-full border-[2px] border-gray-500 board--style shadow-gray-500 p-3 px-4 select-none cursor-pointer bg-transparent hover:bg-gray-50"
+                                className="board--style board--hover h-full w-full border-[2px] border-gray-500 shadow-gray-500 py-3 px-4 select-none bg-transparent"
                             >
-                                <div className="flex items-center gap-2 text-gray-500 font-medium sm:text-[0.925rem] text-[0.75rem]">
-                                    <span>+ new</span>
+                                <div className="flex items-center gap-2 text-gray-500 font-medium">
+                                    <span>+ new board</span>
                                 </div>
                             </div>
 

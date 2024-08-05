@@ -144,25 +144,23 @@ const Writedown = () => {
                         </button>
 
                         {
-                            writedowns.length === 0 &&
-                                <div className='flex flex-col justify-center items-center gap-3 py-3'>
-                                    <p className='text-[12px] sm:text-[0.85rem]'>
+                            writedowns.length === 0 ? (
+                                <div className='flex flex-col justify-center items-center gap-3 py-3 text-[10px] sm:text-sm text-center'>
+                                    <p>
                                         [personal workspace] take notes or write down anything.
                                     </p>
                                     <p>
                                         create your first writedown.
                                     </p>
                                 </div>
-                        }
-
-                        {
-                            writedowns.length > 0 &&
-                            <button
-                                className='text-[0.75rem] text-gray-600 pe-1 text-end underline cursor-pointer sm:mb-0 mb-1'
-                                onClick={fetchWritedowns}
-                            >
-                                refresh
-                            </button>
+                            ) : (
+                                <button
+                                    className='text-[0.75rem] text-gray-600 pe-1 text-end underline cursor-pointer sm:mb-0 mb-1'
+                                    onClick={fetchWritedowns}
+                                >
+                                    refresh
+                                </button>
+                            )
                         }
                     </div>
 

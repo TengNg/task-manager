@@ -23,11 +23,6 @@ const UserSchema = new mongoose.Schema({
         default: Date.now,
     },
 
-    refreshToken: {
-        type: String,
-        default: null,
-    },
-
     recentlyViewedBoardId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Board',
@@ -54,6 +49,12 @@ const UserSchema = new mongoose.Schema({
         //     message: 'max 4 pinned boards'
         // }
     },
+
+    refreshTokenVersion: {
+        type: Number,
+        default: 0,
+        required: true,
+    }
 });
 
 module.exports = mongoose.model('User', UserSchema);

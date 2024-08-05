@@ -6,6 +6,7 @@ import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import Loading from '../components/ui/Loading';
 import Title from '../components/ui/Title';
 import BoardStats from '../components/board/BoardStats';
+import { axiosPrivate as axios } from '../api/axios';
 
 import dateFormatter from "../utils/dateFormatter";
 
@@ -161,7 +162,7 @@ const Profile = () => {
             setLoading(false);
 
             await new Promise(resolve => setTimeout(resolve, 1000));
-            await axiosPrivate.get('/logout/');
+            await axios.get('/logout/');
             setAuth({});
             navigate('/login');
         } catch (err) {
@@ -169,8 +170,24 @@ const Profile = () => {
             console.log(err);
             setLoading(false);
             setMsg({ error: true, content: errMsg });
+            alert('Oops, something went wrong. Please try again.');
             // setAuth({});
             // navigate('/login');
+        }
+    };
+
+    const handleLogoutOfAllDevices = async (e) => {
+        e.preventDefault();
+
+        if (!confirm('This will log you out of all devices. Are you sure ?')) return;
+
+        try {
+            await axios.get('/logout/all-devices');
+            setAuth({});
+            navigate('/login');
+        } catch (err) {
+            console.log(err);
+            alert('Failed to logout. Please try again.');
         }
     };
 
@@ -231,7 +248,7 @@ const Profile = () => {
                 </span>
 
                 <div
-                    className='box--style border-[2px] border-gray-700 shadow-gray-700 bg-gray-100 sm:p-4 p-2 lg:w-[450px] sm:w-[400px] w-3/4'
+                    className='box--style border-[2px] border-gray-700 shadow-gray-700 bg-gray-100 sm:p-4 p-2 lg:w-[450px] sm:w-[400px] w-full'
                     style={{ backgroundColor: 'rgba(241, 241, 241, 0.75)' }}
                 >
                     <form
@@ -257,15 +274,15 @@ const Profile = () => {
                             type='submit'
                             form='userInfoForm'
                             onClick={handleSaveProfile}
-                            className='text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 transition-all w-[100%]'
+                            className='text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 w-[100%]'
                         >update username</button>
 
                         {changePassword &&
                             <div className="flex flex-col div--style w-[100%] relative py-8 border-[2px] border-gray-700 px-4">
                                 <button
-                                    className="absolute top-2 right-2 button--style text-[0.75rem] font-bold"
+                                    className="absolute top-2 right-2 button--style text-[0.75rem] font-medium hover:underline"
                                     onClick={closeChangePasswordOption}
-                                >Close</button>
+                                >close</button>
 
                                 <label htmlFor="password" className='label--style'>Current Password:</label>
                                 <input
@@ -289,7 +306,7 @@ const Profile = () => {
                                     required
                                 />
 
-                                <label htmlFor="confirmedPassword" className='label--style mt-4'>Confirm New Password:</label>
+                                <label htmlFor="confirmedPassword" className='label--style'>Confirm New Password:</label>
                                 <input
                                     className='border-[2px] border-black p-1 font-bold'
                                     type="password"
@@ -302,20 +319,31 @@ const Profile = () => {
                             </div>}
 
                         <div className="flex flex-col gap-4">
-                            <button
-                                onClick={() => setChangePassword(true)}
-                                className={`text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 transition-all w-[100%] ${changePassword && 'hidden'}`}
-                            >
-                                change password
-                            </button>
-
-                            <button
-                                onClick={(e) => handleCheckPassword(e)}
-                                className={`text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 transition-all w-[100%] ${!changePassword && 'hidden'}`}
-                            >
-                                update password
-                            </button>
+                            {
+                                !changePassword ? (
+                                    <button
+                                        onClick={() => setChangePassword(true)}
+                                        className='text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 w-[100%]'
+                                    >
+                                        change password
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={(e) => handleCheckPassword(e)}
+                                        className='text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 w-[100%]'
+                                    >
+                                        update password
+                                    </button>
+                                )
+                            }
                         </div>
+
+                        <button
+                            onClick={handleLogoutOfAllDevices}
+                            className='text-white p-2 text-[0.75rem] bg-rose-800 font-semibold hover:bg-rose-700 w-[100%]'
+                        >
+                            log out of all devices
+                        </button>
 
                         <p className='text-[0.65rem]'>
                             * you will be signed out after saved
@@ -331,12 +359,13 @@ const Profile = () => {
                 </span>
 
                 <div
-                    className='box--style relative border-[2px] border-gray-700 shadow-gray-700 bg-gray-100 sm:p-4 p-2 lg:w-[450px] sm:w-[400px] w-3/4'
+                    className='box--style relative border-[2px] border-gray-700 shadow-gray-700 bg-gray-100 sm:p-4 px-2 py-4 lg:w-[450px] sm:w-[400px] w-full'
                     style={{ backgroundColor: 'rgba(241, 241, 241, 0.75)' }}
                 >
-                    <div className='absolute top-1 right-1 text-[0.75rem] font-medium text-gray-700'>
-                        {ownedBoards.boards.length > 0 && `[${ownedBoards.boards.length}]`}
+                    <div className='absolute top-1 right-1 text-[10px] sm:text-[12px] font-medium text-slate-700 bg-slate-300 px-2 py-[1px] rounded'>
+                        {ownedBoards.boards.length > 0 && `${ownedBoards.boards.length}`}
                     </div>
+
                     <div className='flex flex-col items-center mt-3 gap-4 pb-4 px-4 lg:px-2 max-h-[450px] overflow-auto'>
                         {ownedBoards.fetching
                             ? <div className="loader mx-auto"></div>
@@ -348,23 +377,22 @@ const Profile = () => {
                                         <div
                                             key={_id}
                                             onClick={() => handleOpenBoardStats(_id)}
-                                            className="w-full h-[150px] bg-transparent"
+                                            className="w-full h-[125px] sm:h-[150px] bg-transparent"
                                         >
-
-                                            <div className="w-full h-[150px] board--style board--hover border-[2px] md:border-[2.5px] border-gray-600 py-3 px-3 shadow-gray-600 select-none bg-transparent relative">
-                                                <p className="text-[12px] sm:text-[1rem] font-semibold text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
+                                            <div className="w-full h-[125px] sm:h-[150px] board--style board--hover border-[2px] md:border-[2.5px] border-gray-600 text-gray-700 py-3 px-3 shadow-gray-600 select-none bg-transparent relative">
+                                                <p className="text-[12px] sm:text-[1rem] font-medium sm:font-semibold text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
 
                                                 <div className="h-[1px] w-full bg-black my-2"></div>
 
-                                                <p className="text-[10px] sm:text-[0.85rem] mt-3">
+                                                <p className="text-[11px] sm:text-[0.85rem] mt-3">
                                                     lists: {item.listCount}
                                                 </p>
 
-                                                <p className="text-[10px] sm:text-[0.85rem] mt-1">
+                                                <p className="text-[11px] sm:text-[0.85rem] mt-1">
                                                     members: {members.length + 1}
                                                 </p>
 
-                                                <p className="text-[10px] sm:text-[0.85rem] mt-1">
+                                                <p className="text-[11px] sm:text-[0.85rem] mt-1">
                                                     created: {dateFormatter(createdAt)}
                                                 </p>
                                             </div>

@@ -104,8 +104,8 @@ const CardDetailInfo = ({ card, handleCardOwnerChange, handleCardPriorityLevelCh
                         maxLength={20}
                         type="text"
                         value={ownerValue}
-                        placeholder="type a name here..."
-                        className='text-[0.75rem] w-fit bg-gray-200 border-[1px] border-gray-400 rounded-md py-1 px-2 ms-2'
+                        placeholder="owner name..."
+                        className='text-[0.75rem] max-w-[140px] bg-gray-200 border-[1px] border-gray-400 rounded-md py-1 px-2 ms-2'
                         onBlur={() => setOpenOwnerInput(false)}
                         onChange={(e) => setOwnerValue(e.target.value)}
                         onKeyDown={(e) => {

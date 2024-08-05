@@ -134,12 +134,6 @@ const CardComposer = ({ list, open, setOpen }) => {
         setIsAddingCard(false);
     };
 
-    const handleInputBlur = (e) => {
-        if (!composerRef.current.contains(e.relatedTarget)) {
-            setOpen(false);
-        }
-    };
-
     return (
         <div
             ref={composerRef}
@@ -147,22 +141,21 @@ const CardComposer = ({ list, open, setOpen }) => {
             <textarea
                 disabled={isAddingCard}
                 ref={textAreaRef}
-                className="text-sm h-fit bg-gray-50 border-[2px] py-4 px-4 text-gray-600 border-gray-500 shadow-[0_3px_0_0] shadow-gray-500 leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50"
-                placeholder='Title for this card'
+                className="sm:text-sm h-fit bg-gray-50 border-[2px] py-4 px-4 text-gray-600 border-gray-500 shadow-[0_3px_0_0] shadow-gray-500 leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50"
+                placeholder='card title goes here...'
                 onChange={handleTextAreaChanged}
                 onKeyDown={handleTextAreaOnEnter}
-                onBlur={handleInputBlur}
                 value={text}
                 maxLength={200}
             >
             </textarea>
-            <div className="flex gap-1">
+            <div className="flex gap-1 w-full">
                 <button
                     onClick={handleAddCard}
-                    className="button--style--dark grid place-items-center text-[0.8rem] font-semibold w-[40px] h-[40px]">+</button>
+                    className="button--style--dark grid place-items-center w-1/2 font-medium text-[0.8rem]">+ add</button>
                 <button
                     onClick={() => setOpen(false)}
-                    className="button--style grid place-items-center text-[0.8rem] text-gray-500 border-gray-500 font-semibold w-[40px] h-[40px]">x</button>
+                    className="button--style grid place-items-center text-[0.8rem] w-1/2 font-medium text-gray-600 border-gray-600 hover:underline">cancel</button>
             </div>
         </div>
     )

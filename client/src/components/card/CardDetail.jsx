@@ -297,7 +297,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         <>
             <dialog
                 ref={dialog}
-                className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style p-3 gap-3 pb-4 min-w-[350px] w-[90%] xl:w-[800px] md:w-[80%] h-fit max-h-[90%] border-black border-[2px]'
+                className='full-in-small-screen z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style p-3 gap-3 pb-4 min-w-[350px] w-[90%] xl:w-[800px] md:w-[80%] h-fit max-h-[90%] border-black border-[2px]'
                 style={{ background: "rgb(235, 235, 235)" }}
                 onClick={handleClick}
                 onCancel={handleCancel}
@@ -314,7 +314,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                     {
                         card.highlight != null &&
                         <div
-                            className="w-full h-[10px] sm:h-[15px]"
+                            className="w-full min-h-[10px] h-[10px] sm:h-[15px]"
                             style={{ backgroundColor: `${card.highlight}` }}
                         ></div>
                     }
@@ -345,9 +345,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                         </div>
 
                         <button
-                            onClick={() => {
-                                dialog.current.close();
-                            }}
+                            onClick={handleCancel}
                             className="text-[0.75rem] py-1 text-gray-500 flex">
                             <FontAwesomeIcon icon={faXmark} size='xl' />
                         </button>
@@ -400,7 +398,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                             <textarea
                                 ref={cardDescriptionInput}
                                 id="card__detail__description__textarea"
-                                className="font-text-composer overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[250px] max-h-[400px] break-words box-border text-[0.65rem] sm:text-[0.85rem] py-2 px-3 w-full text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
+                                className="font-text-composer overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[250px] max-h-[400px] break-words box-border text-[0.85rem] py-2 px-3 w-full text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
                                 autoFocus={true}
                                 placeholder={"add description..."}
                                 value={description}

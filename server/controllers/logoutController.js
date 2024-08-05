@@ -1,23 +1,35 @@
 const User = require('../models/User.js');
+const jwt = require('jsonwebtoken');
+
+const { clearAuthCookies } = require('../services/createAuthTokensService');
+
 const handleLogout = async (req, res) => {
     const cookies = req.cookies;
-    if (!cookies?.token) return res.sendStatus(204); // No content
-    const refreshToken = cookies.token;
+    if (!cookies?.token) return res.sendStatus(204);
 
-    const foundUser = await User.findOne({ refreshToken }).lean();
-    if (!foundUser) {
-        res.clearCookie('token', { httpOnly: true, sameSite: 'None', secure: true });
-        return res.sendStatus(204);
-    }
+    clearAuthCookies(res);
 
-    await User.findOneAndUpdate(
-        { refreshToken: foundUser.refreshToken },
-        { refreshToken: null },
-        { new: true }
-    );
-
-    res.clearCookie('token', { httpOnly: true, sameSite: 'None', secure: true });
-    res.status(204).json({ msg: "logout success" });
+    res.sendStatus(204);
 }
 
-module.exports = { handleLogout }
+const handleLogoutOfAllDevices = async (req, res) => {
+    const cookies = req.cookies;
+    if (!cookies?.token) return res.sendStatus(204);
+
+    const refreshToken = cookies.token;
+    const data = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
+
+    await User.findOneAndUpdate(
+        { username: data.username },
+        { $inc: { refreshTokenVersion: 1 } }
+    );
+
+    clearAuthCookies(res);
+
+    res.sendStatus(204);
+}
+
+module.exports = {
+    handleLogout,
+    handleLogoutOfAllDevices,
+}

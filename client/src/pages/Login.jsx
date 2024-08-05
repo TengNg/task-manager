@@ -27,8 +27,9 @@ export default function Login() {
             }
         }
         isLoggedIn().catch(err => {
-            console.log(err);
+            console.error('Error:', err.response?.data?.msg);
             setSuccess(false);
+            usernameInputEl.current.focus();
         });
     }, []);
 
@@ -74,7 +75,7 @@ export default function Login() {
                 <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 bg-gray-100'>
                     <label htmlFor="username">Username</label>
                     <input
-                        className='border-[3px] border-black p-1 font-semibold'
+                        className='border-[3px] border-black p-1 font-medium'
                         type="text"
                         id="username"
                         autoComplete="off"
@@ -87,7 +88,7 @@ export default function Login() {
 
                     <label htmlFor="password">Password</label>
                     <input
-                        className='border-[3px] border-black p-1 font-semibold select-none'
+                        className='border-[3px] border-black p-1 font-medium select-none'
                         type="password"
                         id="password"
                         onChange={(e) => setPassword(e.target.value)}
@@ -97,7 +98,7 @@ export default function Login() {
                     />
 
                     <div className='h-[1rem] w-[100%] my-1 flex--center'>
-                        {success === false && <p className='text-[0.65rem] text-red-700 top-[1rem] right-[1rem] font-bold select-none'>{errMsg}</p>}
+                        {success === false && <p className='text-[0.65rem] text-red-700 top-[1rem] right-[1rem] font-medium select-none'>{errMsg}</p>}
                     </div>
 
                     <button className='button--style--dark flex--center'>Log in</button>
@@ -106,7 +107,7 @@ export default function Login() {
 
                 <div className='flex flex-col font-normal select-none mt-4'>
                     Don't have an account?
-                    <Link className='text-black hover:text-black' to="/register">
+                    <Link className='text-black' to="/register">
                         <button className='button--style mt-1'>Sign up</button>
                     </Link>
                 </div>
