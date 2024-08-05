@@ -6,6 +6,7 @@ import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import Loading from '../components/ui/Loading';
 import Title from '../components/ui/Title';
 import BoardStats from '../components/board/BoardStats';
+import { axiosPrivate as axios } from '../api/axios';
 
 import dateFormatter from "../utils/dateFormatter";
 
@@ -161,7 +162,7 @@ const Profile = () => {
             setLoading(false);
 
             await new Promise(resolve => setTimeout(resolve, 1000));
-            await axiosPrivate.get('/logout/');
+            await axios.get('/logout/');
             setAuth({});
             navigate('/login');
         } catch (err) {
@@ -169,8 +170,24 @@ const Profile = () => {
             console.log(err);
             setLoading(false);
             setMsg({ error: true, content: errMsg });
+            alert('Oops, something went wrong. Please try again.');
             // setAuth({});
             // navigate('/login');
+        }
+    };
+
+    const handleLogoutOfAllDevices = async (e) => {
+        e.preventDefault();
+
+        if (!confirm('This will log you out of all devices. Are you sure ?')) return;
+
+        try {
+            await axios.get('/logout/all-devices');
+            setAuth({});
+            navigate('/login');
+        } catch (err) {
+            console.log(err);
+            alert('Failed to logout. Please try again.');
         }
     };
 
@@ -257,7 +274,7 @@ const Profile = () => {
                             type='submit'
                             form='userInfoForm'
                             onClick={handleSaveProfile}
-                            className='text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 transition-all w-[100%]'
+                            className='text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 w-[100%]'
                         >update username</button>
 
                         {changePassword &&
@@ -302,20 +319,31 @@ const Profile = () => {
                             </div>}
 
                         <div className="flex flex-col gap-4">
-                            <button
-                                onClick={() => setChangePassword(true)}
-                                className={`text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 transition-all w-[100%] ${changePassword && 'hidden'}`}
-                            >
-                                change password
-                            </button>
-
-                            <button
-                                onClick={(e) => handleCheckPassword(e)}
-                                className={`text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 transition-all w-[100%] ${!changePassword && 'hidden'}`}
-                            >
-                                update password
-                            </button>
+                            {
+                                !changePassword ? (
+                                    <button
+                                        onClick={() => setChangePassword(true)}
+                                        className='text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 w-[100%]'
+                                    >
+                                        change password
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={(e) => handleCheckPassword(e)}
+                                        className='text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 w-[100%]'
+                                    >
+                                        update password
+                                    </button>
+                                )
+                            }
                         </div>
+
+                        <button
+                            onClick={handleLogoutOfAllDevices}
+                            className='text-white p-2 text-[0.75rem] bg-rose-800 font-semibold hover:bg-rose-700 w-[100%]'
+                        >
+                            log out of all devices
+                        </button>
 
                         <p className='text-[0.65rem]'>
                             * you will be signed out after saved

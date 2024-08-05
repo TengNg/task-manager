@@ -1,47 +1,27 @@
-require('dotenv').config();
-
-const User = require('../models/User.js');
-const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 const bcrypt = require('bcrypt');
+
+const { createAuthTokens, sendAuthCookies } = require('../services/createAuthTokensService');
+const { sanitizeUser } = require('../services/userService');
 
 const handleLogin = async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) res.status(400).json({ msg: "Username and password are required" });
 
-    const foundUser = await User.findOne({ username }).lean();
+    const foundUser = await User.findOne({ username });
     if (!foundUser) return res.status(401).json({ msg: "Unauthorized" });
 
     const validPwd = await bcrypt.compare(password, foundUser.password);
     if (!validPwd) return res.status(400).json({ msg: "Password is incorrect" });
 
-    const accessToken = jwt.sign(
-        { "username": foundUser.username },
-        process.env.ACCESS_TOKEN,
-        { expiresIn: '300s' }
-    );
+    const { accessToken, refreshToken } = createAuthTokens(foundUser);
+    sendAuthCookies(res, null, refreshToken);
 
-    const refreshToken = jwt.sign(
-        { "username": foundUser.username },
-        process.env.REFRESH_TOKEN,
-        { expiresIn: '12h' }
-    );
-
-    const currentUser = await User.findOneAndUpdate({ username }, { refreshToken }, { new: true }).select('-password -refreshToken');
-
-    res.cookie(
-        'token',
-        refreshToken,
-        {
-            httpOnly: true,
-            sameSite: 'None',
-            secure: true,
-            maxAge: 12 * 60 * 60 * 1000
-        }
-    );
+    const user = sanitizeUser(foundUser.toObject());
 
     return res.status(200).json({
-        user: currentUser,
+        user,
         accessToken,
         refreshToken,
     });
