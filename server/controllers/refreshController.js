@@ -1,14 +1,14 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-const { clearAuthCookies, createAccessToken } = require('../services/createAuthTokensService');
+const { rTokenName, clearAuthCookies, createAccessToken } = require('../services/createAuthTokensService');
 const { sanitizeUser } = require('../services/userService');
 
 const handleRefresh = async (req, res) => {
     const cookies = req.cookies;
-    if (!cookies?.token) return res.status(401).json({ msg: "currently not logged in" });
+    if (!cookies || !cookies[rTokenName]) return res.status(401).json({ msg: "currently not logged in" });
 
-    const refreshToken = cookies.token;
+    const refreshToken = cookies[rTokenName];
 
     jwt.verify(
         refreshToken,

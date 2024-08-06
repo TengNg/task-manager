@@ -1,11 +1,11 @@
 const User = require("../models/User.js");
 const jwt = require('jsonwebtoken');
 
-const { clearAuthCookies } = require('../services/createAuthTokensService');
+const { rTokenName, clearAuthCookies } = require('../services/createAuthTokensService');
 
 const isLoggedIn = async (req, res) => {
     const cookies = req.cookies;
-    if (!cookies?.token) {
+    if (!cookies || !cookies[rTokenName]) {
         return res.status(401).json({ msg: "currently not logged in" });
     }
 
