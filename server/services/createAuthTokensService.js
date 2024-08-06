@@ -7,7 +7,7 @@ const cookieOpts = {
     maxAge: 24 * 60 * 60 * 1000
 };
 
-const rTokenName = 'token';
+const rTokenName = 'tamagostart_rtoken';
 
 /**
  * @param {User} user
@@ -63,10 +63,11 @@ const sendAuthCookies = (res, user, rToken = null) => {
  * @param {Response} res
  */
 const clearAuthCookies = (res) => {
-    res.clearCookie('token', cookieOpts);
+    res.clearCookie(rTokenName, cookieOpts);
 };
 
 module.exports = {
+    rTokenName,
     createAccessToken,
     createRefreshToken,
     createAuthTokens,

@@ -1,11 +1,11 @@
 const User = require('../models/User.js');
 const jwt = require('jsonwebtoken');
 
-const { clearAuthCookies } = require('../services/createAuthTokensService');
+const { rTokenName, clearAuthCookies } = require('../services/createAuthTokensService');
 
 const handleLogout = async (req, res) => {
     const cookies = req.cookies;
-    if (!cookies?.token) return res.sendStatus(204);
+    if (!cookies || !cookies[rTokenName]) return res.sendStatus(204);
 
     clearAuthCookies(res);
 
@@ -14,9 +14,9 @@ const handleLogout = async (req, res) => {
 
 const handleLogoutOfAllDevices = async (req, res) => {
     const cookies = req.cookies;
-    if (!cookies?.token) return res.sendStatus(204);
+    if (!cookies || !cookies[rTokenName]) return res.sendStatus(204);
 
-    const refreshToken = cookies.token;
+    const refreshToken = cookies[rTokenName];
     const data = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
 
     await User.findOneAndUpdate(
