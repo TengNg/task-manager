@@ -59,8 +59,12 @@ const Profile = () => {
         };
 
         getBoards().catch(err => {
+            if (err.response?.status === 403) {
+                navigate('/login', { replace: true });
+            } else {
+                alert("Failed to get owned boards");
+            }
             console.log(err);
-            alert("Failed to get boards");
         })
 
         document.title = `00 profile [${auth?.user?.username}]` || 'tamago-start';
@@ -109,7 +113,13 @@ const Profile = () => {
 
     const handleSaveProfile = async (e) => {
         e.preventDefault();
-        if (usernameInputRef.current.value.trim() === "" || usernameInputRef.current.value.trim() === auth?.user?.username) return;
+        if (usernameInputRef.current.value.trim() === "" || usernameInputRef.current.value.trim() === auth?.user?.username) {
+            alert('Nothing to update. Please provide new username');
+            return;
+        }
+
+        if (!confirm('You will be logged out out all devices after updating username. Are you sure ?')) return;
+
         try {
             setLoading(true);
             await axiosPrivate.put(`/account/edit/new-username`, JSON.stringify({ newUsername: usernameInputRef.current.value.trim() }));
@@ -248,14 +258,14 @@ const Profile = () => {
                 </span>
 
                 <div
-                    className='box--style border-[2px] border-gray-700 shadow-gray-700 bg-gray-100 sm:p-4 p-2 lg:w-[450px] sm:w-[400px] w-full'
+                    className='box--style border-[2px] border-gray-700 shadow-gray-700 bg-gray-100 sm:p-4 p-3 lg:w-[450px] sm:w-[400px] w-full'
                     style={{ backgroundColor: 'rgba(241, 241, 241, 0.75)' }}
                 >
                     <form
                         id='userInfoForm'
                         className='w-[100%] flex flex-col h-fit gap-2 text-gray-700'
                     >
-                        <p className={`absolute top-0 right-1 text-[0.75rem] font-semibold ${msg.error ? 'text-red-600' : 'text-green-500'}`}>{msg.content}</p>
+                        <p className={`absolute top-0 right-1 text-[0.75rem] font-medium ${msg.error ? 'text-red-600' : 'text-green-500'}`}>{msg.content}</p>
                         <div className='flex flex-col'>
                             <label htmlFor="username" className='label--style m-0 p-0'>Username:</label>
                             <input
@@ -264,17 +274,17 @@ const Profile = () => {
                                 type="text"
                                 id="username"
                                 autoComplete="off"
-                                defaultValue={auth.username}
+                                defaultValue={auth?.user?.username}
                                 required
                             />
-                            <span className='text-[0.75rem] my-2'>joined at: {dateFormatter(auth?.user?.createdAt)}</span>
+                            <span className='text-[0.75rem] my-2 font-medium'>joined at {dateFormatter(auth?.user?.createdAt)}</span>
                         </div>
 
                         <button
                             type='submit'
                             form='userInfoForm'
                             onClick={handleSaveProfile}
-                            className='text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 w-[100%]'
+                            className='text-white p-2 text-[0.75rem] bg-gray-600 font-medium hover:bg-gray-500 w-[100%]'
                         >update username</button>
 
                         {changePassword &&
@@ -323,14 +333,14 @@ const Profile = () => {
                                 !changePassword ? (
                                     <button
                                         onClick={() => setChangePassword(true)}
-                                        className='text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 w-[100%]'
+                                        className='text-white p-2 text-[0.75rem] bg-gray-600 font-medium hover:bg-gray-500 w-[100%]'
                                     >
                                         change password
                                     </button>
                                 ) : (
                                     <button
                                         onClick={(e) => handleCheckPassword(e)}
-                                        className='text-white p-2 text-[0.75rem] bg-gray-600 font-semibold hover:bg-gray-500 w-[100%]'
+                                        className='text-white p-2 text-[0.75rem] bg-gray-600 font-medium hover:bg-gray-500 w-[100%]'
                                     >
                                         update password
                                     </button>
@@ -340,14 +350,10 @@ const Profile = () => {
 
                         <button
                             onClick={handleLogoutOfAllDevices}
-                            className='text-white p-2 text-[0.75rem] bg-rose-800 font-semibold hover:bg-rose-700 w-[100%]'
+                            className='text-white p-2 text-[0.75rem] bg-rose-800 font-medium hover:bg-rose-700 w-[100%]'
                         >
                             log out of all devices
                         </button>
-
-                        <p className='text-[0.65rem]'>
-                            * you will be signed out after saved
-                        </p>
                     </form>
                 </div>
             </div>
@@ -359,13 +365,9 @@ const Profile = () => {
                 </span>
 
                 <div
-                    className='box--style relative border-[2px] border-gray-700 shadow-gray-700 bg-gray-100 sm:p-4 px-2 py-4 lg:w-[450px] sm:w-[400px] w-full'
+                    className='box--style relative border-[2px] border-gray-700 shadow-gray-700 bg-gray-100 sm:p-4 p-3 lg:w-[450px] sm:w-[400px] w-full'
                     style={{ backgroundColor: 'rgba(241, 241, 241, 0.75)' }}
                 >
-                    <div className='absolute top-1 right-1 text-[10px] sm:text-[12px] font-medium text-slate-700 bg-slate-300 px-2 py-[1px] rounded'>
-                        {ownedBoards.boards.length > 0 && `${ownedBoards.boards.length}`}
-                    </div>
-
                     <div className='flex flex-col items-center mt-3 gap-4 pb-4 px-4 lg:px-2 max-h-[450px] overflow-auto'>
                         {ownedBoards.fetching
                             ? <div className="loader mx-auto"></div>
@@ -380,7 +382,7 @@ const Profile = () => {
                                             className="w-full h-[125px] sm:h-[150px] bg-transparent"
                                         >
                                             <div className="w-full h-[125px] sm:h-[150px] board--style board--hover border-[2px] md:border-[2.5px] border-gray-600 text-gray-700 py-3 px-3 shadow-gray-600 select-none bg-transparent relative">
-                                                <p className="text-[12px] sm:text-[1rem] font-medium sm:font-semibold text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
+                                                <p className="text-[12px] sm:text-[1rem] font-medium sm:font-medium text-gray-600 overflow-hidden whitespace-nowrap text-ellipsis">{title}</p>
 
                                                 <div className="h-[1px] w-full bg-black my-2"></div>
 

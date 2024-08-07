@@ -132,7 +132,7 @@ const useKeyBinds = () => {
                 }
             }
 
-            if (!formOpen && !isTextFieldFocused && !isTextAreaFocused) {
+            if (!isTextFieldFocused && !isTextAreaFocused) {
                 if (key === 'a') {
                     const listContainer = document.querySelector('#list-container');
                     if (listContainer) {
@@ -152,7 +152,9 @@ const useKeyBinds = () => {
                     }
                     return;
                 }
+            }
 
+            if (!formOpen && !isTextFieldFocused && !isTextAreaFocused) {
                 if (key === '?') {
                     setOpenKeyBindings(prev => !prev);
                     return;

@@ -126,8 +126,11 @@ const Boards = () => {
         };
         getBoards()
             .catch(err => {
-                console.log(err);
-                navigate('/login');
+                if (err.response?.status === 403) {
+                    navigate('/login', { replace: true });
+                } else {
+                    alert('Failed to get boards. Please try again.');
+                }
             })
             .finally(() => {
                 setIsDataLoaded(true)

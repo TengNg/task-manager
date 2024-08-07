@@ -43,12 +43,17 @@ export default function ListMenu({ list, setOpen, handleDelete, handleCopy, proc
         <div
             autoFocus
             ref={containerRef}
-            className={`absolute top-0 left-0 outline-none z-10 bg-slate-200 border-gray-600 border-[2px] shadow-gray-600 box--style w-full p-3 ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}`}
+            className={`absolute top-0 left-0 outline-none z-10 bg-gray-200 border-gray-600 border-[2px] shadow-gray-600 box--style w-full p-3 ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}`}
         >
+            <button
+                onClick={close}
+                className='absolute text-[10px] font-medium text-gray-100 top-1 right-1 hover:underline badge rounded-none bg-purple-600'>close</button>
+
             <div className='border-b-[1px] border-b-black pb-2'>
                 <div className='text-[12px] sm:text-sm'>title: <span className='font-medium underline'>{list.title}</span></div>
                 <div className='text-[12px] sm:text-sm mt-1'>created: {dateFormatter(list.createdAt, { weekdayFormat: true })}</div>
             </div>
+
             <div className='flex flex-col gap-3 mt-3'>
                 <button
                     onClick={copy}

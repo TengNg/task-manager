@@ -165,7 +165,7 @@ const InvitationForm = ({ open, setOpen }) => {
                     />
                     <button
                         onClick={() => handleSendInvitation()}
-                        className="button--style border-[2px] py-2 text-[0.75rem] hover:bg-gray-600 hover:text-white transition-all"
+                        className="button--style border-[2px] py-2 text-[0.75rem] hover:bg-gray-600 hover:text-white"
                     >
                         + invite
                     </button>

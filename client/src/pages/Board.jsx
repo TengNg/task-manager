@@ -552,8 +552,6 @@ const Board = () => {
 
                 <div className="loader mx-auto my-8"></div>
 
-                <p className="font-medium mx-auto text-center text-sm my-2 text-gray-600">if this takes too long, refresh the page and try again.</p>
-
                 <button
                     className='button--style text-sm hover:bg-gray-600 hover:text-gray-100'
                     onClick={() => navigate('/boards')}

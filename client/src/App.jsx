@@ -22,7 +22,7 @@ const titles = {
     '/': '01 home',
     '/home': '01 home',
     '/boards': '02 boards',
-    '/writedown': '03 writedown',
+    '/writedowns': '03 writedowns',
     '/activities': '04 activities',
 }
 
@@ -39,12 +39,12 @@ function App() {
         <>
             {!noNavPaths.includes(pathname) && <NavBar />}
             <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/home" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
                 <Route element={<PersistLogin />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/home" element={<Home />} />
                     <Route path="/b/:boardId/" element={
                         <BoardStateContextProvider>
                             <Board />

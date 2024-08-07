@@ -5,6 +5,8 @@ import Editor from "../components/writedown/Editor";
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import WritedownItem from '../components/writedown/WritedownItem';
 
+import { useNavigate } from 'react-router-dom';
+
 const Writedown = () => {
     const [writedowns, setWritedowns] = useState([]);
     const [writedown, setWritedown] = useState({
@@ -19,6 +21,8 @@ const Writedown = () => {
 
     const axiosPrivate = useAxiosPrivate();
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         fetchWritedowns();
     }, []);
@@ -29,7 +33,11 @@ const Writedown = () => {
             const response = await axiosPrivate.get("/personal_writedowns");
             setWritedowns(response.data.writedowns);
         } catch (err) {
-            alert("Can't load writedowns");
+            if (err.response?.status === 403) {
+                navigate('/login', { replace: true });
+            } else {
+                alert('Failed to get writedowns. Please try again.');
+            }
         } finally {
             setIsDataLoaded(true);
         }
@@ -142,26 +150,6 @@ const Writedown = () => {
                         >
                             {isCreatingWritedown ? "creating..." : "+ new writedown"}
                         </button>
-
-                        {
-                            writedowns.length === 0 ? (
-                                <div className='flex flex-col justify-center items-center gap-3 py-3 text-[10px] sm:text-sm text-center'>
-                                    <p>
-                                        [personal workspace] take notes or write down anything.
-                                    </p>
-                                    <p>
-                                        create your first writedown.
-                                    </p>
-                                </div>
-                            ) : (
-                                <button
-                                    className='text-[0.75rem] text-gray-600 pe-1 text-end underline cursor-pointer sm:mb-0 mb-1'
-                                    onClick={fetchWritedowns}
-                                >
-                                    refresh
-                                </button>
-                            )
-                        }
                     </div>
 
                     {
@@ -172,7 +160,26 @@ const Writedown = () => {
 
                             <div className="loader mx-auto mt-8"></div>
                         </>
-                        ) : (
+                        ) : (<>
+                            {
+                                writedowns.length === 0 ? (
+                                    <div className='flex flex-col justify-center items-center gap-3 py-3 text-[11px] sm:text-sm text-center'>
+                                        <p>
+                                            this is your personal workspace<br />
+                                            take notes or write down anything<br />
+                                            create your first writedown
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <button
+                                        className='text-[0.75rem] text-gray-600 pe-1 text-end underline cursor-pointer sm:mb-0 mb-1'
+                                        onClick={fetchWritedowns}
+                                    >
+                                        refresh
+                                    </button>
+                                )
+                            }
+
                             <div className="flex flex-wrap gap-4 justify-center items-center mt-4">
                                 {writedowns.map(w => {
                                     return (
@@ -185,7 +192,7 @@ const Writedown = () => {
                                     )
                                 })}
                             </div>
-                        )
+                        </>)
                     }
 
                 </div>

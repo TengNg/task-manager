@@ -1,12 +1,12 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-const { rTokenName, clearAuthCookies, createAccessToken } = require('../services/createAuthTokensService');
+const { rTokenName, createAccessToken } = require('../services/createAuthTokensService');
 const { sanitizeUser } = require('../services/userService');
 
 const handleRefresh = async (req, res) => {
     const cookies = req.cookies;
-    if (!cookies || !cookies[rTokenName]) return res.status(401).json({ msg: "currently not logged in" });
+    if (!cookies || !cookies[rTokenName]) return res.sendStatus(401);
 
     const refreshToken = cookies[rTokenName];
 
@@ -19,13 +19,8 @@ const handleRefresh = async (req, res) => {
             const { username, refreshTokenVersion } = decoded;
 
             const foundUser = await User.findOne({ username });
-            if (!foundUser) {
-                return res.status(500).json({ msg: "user not found" });
-            }
-
-            if (foundUser.refreshTokenVersion !== refreshTokenVersion) {
-                clearAuthCookies(res);
-                return res.sendStatus(403);
+            if (!foundUser || foundUser.refreshTokenVersion !== refreshTokenVersion) {
+                return res.sendStatus(401);
             }
 
             const accessToken = createAccessToken(foundUser);

@@ -5,6 +5,8 @@ import Invitations from '../components/invitation/Invitations';
 import JoinBoardRequests from '../components/join-board-request/JoinRequests';
 import ActivitiesHelp from '../components/ui/ActivitiesHelp';
 
+import { useNavigate } from 'react-router-dom';
+
 const ACTIONS = Object.freeze({
     TOGGLE_INVITATIONS_SECTION: 'toggle_invitation_section',
     TOGGLE_JOIN_BOARD_REQUESTS_SECTION: 'toggle_join_board_request_section',
@@ -46,6 +48,8 @@ const Activities = () => {
 
     const axiosPrivate = useAxiosPrivate();
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         fetchInvitations();
         fetchJoinBoardRequests();
@@ -82,8 +86,11 @@ const Activities = () => {
             // await new Promise(resolve => setTimeout(resolve, 1000))
             setInvitations(response.data.invitations);
         } catch (err) {
-            console.log(err);
-            alert('Failed to load invitations, please try again');
+            if (err.response?.status === 403) {
+                navigate('/login', { replace: true });
+            } else {
+                alert('Failed to get invitations. Please try again.');
+            }
         }
 
         setLoadingInvitations(false);
@@ -96,8 +103,10 @@ const Activities = () => {
             const response = await axiosPrivate.get("/join_board_requests");
             setJoinBoardRequests(response.data.joinRequests);
         } catch (err) {
+            if (err.response?.status === 403) {
+                navigate('/login');
+            }
             console.log(err);
-            alert('Failed to load invitations, please try again');
         }
 
         setLoadingRequests(false);
