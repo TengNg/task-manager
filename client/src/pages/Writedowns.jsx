@@ -163,7 +163,7 @@ const Writedown = () => {
                         ) : (<>
                             {
                                 writedowns.length === 0 ? (
-                                    <div className='flex flex-col justify-center items-center gap-3 py-3 text-[11px] sm:text-sm text-center'>
+                                    <div className='flex flex-col justify-center items-center gap-3 py-3 text-[11px] sm:text-sm text-center text-gray-700 mt-3'>
                                         <p>
                                             this is your personal workspace<br />
                                             take notes or write down anything<br />
@@ -171,12 +171,14 @@ const Writedown = () => {
                                         </p>
                                     </div>
                                 ) : (
-                                    <button
-                                        className='text-[0.75rem] text-gray-600 pe-1 text-end underline cursor-pointer sm:mb-0 mb-1'
-                                        onClick={fetchWritedowns}
-                                    >
-                                        refresh
-                                    </button>
+                                    <div className='w-full grid place-items-center my-4'>
+                                        <button
+                                            className='text-[0.75rem] text-gray-600 pe-1 text-center underline cursor-pointer sm:mb-0 mb-1 mx-auto'
+                                            onClick={fetchWritedowns}
+                                        >
+                                            refresh
+                                        </button>
+                                    </div>
                                 )
                             }
 

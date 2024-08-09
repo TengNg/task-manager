@@ -12,7 +12,7 @@ const handleLogin = async (req, res) => {
     const foundUser = await User.findOne({ username });
     if (!foundUser) return res.status(401).json({ msg: "Unauthorized" });
 
-    const validPwd = await bcrypt.compare(password, foundUser.password);
+    const validPwd = bcrypt.compare(password, foundUser.password);
     if (!validPwd) return res.status(400).json({ msg: "Password is incorrect" });
 
     const { accessToken, refreshToken } = createAuthTokens(foundUser);

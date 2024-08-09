@@ -4,7 +4,7 @@ const cookieOpts = {
     httpOnly: true,
     sameSite: 'None',
     secure: true,
-    maxAge: 24 * 60 * 60 * 1000
+    maxAge: 15 * 24 * 60 * 60 * 1000
 };
 
 const rTokenName = 'tamagostart_rtoken';
@@ -17,7 +17,7 @@ const createAccessToken = (user) => {
     const accessToken = jwt.sign(
         { username },
         process.env.ACCESS_TOKEN,
-        { expiresIn: '300s' }
+        { expiresIn: '15min' }
     );
     return accessToken;
 };
@@ -30,7 +30,7 @@ const createRefreshToken = (user) => {
     const refreshToken = jwt.sign(
         { username, refreshTokenVersion },
         process.env.REFRESH_TOKEN,
-        { expiresIn: '24h' }
+        { expiresIn: '15d' }
     );
     return refreshToken;
 };

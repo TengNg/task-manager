@@ -9,7 +9,9 @@ const isLoggedIn = async (req, res) => {
         return res.status(401).json({ msg: "currently not logged in" });
     }
 
-    const data = jwt.verify(cookies.token, process.env.REFRESH_TOKEN);
+    const refreshToken = cookies[rTokenName];
+
+    const data = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
     const { username, refreshTokenVersion } = data;
 
     const foundUser = await User.findOne({ username });

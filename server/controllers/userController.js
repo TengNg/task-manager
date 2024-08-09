@@ -2,6 +2,10 @@ const User = require('../models/User.js');
 
 const bcrypt = require('bcrypt');
 
+const { createAuthTokens, sendAuthCookies } = require('../services/createAuthTokensService');
+
+const usernameRegex = /^[a-zA-Z0-9._-]{3,20}$/;
+
 const getUserInfo = async (req, res) => {
     const { username } = req.user;
     const user = await User.findOne({ username });
@@ -18,10 +22,15 @@ const updateUsername = async (req, res) => {
     const foundUser = await User.findOne({ username: newUsername })
     if (foundUser) return res.status(409).json({ msg: "Username is already exists" }); // Conflict
 
+    if (!usernameRegex.test(newUsername)) return res.status(400).json({ msg: "Username not valid" });
+
     user.username = newUsername;
     await user.save();
 
-    return res.status(200).json({ msg: "Username updated" });
+    const { accessToken, refreshToken } = createAuthTokens(user);
+    sendAuthCookies(res, null, refreshToken);
+
+    res.status(200).json({ msg: "Username updated", accessToken });
 }
 
 const updatePassword = async (req, res) => {
@@ -33,7 +42,9 @@ const updatePassword = async (req, res) => {
     const foundUser = await User.findOne({ username });
     if (!foundUser) return res.status(401).json({ msg: "Unauthorized" });
 
-    const validPwd = await bcrypt.compare(currentPassword, foundUser.password);
+    if (foundUser.discordId) return res.status(400).json({ msg: "Cannot change password" });
+
+    const validPwd = bcrypt.compare(currentPassword, foundUser.password);
     if (!validPwd) return res.status(400).json({ msg: "Password is incorrect" });
 
     if (newPassword === currentPassword) return res.status(200).json({ notice: 'PASSWORD_NOT_CHANGED', msg: "New password is the same as current password" });
@@ -41,6 +52,7 @@ const updatePassword = async (req, res) => {
     const hashedPwd = await bcrypt.hash(newPassword, 10);
     foundUser.password = hashedPwd;
     await foundUser.save();
+
     return res.status(200).json({ msg: "Password changed" });
 };
 

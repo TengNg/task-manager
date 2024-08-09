@@ -36,9 +36,7 @@ const Boards = () => {
 
     const axiosPrivate = useAxiosPrivate();
 
-    const {
-        auth
-    } = useAuth();
+    const { auth } = useAuth();
 
     const {
         openPinnedBoards,

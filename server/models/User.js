@@ -4,12 +4,15 @@ const UserSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
-        dropDups: true
+        dropDups: true,
+        unique: true
     },
 
     password: {
         type: String,
-        required: true
+        required: function() {
+            return !this.discordId;
+        }
     },
 
     profileImage: {
@@ -48,6 +51,10 @@ const UserSchema = new mongoose.Schema({
         //     },
         //     message: 'max 4 pinned boards'
         // }
+    },
+
+    discordId: {
+        type: String,
     },
 
     refreshTokenVersion: {

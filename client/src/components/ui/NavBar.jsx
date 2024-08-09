@@ -62,7 +62,7 @@ const NavBar = () => {
             const path = KEYS[e.key]?.path;
             if (!path) return;
 
-            navigate(path, { replace: true });
+            navigate(path, { state: { from: path } });
         };
 
         document.addEventListener('keydown', handleOnKeyDown);
@@ -70,7 +70,7 @@ const NavBar = () => {
         () => {
             document.removeEventListener('keydown', handleOnKeyDown);
         }
-    }, [auth?.user?.recentlyViewedBoardId]);
+    }, [auth?.user?.username, auth?.user?.recentlyViewedBoardId]);
 
     return (
         <>

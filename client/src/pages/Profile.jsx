@@ -113,22 +113,25 @@ const Profile = () => {
 
     const handleSaveProfile = async (e) => {
         e.preventDefault();
-        if (usernameInputRef.current.value.trim() === "" || usernameInputRef.current.value.trim() === auth?.user?.username) {
+        const newUsername = usernameInputRef.current.value.trim();
+
+        if (newUsername === "" || newUsername === auth?.user?.username) {
             alert('Nothing to update. Please provide new username');
             return;
         }
 
-        if (!confirm('You will be logged out out all devices after updating username. Are you sure ?')) return;
-
         try {
             setLoading(true);
-            await axiosPrivate.put(`/account/edit/new-username`, JSON.stringify({ newUsername: usernameInputRef.current.value.trim() }));
+            const response = await axiosPrivate.put(`/account/edit/new-username`, JSON.stringify({ newUsername }));
+            const { accessToken } = response.data;
             setLoading(false);
-            await axiosPrivate.get('/logout/');
-            setAuth({});
-            navigate('/login');
+            setAuth(prev => {
+                return { ...prev, accessToken, user: { ...prev.user, username: newUsername } }
+            });
+            navigate(`/u/${newUsername}`, { replace: true });
         } catch (err) {
-            if (err.response.status === 409) {
+            const { status } = err?.response;
+            if (status === 409 || status === 400) {
                 setMsg({
                     error: true,
                     content: err?.response?.data?.msg,
@@ -263,11 +266,11 @@ const Profile = () => {
                 >
                     <form
                         id='userInfoForm'
-                        className='w-[100%] flex flex-col h-fit gap-2 text-gray-700'
+                        className='relative w-[100%] flex flex-col h-fit gap-2 text-gray-700'
                     >
                         <p className={`absolute top-0 right-1 text-[0.75rem] font-medium ${msg.error ? 'text-red-600' : 'text-green-500'}`}>{msg.content}</p>
                         <div className='flex flex-col'>
-                            <label htmlFor="username" className='label--style m-0 p-0'>Username:</label>
+                            <label htmlFor="username" className='label--style m-0 p-0'>Username</label>
                             <input
                                 ref={usernameInputRef}
                                 className='border-[2px] border-black p-1 font-medium bg-transparent'
@@ -294,7 +297,7 @@ const Profile = () => {
                                     onClick={closeChangePasswordOption}
                                 >close</button>
 
-                                <label htmlFor="password" className='label--style'>Current Password:</label>
+                                <label htmlFor="password" className='label--style'>Current Password</label>
                                 <input
                                     className='border-[2px] border-black p-1 font-bold'
                                     type="password"
@@ -305,7 +308,7 @@ const Profile = () => {
                                     required
                                 />
 
-                                <label htmlFor="newPassword" className='label--style'>New Password:</label>
+                                <label htmlFor="newPassword" className='label--style'>New Password</label>
                                 <input
                                     className='border-[2px] border-black p-1 font-bold'
                                     type="password"
@@ -316,7 +319,7 @@ const Profile = () => {
                                     required
                                 />
 
-                                <label htmlFor="confirmedPassword" className='label--style'>Confirm New Password:</label>
+                                <label htmlFor="confirmedPassword" className='label--style'>Confirm New Password</label>
                                 <input
                                     className='border-[2px] border-black p-1 font-bold'
                                     type="password"
@@ -327,26 +330,28 @@ const Profile = () => {
                                     required
                                 />
                             </div>}
-
-                        <div className="flex flex-col gap-4">
-                            {
-                                !changePassword ? (
-                                    <button
-                                        onClick={() => setChangePassword(true)}
-                                        className='text-white p-2 text-[0.75rem] bg-gray-600 font-medium hover:bg-gray-500 w-[100%]'
-                                    >
-                                        change password
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={(e) => handleCheckPassword(e)}
-                                        className='text-white p-2 text-[0.75rem] bg-gray-600 font-medium hover:bg-gray-500 w-[100%]'
-                                    >
-                                        update password
-                                    </button>
-                                )
-                            }
-                        </div>
+                        {
+                            auth?.logInWithDiscord &&
+                            <div className="flex flex-col gap-4">
+                                {
+                                    !changePassword ? (
+                                        <button
+                                            onClick={() => setChangePassword(true)}
+                                            className='text-white p-2 text-[0.75rem] bg-gray-600 font-medium hover:bg-gray-500 w-[100%]'
+                                        >
+                                            change password
+                                        </button>
+                                    ) : (
+                                            <button
+                                                onClick={(e) => handleCheckPassword(e)}
+                                                className='text-white p-2 text-[0.75rem] bg-gray-600 font-medium hover:bg-gray-500 w-[100%]'
+                                            >
+                                                update password
+                                            </button>
+                                        )
+                                }
+                            </div>
+                        }
 
                         <button
                             onClick={handleLogoutOfAllDevices}

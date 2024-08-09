@@ -27,7 +27,7 @@ export default function Login() {
             }
         }
         isLoggedIn().catch(err => {
-            console.error('Error:', err.response?.data?.msg);
+            console.error(err);
             setSuccess(false);
             usernameInputEl.current.focus();
         });
@@ -72,7 +72,7 @@ export default function Login() {
 
                 <Title titleName={"Login"} />
 
-                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 bg-gray-100'>
+                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 pt-2 bg-gray-100 w-[325px]'>
                     <label htmlFor="username">Username</label>
                     <input
                         className='border-[3px] border-black p-1 font-medium'
@@ -97,12 +97,17 @@ export default function Login() {
                         required
                     />
 
-                    <div className='h-[1rem] w-[100%] my-1 flex--center'>
-                        {success === false && <p className='text-[0.65rem] text-red-700 top-[1rem] right-[1rem] font-medium select-none'>{errMsg}</p>}
+                    {success === false && <p className='text-[0.65rem] text-red-700 top-[1rem] right-[1rem] font-medium select-none'>{errMsg}</p>}
+
+                    <div className='flex flex-col gap-3 mt-4'>
+                        <button className='button--style--dark flex--center'>Log in</button>
+                        <a
+                            className="button--style border-none text-gray-50 bg-indigo-700 hover:bg-indigo-500 flex--center"
+                            href={`${import.meta.env.VITE_SERVER_URL || 'http://localhost:3001'}/auth/discord`}
+                        >
+                            Log in with Discord
+                        </a>
                     </div>
-
-                    <button className='button--style--dark flex--center'>Log in</button>
-
                 </form>
 
                 <div className='flex flex-col font-normal select-none mt-4'>
