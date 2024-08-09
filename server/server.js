@@ -2,6 +2,10 @@ require('dotenv').config();
 require('express-async-errors');
 
 const express = require("express");
+
+const passport = require("passport");
+const { Strategy } = require("passport-discord-auth");
+
 const mongoose = require("mongoose");
 const cors = require("cors");
 
@@ -30,6 +34,54 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json())
+
+app.use(passport.initialize());
+
+passport.use(
+    new Strategy(
+        {
+            clientId: process.env.DISCORD_CLIENT_ID,
+            clientSecret: process.env.DISCORD_SECRET_ID,
+            callbackUrl: "http://localhost:3001/auth/discord/callback",
+            scope: ["identify", "email"],
+        },
+
+        async (_accessToken, _refreshToken, profile, done) => {
+            const { discordId, verified } = profile._json;
+
+            if (!verified) {
+                return done(null, false);
+            }
+
+            const foundUser = await User.findOne({ discordId });
+            if (!foundUser) {
+                await User.create({ discordId });
+            }
+
+            done(null, profile);
+        }
+    )
+);
+
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+    done(null, user);
+});
+
+app.get('/auth/discord', passport.authenticate('discord'));
+
+app.get(
+    '/auth/discord/callback',
+    passport.authenticate('discord', {
+        session: false,
+    }),
+    (_req, res) => {
+        res.redirect('http://localhost:5173/home');
+    }
+);
 
 app.use("/home", require("./routes/home"));
 app.use("/register", require("./routes/register"));

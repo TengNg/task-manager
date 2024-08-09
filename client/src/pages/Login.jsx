@@ -97,12 +97,19 @@ export default function Login() {
                         required
                     />
 
-                    <div className='h-[1rem] w-[100%] my-1 flex--center'>
+                    <div className='h-[1rem] w-[100%] my-0.5 flex--center'>
                         {success === false && <p className='text-[0.65rem] text-red-700 top-[1rem] right-[1rem] font-medium select-none'>{errMsg}</p>}
                     </div>
 
-                    <button className='button--style--dark flex--center'>Log in</button>
-
+                    <div className='flex flex-col gap-3'>
+                        <button className='button--style--dark flex--center'>Log in</button>
+                        <a
+                            className="button--style border-indigo-500 text-gray-50 bg-indigo-700 hover:bg-indigo-500 flex--center"
+                            href={`${import.meta.env.VITE_SERVER_URL || 'http://localhost:3001'}/auth/discord`}
+                        >
+                            Login with Discord
+                        </a>
+                    </div>
                 </form>
 
                 <div className='flex flex-col font-normal select-none mt-4'>
