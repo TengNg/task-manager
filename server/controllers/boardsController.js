@@ -70,11 +70,11 @@ const getBoard = async (req, res) => {
         })
         .populate({
             path: 'createdBy',
-            select: 'username profileImage createdAt'
+            select: 'username createdAt'
         })
         .populate({
             path: 'members',
-            select: 'username profileImage createdAt'
+            select: 'username createdAt'
         })
 
     if (!board) return res.status(404).json({ msg: "board not found" });

@@ -16,7 +16,7 @@
     }
 
     .underline--hover {
-        @apply before:hover:w-[80%]
+        @apply before:hover:w-[90%]
     }
 
     .section--style {
@@ -48,11 +48,11 @@
     }
 
     .button--style {
-        @apply border-gray-600 border-[2px] px-3 py-2 text-gray-700 box-border font-medium
+        @apply border-gray-700 border-[2px] px-3 py-2 text-gray-700 box-border font-medium
     }
 
     .button--style--dark {
-        @apply px-3 py-2 bg-gray-600 text-white hover:bg-gray-500
+        @apply px-3 py-2 bg-gray-600 text-white hover:bg-gray-500 font-medium
     }
 
     .button--style--rounded {

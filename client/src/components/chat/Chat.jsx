@@ -50,13 +50,13 @@ const Chat = ({
                 <div className='flex w-full justify-start items-start'>
                     <div className='flex w-full gap-2 justify-between flex-wrap'>
                         <p
-                            className={`text-[0.75rem] font-bold ${chat.sentBy.username === auth?.user?.username ? 'text-teal-700' : 'text-gray-700'}`}
+                            className={`text-[0.75rem] font-bold ${chat.sentBy?.username === auth?.user?.username ? 'text-teal-700' : 'text-gray-700'}`}
                         >
                             {sentBy?.username}
 
                             {
                                 withUserIcon &&
-                                chat.sentBy.username === auth?.user?.username &&
+                                chat.sentBy?.username === auth?.user?.username &&
                                 <span className="ms-1">
                                     <FontAwesomeIcon icon={faCircleUser} />
                                 </span>
@@ -75,7 +75,7 @@ const Chat = ({
                     // render message content by message type ==========================================================
 
                     type === 'MESSAGE' ? (
-                        <div className={`max-w-[95%] w-fit flex justify-center items-center ${highlightOwnMessages && chat.sentBy.username === auth?.user?.username ? 'bg-teal-50 border-[1px] border-teal-600' : `bg-slate-100 ${inMiniChat && 'bg-slate-50 border-[1px] border-gray-500'}`} rounded ${padding.x} ${padding.y}`}>
+                        <div className={`max-w-[95%] w-fit flex justify-center items-center ${highlightOwnMessages && chat.sentBy?.username === auth?.user?.username ? 'bg-teal-50 border-[1px] border-teal-600' : `bg-slate-100 ${inMiniChat && 'bg-slate-50 border-[1px] border-gray-500'}`} rounded ${padding.x} ${padding.y}`}>
                             <div className="w-full break-words whitespace-pre-line text-[0.75rem] px-[1px] text-gray-600 font-medium">
                                 {chatContent}
                             </div>
@@ -118,7 +118,7 @@ const Chat = ({
                     )
                 }
 
-                {chat.sentBy.username === auth?.user?.username &&
+                {chat.sentBy?.username === auth?.user?.username &&
                     <button
                         onClick={() => deleteMessage(trackedId)}
                         className='absolute top-[1.1rem] right-[0.2rem] text-transparent group-hover:text-gray-400'

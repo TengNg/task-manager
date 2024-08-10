@@ -70,7 +70,7 @@ const UserAccount = () => {
             <div
                 onClick={() => setCollapse(collapse => !collapse)}
                 ref={userProfileImageRef}
-                className='bg-blue-500 text-white flex--center ms-auto text-[0.8rem] w-[35px] h-[35px] sm:w-[40px] sm:h-[40px] rounded-full bg-center bg-cover overflow-hidden cursor-pointer'
+                className={`${auth?.user?.loginWithDiscord ? 'bg-indigo-600 border-[3px] border-indigo-400' : 'bg-blue-500'} text-white flex--center ms-auto text-[0.8rem] w-[35px] h-[35px] sm:w-[40px] sm:h-[40px] rounded-full bg-center bg-cover overflow-hidden cursor-pointer hover:opacity-90`}
             >
                 <div className="font-bold flex--center select-none">{auth?.user?.username?.charAt(0).toUpperCase()}</div>
             </div>
@@ -84,7 +84,7 @@ const UserAccount = () => {
                     {
                         Object.keys(auth).length > 0 && <>
                             <button
-                                className="absolute right-3 top-3 text-[0.8rem] text-gray-600"
+                                className="absolute right-2 top-2 text-gray-600 px-2 rounded hover:bg-gray-200"
                                 onClick={() => setCollapse(true)}
                             >
                                 <FontAwesomeIcon icon={faXmark} />

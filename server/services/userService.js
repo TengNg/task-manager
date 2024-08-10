@@ -12,7 +12,8 @@ const sanitizeUser = (user) => {
         username,
         createdAt,
         recentlyViewedBoardId,
-        pinnedBoardIdCollection
+        pinnedBoardIdCollection,
+        discordId,
     } = user;
 
     return {
@@ -20,7 +21,8 @@ const sanitizeUser = (user) => {
         username,
         createdAt,
         recentlyViewedBoardId,
-        pinnedBoardIdCollection
+        pinnedBoardIdCollection,
+        loginWithDiscord: !!discordId,
     };
 };
 

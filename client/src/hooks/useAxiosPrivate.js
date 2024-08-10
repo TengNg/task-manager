@@ -21,7 +21,7 @@ const useAxiosPrivate = () => {
             response => response, // every responses with status 2xx will trigger this
             async (error) => {
                 const prevRequest = error?.config;
-                if (error?.response?.status === 403 && prevRequest?._retry === false) {
+                if (error?.response?.status === 403 && prevRequest?._retry == false) {
                     prevRequest._retry = true; // prevent infinite loop
                     const newAccessToken = await refresh();
                     prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;

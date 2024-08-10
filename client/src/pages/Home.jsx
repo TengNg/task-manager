@@ -84,7 +84,10 @@ const Home = () => {
                                         <span className='key'>Esc</span> close opened form / box
                                     </li>
                                     <li>
-                                        <span className='key'>Ctrl</span> + key combinations to quickly perform actions
+                                        <span className='key'>Ctrl</span> + key combinations for better workflow
+                                    </li>
+                                    <li>
+                                        ...
                                     </li>
                                     <li>
                                         See <span className='font-medium'>Help</span> in Board for better understanding :)

@@ -2,6 +2,14 @@ require('dotenv').config();
 require('express-async-errors');
 
 const express = require("express");
+
+const crypto = require('crypto');
+
+const passport = require("passport");
+const { Strategy } = require("passport-discord-auth");
+
+const User = require("./models/User");
+
 const mongoose = require("mongoose");
 const cors = require("cors");
 
@@ -10,6 +18,7 @@ const errorHandler = require('./middlewares/errorHandler');
 const credentials = require('./middlewares/credentials');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const { sendAuthCookies } = require('./services/createAuthTokensService.js');
 
 const app = express();
 
@@ -30,6 +39,55 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json())
+
+passport.use(
+    new Strategy(
+        {
+            clientId: process.env.DISCORD_CLIENT_ID,
+            clientSecret: process.env.DISCORD_SECRET_ID,
+            callbackUrl: `${process.env.SERVER_URL || `http://localhost:${PORT}`}/auth/discord/callback`,
+            scope: ["identify", "email"],
+        },
+
+        async (_accessToken, _refreshToken, profile, done) => {
+            const { id: discordId, username, verified } = profile._json;
+
+            if (!verified) {
+                return done(null, false);
+            }
+
+            let user = await User.findOne({ discordId });
+
+            if (!user) {
+                const secureId = crypto.randomUUID();
+                const initialUsername = `${username}-${secureId}`;
+                const user = await User.create({
+                    username: initialUsername,
+                    discordId
+                });
+
+                if (!user) {
+                    return done(null, false);
+                }
+            }
+
+            done(null, user);
+        }
+    )
+);
+
+app.get('/auth/discord', passport.authenticate('discord'));
+
+app.get(
+    '/auth/discord/callback',
+    passport.authenticate('discord', {
+        session: false,
+    }),
+    (req, res) => {
+        sendAuthCookies(res, req.user, null);
+        res.redirect(`${process.env.FRONTEND_URL || `http://localhost:5173/boards`}`);
+    }
+);
 
 app.use("/home", require("./routes/home"));
 app.use("/register", require("./routes/register"));

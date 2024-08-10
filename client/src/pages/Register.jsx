@@ -7,6 +7,7 @@ import Loading from '../components/ui/Loading';
 // const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 // const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 
+const USERNAME_REGEX = /^[a-zA-Z0-9._-]{3,20}$/;
 const PWD_REGEX = /^.{8,24}$/;
 
 export default function Register() {
@@ -42,13 +43,20 @@ export default function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-         const matched = PWD_REGEX.test(password);
+        const passwordMatched = PWD_REGEX.test(password);
+        const usernameMatched = USERNAME_REGEX.test(username);
 
-         if (matched === false) {
-             setErrMsg('Password must be at least 8 characters');
-             passwordInputEl.current.focus();
-             return;
-         }
+        if (!usernameMatched) {
+            setErrMsg('Invalid Username, must be between 3 and 20 characters (no spaces)');
+            usernameInputEl.current.focus();
+            return;
+        }
+
+        if (passwordMatched === false) {
+            setErrMsg('Password must be at least 8 characters');
+            passwordInputEl.current.focus();
+            return;
+        }
 
         if (confirmedPassword !== password) {
             setErrMsg('Password do not match');
@@ -90,13 +98,14 @@ export default function Register() {
                     displayText={'please wait, creating new account...'}
                 />
 
-                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 bg-gray-100 w-[325px]'>
+                <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 pt-2 bg-gray-100 w-[325px]'>
                     <label htmlFor="username">Username</label>
                     <input
                         className='border-[3px] border-black p-1 font-medium select-none'
                         type="text"
                         id="username"
                         autoComplete="off"
+                        autoFocus={true}
                         ref={usernameInputEl}
                         onChange={(e) => setUsername(e.target.value)}
                         value={username}
@@ -128,11 +137,17 @@ export default function Register() {
                         required
                     />
 
-                    <div className='h-[1rem] w-[100%] my-1 flex--center'>
-                        {success === false && <p className='text-[0.65rem] text-red-700 top-[1rem] right-[1rem] font-medium select-none'>{errMsg}</p>}
-                    </div>
+                    {success === false && <p className='text-[0.65rem] text-red-700 top-[1rem] right-[1rem] text-center font-medium select-none'>{errMsg}</p>}
 
-                    <button className='button--style--dark'>Sign up</button>
+                    <div className='flex flex-col gap-3 mt-4'>
+                        <button className='button--style--dark'>Sign up</button>
+                        <a
+                            className="button--style border-0 text-gray-50 bg-indigo-700 hover:bg-indigo-500 flex--center"
+                            href={`${import.meta.env.VITE_SERVER_URL || 'http://localhost:3001'}/auth/discord`}
+                        >
+                            Log in with Discord
+                        </a>
+                    </div>
                 </form>
 
                 <div className='flex flex-col p-4 select-none'>
