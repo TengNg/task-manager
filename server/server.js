@@ -3,8 +3,6 @@ require('express-async-errors');
 
 const express = require("express");
 
-const crypto = require('crypto');
-
 const passport = require("passport");
 const { Strategy } = require("passport-discord-auth");
 
@@ -13,12 +11,14 @@ const User = require("./models/User");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-const authenticateToken = require("./middlewares/authenticateToken.js");
+const authenticateToken = require("./middlewares/authenticateToken");
 const errorHandler = require('./middlewares/errorHandler');
 const credentials = require('./middlewares/credentials');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const { sendAuthCookies } = require('./services/createAuthTokensService.js');
+
+const { sendAuthCookies } = require('./services/createAuthTokensService');
+const { generateRandomHex } = require('./utils/generateRandomHex.js');
 
 const app = express();
 
@@ -59,15 +59,15 @@ passport.use(
             let user = await User.findOne({ discordId });
 
             if (!user) {
-                const secureId = crypto.randomUUID();
+                const secureId = generateRandomHex(10);
                 const initialUsername = `${username}-${secureId}`;
-                const user = await User.create({
-                    username: initialUsername,
-                    discordId
-                });
-
-                if (!user) {
-                    return done(null, false);
+                try {
+                    user = await User.create({
+                        username: initialUsername,
+                        discordId
+                    });
+                } catch (err) {
+                    done(null, false);
                 }
             }
 
@@ -82,6 +82,7 @@ app.get(
     '/auth/discord/callback',
     passport.authenticate('discord', {
         session: false,
+        failureRedirect: `${process.env.FRONTEND_URL || `http://localhost:5173`}/login?authorize-failed=true`,
     }),
     (req, res) => {
         sendAuthCookies(res, req.user, null);
@@ -114,3 +115,4 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 module.exports = app;
+

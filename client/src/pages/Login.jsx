@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { axiosPrivate } from '../api/axios';
@@ -12,6 +12,8 @@ export default function Login() {
     const [errMsg, setErrMsg] = useState("");
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const [searchParams, _] = useSearchParams();
 
     const { setAuth } = useAuth();
 
@@ -63,14 +65,14 @@ export default function Login() {
 
     return (
         <>
-            <section className='relative w-[100%] h-[100vh] bg-gray-300 flex items-center flex-col p-5 gap-2'>
+            <section className='relative w-[100%] h-[100vh] bg-transparent flex items-center flex-col p-5 gap-2'>
                 <Loading
                     position={'absolute'}
                     loading={loading}
                     displayText={'please wait, logging in...'}
                 />
 
-                <Title titleName={"Login"} />
+                <Title titleName={"login"} />
 
                 <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 pt-2 bg-gray-100 w-[325px]'>
                     <label htmlFor="username">Username</label>
@@ -97,7 +99,8 @@ export default function Login() {
                         required
                     />
 
-                    {success === false && <p className='text-[0.65rem] text-red-700 top-[1rem] right-[1rem] font-medium select-none'>{errMsg}</p>}
+                    {success === false && <p className='text-[0.65rem] text-red-700 ms-1 mt-1 font-medium select-none'>{errMsg}</p>}
+                    {searchParams.get('authorize-failed') && <p className='text-[0.65rem] text-red-700 ms-0.5 mt-1 font-medium select-none'>Failed to Log in</p>}
 
                     <div className='flex flex-col gap-3 mt-4'>
                         <button className='button--style--dark flex--center'>Log in</button>

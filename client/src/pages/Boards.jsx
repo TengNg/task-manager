@@ -125,7 +125,7 @@ const Boards = () => {
         getBoards()
             .catch(err => {
                 if (err.response?.status === 403) {
-                    navigate('/login', { replace: true });
+                    navigate('/error', { replace: true });
                 } else {
                     alert('Failed to get boards. Please try again.');
                 }
@@ -283,7 +283,7 @@ const Boards = () => {
 
 
                 <button
-                    className='fixed hidden sm:block bottom-4 right-4 w-[20px] h-[20px] text-[12px] bg-gray-500 hover:bg-gray-600 text-white rounded-full'
+                    className='fixed hidden sm:block bottom-4 left-4 w-[20px] h-[20px] text-[12px] bg-gray-500 hover:bg-gray-600 text-white rounded-full'
                     onClick={() => {
                         setOpenHelp(prev => !prev)
                     }}

@@ -836,7 +836,7 @@ const Board = () => {
                 {
                     boardState?.hasStaleCard &&
                     <div
-                        className='group relative w-[20px] h-[20px] text-[10px] font-bold text-red-700 border-red-400 border-[2px] rounded-full ms-4 mt-1 text-center cursor-pointer'
+                        className='md:block hidden group relative w-[20px] h-[20px] text-[10px] font-bold text-red-700 border-red-400 border-[2px] rounded-full ms-4 text-center cursor-pointer'
                         onClick={() => {
                             if (searchParams.get('stale')) {
                                 searchParams.delete('stale');
@@ -854,8 +854,8 @@ const Board = () => {
                     </div>
                 }
 
-                <div className='flex gap-3 absolute right-2 bottom-4 sm:right-4 text-[0.65rem] text-gray-700'>
-                    <p className='md:block hidden select-none'>
+                <div className='flex gap-3 ms-3 text-[0.65rem] items-center justify-center text-gray-700'>
+                    <p className='md:block hidden select-none m-0 p-0'>
                         lists: {boardState?.board?.listCount || 0} / 20
                     </p>
 

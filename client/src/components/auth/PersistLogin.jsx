@@ -2,13 +2,11 @@ import { Outlet } from "react-router-dom";
 import useRefreshToken from '../../hooks/useRefreshToken';
 import { useState, useEffect } from "react";
 import useAuth from '../../hooks/useAuth';
-import { useNavigate } from "react-router-dom";
 
 const PersistLogin = () => {
     const [isLoading, setIsLoading] = useState(true);
     const { auth } = useAuth();
     const refresh = useRefreshToken();
-    const navigate = useNavigate();
 
     useEffect(() => {
         let isMounted = true;
@@ -17,10 +15,8 @@ const PersistLogin = () => {
             try {
                 await refresh();
             } catch (err) {
-                console.log(err);
-                if (err?.response?.status === 401) {
-                    navigate('/login');
-                }
+                const errMsg = err?.response?.data || 'An error occurred while refreshing the token. Please refresh the page and try again.';
+                console.error(errMsg);
             } finally {
                 isMounted && setIsLoading(false);
             }

@@ -64,7 +64,7 @@ const JoinRequests = ({
                                 </div>
                                 <div className='flex flex-col justify-start text-gray-800'>
                                     <div className='text-[0.75rem] md:text-[0.9rem] text-gray-700'>
-                                        <span className='max-w-[200px] font-bold underline overflow-hidden whitespace-nowrap text-ellipsis'>{requesterName}</span>
+                                        <span className='max-w-[200px] font-medium underline overflow-hidden whitespace-nowrap text-ellipsis'>{requesterName}</span>
                                         <span>{" "}</span>
                                         <span>sends you a join-request</span>
                                     </div>

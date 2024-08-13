@@ -1,19 +1,13 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import useAuth from "../../hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import dateFormatter from "../../utils/dateFormatter";
-import ThemesDialog from "./ThemesDialog";
-
-import useLocalStorage from "../../hooks/useLocalStorage";
-import LOCAL_STORAGE_KEYS from "../../data/localStorageKeys";
-import backgroundThemes from "../../data/backgroundThemes";
 
 const UserAccount = () => {
     const [collapse, setCollapse] = useState(true);
-    const [openThemesDialog, setOpenThemesDialog] = useState(false);
 
     const { auth, setAuth } = useAuth();
     const navigate = useNavigate();
@@ -21,12 +15,6 @@ const UserAccount = () => {
 
     const userProfileImageRef = useRef();
     const userInfoRef = useRef();
-
-    const [backgroundTheme, setBackgroundTheme] = useLocalStorage(LOCAL_STORAGE_KEYS.BACKGROUND_THEME, { theme: 'offwhite' });
-
-    useEffect(() => {
-        document.querySelector('#root').style.backgroundColor = backgroundThemes[backgroundTheme?.theme] || '#f1f1f1';
-    }, [backgroundTheme]);
 
     const handleLogout = async () => {
         try {
@@ -37,10 +25,6 @@ const UserAccount = () => {
             console.log(err);
             alert('Failed to logout. Please try again.');
         }
-    };
-
-    const handleOpenThemesDialog = () => {
-        setOpenThemesDialog(prev => !prev);
     };
 
     if (Object.keys(auth).length === 0 || !auth.accessToken) {
@@ -59,14 +43,7 @@ const UserAccount = () => {
     }
 
     return <>
-        <ThemesDialog
-            open={openThemesDialog}
-            setOpen={setOpenThemesDialog}
-            backgroundTheme={backgroundTheme}
-            setBackgroundTheme={setBackgroundTheme}
-        />
-
-        <div id='user-account' className="relative h-fit gap-2 z-30">
+        <div id='user-account' className="md:block hidden relative h-fit gap-2 z-30">
             <div
                 onClick={() => setCollapse(collapse => !collapse)}
                 ref={userProfileImageRef}
@@ -101,11 +78,8 @@ const UserAccount = () => {
 
                             <div className='flex flex-col gap-2'>
                                 <Link
-                                    to={`/u/${auth?.user?.username}`}
+                                    to={`/profile`}
                                     className="button--style text-[0.75rem] font-medium hover:underline grid place-items-center">Profile</Link>
-                                <button
-                                    onClick={handleOpenThemesDialog}
-                                    className="button--style text-[0.75rem] font-medium hover:underline">Themes</button>
                                 <button
                                     onClick={handleLogout}
                                     className="button--style--dark text-[0.75rem] font-medium text-gray-200">Log out</button>

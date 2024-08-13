@@ -87,7 +87,7 @@ const Activities = () => {
             setInvitations(response.data.invitations);
         } catch (err) {
             if (err.response?.status === 403) {
-                navigate('/login', { replace: true });
+                navigate('/error', { replace: true });
             } else {
                 alert('Failed to get invitations. Please try again.');
             }
@@ -104,7 +104,7 @@ const Activities = () => {
             setJoinBoardRequests(response.data.joinRequests);
         } catch (err) {
             if (err.response?.status === 403) {
-                navigate('/login');
+                navigate('/error', { replace: true });
             }
             console.log(err);
         }
@@ -286,7 +286,7 @@ const Activities = () => {
             </section>
 
             <button
-                className='fixed bottom-4 right-4 w-[20px] h-[20px] text-[12px] bg-gray-500 hover:bg-gray-600 text-white rounded-full'
+                className='fixed bottom-4 left-4 w-[20px] h-[20px] text-[12px] bg-gray-500 hover:bg-gray-600 text-white rounded-full'
                 onClick={() => {
                     setOpenHelp(prev => !prev)
                 }}

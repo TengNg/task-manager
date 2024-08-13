@@ -34,7 +34,7 @@ const Writedown = () => {
             setWritedowns(response.data.writedowns);
         } catch (err) {
             if (err.response?.status === 403) {
-                navigate('/login', { replace: true });
+                navigate('/error', { replace: true });
             } else {
                 alert('Failed to get writedowns. Please try again.');
             }

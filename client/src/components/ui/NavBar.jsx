@@ -3,34 +3,22 @@ import { useNavigate, useLocation, NavLink } from "react-router-dom"
 import UserAccount from "./UserAccount";
 import useAuth from '../../hooks/useAuth';
 
-const PAGES = Object.freeze({
-    HOME: {
-        path: '/',
-        title: 'home',
-    },
+import PAGES from "../../data/pages";
 
-    BOARDS: {
-        path: '/boards',
-        title: 'boards',
-    },
+const NAV_PAGES = [
+    PAGES.BOARDS,
+    PAGES.WRITEDOWNS,
+    PAGES.ACTIVITIES,
+    PAGES.PROFILE,
+];
 
-    WRITEDOWNS: {
-        path: '/writedowns',
-        title: 'writedowns',
-    },
-
-    ACTIVITIES: {
-        path: '/activities',
-        title: 'activities',
-    },
+const KEYS = Object.freeze({
+    '0': PAGES.ABOUT,
+    '1': PAGES.BOARDS,
+    '2': PAGES.WRITEDOWNS,
+    '3': PAGES.ACTIVITIES,
+    '4': PAGES.PROFILE,
 });
-
-const KEYS = {
-    '1': PAGES.HOME,
-    '2': PAGES.BOARDS,
-    '3': PAGES.WRITEDOWNS,
-    '4': PAGES.ACTIVITIES,
-};
 
 const NavBar = () => {
     const navigate = useNavigate();
@@ -50,13 +38,7 @@ const NavBar = () => {
                 if (recentlyViewedBoardId) {
                     navigate(`/b/${recentlyViewedBoardId}`);
                 }
-            }
-
-            if (e.key === '0') {
-                const uname = auth?.user?.username;
-                if (uname) {
-                    navigate(`/u/${uname}`);
-                }
+                return;
             }
 
             const path = KEYS[e.key]?.path;
@@ -75,7 +57,7 @@ const NavBar = () => {
     return (
         <>
             <section id='header-section' className='w-full h-[70px] flex--center relative gap-2 py-3 px-2 sm:px-4'>
-                <div className='w-[40px] h-[40px]'></div>
+                <div className='md:block hidden w-[40px] h-[40px]'></div>
 
                 {
                     (!pathname.includes('/b/') && auth?.user?.recentlyViewedBoardId) && (<>
@@ -97,7 +79,7 @@ const NavBar = () => {
                 <nav className="h-full top-4 m-auto border-gray-700 border-[2px] bg-transparent px-2 z-30 drop-shadow-sm">
                     <ul className="w-[100%] h-[100%] flex justify-around items-center sm:gap-4 gap-2">
                         {
-                            Object.values(PAGES).map((el, index) => {
+                            NAV_PAGES.map((el, index) => {
                                 const { path, title } = el;
                                 const num = `0${index + 1}`;
                                 return <li key={path}>

@@ -88,8 +88,8 @@ export default function Register() {
 
     return (
         <>
-            <section className='relative w-[100%] h-[100vh] bg-gray-300 flex flex-col items-center p-5 gap-2'>
-                <Title titleName={"Register"} />
+            <section className='relative w-[100%] h-[100vh] bg-transparent flex flex-col items-center p-5 gap-2'>
+                <Title titleName={"register"} />
 
                 <Loading
                     position={'absolute'}
@@ -137,7 +137,7 @@ export default function Register() {
                         required
                     />
 
-                    {success === false && <p className='text-[0.65rem] text-red-700 top-[1rem] right-[1rem] text-center font-medium select-none'>{errMsg}</p>}
+                    {success === false && <p className='text-[0.65rem] text-red-700 ms-1 mt-1 font-medium select-none'>{errMsg}</p>}
 
                     <div className='flex flex-col gap-3 mt-4'>
                         <button className='button--style--dark'>Sign up</button>

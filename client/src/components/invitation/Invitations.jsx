@@ -65,7 +65,7 @@ export default function Invitations({
                                 </div>
                                 <div className='flex flex-col justify-start text-gray-700'>
                                     <div className='text-[0.75rem] md:text-[0.9rem] text-gray-700'>
-                                        <span className='max-w-[200px] font-bold underline overflow-hidden whitespace-nowrap text-ellipsis'>{sender.username}</span>
+                                        <span className='max-w-[200px] font-medium underline overflow-hidden whitespace-nowrap text-ellipsis'>{sender.username}</span>
                                         <span>{" "}</span>
                                         <span>sends you a board invitation</span>
                                     </div>

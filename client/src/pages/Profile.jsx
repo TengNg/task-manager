@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 
@@ -11,8 +11,6 @@ import { axiosPrivate as axios } from '../api/axios';
 import dateFormatter from "../utils/dateFormatter";
 
 const Profile = () => {
-    const { username } = useParams();
-
     const [changePassword, setChangePassword] = useState(false);
     const [password, setPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -44,12 +42,8 @@ const Profile = () => {
     const usernameInputRef = useRef(null);
 
     useEffect(() => {
-        if (auth?.user?.username === undefined) {
-            navigate('/login');
-        } else if (username != auth?.user?.username) {
-            navigate('/notfound');
-        } else {
-            usernameInputRef.current.value = auth.user.username;
+        if (usernameInputRef.current) {
+            usernameInputRef.current.value = auth?.user?.username;
         }
 
         const getBoards = async () => {
@@ -60,7 +54,7 @@ const Profile = () => {
 
         getBoards().catch(err => {
             if (err.response?.status === 403) {
-                navigate('/login', { replace: true });
+                navigate('/error', { replace: true });
             } else {
                 alert("Failed to get owned boards");
             }
@@ -189,6 +183,21 @@ const Profile = () => {
         }
     };
 
+    const handleLogout = async (e) => {
+        e.preventDefault();
+
+        if (!confirm('Are you sure you want to logout?')) return;
+
+        try {
+            await axios.get('/logout/');
+            setAuth({});
+            navigate('/login');
+        } catch (err) {
+            console.log(err);
+            alert('Failed to logout. Please try again.');
+        }
+    };
+
     const handleLogoutOfAllDevices = async (e) => {
         e.preventDefault();
 
@@ -241,6 +250,10 @@ const Profile = () => {
         }
     };
 
+    if (!auth?.user?.username) {
+        return null;
+    }
+
     return (<>
         <BoardStats
             boardStatsModal={boardStatsModal}
@@ -287,17 +300,17 @@ const Profile = () => {
                             type='submit'
                             form='userInfoForm'
                             onClick={handleSaveProfile}
-                            className='text-white p-2 text-[0.75rem] bg-gray-600 font-medium hover:bg-gray-500 w-[100%]'
+                            className='text-white p-2 text-[0.75rem] bg-sky-800 font-medium hover:bg-sky-700 w-[100%]'
                         >update username</button>
 
                         {changePassword &&
                             <div className="flex flex-col div--style w-[100%] relative py-8 border-[2px] border-gray-700 px-4">
                                 <button
-                                    className="absolute top-2 right-2 button--style text-[0.75rem] font-medium hover:underline"
+                                    className="absolute top-2 right-2 text-[11px] border-[1px] border-gray-700 px-2 py-1 hover:underline"
                                     onClick={closeChangePasswordOption}
                                 >close</button>
 
-                                <label htmlFor="password" className='label--style'>Current Password</label>
+                                <label htmlFor="password" className='label--style'>current password</label>
                                 <input
                                     className='border-[2px] border-black p-1 font-bold'
                                     type="password"
@@ -308,7 +321,7 @@ const Profile = () => {
                                     required
                                 />
 
-                                <label htmlFor="newPassword" className='label--style'>New Password</label>
+                                <label htmlFor="newPassword" className='label--style'>new password</label>
                                 <input
                                     className='border-[2px] border-black p-1 font-bold'
                                     type="password"
@@ -319,7 +332,7 @@ const Profile = () => {
                                     required
                                 />
 
-                                <label htmlFor="confirmedPassword" className='label--style'>Confirm New Password</label>
+                                <label htmlFor="confirmedPassword" className='label--style'>confirm new password</label>
                                 <input
                                     className='border-[2px] border-black p-1 font-bold'
                                     type="password"
@@ -331,20 +344,20 @@ const Profile = () => {
                                 />
                             </div>}
                         {
-                            auth?.logInWithDiscord &&
+                            auth?.user?.loginWithDiscord == false &&
                             <div className="flex flex-col gap-4">
                                 {
                                     !changePassword ? (
                                         <button
                                             onClick={() => setChangePassword(true)}
-                                            className='text-white p-2 text-[0.75rem] bg-gray-600 font-medium hover:bg-gray-500 w-[100%]'
+                                            className='text-white p-2 text-[0.75rem] bg-sky-800 font-medium hover:bg-sky-700 w-[100%]'
                                         >
                                             change password
                                         </button>
                                     ) : (
                                             <button
                                                 onClick={(e) => handleCheckPassword(e)}
-                                                className='text-white p-2 text-[0.75rem] bg-gray-600 font-medium hover:bg-gray-500 w-[100%]'
+                                                className='text-white p-2 text-[0.75rem] bg-sky-800 font-medium hover:bg-sky-700 w-[100%]'
                                             >
                                                 update password
                                             </button>
@@ -352,6 +365,15 @@ const Profile = () => {
                                 }
                             </div>
                         }
+
+                        <div className='h-[1px] bg-gray-800'></div>
+
+                        <button
+                            onClick={handleLogout}
+                            className='text-white p-2 text-[0.75rem] bg-gray-600 font-medium hover:bg-gray-500 w-[100%]'
+                        >
+                            log out
+                        </button>
 
                         <button
                             onClick={handleLogoutOfAllDevices}

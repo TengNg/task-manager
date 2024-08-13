@@ -8,9 +8,10 @@ const BoardForm = forwardRef(({}, ref) => {
 
     const navigate = useNavigate();
 
-    const handleCreateBoard = async () => {
+    const handleCreateBoard = async (e) => {
+        e.preventDefault();
+
         if (!title) {
-            alert("Title is required");
             return;
         }
 
@@ -31,8 +32,9 @@ const BoardForm = forwardRef(({}, ref) => {
 
     return (
         <>
-            <div
+            <form
                 ref={ref}
+                onSubmit={handleCreateBoard}
                 className="absolute board--style border-[2px] border-gray-600 shadow-gray-600 px-4 py-3 w-[210px] sm:w-[300px] flex flex-col gap-3 bg-gray-100 z-20 top-0"
             >
                 <p className="text-gray-600 font-medium">+ new board</p>
@@ -57,13 +59,12 @@ const BoardForm = forwardRef(({}, ref) => {
                     placeholder="description..."
                     value={description}
                     onChange={e => setDescription(e.target.value)}
-                    required
                 />
 
                 <button
-                    onClick={handleCreateBoard}
+                    type='submit'
                     className="button--style--dark">create</button>
-            </div>
+            </form>
         </>
     )
 })
