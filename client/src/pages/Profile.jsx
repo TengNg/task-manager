@@ -122,7 +122,6 @@ const Profile = () => {
             setAuth(prev => {
                 return { ...prev, accessToken, user: { ...prev.user, username: newUsername } }
             });
-            navigate(`/u/${newUsername}`, { replace: true });
         } catch (err) {
             const { status } = err?.response;
             if (status === 409 || status === 400) {
@@ -168,10 +167,10 @@ const Profile = () => {
             closeChangePasswordOption();
             setLoading(false);
 
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            await axios.get('/logout/');
-            setAuth({});
-            navigate('/login');
+            //await new Promise(resolve => setTimeout(resolve, 1000));
+            //await axios.get('/logout/');
+            //setAuth({});
+            //navigate('/login');
         } catch (err) {
             const errMsg = err?.response?.status === 400 ? "Current password is incorrect" : "Can't change password"
             console.log(err);

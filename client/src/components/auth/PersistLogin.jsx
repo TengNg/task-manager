@@ -51,10 +51,6 @@ const PersistLogin = () => {
 
                                 <br />
                                 <br />
-
-                                <span>
-                                    [Slow server connection] Please wait...
-                                </span>
                             </div>
 
                             <br />
