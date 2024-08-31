@@ -261,7 +261,7 @@ const Profile = () => {
 
         <section
             id="profile"
-            className="w-full h-[calc(100%-75px)] overflow-auto pb-4"
+            className="w-full h-full overflow-auto pb-8"
         >
             <Title titleName={'profile'} />
 

@@ -138,7 +138,7 @@ const Writedown = () => {
                 updateTitle={handleUpdateWritedownTitle}
             />
 
-            <section className="w-full h-[calc(100%-75px)] overflow-auto pb-4">
+            <section className="w-full h-full overflow-auto pb-8">
 
                 <div className='mx-auto sm:w-3/4 w-[90%]'>
                     <Title titleName={"writedowns"} />

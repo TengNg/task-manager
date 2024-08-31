@@ -220,7 +220,7 @@ const Activities = () => {
                 setOpen={setOpenHelp}
             />
 
-            <section className="w-full h-[calc(100%-75px)] overflow-auto pb-4">
+            <section className="w-full h-full overflow-auto pb-8">
                 <Title titleName="activities" />
 
                 {
