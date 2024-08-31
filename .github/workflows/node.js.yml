@@ -18,15 +18,10 @@ jobs:
         ports:
           - 27017:27017
 
-    strategy:
-      matrix:
-        node-version: [21.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
@@ -43,6 +38,7 @@ jobs:
         run: |
           cd server
           npm install
+          npm install express@4.19.2
 
       - name: Run tests
         env:
