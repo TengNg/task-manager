@@ -6,7 +6,6 @@ export default function NotFound() {
     const navigate = useNavigate();
     return (
         <>
-
             <section
                 id="boards"
                 className="w-full h-[calc(100%-75px)] overflow-auto pb-4"

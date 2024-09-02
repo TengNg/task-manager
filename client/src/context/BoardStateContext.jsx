@@ -529,6 +529,15 @@ export const BoardStateContextProvider = ({ children }) => {
         });
     };
 
+    const collapseList = (listId, collapsed = true) => {
+        setBoardState(prev => {
+            return {
+                ...prev,
+                lists: prev.lists.map(list => list._id === listId ? { ...list, collapsed } : list)
+            }
+        });
+    };
+
     const removeMemberFromBoard = (memberName) => {
         setBoardState(prev => {
             return {
@@ -565,6 +574,7 @@ export const BoardStateContextProvider = ({ children }) => {
 
                 setListTitle,
                 deleteList,
+                collapseList,
 
                 setCardTitle,
                 setCardDescription,

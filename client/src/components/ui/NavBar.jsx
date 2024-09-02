@@ -54,6 +54,40 @@ const NavBar = () => {
         }
     }, [auth?.user?.username, auth?.user?.recentlyViewedBoardId]);
 
+    if (Object.keys(auth).length == 0 || auth?.accessToken == undefined) {
+        return (
+            <section id='header-section' className='w-full h-[70px] flex--center relative gap-2 py-3 px-2 sm:px-4'>
+                <nav className="h-full top-4 m-auto border-gray-700 border-[2px] bg-transparent px-2 z-30 drop-shadow-sm">
+                    <ul className="w-[100%] h-[100%] flex justify-around items-center sm:gap-4 gap-2">
+                        <li className='w-[80px]'>
+                            <NavLink to={'/about'} className={({ isActive }) => isActive ? 'anchor--style--selected' : 'anchor--style'}>
+                                <div className='md:text-[0.8rem] text-[0.65rem]'>
+                                    about
+                                </div>
+                            </NavLink>
+                        </li>
+
+                        <li className='w-[80px]'>
+                            <NavLink to={'/login'} className={({ isActive }) => isActive ? 'anchor--style--selected' : 'anchor--style'}>
+                                <div className='md:text-[0.8rem] text-[0.65rem]'>
+                                    login
+                                </div>
+                            </NavLink>
+                        </li>
+
+                        <li className='w-[80px]'>
+                            <NavLink to={'/register'} className={({ isActive }) => isActive ? 'anchor--style--selected' : 'anchor--style'}>
+                                <div className='md:text-[0.8rem] text-[0.65rem]'>
+                                    register
+                                </div>
+                            </NavLink>
+                        </li>
+                    </ul>
+                </nav>
+            </section>
+        )
+    }
+
     return (
         <>
             <section id='header-section' className='w-full h-[70px] flex--center relative gap-2 py-3 px-2 sm:px-4'>
@@ -83,7 +117,7 @@ const NavBar = () => {
                                 const { path, title } = el;
                                 const num = `0${index + 1}`;
                                 return <li key={path}>
-                                    <NavLink to={path} className={({ isActive }) => isActive ? 'anchor--style--selected' : 'anchor--style'} >
+                                    <NavLink to={path} className={({ isActive }) => isActive ? 'anchor--style--selected' : 'anchor--style'}>
                                         <div className='md:text-[0.8rem] text-[0.65rem]'>
                                             <span className='md:inline hidden'>{num}</span>
                                             <span className='md:inline hidden'>{" "}</span>

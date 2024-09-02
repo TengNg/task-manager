@@ -14,6 +14,7 @@ const List = ({ index, list, cards }) => {
         setBoardState,
         setListTitle,
         deleteList,
+        collapseList,
         theme,
         debugModeEnabled,
         hasFilter,
@@ -160,115 +161,140 @@ const List = ({ index, list, cards }) => {
                             setOpen={setOpenListMenu}
                             handleDelete={handleDeleteList}
                             handleCopy={handleCopyList}
-                                processingList={processingList}
+                            processingList={processingList}
                         />
                     }
 
-                    <div
-                        className={`
-                            ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}
-                            list__item flex flex-col justify-start w-[300px] max-h-[100%] overflow-auto border-[2px] select-none pt-2 cursor-pointer border-gray-700 shadow-gray-700
-                        `}
-                    >
+                    {!list.collapsed ? (
                         <div
-                            {...provided.dragHandleProps}
-                            className="relative w-full bg-transparent">
+                            className={`
+                                        ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}
+                                        list__item flex flex-col justify-start w-[300px] max-h-[100%] overflow-auto border-[2px] select-none pt-2 cursor-pointer border-gray-700 shadow-gray-700
+                                      `}
+                        >
                             <div
-                                ref={titleRef}
-                                className="sm:w-[240px] w-[180px] font-medium sm:font-semibold text-gray-700 break-words whitespace-pre-line px-3"
-                                onMouseUp={handleMouseUp}
-                            >
-                                <p>{list.title}</p>
+                                {...provided.dragHandleProps}
+                                className="relative w-full bg-transparent">
+                                <div
+                                    ref={titleRef}
+                                    className="sm:w-[240px] w-[180px] font-medium sm:font-semibold text-gray-700 break-words whitespace-pre-line px-3"
+                                    onMouseUp={handleMouseUp}
+                                >
+                                    <p>{list.title}</p>
+                                </div>
+
+                                <textarea
+                                    className="hidden bg-transparent h-fit sm:w-[240px] w-[180px] focus:outline-none font-medium sm:font-semibold px-3 text-gray-600 leading-normal overflow-y-hidden resize-none"
+                                    value={list.title}
+                                    ref={textAreaRef}
+                                    onFocus={handleTextAreaOnFocus}
+                                    onChange={handleTextAreaChanged}
+                                    onBlur={handleTitleInputBlur}
+                                    onKeyDown={handleTextAreaOnEnter}
+                                />
+
+                                <button
+                                    className="absolute h-[30px] -top-1 right-3 text-[0.75rem] text-gray-600 font-bold flex items-start"
+                                    onClick={() => {
+                                        setOpenListMenu(prev => !prev);
+                                    }}
+                                >
+                                    ...
+                                </button>
+
+                                <div className="h-[1.5px] mt-1 mx-3 bg-gray-600"></div>
                             </div>
 
-                            <textarea
-                                className="hidden bg-transparent h-fit sm:w-[240px] w-[180px] focus:outline-none font-medium sm:font-semibold px-3 text-gray-600 leading-normal overflow-y-hidden resize-none"
-                                value={list.title}
-                                ref={textAreaRef}
-                                onFocus={handleTextAreaOnFocus}
-                                onChange={handleTextAreaChanged}
-                                onBlur={handleTitleInputBlur}
-                                onKeyDown={handleTextAreaOnEnter}
-                            />
-
-                            <button
-                                className="absolute h-full -top-[0.4rem] right-3 text-[0.75rem] text-gray-600 font-bold"
-                                onClick={() => {
-                                    setOpenListMenu(prev => !prev);
-                                }}
-                            >
-                                ...
-                            </button>
-
-                            <div className="h-[1.5px] mt-1 mx-3 bg-gray-600"></div>
-                        </div>
-
-                        <div className="max-h-full overflow-y-auto px-3">
-                            <Droppable droppableId={list._id} type="CARD">
-                                {(provided) => (
-                                    <div
-                                        {...provided.droppableProps}
-                                        ref={provided.innerRef}
-                                        ignoreContainerClipping={true}
-                                    >
-                                        <div className="flex flex-col pb-1 items-start justify-start h-full">
-                                            {cards.map((card, idx) => {
-                                                return <Card
-                                                    key={idx}
-                                                    card={card}
-                                                    index={idx}
-                                                    listIndex={index}
-                                                />
-                                            })}
-                                            {provided.placeholder}
+                            <div className="max-h-full overflow-y-auto px-3">
+                                <Droppable droppableId={list._id} type="CARD">
+                                    {(provided) => (
+                                        <div
+                                            {...provided.droppableProps}
+                                            ref={provided.innerRef}
+                                            ignoreContainerClipping={true}
+                                        >
+                                            <div className="flex flex-col pb-1 items-start justify-start h-full">
+                                                {cards.map((card, idx) => {
+                                                    return <Card
+                                                        key={idx}
+                                                        card={card}
+                                                        index={idx}
+                                                        listIndex={index}
+                                                    />
+                                                })}
+                                                {provided.placeholder}
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
-                            </Droppable>
+                                    )}
+                                </Droppable>
+
+                                {
+                                    openCardComposer === true &&
+                                    <CardComposer
+                                        list={list}
+                                        open={openCardComposer}
+                                        setOpen={setOpenCardComposer}
+                                    />
+                                }
+
+                            </div>
 
                             {
-                                openCardComposer === true &&
-                                <CardComposer
-                                    list={list}
-                                    open={openCardComposer}
-                                    setOpen={setOpenCardComposer}
-                                />
+                                openCardComposer === false &&
+                                <button
+                                    className="flex gap-2 group text-gray-400 mt-2 mx-3 p-2 text-[0.8rem] hover:bg-gray-200 font-medium sm:font-semibold text-start"
+                                    onClick={() => setOpenCardComposer(true)}
+                                >
+                                    <span>
+                                        + new card
+                                    </span>
+                                </button>
+                            }
+
+                            {
+                                <div className='flex items-center gap-1 ms-auto me-1 text-gray-500 text-[0.65rem] font-medium sm:font-semibold'>
+                                    {
+                                        debugModeEnabled.enabled &&
+                                        <span>[rank: {list.order}]</span>
+                                    }
+
+                                    <span>{list.cards.length}</span>
+                                    {
+                                        hasFilter && (
+                                            <>
+                                                <span>{" "}</span>
+                                                <span>(found: {list.cards.filter(card => !card.hiddenByFilter).length})</span>
+                                            </>
+                                        )
+                                    }
+                                </div>
                             }
 
                         </div>
-
-                        {
-                            openCardComposer === false &&
-                            <button
-                                className="flex gap-2 group text-gray-400 mt-2 mx-3 p-2 text-[0.8rem] hover:bg-gray-200 font-medium sm:font-semibold text-start"
-                                onClick={() => setOpenCardComposer(true)}
+                    ) : (
+                        <div
+                            className={`${theme.itemTheme == 'rounded' ? 'rounded shadow-[0_3px_0_0]' : 'shadow-[3px_4px_0_0]'} h-[300px] w-[4rem] border-[2px] border-gray-700 shadow-gray-700 bg-gray-200/50`}>
+                            <div
+                                {...provided.dragHandleProps}
+                                className="bg-transparent p-2"
                             >
-                                <span>
-                                    + new card
-                                </span>
-                            </button>
-                        }
-
-                        {
-                            <div className='flex items-center gap-1 ms-auto me-1 text-gray-500 text-[0.65rem] font-medium sm:font-semibold'>
-                                {
-                                    debugModeEnabled.enabled &&
-                                        <span>[rank: {list.order}]</span>
-                                }
-
-                                <span>{list.cards.length}</span>
-                                {
-                                    hasFilter && (
-                                        <>
-                                            <span>{" "}</span>
-                                            <span>(found: {list.cards.filter(card => !card.hiddenByFilter).length})</span>
-                                        </>
-                                    )
-                                }
+                                <div
+                                    className='text-center bg-gray-400 p-2 text-[10px] hover:bg-gray-400/75 grid place-items-center rounded-sm'
+                                    onClick={() => {
+                                        collapseList(list._id, false);
+                                    }}
+                                >
+                                    <div className='w-[10px] h-[10px] rounded-full bg-gray-200'></div>
+                                </div>
+                                <div
+                                    className="font-medium sm:font-semibold text-gray-700 break-words whitespace-nowrap px-3 h-[250px]"
+                                    style={{ writingMode: 'sideways-lr' }}
+                                >
+                                    {list.title.length > 20 ? list.title.slice(0, 20) + '...' : list.title}
+                                </div>
                             </div>
-                        }
-
-                    </div>
+                        </div>
+                    )}
                 </div>
             )}
         </Draggable>

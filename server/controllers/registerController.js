@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 
-const usernameRegex = /^[a-zA-Z0-9._-]{3,20}$/;
+const { usernameRegex } = require('../data/regex');
 
 const handleRegister = async (req, res) => {
     const { username, password } = req.body;

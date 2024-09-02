@@ -60,8 +60,6 @@ const Profile = () => {
             }
             console.log(err);
         })
-
-        document.title = `00 profile [${auth?.user?.username}]` || 'tamago-start';
     }, []);
 
     useEffect(() => {

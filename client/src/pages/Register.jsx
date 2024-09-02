@@ -30,11 +30,11 @@ export default function Register() {
         const isLoggedIn = async () => {
             const response = await axiosPrivate.get('/check-cookies');
             if (response.status === 200) {
-                navigate('/')
+                navigate('/boards', { replace: true });
             }
         }
         isLoggedIn().catch(err => {
-            console.error('Error:', err.response?.data?.msg);
+            console.error(err);
             setSuccess(false);
             usernameInputEl.current.focus();
         });

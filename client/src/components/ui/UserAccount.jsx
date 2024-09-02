@@ -29,8 +29,9 @@ const UserAccount = () => {
 
     if (Object.keys(auth).length === 0 || !auth.accessToken) {
         return (
-            <button onClick={() => navigate('/login')}
-                className="border-[2px] border-gray-600 shadow-gray-600 shadow-[0_3px_0_0] bg-gray-100 py-1 px-2 text-[10px] sm:text-[0.75rem] font-medium text-gray-600"
+            <button
+                onClick={() => navigate('/login')}
+                className="border-[2px] border-gray-600 shadow-gray-600 shadow-[0_3px_0_0] bg-gray-100 py-1 px-2 text-[10px] sm:text-[0.75rem] font-medium text-gray-600 opacity-75"
             >
                 <div className="sm:hidden block">
                     <FontAwesomeIcon icon={faArrowRightToBracket} />

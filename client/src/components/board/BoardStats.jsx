@@ -66,16 +66,25 @@ const BoardStats = ({ boardStatsModal, setBoardStatsModal }) => {
             </div>
 
             <div className="w-full relative flex flex-col items-start gap-3 py-2 mt-2">
-                <div className='w-full flex justify-between items-center gap-2 text-gray-700 text-[0.65rem] sm:text-[0.75rem] border-[1px] border-dashed border-gray-700 p-4'>
+                <div className='h-[50px] w-full flex justify-between items-center gap-2 text-gray-700 text-[0.65rem] sm:text-[0.75rem] border-[1px] border-dashed border-gray-700 p-4'>
                     <p>
-                        code: <span className='font-medium'>{boardStatsModal?.board?._id}</span>
+                        code: <span
+                            className='font-medium hover:underline cursor-pointer'
+                            onClick={() => {
+                                if (boardStatsModal?.board?._id) {
+                                    navigator.clipboard.writeText(boardStatsModal?.board?._id);
+                                    alert('code copied to clipboard');
+                                }
+                            }}
+                        >{boardStatsModal?.board?._id}</span>
                     </p>
 
                     <button
-                        className='w-[12px] h-[12px] bg-gray-300 hover:bg-gray-400 rounded-full'
+                        className='p-3 bg-gray-200 hover:bg-indigo-200 rounded group'
                         onClick={() => navigate(`/b/${boardStatsModal?.board?._id}`)}
-                        title='Click to visit board'
+                        title='visit board'
                     >
+                        <div className='w-[10px] h-[10px] bg-gray-300 group-hover:bg-indigo-400 rounded-full'></div>
                     </button>
                 </div>
 
@@ -85,8 +94,8 @@ const BoardStats = ({ boardStatsModal, setBoardStatsModal }) => {
                         <span className='font-medium'>
                             {
                                 boardStatsModal.board?.members?.length > 0
-                                ? boardStatsModal.board?.members?.map(member => member.username).join(', ')
-                                : '<none>'
+                                    ? boardStatsModal.board?.members?.map(member => member.username).join(', ')
+                                    : '<none>'
                             }
                         </span>
                     </div>
@@ -113,44 +122,48 @@ const BoardStats = ({ boardStatsModal, setBoardStatsModal }) => {
                 </div>
 
                 <div className='relative w-full flex flex-col gap-2 text-gray-700 text-[0.65rem] sm:text-[0.75rem] border-[1px] border-dashed border-gray-700 px-4 pb-4 pt-3'>
-                    <p>stats:</p>
+                    <div className='flex justify-between'>
+                        <p>cards by status:</p>
 
-                    <div className='flex items-center absolute right-2 top-2 gap-2'>
-                        <button
-                            className='text-[10px] text-gray-400 font-medium'
-                            onClick={() => {
-                                const json = JSON.stringify(boardStatsModal.stats, null, 2);
-                                navigator.clipboard.writeText(json).then(() => {
-                                    alert('stats copied to clipboard (as json format)');
-                                });
-                            }}
-                            title='Copy board stats (json format)'
-                        >
-                            json
-                        </button>
-                        <button
-                            className='w-[12px] h-[12px] bg-gray-300 hover:bg-gray-400 rounded-full'
-                            onClick={() => {
-                                let str = "";
-                                boardStatsModal.stats.forEach(item => {
-                                    str += `${item._id}: ${item.count}\n`;
-                                });
+                        <div className='flex items-center gap-3'>
+                            <button
+                                className='text-[12px] text-gray-400 font-medium hover:text-yellow-600 hover:underline'
+                                onClick={() => {
+                                    const json = JSON.stringify(boardStatsModal.stats, null, 2);
+                                    navigator.clipboard.writeText(json).then(() => {
+                                        alert('stats copied to clipboard (as json format)');
+                                    });
+                                }}
+                                title='copy board stats (json)'
+                            >
+                                json
+                            </button>
+                            <button
+                                className='text-[12px] text-gray-400 font-medium hover:text-purple-600 hover:underline'
+                                onClick={() => {
+                                    let str = "";
 
-                                navigator.clipboard.writeText(str).then(() => {
-                                    alert('stats copied to clipboard');
-                                });
-                            }}
-                            title='Copy board stats'
-                        >
-                        </button>
+                                    boardStatsModal.stats.forEach(item => {
+                                        str += `${item._id}: ${item.count}\n`;
+                                    });
+
+                                    navigator.clipboard.writeText(str).then(() => {
+                                        alert('stats copied to clipboard');
+                                    });
+                                }}
+                                title='copy board stats (text)'
+                            >
+                                txt
+                            </button>
+                        </div>
                     </div>
 
-                    {
-                        boardStatsModal.stats.map(item => {
-                            const { _id, count } = item;
-                            return (<>
-                                <div
-                                    key={_id}
+                    <div className='flex flex-col gap-1'>
+                        {
+                            boardStatsModal.stats.map((item, index) => {
+                                const { _id, count } = item;
+                                return <div
+                                    key={index}
                                     className='w-full p-1 px-3 text-gray-50 font-semibold cursor-pointer rounded-sm hover:opacity-80'
                                     style={{ backgroundColor: PRIORITY_LEVELS[`${_id}`]?.color?.rgba || 'rgba(133, 149, 173, 0.8)' }}
                                     onClick={() => {
@@ -162,9 +175,9 @@ const BoardStats = ({ boardStatsModal, setBoardStatsModal }) => {
                                 >
                                     {_id.toUpperCase()}: {count}
                                 </div>
-                            </>)
-                        })
-                    }
+                            })
+                        }
+                    </div>
 
                 </div>
 
@@ -177,7 +190,7 @@ const BoardStats = ({ boardStatsModal, setBoardStatsModal }) => {
                         })
                     }}
                 >
-                    stale cards: <span className='font-medium'>{boardStatsModal?.staleCardCount || '0' }</span>
+                    stale cards: <span className='font-medium'>{boardStatsModal?.staleCardCount || '0'}</span>
                 </div>
             </div>
 

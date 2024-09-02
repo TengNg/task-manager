@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 const { createAuthTokens, sendAuthCookies } = require('../services/createAuthTokensService');
 
-const usernameRegex = /^[a-zA-Z0-9._-]{3,20}$/;
+const { usernameRegex } = require('../data/regex');
 
 const getUserInfo = async (req, res) => {
     const { username } = req.user;
