@@ -60,7 +60,7 @@ const NavBar = () => {
                 <nav className="h-full top-4 m-auto border-gray-700 border-[2px] bg-transparent px-2 z-30 drop-shadow-sm">
                     <ul className="w-[100%] h-[100%] flex justify-around items-center sm:gap-4 gap-2">
                         <li className='w-[80px]'>
-                            <NavLink to={'/about'} className={({ isActive }) => isActive ? 'anchor--style--selected' : 'anchor--style'}>
+                            <NavLink to={'/about'} className={({ isActive }) => isActive || pathname === '/' ? 'anchor--style--selected' : 'anchor--style'}>
                                 <div className='md:text-[0.8rem] text-[0.65rem]'>
                                     about
                                 </div>

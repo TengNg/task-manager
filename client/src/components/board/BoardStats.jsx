@@ -160,10 +160,10 @@ const BoardStats = ({ boardStatsModal, setBoardStatsModal }) => {
 
                     <div className='flex flex-col gap-1'>
                         {
-                            boardStatsModal.stats.map((item, index) => {
+                            boardStatsModal.stats.map(item => {
                                 const { _id, count } = item;
                                 return <div
-                                    key={index}
+                                    key={_id}
                                     className='w-full p-1 px-3 text-gray-50 font-semibold cursor-pointer rounded-sm hover:opacity-80'
                                     style={{ backgroundColor: PRIORITY_LEVELS[`${_id}`]?.color?.rgba || 'rgba(133, 149, 173, 0.8)' }}
                                     onClick={() => {

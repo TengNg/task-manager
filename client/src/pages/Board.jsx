@@ -5,6 +5,8 @@ import useBoardState from "../hooks/useBoardState";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import useAuth from "../hooks/useAuth";
 import useKeyBinds from "../hooks/useKeyBinds";
+import useCardActions from "../hooks/useCardActions";
+import useFetchCardDetail from "../hooks/useFetchCardDetail";
 
 import { lexorank } from '../utils/class/Lexorank';
 
@@ -43,7 +45,7 @@ const Board = () => {
         isRemoved,
         setIsRemoved,
 
-        focusedCard: _focusedCard,
+        focusedCard,
         setFocusedCard,
 
         setOpenedCard,
@@ -55,7 +57,7 @@ const Board = () => {
 
         addCardToList,
         openedCardQuickEditor,
-        setOpenedCardQuickEditor: _setOpenedCardQuickEditor,
+        setOpenedCardQuickEditor,
         openedCard: _openedCard,
 
         addCopiedCard,
@@ -98,8 +100,6 @@ const Board = () => {
         openFloatingChat, setOpenFloatingChat,
         openInvitationForm, setOpenInvitationForm,
         openAddList, setOpenAddList,
-        focusedListIndex, setFocusedListIndex,
-        focusedCardIndex, setFocusedCardIndex,
         openKeyBindings, setOpenKeyBindings,
         openConfiguration: openBoardConfiguration, setOpenConfiguration: setOpenBoardConfiguration,
         openBoardActivities, setOpenBoardActivities
@@ -144,57 +144,28 @@ const Board = () => {
         }
     }, [isRemoved])
 
-    useEffect(() => {
-        const cardId = searchParams.get('card');
-        if (!cardId) {
-            return;
+    useFetchCardDetail({
+        stateHooks: {
+            setCardDetailAbortController,
+            setOpenCardDetail,
+            setOpenedCard
+        },
+        effectDeps: {
+            searchParams
         }
+    });
 
-        const getCardData = async () => {
-            try {
-                const controller = new AbortController();
-                setCardDetailAbortController(controller);
-                setOpenCardDetail(true);
-                setOpenedCard(undefined);
-                const response = await axiosPrivate.get(`/cards/${cardId}`, { signal: controller.signal });
-                const { card } = response.data;
-                setOpenedCard(card);
-
-                // set document title as card title
-                document.title = `[card] ${card.title}`;
-            } catch (err) {
-                const errMsg = err?.response?.data?.msg || 'failed to get card data';
-                setOpenedCard({ failedToLoad: true, errMsg });
-            }
+    useCardActions({
+        stateHooks: {
+            setFocusedCard,
+            setOpenedCardQuickEditor
+        },
+        effectDeps: {
+            boardState,
+            focusedCard,
+            hasFilter
         }
-
-        getCardData();
-    }, [searchParams]);
-
-    useEffect(() => {
-        if (!isDataLoaded) return;
-        if (error?.msg) return;
-
-        const totalList = boardState.lists.length;
-
-        if (focusedListIndex > totalList - 1) {
-            setFocusedListIndex(totalList - 1);
-            return;
-        }
-
-        const focusedCard = boardState.lists[focusedListIndex]?.cards.filter(card => !card.hiddenByFilter)[focusedCardIndex];
-        if (!focusedCard) {
-            if (focusedCardIndex < 0) {
-                setFocusedCardIndex(boardState.lists[focusedListIndex]?.cards.length - 1);
-            }
-
-            if (focusedCardIndex > boardState.lists[focusedListIndex]?.cards.length - 1) {
-                setFocusedCardIndex(0);
-            }
-        }
-
-        setFocusedCard({ id: focusedCard?._id, highlight: true });
-    }, [isDataLoaded, focusedListIndex, focusedCardIndex]);
+    });
 
     useEffect(() => {
         setAuth(prev => {
@@ -523,19 +494,15 @@ const Board = () => {
     };
 
     if (error?.msg) {
-        return (
-            <>
-                <section className='w-full flex flex-col justify-center items-center gap-4'>
-                    <p className="font-medium mx-auto text-center mt-20 text-gray-600">{error.msg}</p>
-                    <button
-                        className='button--style text-sm hover:bg-gray-600 hover:text-gray-100'
-                        onClick={() => navigate('/boards')}
-                    >
-                        Back to Boards
-                    </button>
-                </section>
-            </>
-        )
+        return <section className='w-full flex flex-col justify-center items-center gap-4'>
+            <p className="font-medium mx-auto text-center mt-20 text-gray-600">{error.msg}</p>
+            <button
+                className='button--style text-sm hover:bg-gray-600 hover:text-gray-100'
+                onClick={() => navigate('/boards')}
+            >
+                Back to Boards
+            </button>
+        </section>
     }
 
     if (isDataLoaded === false) {
@@ -546,20 +513,18 @@ const Board = () => {
     }
 
     if (!isConnected) {
-        return <>
-            <section className='w-full flex flex-col justify-center items-center gap-4'>
-                <p className="font-medium mx-auto text-center mt-20 text-gray-600">connecting to board</p>
+        return <section className='w-full flex flex-col justify-center items-center gap-4'>
+            <p className="font-medium mx-auto text-center mt-20 text-gray-600">connecting to board</p>
 
-                <div className="loader mx-auto my-8"></div>
+            <div className="loader mx-auto my-8"></div>
 
-                <button
-                    className='button--style text-sm hover:bg-gray-600 hover:text-gray-100'
-                    onClick={() => navigate('/boards')}
-                >
-                    Back to Boards
-                </button>
-            </section>
-        </>
+            <button
+                className='button--style text-sm hover:bg-gray-600 hover:text-gray-100'
+                onClick={() => navigate('/boards')}
+            >
+                Back to Boards
+            </button>
+        </section>
     }
 
     return (
@@ -695,7 +660,7 @@ const Board = () => {
                                 [private]
                             </span>
                             : <span className='sm:text-[20px]'>
-                                🌐
+                                [public]
                             </span>
                     }
                 </div>

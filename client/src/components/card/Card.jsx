@@ -21,31 +21,11 @@ const Card = ({ index, card }) => {
 
     const [searchParams, setSearchParams] = useSearchParams();
 
-    useEffect(() => {
-        if (cardRef && cardRef.current && focusedCard?.id === card._id && focusedCard?.highlight) {
-            cardRef.current.focus();
-
-            const handleClickOutside = (event) => {
-                if (cardRef.current && !cardRef.current.contains(event.target)) {
-                    setFocusedCard(prev => {
-                        return { ...prev, highlight: false }
-                    });
-                }
-            };
-
-            document.addEventListener('mousedown', handleClickOutside);
-
-            return () => {
-                document.removeEventListener('mousedown', handleClickOutside);
-            };
-        }
-    }, [focusedCard]);
-
     const handleOpenQuickEditor = (e) => {
         e.stopPropagation();
         if (cardRef) {
             const rect = cardRef.current.getBoundingClientRect();
-            const top = rect.bottom + window.scrollY; // Adjust as needed
+            const top = rect.bottom + window.scrollY;
             const left = rect.left + window.scrollX;
             const width = rect.width;
             const height = rect.height;
@@ -54,13 +34,16 @@ const Card = ({ index, card }) => {
                 open: true,
                 card: card,
                 attribute: { top, left, width, height },
-            })
+            });
+
+            setFocusedCard({ id: card._id, listId: card.listId, focused: true });
         }
     };
 
     const handleOpenCardDetail = () => {
         searchParams.set('card', card._id);
         setSearchParams(searchParams, { replace: true });
+        setFocusedCard({ id: card._id, listId: card.listId, focused: true });
     };
 
     const getStyle = (style, _) => {
@@ -104,6 +87,7 @@ const Card = ({ index, card }) => {
                         }}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
+                        data-card-item={`${card._id}-${card.listId}`}
                         onKeyDown={(e) => {
                             if (e.key == 'Enter') {
                                 e.preventDefault();
@@ -122,7 +106,7 @@ const Card = ({ index, card }) => {
                         }}
                         onClick={handleOpenCardDetail}
                         className={`card__item
-                            ${focusedCard?.id === card._id && focusedCard?.highlight && 'focused'}
+                            ${focusedCard?.id === card._id && focusedCard?.focused && 'focused'}
                             ${card.hiddenByFilter && 'hidden'} ${theme.itemTheme == 'rounded' ? 'rounded' : ''} w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative
                             ${dateToCompare(card?.dueDate) ? 'past__due__card' : '' }
                         `}

@@ -54,21 +54,21 @@ function App() {
         <>
             {!noNavPaths.includes(pathname) && <NavBar />}
             <Routes>
-                <Route path="/" element={<About />} />
-                <Route path="/about" element={<About />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
                 <Route element={<PersistLogin />}>
+                    <Route path="/" element={<About />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/boards" element={<Boards />} />
+                    <Route path="/writedowns" element={<Writedowns />} />
+                    <Route path="/activities" element={<Activities />} />
+                    <Route path="/profile" element={<Profile />} />
                     <Route path="/b/:boardId/" element={
                         <BoardStateContextProvider>
                             <Board />
                         </BoardStateContextProvider>
                     } />
-                    <Route path="/boards" element={<Boards />} />
-                    <Route path="/writedowns" element={<Writedowns />} />
-                    <Route path="/activities" element={<Activities />} />
-                    <Route path="/profile" element={<Profile />} />
                 </Route>
 
                 <Route path="/error" element={<SomethingWentWrong />} />

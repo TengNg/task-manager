@@ -184,7 +184,7 @@ const List = ({ index, list, cards }) => {
                                 </div>
 
                                 <textarea
-                                    className="hidden bg-transparent h-fit sm:w-[240px] w-[180px] focus:outline-none font-medium sm:font-semibold px-3 text-gray-600 leading-normal overflow-y-hidden resize-none"
+                                    className="hidden bg-transparent h-fit sm:w-[240px] w-[180px] focus:outline-none font-medium sm:font-semibold px-3 text-gray-700 leading-normal overflow-y-hidden resize-none"
                                     value={list.title}
                                     ref={textAreaRef}
                                     onFocus={handleTextAreaOnFocus}

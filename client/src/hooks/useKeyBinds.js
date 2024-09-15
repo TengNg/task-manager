@@ -12,8 +12,6 @@ const useKeyBinds = () => {
 
     const [openInvitationForm, setOpenInvitationForm] = useState(false);
     const [openAddList, setOpenAddList] = useState(false);
-    const [focusedListIndex, setFocusedListIndex] = useState(-1);
-    const [focusedCardIndex, setFocusedCardIndex] = useState(0);
 
     const [openKeyBindings, setOpenKeyBindings] = useState(false);
     const [openConfiguration, setOpenConfiguration] = useState(false);
@@ -99,36 +97,6 @@ const useKeyBinds = () => {
                         setOpenPinnedBoards(prev => !prev);
                         return;
                     }
-
-                    if (key === 'ArrowLeft' || key === 'h') {
-                        setFocusedListIndex(prev => {
-                            if (prev === 0) return prev;
-                            return prev - 1;
-                        });
-                        return;
-                    }
-
-                    if (key === 'ArrowRight' || key === 'l') {
-                        setFocusedListIndex(prev => {
-                            return prev + 1;
-                        });
-                        return;
-                    }
-
-                    if (key === 'ArrowUp' || key === 'k') {
-                        setFocusedCardIndex(prev => {
-                            if (prev === -1) return prev;
-                            return prev - 1;
-                        });
-                        return;
-                    }
-
-                    if (key === 'ArrowDown' || key === 'j') {
-                        setFocusedCardIndex(prev => {
-                            return prev + 1;
-                        });
-                        return;
-                    }
                 }
             }
 
@@ -209,10 +177,6 @@ const useKeyBinds = () => {
         openInvitationForm, setOpenInvitationForm,
 
         openAddList, setOpenAddList,
-
-        focusedListIndex, setFocusedListIndex,
-
-        focusedCardIndex, setFocusedCardIndex,
 
         openKeyBindings, setOpenKeyBindings,
 
