@@ -287,8 +287,8 @@ const List = ({ index, list, cards }) => {
                                     <div className='w-[10px] h-[10px] rounded-full bg-gray-200'></div>
                                 </div>
                                 <div
-                                    className="font-medium sm:font-semibold text-gray-700 break-words whitespace-nowrap px-3 h-[250px]"
-                                    style={{ writingMode: 'sideways-lr' }}
+                                    className="font-medium sm:font-semibold text-gray-700 whitespace-nowrap px-3 h-[250px]"
+                                    style={{ transform: 'rotate(-90deg)', transformOrigin: '135px 50%' }}
                                 >
                                     {list.title.length > 20 ? list.title.slice(0, 20) + '...' : list.title}
                                 </div>
