@@ -124,8 +124,8 @@ const Boards = () => {
         };
         getBoards()
             .catch(err => {
-                if (err.response?.status === 403) {
-                    navigate('/error', { replace: true });
+                if (err.response?.status === 403 || err.response?.status === 401) {
+                    navigate('/login', { replace: true });
                 } else {
                     alert('Failed to get boards. Please try again.');
                 }

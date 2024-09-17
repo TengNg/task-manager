@@ -12,7 +12,7 @@ import useBoardState from '../../hooks/useBoardState';
 
 const ACTIVITIES_PER_PAGE = 50;
 
-const BoardActivities = ({ boardId, open, setOpen }) => {
+const BoardActivities = ({ open, setOpen }) => {
     const { auth } = useAuth();
     const { boardState } = useBoardState();
 
@@ -60,7 +60,7 @@ const BoardActivities = ({ boardId, open, setOpen }) => {
         try {
             setLoading(true);
 
-            const response = await axiosPrivate.get(`/board_activities/${boardId}?perPage=${ACTIVITIES_PER_PAGE}&page=${activitiesPage}`);
+            const response = await axiosPrivate.get(`/board_activities/${boardState?.board?.boardId}?perPage=${ACTIVITIES_PER_PAGE}&page=${activitiesPage}`);
 
             if (response.data.activities.length === 0) {
                 setAllActivitiesFetched(true);
@@ -85,11 +85,12 @@ const BoardActivities = ({ boardId, open, setOpen }) => {
     const handleCleanBoardActivities = async () => {
         try {
             if (confirm('Are you sure you want to clear all board activities ?')) {
-                await axiosPrivate.delete(`/board_activities/${boardId}`);
+                await axiosPrivate.delete(`/board_activities/${boardState?.board?.boardId}`);
                 setActivities([]);
             }
         } catch (err) {
             console.log(err);
+            alert('Failed to clear activities');
         }
     };
 

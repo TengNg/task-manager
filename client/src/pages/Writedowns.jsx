@@ -33,8 +33,8 @@ const Writedown = () => {
             const response = await axiosPrivate.get("/personal_writedowns");
             setWritedowns(response.data.writedowns);
         } catch (err) {
-            if (err.response?.status === 403) {
-                navigate('/error', { replace: true });
+            if (err.response?.status === 403 || err.response?.status === 401) {
+                navigate('/login', { replace: true });
             } else {
                 alert('Failed to get writedowns. Please try again.');
             }

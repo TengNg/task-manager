@@ -21,6 +21,7 @@ const isLoggedIn = async (req, res) => {
 
     if (refreshTokenVersion !== foundUser.refreshTokenVersion) {
         clearAuthCookies(res);
+        return res.status(401).json({ msg: "currently not logged in" });
     }
 
     return res.status(200).json({ msg: "user is logged in" });

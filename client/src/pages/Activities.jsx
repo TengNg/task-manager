@@ -86,8 +86,8 @@ const Activities = () => {
             // await new Promise(resolve => setTimeout(resolve, 1000))
             setInvitations(response.data.invitations);
         } catch (err) {
-            if (err.response?.status === 403) {
-                navigate('/error', { replace: true });
+            if (err.response?.status === 403 || err.response?.status === 401) {
+                navigate('/login', { replace: true });
             } else {
                 alert('Failed to get invitations. Please try again.');
             }
@@ -103,8 +103,8 @@ const Activities = () => {
             const response = await axiosPrivate.get("/join_board_requests");
             setJoinBoardRequests(response.data.joinRequests);
         } catch (err) {
-            if (err.response?.status === 403) {
-                navigate('/error', { replace: true });
+            if (err.response?.status === 403 || err.response?.status === 401) {
+                navigate('/login', { replace: true });
             }
             console.log(err);
         }

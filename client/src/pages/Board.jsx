@@ -179,34 +179,35 @@ const Board = () => {
         setChats([]);
         setIsDataLoaded(false);
 
-        const fetchData = async () => {
+        const fetchBoardData = async () => {
             const boardResponse = await axiosPrivate.get(`/boards/${boardId}`);
-            const chatsResponse = await axiosPrivate.get(`/chats/b/${boardId}?perPage=10&page=1`);
-            const newMessages = chatsResponse.data.messages.reverse();
-
-            // set document title as board title
-            document.title = boardResponse.data.board.title;
-
             setBoardState(boardResponse.data);
             setTitle(boardResponse.data.board.title);
+            setIsDataLoaded(true);
+            document.title = boardResponse.data.board.title;
+        };
 
+        const fetchChat = async () => {
+            const chatsResponse = await axiosPrivate.get(`/chats/b/${boardId}?perPage=10&page=1`);
+            const newMessages = chatsResponse.data.messages.reverse();
             setChats(newMessages);
             setChatsPage(2);
-
             setOpenChatBox(false);
             setOpenFloatingChat(false);
-
-            setIsDataLoaded(true);
         }
 
-        fetchData().catch(err => {
-            console.log(err);
-
-            const errMsg = err?.response?.data?.msg || 'Failed to load board';
+        fetchBoardData().catch(err => {
+            const errMsg = err?.response?.data?.msg || 'Failed to load Board';
             setError({ msg: errMsg });
-            setIsDataLoaded(true);
             socket.emit("disconnectFromBoard");
         });
+
+        fetchChat().catch(err => {
+            const errMsg = err?.response?.data?.msg || 'Failed to load Chat';
+            alert(errMsg);
+        });
+
+        setIsDataLoaded(true);
 
         return () => {
             socket.emit("disconnectFromBoard");
@@ -505,7 +506,7 @@ const Board = () => {
         </section>
     }
 
-    if (isDataLoaded === false) {
+    if (isDataLoaded === false || boardState?.board === undefined) {
         return <>
             <div className="font-medium mx-auto text-center mt-20 text-gray-600">getting board data</div>
             <div className="loader mx-auto my-8"></div>
@@ -558,7 +559,6 @@ const Board = () => {
             }
 
             <BoardActivities
-                boardId={boardState.board._id}
                 open={openBoardActivities}
                 setOpen={setOpenBoardActivities}
             />
