@@ -24,6 +24,11 @@ const boardSchema = new mongoose.Schema({
         default: 0
     },
 
+    cardCount: {
+        type: Number,
+        default: 0
+    },
+
     members: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

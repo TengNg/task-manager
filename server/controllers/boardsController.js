@@ -85,11 +85,26 @@ const getBoard = async (req, res) => {
         foundUser.save();
     }
 
-    const lists = await List.find({ boardId: id }).sort({ order: 'asc' });
 
-    // for making sure board has correct list count
-    board.listCount = lists.length;
-    await board.save();
+    // this current update list-count & card-count logic is ugly
+    // but with this I will not need to update anything on production db
+    // and it should be ok for now
+
+    if (board.listCount === 0) {
+        const lists = await List.find({ boardId: id });
+        if (lists.length > 0) {
+            board.listCount = lists.length;
+            await board.save();
+        }
+    }
+
+    if (board.cardCount === 0) {
+        const cards = await Card.find({ boardId: id });
+        if (cards.length > 0) {
+            board.cardCount = cards.length;
+            await board.save();
+        }
+    }
 
     //const listsWithCardsPromises = lists.map(async (list) => {
     //    const cards = await Card.find({ listId: list._id }).select('-trackedId -updatedAt').sort({ order: 'asc' }).lean();
@@ -154,18 +169,10 @@ const getBoard = async (req, res) => {
         .find({ boardId: board._id })
         .lean();
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0)
-    const staleCard = await Card.exists({
-        boardId: id,
-        dueDate: { $lt: today }
-    });
-
     return res.json({
         board,
         lists: listsWithCards,
         memberships,
-        hasStaleCard: staleCard ? true : false,
     });
 }
 

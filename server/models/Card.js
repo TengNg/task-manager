@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const { MAX_CARD_COUNT } = require('../data/limits');
 
 const cardSchema = new mongoose.Schema({
     trackedId: {
@@ -90,8 +91,18 @@ const cardSchema = new mongoose.Schema({
     // }],
 });
 
-cardSchema.pre('save', function(next) {
-    if (!this.isNew) {
+cardSchema.index({ boardId: 1 });
+cardSchema.index({ listId: 1 });
+
+cardSchema.pre('save', async function(next) {
+    if (this.isNew) {
+        const Board = mongoose.model('Board');
+        const foundBoard = await Board.findById(this.boardId)
+        if (foundBoard && foundBoard.cardCount >= MAX_CARD_COUNT) {
+            const error = new Error(`Maximum card count reached for this board (maximum: ${MAX_CARD_COUNT})`);
+            return next(error);
+        }
+    } else {
         this.updatedAt = Date.now();
     }
 
@@ -100,6 +111,20 @@ cardSchema.pre('save', function(next) {
     }
 
     next();
+});
+
+cardSchema.post('save', async function(doc, next) {
+    const Board = mongoose.model('Board');
+    await Board.updateOne({ _id: doc.boardId }, { $inc: { cardCount: 1 } });
+    next();
+});
+
+cardSchema.post('findOneAndDelete', async function(doc) {
+    const Board = mongoose.model('Board');
+    const foundBoard = await Board.findById(doc.boardId);
+    if (foundBoard) {
+        await Board.updateOne({ _id: doc.boardId }, { $inc: { cardCount: -1 } });
+    }
 });
 
 module.exports = mongoose.model('Card', cardSchema);
