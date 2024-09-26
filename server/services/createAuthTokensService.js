@@ -7,6 +7,12 @@ const cookieOpts = {
     maxAge: 15 * 24 * 60 * 60 * 1000
 };
 
+const accessTokenCookieOpts = {
+    ...cookieOpts,
+    maxAge: 15 * 60 * 1000
+};
+
+const aTokenName = 'tamagostart_atoken';
 const rTokenName = 'tamagostart_rtoken';
 
 /**
@@ -49,13 +55,23 @@ const createAuthTokens = (user) => {
  * @param {User} user
  * @param {JWTToken} rToken
  */
-const sendAuthCookies = (res, user, rToken = null) => {
-    if (rToken) {
-        res.cookie(rTokenName, rToken, cookieOpts);
+const sendAuthCookies = (res, user, tokens = {}) => {
+    if (tokens.refreshToken || tokens.accessToken) {
+        if (tokens.accessToken) {
+            res.cookie(aTokenName, tokens.accessToken, accessTokenCookieOpts);
+        }
+
+        if (tokens.refreshToken) {
+            res.cookie(rTokenName, tokens.refreshToken, cookieOpts);
+        }
+
         return;
     }
 
+    const accessToken = createAccessToken(user);
     const refreshToken = createRefreshToken(user);
+
+    res.cookie(aTokenName, accessToken, accessTokenCookieOpts);
     res.cookie(rTokenName, refreshToken, cookieOpts);
 };
 
@@ -63,10 +79,12 @@ const sendAuthCookies = (res, user, rToken = null) => {
  * @param {Response} res
  */
 const clearAuthCookies = (res) => {
+    res.clearCookie(aTokenName, accessTokenCookieOpts);
     res.clearCookie(rTokenName, cookieOpts);
 };
 
 module.exports = {
+    aTokenName,
     rTokenName,
     cookieOpts,
     createAccessToken,

@@ -16,7 +16,7 @@ const handleLogin = async (req, res) => {
     if (!validPwd) return res.status(400).json({ msg: "Password is incorrect" });
 
     const { accessToken, refreshToken } = createAuthTokens(foundUser);
-    sendAuthCookies(res, null, refreshToken);
+    sendAuthCookies(res, null, { accessToken, refreshToken });
 
     const user = sanitizeUser(foundUser.toObject());
 

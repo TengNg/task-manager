@@ -22,7 +22,11 @@ const PersistLogin = () => {
             }
         }
 
-        !auth?.accessToken ? verifyRefreshToken() : setIsLoading(false);
+        if (Object.keys(auth).length === 0) {
+            verifyRefreshToken()
+        } else {
+            setIsLoading(false);
+        }
 
         return () => isMounted = false;
     }, []);

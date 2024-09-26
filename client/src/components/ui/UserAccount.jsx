@@ -27,7 +27,7 @@ const UserAccount = () => {
         }
     };
 
-    if (Object.keys(auth).length === 0 || !auth.accessToken) {
+    if (Object.keys(auth).length === 0) {
         return (
             <button
                 onClick={() => navigate('/login')}

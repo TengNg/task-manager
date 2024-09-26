@@ -47,11 +47,11 @@ export const BoardStateContextProvider = ({ children }) => {
     const { auth } = useAuth();
 
     const socket = useMemo(() => {
-        if (!auth?.accessToken) {
+        if (Object.keys(auth).length === 0) {
             return null;
         }
         return io(SOCKET_URL);
-    }, [auth?.accessToken]);
+    }, [auth]);
 
     const notify = ({ message, timeSent, duration, from }) => {
         setToast({ open: true, message, timeSent, duration, from });
