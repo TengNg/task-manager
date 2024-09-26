@@ -54,7 +54,7 @@ const NavBar = () => {
         }
     }, [auth?.user?.username, auth?.user?.recentlyViewedBoardId]);
 
-    if (Object.keys(auth).length == 0 || auth?.accessToken == undefined) {
+    if (Object.keys(auth).length == 0) {
         return (
             <section id='header-section' className='w-full h-[70px] flex--center relative gap-2 py-3 px-2 sm:px-4'>
                 <nav className="h-full top-4 m-auto border-gray-700 border-[2px] bg-transparent px-2 z-30 drop-shadow-sm">
