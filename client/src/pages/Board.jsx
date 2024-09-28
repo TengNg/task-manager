@@ -90,8 +90,6 @@ const Board = () => {
         setAuth
     } = useAuth();
 
-    const axiosPrivate = useAxiosPrivate();
-
     const {
         openMembers, setOpenMembers,
         openFilter, setOpenFilter,
@@ -104,6 +102,8 @@ const Board = () => {
         openConfiguration: openBoardConfiguration, setOpenConfiguration: setOpenBoardConfiguration,
         openBoardActivities, setOpenBoardActivities
     } = useKeyBinds();
+
+    const axiosPrivate = useAxiosPrivate();
 
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
     const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
@@ -131,11 +131,7 @@ const Board = () => {
     const location = useLocation();
     const { pathname } = location;
 
-    const boardVisibility = useMemo(() => {
-        return boardState?.board?.visibility || 'private'
-    }, [boardState?.board?.visibility]);
-
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams, _setSearchParams] = useSearchParams();
 
     useEffect(() => {
         if (isRemoved) {
@@ -168,12 +164,15 @@ const Board = () => {
     });
 
     useEffect(() => {
+        if (!socket) return;
+
         setAuth(prev => {
             prev.user.recentlyViewedBoardId = boardId;
             return prev;
         });
 
         socket.emit("joinBoard", { boardId, username: auth?.user?.username });
+
         setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
 
         setChats([]);
@@ -494,6 +493,12 @@ const Board = () => {
         });
     };
 
+    if (!socket) {
+        return <section className='w-full flex flex-col justify-center items-center gap-4'>
+            <p className="font-medium mx-auto text-center mt-20 text-gray-600">failed to connect, please try again</p>
+        </section>
+    }
+
     if (error?.msg) {
         return <section className='w-full flex flex-col justify-center items-center gap-4'>
             <p className="font-medium mx-auto text-center mt-20 text-gray-600">{error.msg}</p>
@@ -596,7 +601,6 @@ const Board = () => {
             />
 
             <VisibilityConfig
-                visibility={boardVisibility}
                 open={openVisibilityConfig}
                 setOpen={setOpenVisibilityConfig}
             />
@@ -659,7 +663,7 @@ const Board = () => {
                             ? <span className='sm:text-[14px] text-gray-700 font-medium'>
                                 [private]
                             </span>
-                            : <span className='sm:text-[20px]'>
+                            : <span className='sm:text-[14px] text-gray-700 font-medium'>
                                 [public]
                             </span>
                     }
