@@ -33,7 +33,8 @@ export default function dateFormatter(miliseconds, option = { weekdayFormat: fal
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const seconds = String(date.getSeconds()).padStart(2, '0');
 
-    return option.withTime ? `${weekday[wday]}, ${day} ${month[m]} ${year} - ${hours}:${minutes}:${seconds}` : `${weekday[wday]}, ${month[m]} ${day}, ${year}`;
+    return option.withTime ? `${weekday[wday]}, ${day} ${month[m]} ${year} - ${hours}:${minutes}:${seconds}`
+                           : `${weekday[wday]}, ${month[m]} ${day}, ${year}`;
 }
 
 export const formatDateToYYYYMMDD = (miliseconds, option = { withTime: false }) => {

@@ -1,34 +1,18 @@
-import { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import dateFormatter from "../../utils/dateFormatter";
 import Loading from '../ui/Loading';
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
-const WritedownItem = ({ writedown, open, remove }) => {
-    const { _id: id, title, content, pinned, createdAt } = writedown;
-    const [isPinned, setIsPinned] = useState(pinned);
-    const [loading, setLoading] = useState(false);
-    const axiosPrivate = useAxiosPrivate();
-
-    const handlePin = async () => {
-        setLoading(true);
-        try {
-            const response = await axiosPrivate.put(`/personal_writedowns/${id}/pin`);
-            setIsPinned(response.data.pinned);
-        } catch (err) {
-            alert('Failed to pin writedown');
-        } finally {
-            setLoading(false);
-        }
-    };
+const WritedownItem = ({ writedown, open, remove, pin }) => {
+    const { _id: id, title, content, isPinning, pinned, createdAt } = writedown;
 
     return (
         <div
             className='relative flex flex-col w-[250px] h-[200px] border-[2px] px-3 pb-3 pt-2 border-gray-700 border-dashed text-gray-700 text-[0.85rem]'
         >
+
             <Loading
-                loading={loading}
+                loading={isPinning}
                 position={'absolute'}
                 displayText='saving...'
                 fontSize='0.75rem'
@@ -37,8 +21,8 @@ const WritedownItem = ({ writedown, open, remove }) => {
             <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-2 mb-2'>
                 <button
                     className='w-[12px] h-[12px] rounded-full'
-                    style={{ backgroundColor: isPinned ? 'rgba(191, 155, 64, 0.65)' : '#d4d4d4' }}
-                    onClick={handlePin}
+                    style={{ backgroundColor: pinned ? 'rgba(191, 155, 64, 0.65)' : '#d4d4d4' }}
+                    onClick={() => pin(id)}
                 >
                 </button>
                 <button

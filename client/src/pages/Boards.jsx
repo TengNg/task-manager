@@ -156,7 +156,7 @@ const Boards = () => {
         return (
             <section
                 id="boards"
-                className="w-full h-[calc(100%-75px)] overflow-auto pb-4"
+                className="w-full h-full overflow-auto pb-4"
             >
                 <div className='mx-auto sm:w-3/4 w-[90%]'>
                     <Title

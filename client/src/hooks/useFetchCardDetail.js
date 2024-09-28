@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import useAxiosPrivate from './useAxiosPrivate';
+import { useSearchParams } from 'react-router-dom';
 
-const useFetchCardDetail = ({ stateHooks, effectDeps }) => {
+const useFetchCardDetail = ({ stateHooks }) => {
     const axiosPrivate = useAxiosPrivate();
 
     const { setCardDetailAbortController, setOpenCardDetail, setOpenedCard } = stateHooks;
-    const { searchParams } = effectDeps;
+    const [searchParams, _setSearchParams] = useSearchParams();
 
     useEffect(() => {
         const cardId = searchParams.get('card');

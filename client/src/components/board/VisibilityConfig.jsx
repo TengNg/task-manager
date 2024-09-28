@@ -6,7 +6,7 @@ import VISIBILITY_MAP from '../../data/visibility';
 import useBoardState from '../../hooks/useBoardState';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
-const VisibilityConfig = ({ open, setOpen, visibility }) => {
+const VisibilityConfig = ({ open, setOpen }) => {
     const {
         boardState,
         setBoardVisibility,
@@ -15,6 +15,8 @@ const VisibilityConfig = ({ open, setOpen, visibility }) => {
     const axiosPrivate = useAxiosPrivate();
 
     const [updating, setUpdating] = useState(false);
+
+    const visibility = boardState?.board?.visibility || 'private'
 
     const dialog = useRef();
     const visiblityOptions = Object.keys(VISIBILITY_MAP);

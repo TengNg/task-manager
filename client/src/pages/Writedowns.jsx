@@ -129,6 +129,40 @@ const Writedown = () => {
         }
     };
 
+    async function handlePinWritedown(id) {
+        try {
+            setWritedowns(prev => {
+                return prev.map(writedown => {
+                    return writedown._id === id ? { ...writedown, isPinning: true } : writedown
+                });
+            });
+
+            const response = await axiosPrivate.put(`/personal_writedowns/${id}/pin`);
+
+            setWritedowns(prev => {
+                const newWritedowns = prev.map(writedown => {
+                    if (writedown._id === id) {
+                        return { ...writedown, pinned: response.data.pinned, isPinning: false };
+                    }
+
+                    return writedown;
+                });
+
+                const sortedWritedowns = newWritedowns.sort((a, b) => {
+                    if (a.pinned !== b.pinned) {
+                        return b.pinned - a.pinned;
+                    }
+
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+
+                return sortedWritedowns;
+            });
+        } catch (err) {
+            alert('Failed to pin writedown');
+        }
+    }
+
     return (
         <>
             <Editor
@@ -190,6 +224,7 @@ const Writedown = () => {
                                             writedown={w}
                                             open={handleOpenWritedown}
                                             remove={handleDeleteWritedown}
+                                            pin={handlePinWritedown}
                                         />
                                     )
                                 })}

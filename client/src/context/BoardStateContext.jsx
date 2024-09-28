@@ -58,6 +58,10 @@ export const BoardStateContextProvider = ({ children }) => {
     };
 
     useEffect(() => {
+        if (!socket) {
+            return;
+        }
+
         const onConnect = async () => {
             setIsConnected(true);
         };

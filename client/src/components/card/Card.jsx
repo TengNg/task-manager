@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { Draggable } from "react-beautiful-dnd";
 import useBoardState from '../../hooks/useBoardState';
 import dateFormatter, { dateToCompare } from '../../utils/dateFormatter';
@@ -36,7 +36,7 @@ const Card = ({ index, card }) => {
                 attribute: { top, left, width, height },
             });
 
-            setFocusedCard({ id: card._id, listId: card.listId, focused: true });
+            setFocusedCard({ id: card._id, listId: card.listId, focused: false });
         }
     };
 

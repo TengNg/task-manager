@@ -164,7 +164,7 @@ const CardQuickEditor = ({ open, card, attribute, handleCopyCard, handleDeleteCa
                     left: `${attribute.left}px`,
                     width: `${attribute.width}px`,
                     height: `${attribute.height}px`,
-                    transform: `translateY(${-attribute.height}px)`
+                    transform: `translateY(${-attribute.height - 1}px)`
                 }}
             >
                 <div className="flex h-full relative mb-2">

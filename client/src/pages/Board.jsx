@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo } from "react";
-import { useNavigate, useSearchParams, useParams, useLocation } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom"
 
 import useBoardState from "../hooks/useBoardState";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
@@ -90,8 +90,6 @@ const Board = () => {
         setAuth
     } = useAuth();
 
-    const axiosPrivate = useAxiosPrivate();
-
     const {
         openMembers, setOpenMembers,
         openFilter, setOpenFilter,
@@ -104,6 +102,8 @@ const Board = () => {
         openConfiguration: openBoardConfiguration, setOpenConfiguration: setOpenBoardConfiguration,
         openBoardActivities, setOpenBoardActivities
     } = useKeyBinds();
+
+    const axiosPrivate = useAxiosPrivate();
 
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
     const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
@@ -131,12 +131,6 @@ const Board = () => {
     const location = useLocation();
     const { pathname } = location;
 
-    const boardVisibility = useMemo(() => {
-        return boardState?.board?.visibility || 'private'
-    }, [boardState?.board?.visibility]);
-
-    const [searchParams, setSearchParams] = useSearchParams();
-
     useEffect(() => {
         if (isRemoved) {
             navigate('/notfound');
@@ -150,9 +144,6 @@ const Board = () => {
             setOpenCardDetail,
             setOpenedCard
         },
-        effectDeps: {
-            searchParams
-        }
     });
 
     useCardActions({
@@ -168,12 +159,15 @@ const Board = () => {
     });
 
     useEffect(() => {
+        if (!socket) return;
+
         setAuth(prev => {
             prev.user.recentlyViewedBoardId = boardId;
             return prev;
         });
 
         socket.emit("joinBoard", { boardId, username: auth?.user?.username });
+
         setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
 
         setChats([]);
@@ -494,6 +488,12 @@ const Board = () => {
         });
     };
 
+    if (!socket) {
+        return <section className='w-full flex flex-col justify-center items-center gap-4'>
+            <p className="font-medium mx-auto text-center mt-20 text-gray-600">failed to connect, please try again</p>
+        </section>
+    }
+
     if (error?.msg) {
         return <section className='w-full flex flex-col justify-center items-center gap-4'>
             <p className="font-medium mx-auto text-center mt-20 text-gray-600">{error.msg}</p>
@@ -596,7 +596,6 @@ const Board = () => {
             />
 
             <VisibilityConfig
-                visibility={boardVisibility}
                 open={openVisibilityConfig}
                 setOpen={setOpenVisibilityConfig}
             />
@@ -659,17 +658,14 @@ const Board = () => {
                             ? <span className='sm:text-[14px] text-gray-700 font-medium'>
                                 [private]
                             </span>
-                            : <span className='sm:text-[20px]'>
+                            : <span className='sm:text-[14px] text-gray-700 font-medium'>
                                 [public]
                             </span>
                     }
                 </div>
             }
 
-            <div
-                id='board-wrapper'
-                className="flex flex-col justify-start gap-3 items-start bg-transparent"
-            >
+            <div className="w-full h-[calc(100vh-125px)] flex flex-col justify-start gap-3 items-start bg-transparent">
                 <div className="flex flex-wrap justify-between w-full z-20 px-4">
                     <div>
                         <input
