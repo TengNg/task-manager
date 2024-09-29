@@ -96,7 +96,6 @@ describe('GET /boards/:id', () => {
             board: { _id: validId, createdBy: mockUser._id, listCount: 1 },
             lists: mockListsWithCards,
             memberships: mockMemberships,
-            hasStaleCard: false,
         });
     }, 60000);
 });

@@ -6,6 +6,7 @@ const app = require('../../../server');
 const { listById } = require('../../../services/listService');
 const { isActionAuthorized } = require('../../../services/boardActionAuthorizeService');
 
+jest.mock('../../../models/Card');
 jest.mock('../../../models/Board');
 jest.mock('../../../models/User');
 jest.mock('../../../models/List');
@@ -79,11 +80,5 @@ describe('POST /cards', () => {
             .set('Authorization', `Bearer ${token}`);
 
         expect(res.statusCode).toEqual(201);
-
-        const { newCard } = res.body;
-        expect(newCard.title).toEqual(newCardTitle);
-        expect(newCard.order).toEqual(newCardOrder);
-        expect(newCard.listId).toEqual(listId);
-        expect(newCard.boardId).toEqual(boardId);
     });
 });

@@ -6,6 +6,8 @@ const app = require('../../../server');
 const { cardById } = require('../../../services/cardService');
 const { isActionAuthorized } = require('../../../services/boardActionAuthorizeService');
 
+jest.mock('../../../models/Card');
+jest.mock('../../../models/Board');
 jest.mock('../../../services/cardService');
 jest.mock('../../../services/boardActionAuthorizeService');
 
