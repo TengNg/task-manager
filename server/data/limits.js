@@ -3,4 +3,6 @@ module.exports= {
     MAX_LIST_COUNT: 25,
     MAX_BOARD_COUNT: 10,
     MAX_BOARD_MEMBER_COUNT: 10,
+    MAX_REQUEST_PAGE: 3,
+    MAX_INVITATION_PAGE: 3,
 };

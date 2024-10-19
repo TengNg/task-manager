@@ -1,19 +1,31 @@
-import { useNavigate } from 'react-router-dom';
 import Avatar from '../avatar/Avatar';
-import Loading from '../ui/Loading';
+import { useNavigate } from 'react-router-dom';
 import dateFormatter from '../../utils/dateFormatter';
+
+const MAX_INVITATION_PAGE = 3;
 
 export default function Invitations({
     show,
     invitations,
-    loadingInvitations,
+    loading,
+    error,
     fetchInvitations,
-    handleAcceptInvitation,
-    handleRejectInvitation,
-    handleRemoveInvitation,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+    accept,
+    reject,
+    remove
 }) {
-
     const navigate = useNavigate();
+
+    if (error) {
+        return <div className={`mx-auto lg:w-1/2 md:w-3/4 w-[90%] ${!show && 'hidden'}`}>
+            <div className='relative box--style border-[2px] border-gray-600 shadow-gray-600 mx-auto overflow-auto p-4 md:p-8 bg-gray-100/75 flex flex-col gap-4'>
+                <div className='text-gray-500 text-center text-[0.85rem]'>failed to load invitations, please try again.</div>
+            </div>
+        </div>
+    }
 
     return (
         <>
@@ -21,29 +33,21 @@ export default function Invitations({
 
                 <div className="flex gap-1 sm:gap-0 justify-between items-center">
                     <p className="text-[0.75rem] text-gray-700 m-0 p-0">
-                        invitations [{invitations.length}]
+                        received invitations [{invitations.length}]
                     </p>
 
                     <button
+                        disabled={loading}
                         className='underline text-[0.75rem] text-gray-700 me-1'
                         onClick={() => {
-                            if (!loadingInvitations) {
-                                fetchInvitations();
-                            }
+                            fetchInvitations();
                         }}
                     >
-                        refresh
+                        {loading ? "refreshing..." : "refresh"}
                     </button>
                 </div>
 
-                <div className='relative box--style border-[2px] border-gray-600 shadow-gray-600 min-h-[350px] max-h-[600px] mx-auto overflow-auto p-4 md:p-8 bg-gray-100 flex flex-col gap-4'>
-                    <Loading
-                        position='absolute'
-                        loading={loadingInvitations}
-                        displayText={"loading invitations..."}
-                        fontSize={'0.9rem'}
-                    />
-
+                <div className='relative box--style border-[2px] border-gray-600 shadow-gray-600 h-[350px] mx-auto overflow-auto p-4 md:p-8 bg-gray-100/75 flex flex-col gap-4'>
                     {invitations.length === 0 && <div className='text-gray-500 text-center text-[0.85rem] mt-[7.5rem]'>no invitations found.</div>}
 
                     {invitations.map((item, index) => {
@@ -84,28 +88,47 @@ export default function Invitations({
                                 </div>
                             </div>
 
-
                             {
                                 status === 'pending'
                                     ? <div className='ms-auto flex gap-2'>
                                         <button
-                                            onClick={() => handleAcceptInvitation(_id)}
-                                            className='button--style--rounded rounded-none px-3 py-2 bg-white text-[0.65rem] sm:text-[0.75rem] text-blue-700 border-blue-700'>Accept</button>
+                                            disabled={accept.isLoading && accept.variables === _id}
+                                            onClick={() => accept.mutate(_id)}
+                                            className='button--style--rounded rounded-none px-3 py-2 bg-white text-[0.65rem] sm:text-[0.75rem] text-blue-700 border-blue-700'
+                                        >{accept.isLoading && accept.variables === _id ? "Accepting..." : "Accept"}</button>
                                         <button
-                                            onClick={() => handleRejectInvitation(_id)}
-                                            className='button--style--rounded rounded-none px-3 py-2 bg-white text-[0.65rem] sm:text-[0.75rem] text-red-700 border-red-700'>Reject</button>
+                                            disabled={reject.isLoading && reject.variables === _id}
+                                            onClick={() => reject.mutate(_id)}
+                                            className='button--style--rounded rounded-none px-3 py-2 bg-white text-[0.65rem] sm:text-[0.75rem] text-red-700 border-red-700'
+                                        >{reject.isLoading && reject.variables === _id ? "Rejecting..." : "Reject"}</button>
                                     </div>
                                     : <button
+                                        disabled={remove.isLoading && remove.variables === _id}
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            handleRemoveInvitation(_id)
+                                            remove.mutate(_id)
                                         }}
-                                        className='ms-auto button--style--rounded rounded-none px-3 py-2 border-gray-600 text-[0.65rem] sm:text-[0.75rem] text-gray-600 bg-gray-100'>Remove</button>
-
+                                        className='ms-auto button--style--rounded rounded-none px-3 py-2 border-gray-600 text-[0.65rem] sm:text-[0.75rem] text-gray-600 bg-gray-100'
+                                    >{remove.isLoading && remove.variables === _id ? "Removing..." : "Remove"}</button>
                             }
-
                         </div>
                     })}
+
+                    {
+                        invitations.length >= MAX_INVITATION_PAGE &&
+                        <button
+                            onClick={() => fetchNextPage()}
+                            disabled={!hasNextPage || isFetchingNextPage}
+                            className='button--style--rounded rounded-none text-gray-700 border-gray-700 text-sm p-1'
+                        >
+                            {isFetchingNextPage
+                                ? 'Loading more...'
+                                : hasNextPage
+                                    ? 'Load More'
+                                    : 'Nothing more to load'}
+                        </button>
+                    }
+
                 </div>
             </div>
 
