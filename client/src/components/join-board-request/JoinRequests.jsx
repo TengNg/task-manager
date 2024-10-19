@@ -1,19 +1,31 @@
 import Avatar from '../avatar/Avatar';
-import Loading from "../ui/Loading";
 import { useNavigate } from 'react-router-dom';
 import dateFormatter from '../../utils/dateFormatter';
 
-const JoinRequests = ({
+const MAX_REQUEST_PAGE = 3;
+
+export default function JoinRequests({
     show,
     requests,
     loading,
+    error,
     fetchRequests,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
     accept,
     reject,
     remove
-}) => {
-
+}) {
     const navigate = useNavigate();
+
+    if (error) {
+        return <div className={`mx-auto lg:w-1/2 md:w-3/4 w-[90%] ${!show && 'hidden'}`}>
+            <div className='relative box--style border-[2px] border-gray-600 shadow-gray-600 mx-auto overflow-auto p-4 md:p-8 bg-gray-100/75 flex flex-col gap-4'>
+                <div className='text-gray-500 text-center text-[0.85rem]'>failed to load requests, please try again.</div>
+            </div>
+        </div>
+    }
 
     return (
         <>
@@ -24,25 +36,17 @@ const JoinRequests = ({
                         received requests [{requests.length}]
                     </p>
                     <button
+                        disabled={loading}
                         className='underline text-[0.75rem] text-gray-700 me-1'
                         onClick={() => {
-                            if (!loading) {
-                                fetchRequests();
-                            }
+                            fetchRequests();
                         }}
                     >
-                        refresh
+                        {loading ? "refreshing..." : "refresh"}
                     </button>
                 </div>
 
-                <div className='relative box--style border-[2px] border-gray-600 shadow-gray-600 min-h-[350px] max-h-[600px] mx-auto overflow-auto p-4 md:p-8 bg-gray-100 flex flex-col gap-4'>
-                    <Loading
-                        position='absolute'
-                        loading={loading}
-                        displayText={"loading board requests..."}
-                        fontSize={'0.9rem'}
-                    />
-
+                <div className='relative box--style border-[2px] border-gray-600 shadow-gray-600 h-[350px] mx-auto overflow-auto p-4 md:p-8 bg-gray-100/75 flex flex-col gap-4'> 
                     {requests.length === 0 && <div className='text-gray-500 text-center text-[0.85rem] mt-[7.5rem]'>no requests found.</div>}
 
                     {requests.map((item, index) => {
@@ -52,7 +56,7 @@ const JoinRequests = ({
                         return <div
                             key={index}
                             className={`button--style--rounded rounded-none border-gray-700 shadow-gray-700 flex justify-between flex-wrap sm:flex-nowrap items-center p-4
-                                                        ${status === "accepted" ? 'bg-blue-100' : status === "rejected" ? 'bg-red-100' : 'bg-slate-100'}`}
+                                        ${status === "accepted" ? 'bg-blue-100' : status === "rejected" ? 'bg-red-100' : 'bg-slate-100'}`}
                         >
                             <div className='flex gap-2 mb-4 sm:mb-0'>
                                 <div className="sm:mt-1 sm:block hidden">
@@ -101,24 +105,44 @@ const JoinRequests = ({
                                 </div>
                             </div>
 
-
                             {
                                 status === 'pending'
                                     ? <div className='ms-auto flex gap-2'>
                                         <button
-                                            onClick={() => accept({ id: _id, boardId: board._id, requesterName })}
-                                            className='button--style--rounded rounded-none px-3 py-2 bg-white text-[0.65rem] sm:text-[0.75rem] text-blue-700 border-blue-700'>Accept</button>
+                                            disabled={accept.isLoading && accept.variables.id === _id}
+                                            onClick={() => accept.mutate({ id: _id, boardId: board._id, requesterName })}
+                                            className='button--style--rounded rounded-none px-3 py-2 bg-white text-[0.65rem] sm:text-[0.75rem] text-blue-700 border-blue-700'
+                                        >{accept.isLoading && accept.variables.id === _id ? "Accepting..." : "Accept"}</button>
                                         <button
-                                            onClick={() => reject({ id: _id, boardId: board._id, requesterName })}
-                                            className='button--style--rounded rounded-none px-3 py-2 bg-white text-[0.65rem] sm:text-[0.75rem] text-red-700 border-red-700'>Reject</button>
+                                            disabled={reject.isLoading && reject.variables.id === _id}
+                                            onClick={() => reject.mutate({ id: _id, boardId: board._id, requesterName })}
+                                            className='button--style--rounded rounded-none px-3 py-2 bg-white text-[0.65rem] sm:text-[0.75rem] text-red-700 border-red-700'
+                                        >{reject.isLoading && reject.variables.id === _id ? "Rejecting..." : "Reject"}</button>
                                     </div>
                                     : <button
-                                        onClick={() => remove({ id: _id, boardId: board._id, requesterName })}
-                                        className='ms-auto button--style--rounded rounded-none px-3 py-2 border-gray-600 text-[0.65rem] sm:text-[0.75rem] text-gray-600 bg-gray-100'>Remove</button>
-
+                                        disabled={remove.isLoading && remove.variables.id === _id}
+                                        onClick={() => remove.mutate({ id: _id, boardId: board._id, requesterName })}
+                                        className='ms-auto button--style--rounded rounded-none px-3 py-2 border-gray-600 text-[0.65rem] sm:text-[0.75rem] text-gray-600 bg-gray-100'
+                                    >{reject.isLoading && reject.variables.id === _id ? "Removing..." : "Remove"}</button>
                             }
                         </div>
                     })}
+
+                    {
+                        requests.length >= MAX_REQUEST_PAGE &&
+                        <button
+                            onClick={() => fetchNextPage()}
+                            disabled={!hasNextPage || isFetchingNextPage}
+                            className='button--style--rounded rounded-none text-gray-700 border-gray-700 text-sm p-1'
+                        >
+                            {isFetchingNextPage
+                                ? 'Loading more...'
+                                : hasNextPage
+                                    ? 'Load More'
+                                    : 'Nothing more to load'}
+                        </button>
+                    }
+
                 </div>
             </div>
 
@@ -126,4 +150,3 @@ const JoinRequests = ({
     )
 }
 
-export default JoinRequests

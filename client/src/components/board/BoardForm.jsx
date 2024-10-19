@@ -26,7 +26,7 @@ const BoardForm = forwardRef(({}, ref) => {
 
     const handleInputOnEnter = async (e) => {
         if (e.key == 'Enter') {
-            handleCreateBoard()
+            handleCreateBoard(e);
         }
     };
 
