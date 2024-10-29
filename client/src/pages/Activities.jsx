@@ -1,11 +1,11 @@
-import { useReducer, useState, useEffect } from 'react';
+import { useReducer, useState, useEffect, useMemo } from 'react';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import Title from '../components/ui/Title';
 import Invitations from '../components/invitation/Invitations';
 import JoinBoardRequests from '../components/join-board-request/JoinRequests';
 import ActivitiesHelp from '../components/ui/ActivitiesHelp';
 
-import { useNavigate } from 'react-router-dom';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 const ACTIONS = Object.freeze({
     TOGGLE_INVITATIONS_SECTION: 'toggle_invitation_section',
@@ -30,188 +30,271 @@ const reducer = (state, action) => {
 };
 
 const Activities = () => {
+    const queryClient = useQueryClient();
+
     const [state, dispatch] = useReducer(
         reducer,
         {
             showInvitations: true,
-            showJoinBoardRequests: false,
+            showJoinBoardRequests: true,
         },
     );
 
     const { showInvitations, showJoinBoardRequests } = state;
 
-    const [invitations, setInvitations] = useState([]);
-    const [joinBoardRequests, setJoinBoardRequests] = useState([]);
-    const [loadingInvitations, setLoadingInvitations] = useState(false);
-    const [loadingRequests, setLoadingRequests] = useState(false);
     const [openHelp, setOpenHelp] = useState(false);
 
     const axiosPrivate = useAxiosPrivate();
 
-    const navigate = useNavigate();
-
     useEffect(() => {
-        fetchInvitations();
-        fetchJoinBoardRequests();
-
+        const handleKeyDown = (e) => {
+            switch (e.key) {
+                case "?": setOpenHelp(prev => !prev); break;
+                case "i": handleToggleInvitationsSection(); break;
+                case "o": handleToggleBoardRequestsSection(); break;
+                default: break;
+            }
+        };
         document.addEventListener('keydown', handleKeyDown);
         () => {
             document.removeEventListener('keydown', handleKeyDown);
         }
     }, []);
 
-    function handleKeyDown(e) {
-        const key = e.key;
-
-        switch (key) {
-            case "?":
-                setOpenHelp(prev => !prev);
-                break;
-            case "i":
-                dispatch({ type: ACTIONS.TOGGLE_INVITATIONS_SECTION });
-                break;
-            case "o":
-                dispatch({ type: ACTIONS.TOGGLE_JOIN_BOARD_REQUESTS_SECTION });
-                break;
-            default:
-                break;
+    const {
+        data: invitationData,
+        refetch: refetchInvitationData,
+        fetchNextPage: fetchNextInvitationPage,
+        isFetchingNextPage: isFetchingNextInvitationPage,
+        hasNextPage: hasNextInvitationPage,
+        isLoading: isLoadingInvitations,
+        isRefetching: isRefetchingInvitations,
+        isError: errorLoadingInvitations,
+    } = useInfiniteQuery({
+        staleTime: Infinity,
+        queryKey: ["invitations"],
+        queryFn: ({ pageParam = 1 }) => fetchInvitations({ page: pageParam }),
+        getNextPageParam: (lastPage, pages) => {
+            return lastPage.length ? pages.length + 1 : undefined;
         }
-    }
+    });
 
-    const fetchInvitations = async () => {
-        setLoadingInvitations(true);
-
-        try {
-            const response = await axiosPrivate.get("/invitations");
-            // await new Promise(resolve => setTimeout(resolve, 1000))
-            setInvitations(response.data.invitations);
-        } catch (err) {
-            if (err.response?.status === 403 || err.response?.status === 401) {
-                navigate('/login', { replace: true });
-            } else {
-                alert('Failed to get invitations. Please try again.');
-            }
+    const {
+        data: boardRequestData,
+        refetch: refetchBoardData,
+        fetchNextPage: fetchNextBoardRequestPage,
+        isLoading: isLoadingBoardRequests,
+        isFetchingNextPage: isFetchingNextBoardRequestPage,
+        hasNextPage: hasNextBoardRequestPage,
+        isRefetching: isRefetchingBoardRequests,
+        isError: errorLoadingBoardRequests,
+    } = useInfiniteQuery({
+        staleTime: Infinity,
+        queryKey: ["boardRequests"],
+        queryFn: ({ pageParam = 1 }) => fetchBoardRequests({ page: pageParam }),
+        getNextPageParam: (lastPage, pages) => {
+            return lastPage.length ? pages.length + 1 : undefined;
         }
+    });
 
-        setLoadingInvitations(false);
-    };
+    // ==================================================
 
-    const fetchJoinBoardRequests = async () => {
-        setLoadingRequests(true);
+    const acceptInvitationMutation = useMutation({
+        mutationFn: (invitationId) => handleAcceptInvitation(invitationId),
+        onSuccess: (_data, invitationId, _context) => {
+            // queryClient.invalidateQueries({ queryKey: ["invitations"] });
+            queryClient.setQueryData(["invitations"], (old) => {
+                return {
+                    ...old,
+                    pages: [...old.pages].map(page => {
+                        return page.map(item => {
+                            return item._id === invitationId ? { ...item, status: "accepted" } : item;
+                        })
+                    })
+                }
+            });
+        },
+        onError: (err, _, _context) => {
+            const errMsg = err.response?.data?.msg || "Failed to accept this invitation";
+            alert(errMsg);
+        },
+    });
 
-        try {
-            const response = await axiosPrivate.get("/join_board_requests");
-            setJoinBoardRequests(response.data.joinRequests);
-        } catch (err) {
-            if (err.response?.status === 403 || err.response?.status === 401) {
-                navigate('/login', { replace: true });
-            }
-            console.log(err);
-        }
+    const rejectInvitationMutation = useMutation({
+        mutationFn: (invitationId) => handleRejectInvitation(invitationId),
+        onSuccess: (_data, invitationId, _context) => {
+            // queryClient.invalidateQueries({ queryKey: ["invitations"] });
+            queryClient.setQueryData(["invitations"], (old) => {
+                return {
+                    ...old,
+                    pages: [...old.pages].map(page => {
+                        return page.map(item => {
+                            return item._id === invitationId ? { ...item, status: "rejected" } : item;
+                        })
+                    })
+                }
+            });
+        },
+        onError: (err, _, _context) => {
+            const errMsg = err.response?.data?.msg || "Failed to accept this invitation";
+            alert(errMsg);
+        },
+    });
 
-        setLoadingRequests(false);
-    };
+    const removeInvitationMutation = useMutation({
+        mutationFn: (invitationId) => handleRemoveInvitation(invitationId),
+        onSuccess: (_data, invitationId, _context) => {
+            // queryClient.invalidateQueries({ queryKey: ["invitations"] });
+            queryClient.setQueryData(["invitations"], (old) => {
+                return {
+                    ...old,
+                    pages: [...old.pages].map(page => {
+                        return page.filter(item => {
+                            return item._id !== invitationId;
+                        })
+                    })
+                }
+            });
+        },
+        onError: (err, _, _context) => {
+            const errMsg = err.response?.data?.msg || "Failed to accept this invitation";
+            alert(errMsg);
+        },
+    });
 
-    const handleToggleInvitationsSection = () => {
+    // ==================================================
+
+    const acceptBoardRequestMutation = useMutation({
+        mutationFn: ({
+            id, boardId, requesterName
+        }) => handleAcceptBoardRequest({ id, boardId, requesterName }),
+        onSuccess: (_data, variables, _context) => {
+            // queryClient.invalidateQueries({ queryKey: ["boardRequests"] });
+            const { id: requestId } = variables;
+            queryClient.setQueryData(["boardRequests"], (old) => {
+                return {
+                    ...old,
+                    pages: [...old.pages].map(page => {
+                        return page.map(item => {
+                            return item._id === requestId ? { ...item, status: "accepted" } : item;
+                        })
+                    })
+                }
+            });
+        },
+        onError: (err, _, _context) => {
+            const errMsg = err.response?.data?.msg || "Failed to accept this invitation";
+            alert(errMsg);
+        },
+    });
+
+    const rejectBoardRequestMutation = useMutation({
+        mutationFn: ({
+            id, boardId, requesterName
+        }) => handleRejectBoardRequest({ id, boardId, requesterName }),
+        onSuccess: (_data, variables, _context) => {
+            // queryClient.invalidateQueries({ queryKey: ["boardRequests"] });
+            const { id: requestId } = variables;
+            queryClient.setQueryData(["boardRequests"], (old) => {
+                return {
+                    ...old,
+                    pages: [...old.pages].map(page => {
+                        return page.map(item => {
+                            return item._id === requestId ? { ...item, status: "accepted" } : item;
+                        })
+                    })
+                }
+            });
+        },
+        onError: (err, _, _context) => {
+            const errMsg = err.response?.data?.msg || "Failed to accept this invitation";
+            alert(errMsg);
+        },
+    });
+
+    const removeBoardRequestMutation = useMutation({
+        mutationFn: ({
+            id, boardId, requesterName
+        }) => handleRemoveBoardRequest({ id, boardId, requesterName }),
+        onSuccess: (_data, variables, _context) => {
+            // queryClient.invalidateQueries({ queryKey: ["boardRequests"] });
+            const { id: requestId } = variables;
+            queryClient.setQueryData(["boardRequests"], (old) => {
+                return {
+                    ...old,
+                    pages: [...old.pages].map(page => {
+                        return page.filter(item => {
+                            return item._id !== requestId;
+                        })
+                    })
+                }
+            });
+        },
+        onError: (err, _, _context) => {
+            const errMsg = err.response?.data?.msg || "Failed to accept this invitation";
+            alert(errMsg);
+        },
+    });
+
+    // ==================================================
+
+    function handleToggleInvitationsSection() {
         dispatch({ type: ACTIONS.TOGGLE_INVITATIONS_SECTION });
     };
 
-    const handleToggleJoinBoardRequestsSection = () => {
+    function handleToggleBoardRequestsSection() {
         dispatch({ type: ACTIONS.TOGGLE_JOIN_BOARD_REQUESTS_SECTION });
     }
 
-    const handleAcceptInvitation = async (invitationId) => {
-        try {
-            await axiosPrivate.put(`/invitations/${invitationId}/accept`, JSON.stringify({ id: invitationId }));
-            setInvitations(prev => {
-                return prev.map(item => item._id === invitationId ? { ...item, status: 'accepted' } : item);
-            });
-        } catch (err) {
-            console.log(err);
-            if (err?.response?.status === 409) {
-                alert(err?.response?.data?.error);
-            } else {
-                alert('Failed to accept invitation');
-            }
-        }
+    // ==================================================
+
+    async function fetchInvitations({ page, status = 'all' }) {
+        const response = await axiosPrivate.get(`/invitations?page=${page}&status=${status}`);
+        return response?.data?.invitations || [];
     };
 
-    const handleRejectInvitation = async (invitationId) => {
-        try {
-            await axiosPrivate.put(`/invitations/${invitationId}/reject`, JSON.stringify({ id: invitationId }));
-            setInvitations(prev => {
-                return prev.map(item => item._id === invitationId ? { ...item, status: 'rejected' } : item);
-            });
-        } catch (err) {
-            alert('Failed to accept invitation');
-        }
+    async function fetchBoardRequests({ page, status = 'all' }) {
+        const response = await axiosPrivate.get(`/join_board_requests?page=${page}&status=${status}`);
+        return response?.data?.joinRequests || [];
     };
 
-    const handleRemoveInvitation = async (invitationId) => {
-        try {
-            await axiosPrivate.delete(`/invitations/${invitationId}`, JSON.stringify({ id: invitationId }));
-            setInvitations(prev => {
-                return prev.filter(item => item._id !== invitationId);
-            });
-        } catch (err) {
-            console.log(err);
-            alert('Failed to remove invitation');
-        }
+    async function handleAcceptInvitation(invitationId) {
+        return await axiosPrivate.put(`/invitations/${invitationId}/accept`, JSON.stringify({ id: invitationId }));
     };
 
-    const handleAcceptJoinBoardRequest = async ({ id, boardId, requesterName }) => {
-        try {
-            await axiosPrivate.put(`/join_board_requests/${id}/accept`, JSON.stringify({ boardId, requesterName }));
-
-            setJoinBoardRequests(prev => {
-                const requests = [...prev];
-                return requests.map(request => {
-                    if (request._id === id) {
-                        return { ...request, status: 'accepted' };
-                    }
-
-                    return request;
-                });
-            });
-        } catch (err) {
-            const errMsg = err?.response?.data?.msg || 'Failed to accept join board request';
-            alert(errMsg);
-        }
+    async function handleRejectInvitation(invitationId) {
+        return await axiosPrivate.put(`/invitations/${invitationId}/reject`, JSON.stringify({ id: invitationId }));
     };
 
-    const handleRejectJoinBoardRequest = async ({ id, boardId, requesterName }) => {
-        try {
-            await axiosPrivate.put(`/join_board_requests/${id}/reject`, JSON.stringify({ boardId, requesterName }));
-
-            setJoinBoardRequests(prev => {
-                const requests = [...prev];
-                return requests.map(request => {
-                    if (request._id === id) {
-                        return { ...request, status: 'rejected' };
-                    }
-
-                    return request;
-                });
-            });
-        } catch (err) {
-            const errMsg = err?.response?.data?.msg || 'Failed to reject join board request';
-            alert(errMsg);
-        }
+    async function handleRemoveInvitation(invitationId) {
+        return await axiosPrivate.delete(`/invitations/${invitationId}`, JSON.stringify({ id: invitationId }));
     };
 
-    const handleRemoveJoinBoardRequest = async ({ id, boardId, requesterName }) => {
-        try {
-            // body param: needs to be set under "data" key
-            await axiosPrivate.delete(`/join_board_requests/${id}`, { data: JSON.stringify({ boardId, requesterName }) });
-
-            setJoinBoardRequests(prev => {
-                return prev.filter(item => item._id !== id);
-            });
-        } catch (err) {
-            const errMsg = err?.response?.data?.msg || 'Failed to remove join board request';
-            alert(errMsg);
-        }
+    async function handleAcceptBoardRequest({ id, boardId, requesterName }) {
+        return await axiosPrivate.put(`/join_board_requests/${id}/accept`, JSON.stringify({ boardId, requesterName }));
     };
+
+    async function handleRejectBoardRequest({ id, boardId, requesterName }) {
+        return await axiosPrivate.put(`/join_board_requests/${id}/reject`, JSON.stringify({ boardId, requesterName }));
+    };
+
+    async function handleRemoveBoardRequest({ id, boardId, requesterName }) {
+        return await axiosPrivate.delete(`/join_board_requests/${id}`, JSON.stringify({ boardId, requesterName }));
+    };
+
+    // ==================================================
+
+    const invitations = useMemo(() => {
+        return invitationData?.pages.reduce((acc, page) => {
+            return [...acc, ...page];
+        }, []) || [];
+    }, [invitationData]);
+
+    const boardRequests = useMemo(() => {
+        return boardRequestData?.pages.reduce((acc, page) => {
+            return [...acc, ...page];
+        }, []) || [];
+    }, [boardRequestData]);
 
     return (
         <>
@@ -248,41 +331,43 @@ const Activities = () => {
                         <button
                             title='press "o" to open'
                             className={`w-[100px] ${showJoinBoardRequests ? 'mt-[0.15rem] text-gray-100 shadow-[0_1px_0_0]' : 'shadow-gray-600 shadow-[0_3px_0_0]'} bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium`}
-                            onClick={handleToggleJoinBoardRequestsSection}
+                            onClick={handleToggleBoardRequestsSection}
                         >
                             requests
                         </button>
                     </div>
                 </div>
 
-                <Invitations
-                    show={showInvitations}
-                    toggleShow={handleToggleInvitationsSection}
-                    invitations={invitations}
-                    loadingInvitations={loadingInvitations}
-                    fetchInvitations={fetchInvitations}
-                    handleAcceptInvitation={handleAcceptInvitation}
-                    handleRejectInvitation={handleRejectInvitation}
-                    handleRemoveInvitation={handleRemoveInvitation}
-                />
-
-                {
-                    showJoinBoardRequests &&
-                    showInvitations &&
-                    <div className="h-[1px] w-full my-4"></div>
-                }
-
-                <JoinBoardRequests
-                    show={showJoinBoardRequests}
-                    toggleShow={handleToggleJoinBoardRequestsSection}
-                    requests={joinBoardRequests}
-                    loading={loadingRequests}
-                    fetchRequests={fetchJoinBoardRequests}
-                    accept={handleAcceptJoinBoardRequest}
-                    reject={handleRejectJoinBoardRequest}
-                    remove={handleRemoveJoinBoardRequest}
-                />
-
+                <div className="flex flex-col gap-4">
+                    <Invitations
+                        show={showInvitations}
+                        toggleShow={handleToggleInvitationsSection}
+                        invitations={invitations}
+                        loading={isLoadingInvitations || isRefetchingInvitations}
+                        error={errorLoadingInvitations}
+                        fetchInvitations={refetchInvitationData}
+                        isFetchingNextPage={isFetchingNextInvitationPage}
+                        fetchNextPage={fetchNextInvitationPage}
+                        hasNextPage={hasNextInvitationPage}
+                        accept={acceptInvitationMutation}
+                        reject={rejectInvitationMutation}
+                        remove={removeInvitationMutation}
+                    />
+                    <JoinBoardRequests
+                        show={showJoinBoardRequests}
+                        toggleShow={handleToggleBoardRequestsSection}
+                        requests={boardRequests}
+                        loading={isLoadingBoardRequests || isRefetchingBoardRequests}
+                        error={errorLoadingBoardRequests}
+                        fetchRequests={refetchBoardData}
+                        fetchNextPage={fetchNextBoardRequestPage}
+                        hasNextPage={hasNextBoardRequestPage}
+                        isFetchingNextPage={isFetchingNextBoardRequestPage}
+                        accept={acceptBoardRequestMutation}
+                        reject={rejectBoardRequestMutation}
+                        remove={removeBoardRequestMutation}
+                    />
+                </div>
             </section>
 
             <button

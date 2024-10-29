@@ -100,7 +100,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
 
     const listSelectOptions = useMemo(() => {
         return boardState?.lists?.map(list => { return { value: list._id, title: list.title } }) || []
-    });
+    }, [boardState?.lists]);
 
     const handleClick = (e) => {
         const hlPicker = dialog.current.querySelector('#card__detail__highlight__picker');

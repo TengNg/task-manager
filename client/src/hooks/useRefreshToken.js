@@ -5,10 +5,15 @@ const useRefreshToken = () => {
     const { setAuth } = useAuth();
 
     const refresh = async () => {
-        const response = await axiosPrivate.get('/refresh');
-        const { user, accessToken } = response.data;
-        setAuth({ user, accessToken });
-        return accessToken;
+        try {
+            const response = await axiosPrivate.get('/refresh');
+            const { user, accessToken } = response.data;
+            setAuth({ user, accessToken });
+            return accessToken;
+        } catch (err) {
+            await axiosPrivate.get('/logout');
+            return undefined;
+        }
     }
 
     return refresh;

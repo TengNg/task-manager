@@ -1,11 +1,9 @@
+const mongoose = require('mongoose');
 const Board = require("../models/Board");
 const JoinBoardRequest = require("../models/JoinBoardRequest");
-
-const mongoose = require('mongoose');
-
-const { MAX_BOARD_MEMBER_COUNT } = require('../data/limits');
-
 const { userByUsername: getUser } = require('../services/userService');
+
+const { MAX_BOARD_MEMBER_COUNT, MAX_REQUEST_PAGE } = require('../data/limits');
 
 const findUser = async (req, res) => {
     const { username } = req.user;
@@ -38,6 +36,10 @@ const findRequest = async (req, res) => {
 };
 
 const getAllRequests = async (req, res) => {
+    const perPage = MAX_REQUEST_PAGE;
+    let { page } = req.query;
+    page = +page || 1;
+
     const foundUser = await findUser(req, res);
 
     const ownedBoardIds = await Board.find({ createdBy: foundUser._id }).distinct('_id').lean();
@@ -59,7 +61,10 @@ const getAllRequests = async (req, res) => {
             }
         })
         .sort({ createdAt: -1 })
+        .skip((page - 1) * perPage)
+        .limit(perPage)
         .lean();
+
     return res.json({ joinRequests });
 };
 
