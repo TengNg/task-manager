@@ -7,12 +7,12 @@ const { sanitizeUser } = require('../services/userService');
 const handleLogin = async (req, res) => {
     const { username, password } = req.body;
 
-    if (!username || !password) res.status(400).json({ msg: "Username and password are required" });
+    if (!username || !password) res.status(400).json({ msg: "Username and Password are required" });
 
     const foundUser = await User.findOne({ username });
     if (!foundUser) return res.status(401).json({ msg: "Unauthorized" });
 
-    const validPwd = bcrypt.compare(password, foundUser.password);
+    const validPwd = await bcrypt.compare(password, foundUser.password);
     if (!validPwd) return res.status(400).json({ msg: "Password is incorrect" });
 
     const { accessToken, refreshToken } = createAuthTokens(foundUser);
