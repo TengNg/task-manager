@@ -5,9 +5,9 @@ const PRIORITY_LEVELS = Object.freeze({
         value: "low",
         title: "LOW",
         icon: "🟣",
-        color:  {
+        color: {
             rgba: `rgba(168, 125, 247, ${OPACITY})`,
-        }
+        },
     },
 
     medium: {
@@ -16,7 +16,7 @@ const PRIORITY_LEVELS = Object.freeze({
         icon: "🟡",
         color: {
             rgba: `rgba(191, 155, 64, ${OPACITY})`,
-        }
+        },
     },
 
     high: {
@@ -25,7 +25,7 @@ const PRIORITY_LEVELS = Object.freeze({
         icon: "🔴",
         color: {
             rgba: `rgba(209, 97, 121, ${OPACITY})`,
-        }
+        },
     },
 
     critical: {
@@ -34,8 +34,8 @@ const PRIORITY_LEVELS = Object.freeze({
         icon: "⭕",
         color: {
             rgba: `rgba(204, 51, 84, ${OPACITY})`,
-        }
-    }
+        },
+    },
 });
 
 export default PRIORITY_LEVELS;

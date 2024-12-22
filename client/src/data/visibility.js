@@ -1,6 +1,6 @@
 const VISIBILITY_MAP = Object.freeze({
-    'private': '🔒',
-    'public': '🌐',
+    private: "🔒",
+    public: "🌐",
     //'read-only': 'ro',
 });
 

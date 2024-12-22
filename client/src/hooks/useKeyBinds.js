@@ -21,137 +21,142 @@ const useKeyBinds = () => {
         const handleKeyDown = (event) => {
             const key = event.key;
 
-            if (key === 'Escape') {
+            if (key === "Escape") {
                 setOpenFloatingChat(false);
                 setOpenChatBox(false);
                 setOpenPinnedBoards(false);
                 return;
             }
 
-            const isTextFieldFocused = document.querySelector('input:focus');
-            const isTextAreaFocused = document.querySelector('textarea:focus');
+            const isTextFieldFocused = document.querySelector("input:focus");
+            const isTextAreaFocused = document.querySelector("textarea:focus");
 
             if (isTextAreaFocused) {
                 return;
             }
 
-            const formOpen = openFilter || openPinnedBoards || openFloatingChat || openInvitationForm || openAddList;
+            const formOpen =
+                openFilter ||
+                openPinnedBoards ||
+                openFloatingChat ||
+                openInvitationForm ||
+                openAddList;
 
             if (event.ctrlKey) {
                 if (
-                    key === 'e'
-                    || key === 'm'
-                    || key === 'i'
-                    || key === 'p'
-                    || key === 'x'
-
-                    || key === 'h'
-                    || key === 'j'
-                    || key === 'k'
-                    || key === 'l'
-                    || key === ';'
-                    || key === '.'
-
-                    || key === 'ArrowLeft'
-                    || key === 'ArrowRight'
-                    || key === 'ArrowUp'
-                    || key === 'ArrowDown'
+                    key === "e" ||
+                    key === "m" ||
+                    key === "i" ||
+                    key === "p" ||
+                    key === "x" ||
+                    key === "h" ||
+                    key === "j" ||
+                    key === "k" ||
+                    key === "l" ||
+                    key === ";" ||
+                    key === "." ||
+                    key === "ArrowLeft" ||
+                    key === "ArrowRight" ||
+                    key === "ArrowUp" ||
+                    key === "ArrowDown"
                 ) {
                     event.preventDefault();
                 }
             }
 
             if (event.ctrlKey) {
-                if (key === 'p') {
-                    setOpenFilter(prev => !prev);
+                if (key === "p") {
+                    setOpenFilter((prev) => !prev);
                     return;
                 }
 
-                if (key === 'i') {
-                    setOpenInvitationForm(prev => !prev);
+                if (key === "i") {
+                    setOpenInvitationForm((prev) => !prev);
                     return;
                 }
 
-                if (key === ';') {
-                    setOpenAddList(prev => !prev);
+                if (key === ";") {
+                    setOpenAddList((prev) => !prev);
                     return;
                 }
 
-                if (key === 'm') {
-                    setOpenMembers(prev => !prev);
+                if (key === "m") {
+                    setOpenMembers((prev) => !prev);
                     return;
                 }
 
-                if (key === 'x') {
-                    setOpenConfiguration(prev => !prev);
+                if (key === "x") {
+                    setOpenConfiguration((prev) => !prev);
                     return;
                 }
 
-                if (key === '.') {
-                    setOpenBoardActivities(prev => !prev);
+                if (key === ".") {
+                    setOpenBoardActivities((prev) => !prev);
                     return;
                 }
 
                 if (!formOpen && !isTextFieldFocused && !isTextAreaFocused) {
-                    if (key === 'e') {
-                        setOpenPinnedBoards(prev => !prev);
+                    if (key === "e") {
+                        setOpenPinnedBoards((prev) => !prev);
                         return;
                     }
                 }
             }
 
             if (!isTextFieldFocused && !isTextAreaFocused) {
-                if (key === 'a') {
-                    const listContainer = document.querySelector('#list-container');
+                if (key === "a") {
+                    const listContainer =
+                        document.querySelector("#list-container");
                     if (listContainer) {
                         listContainer.scrollBy({ left: -400, top: 0 });
                     } else {
-                        console.log('cant scroll');
+                        console.log("cant scroll");
                     }
                     return;
                 }
 
-                if (key === 'd') {
-                    const listContainer = document.querySelector('#list-container');
+                if (key === "d") {
+                    const listContainer =
+                        document.querySelector("#list-container");
                     if (listContainer) {
                         listContainer.scrollBy({ left: 400, top: 0 });
                     } else {
-                        console.log('cant scroll');
+                        console.log("cant scroll");
                     }
                     return;
                 }
             }
 
             if (!formOpen && !isTextFieldFocused && !isTextAreaFocused) {
-                if (key === '?') {
-                    setOpenKeyBindings(prev => !prev);
+                if (key === "?") {
+                    setOpenKeyBindings((prev) => !prev);
                     return;
                 }
 
-                if (key === '.') {
+                if (key === ".") {
                     event.preventDefault();
                     if (openFloatingChat) {
                         setOpenFloatingChat(false);
                     }
-                    setOpenChatBox(prev => !prev);
+                    setOpenChatBox((prev) => !prev);
                     return;
                 }
 
-                if (key === '>') {
+                if (key === ">") {
                     event.preventDefault();
                     if (openChatBox) {
                         setOpenChatBox(false);
                     }
-                    setOpenFloatingChat(prev => !prev);
+                    setOpenFloatingChat((prev) => !prev);
                     return;
                 }
             }
         };
 
-        document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener("keydown", handleKeyDown);
 
         return () => {
-            document.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener("keydown", handleKeyDown);
         };
     }, [
         openPinnedBoards,
@@ -164,26 +169,36 @@ const useKeyBinds = () => {
     ]);
 
     return {
-        openMembers, setOpenMembers,
+        openMembers,
+        setOpenMembers,
 
-        openFilter, setOpenFilter,
+        openFilter,
+        setOpenFilter,
 
-        openPinnedBoards, setOpenPinnedBoards,
+        openPinnedBoards,
+        setOpenPinnedBoards,
 
-        openChatBox, setOpenChatBox,
+        openChatBox,
+        setOpenChatBox,
 
-        openFloatingChat, setOpenFloatingChat,
+        openFloatingChat,
+        setOpenFloatingChat,
 
-        openInvitationForm, setOpenInvitationForm,
+        openInvitationForm,
+        setOpenInvitationForm,
 
-        openAddList, setOpenAddList,
+        openAddList,
+        setOpenAddList,
 
-        openKeyBindings, setOpenKeyBindings,
+        openKeyBindings,
+        setOpenKeyBindings,
 
-        openConfiguration, setOpenConfiguration,
+        openConfiguration,
+        setOpenConfiguration,
 
-        openBoardActivities, setOpenBoardActivities
+        openBoardActivities,
+        setOpenBoardActivities,
     };
-}
+};
 
 export default useKeyBinds;

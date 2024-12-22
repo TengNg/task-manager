@@ -1,10 +1,8 @@
 class Lexorank {
-
-    constructor(){
-        this.MIN_CHAR = this.byte('0');
-        this.MAX_CHAR = this.byte('z');
+    constructor() {
+        this.MIN_CHAR = this.byte("0");
+        this.MAX_CHAR = this.byte("z");
     }
-
 
     /**
      *
@@ -12,15 +10,15 @@ class Lexorank {
      * @param {String} next
      * @returns {Array} of [String, Boolean]
      */
-    insert(prev, next){
-        if (prev === '' || !prev) {
+    insert(prev, next) {
+        if (prev === "" || !prev) {
             prev = this.string(this.MIN_CHAR);
         }
-        if (next === '' || !next) {
+        if (next === "" || !next) {
             next = this.string(this.MAX_CHAR);
         }
 
-        let rank = '';
+        let rank = "";
         let i = 0;
 
         while (true) {
@@ -50,14 +48,13 @@ class Lexorank {
         return [rank, true];
     }
 
-
     /**
      *
      * @param {Number} prev
      * @param {Number} next
      * @returns {Number}
      */
-    mid(prev, next){
+    mid(prev, next) {
         // TODO: consider to use 8 steps each jump
         return Math.floor((prev + next) / 2);
     }
@@ -67,19 +64,18 @@ class Lexorank {
      * @param {String} str
      * @param {Number} defaultChar
      */
-    getChar(str, i, defaultChar){
+    getChar(str, i, defaultChar) {
         if (i >= str.length) {
             return defaultChar;
         }
         return this.byte(str.charAt(i));
     }
 
-
     /**
      * @returns {Number}
      * @param {string} char
      */
-    byte(char){
+    byte(char) {
         return char.charCodeAt(0);
     }
 
@@ -87,11 +83,9 @@ class Lexorank {
      * @returns {String}
      * @param {Number} byte
      */
-    string(byte){
+    string(byte) {
         return String.fromCharCode(byte);
     }
-
 }
 
 export const lexorank = new Lexorank();
-

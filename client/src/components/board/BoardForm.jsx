@@ -1,4 +1,4 @@
-import { useState, forwardRef } from "react"
+import { useState, forwardRef } from "react";
 import { axiosPrivate } from "../../api/axios";
 import { useNavigate } from "react-router-dom";
 
@@ -16,16 +16,20 @@ const BoardForm = forwardRef(({}, ref) => {
         }
 
         try {
-            const response = await axiosPrivate.post("/boards", JSON.stringify({ title, description }));
+            const response = await axiosPrivate.post(
+                "/boards",
+                JSON.stringify({ title, description }),
+            );
             navigate(`/b/${response.data.newBoard._id}`);
         } catch (err) {
-            const errMsg = err?.response?.data?.errMsg || 'Failed to create new board';
+            const errMsg =
+                err?.response?.data?.errMsg || "Failed to create new board";
             alert(errMsg);
         }
     };
 
     const handleInputOnEnter = async (e) => {
-        if (e.key == 'Enter') {
+        if (e.key == "Enter") {
             handleCreateBoard(e);
         }
     };
@@ -42,31 +46,31 @@ const BoardForm = forwardRef(({}, ref) => {
                 <input
                     autoFocus={true}
                     onKeyDown={handleInputOnEnter}
-                    className='border-[2px] border-gray-400 text-gray-600 font-semibold p-2'
+                    className="border-[2px] border-gray-400 text-gray-600 font-semibold p-2"
                     type="text"
                     autoComplete="off"
                     placeholder="title..."
                     value={title}
-                    onChange={e => setTitle(e.target.value)}
+                    onChange={(e) => setTitle(e.target.value)}
                     required
                 />
 
                 <input
-                    className='border-[2px] border-gray-400 text-gray-600 font-semibold p-2'
+                    className="border-[2px] border-gray-400 text-gray-600 font-semibold p-2"
                     onKeyDown={handleInputOnEnter}
                     type="text"
                     autoComplete="off"
                     placeholder="description..."
                     value={description}
-                    onChange={e => setDescription(e.target.value)}
+                    onChange={(e) => setDescription(e.target.value)}
                 />
 
-                <button
-                    type='submit'
-                    className="button--style--dark">create</button>
+                <button type="submit" className="button--style--dark">
+                    create
+                </button>
             </form>
         </>
-    )
-})
+    );
+});
 
-export default BoardForm
+export default BoardForm;

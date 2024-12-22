@@ -35,4 +35,3 @@ export const highlightColorsRGBA = Object.freeze({
 });
 
 export default highlightColors;
-

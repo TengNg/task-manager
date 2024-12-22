@@ -1,31 +1,31 @@
-import './App.css'
-import './index.css'
-import { useState, useEffect } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
-import About from './pages/About'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import NavBar from './components/ui/NavBar'
-import Boards from './pages/Boards'
-import Board from './pages/Board'
-import Activities from './pages/Activities'
-import Profile from './pages/Profile'
-import NotFound from './pages/NotFound'
-import Writedowns from './pages/Writedowns'
-import PersistLogin from './components/auth/PersistLogin'
+import "./App.css";
+import "./index.css";
+import { useState, useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
+import About from "./pages/About";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import NavBar from "./components/ui/NavBar";
+import Boards from "./pages/Boards";
+import Board from "./pages/Board";
+import Activities from "./pages/Activities";
+import Profile from "./pages/Profile";
+import NotFound from "./pages/NotFound";
+import Writedowns from "./pages/Writedowns";
+import PersistLogin from "./components/auth/PersistLogin";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPalette } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPalette } from "@fortawesome/free-solid-svg-icons";
 
-import ThemesDialog from './components/ui/ThemesDialog'
+import ThemesDialog from "./components/ui/ThemesDialog";
 
-import { BoardStateContextProvider } from './context/BoardStateContext'
+import { BoardStateContextProvider } from "./context/BoardStateContext";
 
 import useLocalStorage from "./hooks/useLocalStorage";
 
-import PAGES from './data/pages';
+import PAGES from "./data/pages";
 import LOCAL_STORAGE_KEYS from "./data/localStorageKeys";
-import SomethingWentWrong from './pages/SomethingWentWrong'
+import SomethingWentWrong from "./pages/SomethingWentWrong";
 
 const noNavPaths = ["/login", "/register"];
 
@@ -35,19 +35,23 @@ const titleMap = Object.values(PAGES).reduce((obj, p, index) => {
 }, {});
 
 function App() {
-    const location = useLocation()
+    const location = useLocation();
     const { pathname } = location;
 
     const [openThemesDialog, setOpenThemesDialog] = useState(false);
-    const [backgroundTheme, setBackgroundTheme] = useLocalStorage(LOCAL_STORAGE_KEYS.APP_BACKGROUND_THEME, { theme: 'offwhite', hex: '#f1f1f1' });
+    const [backgroundTheme, setBackgroundTheme] = useLocalStorage(
+        LOCAL_STORAGE_KEYS.APP_BACKGROUND_THEME,
+        { theme: "offwhite", hex: "#f1f1f1" },
+    );
 
     useEffect(() => {
-        document.querySelector('#root').style.backgroundColor = backgroundTheme?.hex || '#f1f1f1';
+        document.querySelector("#root").style.backgroundColor =
+            backgroundTheme?.hex || "#f1f1f1";
     }, [backgroundTheme]);
 
     useEffect(() => {
-        if (pathname.includes('/b/')) return;
-        document.title = titleMap[pathname] || 'tamago-start';
+        if (pathname.includes("/b/")) return;
+        document.title = titleMap[pathname] || "tamago-start";
     }, [location]);
 
     return (
@@ -64,11 +68,14 @@ function App() {
                     <Route path="/writedowns" element={<Writedowns />} />
                     <Route path="/activities" element={<Activities />} />
                     <Route path="/profile" element={<Profile />} />
-                    <Route path="/b/:boardId/" element={
-                        <BoardStateContextProvider>
-                            <Board />
-                        </BoardStateContextProvider>
-                    } />
+                    <Route
+                        path="/b/:boardId/"
+                        element={
+                            <BoardStateContextProvider>
+                                <Board />
+                            </BoardStateContextProvider>
+                        }
+                    />
                 </Route>
 
                 <Route path="/error" element={<SomethingWentWrong />} />
@@ -84,14 +91,14 @@ function App() {
 
             <button
                 onClick={() => setOpenThemesDialog(true)}
-                className='fixed sm:right-4 sm:bottom-4 text-[13px] sm:text-[1rem] right-1 bottom-2 sm:w-[35px] sm:h-[35px] w-[30px] h-[30px] rounded-full bg-gray-500 text-transparent hover:bg-gray-500/75'
-                style={{ color: backgroundTheme?.hex || '#f1f1f1' }}
+                className="fixed sm:right-4 sm:bottom-4 text-[13px] sm:text-[1rem] right-1 bottom-2 sm:w-[35px] sm:h-[35px] w-[30px] h-[30px] rounded-full bg-gray-500 text-transparent hover:bg-gray-500/75"
+                style={{ color: backgroundTheme?.hex || "#f1f1f1" }}
                 title={backgroundTheme?.theme}
             >
                 <FontAwesomeIcon icon={faPalette} />
             </button>
         </>
-    )
+    );
 }
 
-export default App
+export default App;

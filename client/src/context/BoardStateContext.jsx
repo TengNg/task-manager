@@ -1,5 +1,5 @@
-import io from 'socket.io-client';
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
+import io from "socket.io-client";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
 
 import { createContext, useEffect, useMemo, useState } from "react";
 
@@ -14,7 +14,7 @@ const filterParams = () => {
     const url = new URL(location.href);
     const filter = url.searchParams.get("filter");
     const priority = url.searchParams.get("priority");
-    return { filter, priority }
+    return { filter, priority };
 };
 
 export const BoardStateContextProvider = ({ children }) => {
@@ -25,18 +25,25 @@ export const BoardStateContextProvider = ({ children }) => {
     const [focusedCard, setFocusedCard] = useState();
     const [openCardDetail, setOpenCardDetail] = useState(false);
     const [openedCard, setOpenedCard] = useState(undefined);
-    const [openedCardQuickEditor, setOpenedCardQuickEditor] = useState(undefined);
+    const [openedCardQuickEditor, setOpenedCardQuickEditor] =
+        useState(undefined);
     const [listToMove, setListToMove] = useState();
     const [hasFilter, setHasFilter] = useState(false);
 
-    const [theme, setTheme] = useLocalStorage(LOCAL_STORAGE_KEYS.BOARD_ITEM_THEME, {});
-    const [debugModeEnabled, setDebugModeEnabled] = useLocalStorage(LOCAL_STORAGE_KEYS.DEBUG_MODE_ENABLED, {});
+    const [theme, setTheme] = useLocalStorage(
+        LOCAL_STORAGE_KEYS.BOARD_ITEM_THEME,
+        {},
+    );
+    const [debugModeEnabled, setDebugModeEnabled] = useLocalStorage(
+        LOCAL_STORAGE_KEYS.DEBUG_MODE_ENABLED,
+        {},
+    );
 
     const [hasReceivedNewMessage, setHasReceivedNewMessage] = useState(true);
     const [isAtBottomOfChat, setIsAtBottomOfChat] = useState(true);
     const [toast, setToast] = useState({
         open: false,
-        message: '',
+        message: "",
         duration: null,
         timeSent: null,
         from: null,
@@ -70,8 +77,8 @@ export const BoardStateContextProvider = ({ children }) => {
             setIsConnected(false);
         };
 
-        socket.on('connect', onConnect);
-        socket.on('disconnect', onDisconnect);
+        socket.on("connect", onConnect);
+        socket.on("disconnect", onDisconnect);
 
         socket.on("boardClosed", (_) => {
             setIsRemoved(true);
@@ -87,7 +94,9 @@ export const BoardStateContextProvider = ({ children }) => {
         socket.once("memberJoined", (data) => {
             const { username } = data;
             const timestamp = Date.now();
-            console.log(`${username} joined the board, at ${dateFormatter(timestamp)}`);
+            console.log(
+                `${username} joined the board, at ${dateFormatter(timestamp)}`,
+            );
         });
 
         socket.on("memberLeaved", (data) => {
@@ -113,44 +122,44 @@ export const BoardStateContextProvider = ({ children }) => {
         socket.on("getBoardWithMovedListAdded", (data) => {
             const { list, cards, index } = data;
 
-            setBoardState(prev => {
-                const newLists = [...prev.lists]
+            setBoardState((prev) => {
+                const newLists = [...prev.lists];
                 newLists.splice(index, 0, { ...list, cards });
-                return { ...prev, lists: newLists }
+                return { ...prev, lists: newLists };
             });
         });
 
         socket.on("listMoved", (data) => {
             const { listId: _, fromIndex, toIndex } = data;
-            setBoardState(prev => {
-                const newLists = [...prev.lists]
+            setBoardState((prev) => {
+                const newLists = [...prev.lists];
                 const currentList = newLists.splice(fromIndex, 1)[0];
                 newLists.splice(toIndex, 0, currentList);
-                return { ...prev, lists: newLists }
+                return { ...prev, lists: newLists };
             });
         });
 
         socket.on("getBoardWithUpdatedLists", (data) => {
-            setBoardState(prev => {
-                return { ...prev, lists: data }
+            setBoardState((prev) => {
+                return { ...prev, lists: data };
             });
         });
 
         socket.on("getBoardWithUpdatedLists", (data) => {
-            setBoardState(prev => {
-                return { ...prev, lists: data }
+            setBoardState((prev) => {
+                return { ...prev, lists: data };
             });
         });
 
         socket.on("getBoardWithUpdatedTitle", (data) => {
-            setBoardState(prev => {
-                return { ...prev, board: { ...prev.board, title: data } }
+            setBoardState((prev) => {
+                return { ...prev, board: { ...prev.board, title: data } };
             });
         });
 
         socket.on("getBoardWithUpdatedDescription", (data) => {
-            setBoardState(prev => {
-                return { ...prev, board: { ...prev.board, description: data } }
+            setBoardState((prev) => {
+                return { ...prev, board: { ...prev.board, description: data } };
             });
         });
 
@@ -169,7 +178,9 @@ export const BoardStateContextProvider = ({ children }) => {
             const card = data;
 
             if (filter) {
-                const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                const includesFilter = card.title
+                    .toLowerCase()
+                    .includes(filter.toLowerCase());
                 card["hiddenByFilter"] = !includesFilter;
             }
 
@@ -187,7 +198,9 @@ export const BoardStateContextProvider = ({ children }) => {
             const { card, index } = data;
 
             if (filter) {
-                const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                const includesFilter = card.title
+                    .toLowerCase()
+                    .includes(filter.toLowerCase());
                 card["hiddenByFilter"] = !includesFilter;
             }
 
@@ -209,7 +222,9 @@ export const BoardStateContextProvider = ({ children }) => {
             const { oldListId, newListId, cardId, newCard: card } = data;
 
             if (filter) {
-                const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                const includesFilter = card.title
+                    .toLowerCase()
+                    .includes(filter.toLowerCase());
                 card["hiddenByFilter"] = !includesFilter;
             }
 
@@ -228,25 +243,29 @@ export const BoardStateContextProvider = ({ children }) => {
             let { cards, listId } = data;
 
             if (filter) {
-                cards = cards.map(card => {
-                    const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                cards = cards.map((card) => {
+                    const includesFilter = card.title
+                        .toLowerCase()
+                        .includes(filter.toLowerCase());
                     card["hiddenByFilter"] = !includesFilter;
                     return card;
                 });
             }
 
             if (priority) {
-                cards = cards.map(card => {
+                cards = cards.map((card) => {
                     const includesFilter = card.priorityLevel === priority;
                     card["hiddenByFilter"] = !includesFilter;
                     return card;
                 });
             }
 
-            setBoardState(prev => {
+            setBoardState((prev) => {
                 return {
                     ...prev,
-                    lists: prev.lists.map(list => list._id === listId ? { ...list, cards } : list)
+                    lists: prev.lists.map((list) =>
+                        list._id === listId ? { ...list, cards } : list,
+                    ),
                 };
             });
         });
@@ -257,7 +276,9 @@ export const BoardStateContextProvider = ({ children }) => {
             const { oldListId, newListId, insertedIndex, card } = data;
 
             if (filter) {
-                const includesFilter = card.title.toLowerCase().includes(filter.toLowerCase());
+                const includesFilter = card.title
+                    .toLowerCase()
+                    .includes(filter.toLowerCase());
                 card["hiddenByFilter"] = !includesFilter;
             }
 
@@ -296,7 +317,7 @@ export const BoardStateContextProvider = ({ children }) => {
         });
 
         socket.on("receiveMessage", (data) => {
-            setChats(prev => [...prev, data]);
+            setChats((prev) => [...prev, data]);
             notify({
                 from: { username: data.sentBy.username },
                 message: data.content,
@@ -308,8 +329,8 @@ export const BoardStateContextProvider = ({ children }) => {
         });
 
         socket.on("messageDeleted", (data) => {
-            setChats(prev => {
-                return prev.filter(chat => chat.trackedId !== data.trackedId);
+            setChats((prev) => {
+                return prev.filter((chat) => chat.trackedId !== data.trackedId);
             });
         });
 
@@ -324,140 +345,198 @@ export const BoardStateContextProvider = ({ children }) => {
     }, []);
 
     const setBoardVisibility = (value) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return { ...prev, board: { ...prev.board, visibility: value } };
         });
     };
 
     const setBoardTitle = (value) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return { ...prev, board: { ...prev.board, title: value } };
         });
     };
 
     const setBoardDescription = (value) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return { ...prev, board: { ...prev.board, description: value } };
         });
     };
 
     const setListTitle = (listId, value) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
-                lists: prev.lists.map(list => list._id === listId ? { ...list, title: value } : list)
-            }
+                lists: prev.lists.map((list) =>
+                    list._id === listId ? { ...list, title: value } : list,
+                ),
+            };
         });
     };
 
     const setCardTitle = (cardId, listId, value) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
-                lists: prev.lists.map(list => list._id === listId ? {
-                    ...list,
-                    cards: list.cards.map(card => card._id === cardId ? { ...card, title: value } : card)
-                } : list)
-            }
+                lists: prev.lists.map((list) =>
+                    list._id === listId
+                        ? {
+                              ...list,
+                              cards: list.cards.map((card) =>
+                                  card._id === cardId
+                                      ? { ...card, title: value }
+                                      : card,
+                              ),
+                          }
+                        : list,
+                ),
+            };
         });
     };
 
     const setCardDescription = (cardId, listId, value) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
-                lists: prev.lists.map(list => list._id === listId ? {
-                    ...list,
-                    cards: list.cards.map(card => card._id === cardId ? { ...card, description: value } : card)
-                } : list)
-            }
+                lists: prev.lists.map((list) =>
+                    list._id === listId
+                        ? {
+                              ...list,
+                              cards: list.cards.map((card) =>
+                                  card._id === cardId
+                                      ? { ...card, description: value }
+                                      : card,
+                              ),
+                          }
+                        : list,
+                ),
+            };
         });
     };
 
     const setCardHighlight = (cardId, listId, value) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
-                lists: prev.lists.map(list => list._id === listId ? {
-                    ...list,
-                    cards: list.cards.map(card => card._id === cardId ? { ...card, highlight: value } : card)
-                } : list)
-            }
+                lists: prev.lists.map((list) =>
+                    list._id === listId
+                        ? {
+                              ...list,
+                              cards: list.cards.map((card) =>
+                                  card._id === cardId
+                                      ? { ...card, highlight: value }
+                                      : card,
+                              ),
+                          }
+                        : list,
+                ),
+            };
         });
     };
 
     const setCardDetailHighlight = (highlight) => {
-        setOpenedCard(prev => {
-            return { ...prev, highlight }
+        setOpenedCard((prev) => {
+            return { ...prev, highlight };
         });
     };
 
     const setCardDetailListId = (listId) => {
-        setOpenedCard(prev => {
-            return { ...prev, listId }
+        setOpenedCard((prev) => {
+            return { ...prev, listId };
         });
     };
 
     const setCardQuickEditorHighlight = (highlight) => {
-        setOpenedCardQuickEditor(prev => {
-            return { ...prev, card: { ...prev.card, highlight } }
+        setOpenedCardQuickEditor((prev) => {
+            return { ...prev, card: { ...prev.card, highlight } };
         });
     };
 
     const setCardOwner = (cardId, listId, value) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
-                lists: prev.lists.map(list => list._id === listId ? {
-                    ...list,
-                    cards: list.cards.map(card => card._id === cardId ? { ...card, owner: value } : card)
-                } : list)
-            }
+                lists: prev.lists.map((list) =>
+                    list._id === listId
+                        ? {
+                              ...list,
+                              cards: list.cards.map((card) =>
+                                  card._id === cardId
+                                      ? { ...card, owner: value }
+                                      : card,
+                              ),
+                          }
+                        : list,
+                ),
+            };
         });
     };
 
     const setCardPriorityLevel = (cardId, listId, value) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
-                lists: prev.lists.map(list => list._id === listId ? {
-                    ...list,
-                    cards: list.cards.map(card => card._id === cardId ? { ...card, priorityLevel: value } : card)
-                } : list)
-            }
+                lists: prev.lists.map((list) =>
+                    list._id === listId
+                        ? {
+                              ...list,
+                              cards: list.cards.map((card) =>
+                                  card._id === cardId
+                                      ? { ...card, priorityLevel: value }
+                                      : card,
+                              ),
+                          }
+                        : list,
+                ),
+            };
         });
     };
 
     const setCardVerifiedStatus = (cardId, listId, value) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
-                lists: prev.lists.map(list => list._id === listId ? {
-                    ...list,
-                    cards: list.cards.map(card => card._id === cardId ? { ...card, verified: value } : card)
-                } : list)
-            }
+                lists: prev.lists.map((list) =>
+                    list._id === listId
+                        ? {
+                              ...list,
+                              cards: list.cards.map((card) =>
+                                  card._id === cardId
+                                      ? { ...card, verified: value }
+                                      : card,
+                              ),
+                          }
+                        : list,
+                ),
+            };
         });
     };
 
     const setCardDueDate = (cardId, listId, value) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
-                lists: prev.lists.map(list => list._id === listId ? {
-                    ...list,
-                    cards: list.cards.map(card => card._id === cardId ? { ...card, dueDate: value } : card)
-                } : list)
-            }
+                lists: prev.lists.map((list) =>
+                    list._id === listId
+                        ? {
+                              ...list,
+                              cards: list.cards.map((card) =>
+                                  card._id === cardId
+                                      ? { ...card, dueDate: value }
+                                      : card,
+                              ),
+                          }
+                        : list,
+                ),
+            };
         });
     };
 
     const addListToBoard = (list) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
-                lists: [...prev.lists, { ...list, cards: [] }]
-            }
+                lists: [...prev.lists, { ...list, cards: [] }],
+            };
         });
     };
 
@@ -469,19 +548,23 @@ export const BoardStateContextProvider = ({ children }) => {
         //     setBoardState(currentBoardState);
         // }
 
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
-                lists: prev.lists.map(list => list._id === listId ? { ...list, cards: [...list.cards, card] } : list)
+                lists: prev.lists.map((list) =>
+                    list._id === listId
+                        ? { ...list, cards: [...list.cards, card] }
+                        : list,
+                ),
             };
         });
     };
 
     const addCardToListByIndex = (listId, card, index) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
-                lists: prev.lists.map(list => {
+                lists: prev.lists.map((list) => {
                     if (list._id === listId) {
                         const cards = [...list.cards];
                         cards.splice(index, 0, card);
@@ -489,16 +572,16 @@ export const BoardStateContextProvider = ({ children }) => {
                     } else {
                         return list;
                     }
-                })
+                }),
             };
         });
     };
 
     const addCopiedCard = (card, index) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
-                lists: prev.lists.map(list => {
+                lists: prev.lists.map((list) => {
                     if (list._id === card.listId) {
                         const cards = [...list.cards];
                         cards.splice(index + 1, 0, card);
@@ -506,62 +589,77 @@ export const BoardStateContextProvider = ({ children }) => {
                     } else {
                         return list;
                     }
-                })
+                }),
             };
         });
     };
 
     const deleteCard = (listId, cardId) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
-                lists: prev.lists.map(list => list._id === listId
-                    ? {
-                        ...list,
-                        cards: list.cards.filter(card => card._id !== cardId)
-                    } : list)
+                lists: prev.lists.map((list) =>
+                    list._id === listId
+                        ? {
+                              ...list,
+                              cards: list.cards.filter(
+                                  (card) => card._id !== cardId,
+                              ),
+                          }
+                        : list,
+                ),
             };
         });
     };
 
     const deleteList = (listId) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
-                lists: prev.lists.filter(list => list._id != listId)
-            }
+                lists: prev.lists.filter((list) => list._id != listId),
+            };
         });
     };
 
     const collapseList = (listId, collapsed = true) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
-                lists: prev.lists.map(list => list._id === listId ? { ...list, collapsed } : list)
-            }
+                lists: prev.lists.map((list) =>
+                    list._id === listId ? { ...list, collapsed } : list,
+                ),
+            };
         });
     };
 
     const removeMemberFromBoard = (memberName) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
                 board: {
                     ...prev.board,
-                    members: prev.board.members.filter(member => member.username !== memberName)
-                }
+                    members: prev.board.members.filter(
+                        (member) => member.username !== memberName,
+                    ),
+                },
             };
         });
     };
 
     const addMemberToBoard = (member) => {
-        setBoardState(prev => {
+        setBoardState((prev) => {
             return {
                 ...prev,
                 board: {
                     ...prev.board,
-                    members: [...prev.board.members, { username: member.username, profileImage: member.profileImage }]
-                }
+                    members: [
+                        ...prev.board.members,
+                        {
+                            username: member.username,
+                            profileImage: member.profileImage,
+                        },
+                    ],
+                },
             };
         });
     };
@@ -626,24 +724,31 @@ export const BoardStateContextProvider = ({ children }) => {
                 focusedCard,
                 setFocusedCard,
 
-                theme, setTheme,
-                debugModeEnabled, setDebugModeEnabled,
+                theme,
+                setTheme,
+                debugModeEnabled,
+                setDebugModeEnabled,
 
-                hasFilter, setHasFilter,
+                hasFilter,
+                setHasFilter,
 
-                isConnected, setIsConnected,
+                isConnected,
+                setIsConnected,
 
-                toast, setToast,
+                toast,
+                setToast,
 
-                hasReceivedNewMessage, setHasReceivedNewMessage,
-                isAtBottomOfChat, setIsAtBottomOfChat,
+                hasReceivedNewMessage,
+                setHasReceivedNewMessage,
+                isAtBottomOfChat,
+                setIsAtBottomOfChat,
 
                 socket,
             }}
         >
             {children}
         </BoardStateContext.Provider>
-    )
-}
+    );
+};
 
 export default BoardStateContext;

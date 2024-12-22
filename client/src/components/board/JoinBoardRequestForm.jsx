@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import { useState, useEffect, useRef } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const JoinBoardRequestForm = ({ open, setOpen }) => {
     const dialog = useRef();
@@ -19,13 +19,13 @@ const JoinBoardRequestForm = ({ open, setOpen }) => {
             const handleOnClose = () => {
                 setOpen(false);
                 setSuccess(false);
-                boardCodeInput.current.value = '';
+                boardCodeInput.current.value = "";
             };
 
-            dialog.current.addEventListener('close', handleOnClose);
+            dialog.current.addEventListener("close", handleOnClose);
 
             () => {
-                dialog.current.removeEventListener('close', handleOnClose);
+                dialog.current.removeEventListener("close", handleOnClose);
             };
         } else {
             dialog.current.close();
@@ -45,7 +45,7 @@ const JoinBoardRequestForm = ({ open, setOpen }) => {
     const handleCloseOnOutsideClick = (e) => {
         if (e.target === dialog.current) {
             dialog.current.close();
-        };
+        }
     };
 
     const handleClose = () => {
@@ -56,16 +56,20 @@ const JoinBoardRequestForm = ({ open, setOpen }) => {
         e.preventDefault();
 
         const formData = new FormData(e.target);
-        const boardCode = formData.get('boardCode');
+        const boardCode = formData.get("boardCode");
 
         if (!boardCode) return;
 
         try {
-            await axiosPrivate.post(`/join_board_requests/`, JSON.stringify({ boardId: boardCode.trim() }));
-            boardCodeInput.current.value = '';
+            await axiosPrivate.post(
+                `/join_board_requests/`,
+                JSON.stringify({ boardId: boardCode.trim() }),
+            );
+            boardCodeInput.current.value = "";
             setSuccess(true);
         } catch (err) {
-            const errMsg = err?.response?.data?.msg || 'Failed to send join request';
+            const errMsg =
+                err?.response?.data?.msg || "Failed to send join request";
             alert(errMsg);
             setSuccess(false);
         }
@@ -74,23 +78,24 @@ const JoinBoardRequestForm = ({ open, setOpen }) => {
     return (
         <dialog
             ref={dialog}
-            className='relative z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 pb-4 h-fit min-w-[350px] max-h-[500px] border-black border-[2px] bg-gray-200'
+            className="relative z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 pb-4 h-fit min-w-[350px] max-h-[500px] border-black border-[2px] bg-gray-200"
             onClick={handleCloseOnOutsideClick}
         >
-
-            <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
-                <p className="font-normal text-[1rem] text-gray-700">send join request</p>
+            <div className="flex w-full justify-between items-center border-b-[1px] border-black pb-3">
+                <p className="font-normal text-[1rem] text-gray-700">
+                    send join request
+                </p>
                 <button
                     className="text-gray-600 flex justify-center items-center"
                     onClick={handleClose}
                 >
-                    <FontAwesomeIcon icon={faXmark} size='xl' />
+                    <FontAwesomeIcon icon={faXmark} size="xl" />
                 </button>
             </div>
 
             <form onSubmit={handleSendJoinRequest}>
                 <div className="w-full relative flex flex-col items-start gap-4 py-2 mt-2">
-                    <div className='w-full flex gap-2'>
+                    <div className="w-full flex gap-2">
                         <input
                             type="text"
                             name="boardCode"
@@ -102,19 +107,15 @@ const JoinBoardRequestForm = ({ open, setOpen }) => {
                 </div>
             </form>
 
-
-            {
-                success && (
-                    <>
-                        <p className="text-[0.75rem] text-blue-600 text-center mt-2">
-                            request sent
-                        </p>
-                    </>
-                )
-            }
-
+            {success && (
+                <>
+                    <p className="text-[0.75rem] text-blue-600 text-center mt-2">
+                        request sent
+                    </p>
+                </>
+            )}
         </dialog>
-    )
-}
+    );
+};
 
 export default JoinBoardRequestForm;

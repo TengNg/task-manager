@@ -5,25 +5,23 @@ const ListActivityItem = ({ activity }) => {
     const { action, user, list, description, createdAt } = activity;
 
     return (
-        <div className='flex flex-col gap-2 text-[12px] sm:text-sm shadow-[0_3px_0_0] border-[2px] border-blue-700 shadow-blue-700 bg-blue-50 p-4'>
+        <div className="flex flex-col gap-2 text-[12px] sm:text-sm shadow-[0_3px_0_0] border-[2px] border-blue-700 shadow-blue-700 bg-blue-50 p-4">
             <div>
-                <span className='font-medium text-blue-800'>{action}:</span>
-                <span>{" "}</span>
-                <span className='font-medium'>
-                    {list?.title}
-                </span>
-                <span>{" "}</span>
+                <span className="font-medium text-blue-800">{action}:</span>
+                <span> </span>
+                <span className="font-medium">{list?.title}</span>
+                <span> </span>
             </div>
             <div>
                 <span>information:</span>
-                <span>{" "}</span>
-                <span className='font-medium'>{description || "<empty>"}</span>
+                <span> </span>
+                <span className="font-medium">{description || "<empty>"}</span>
             </div>
             <div>
                 <span>by</span>
-                <span>{" "}</span>
-                <div className='inline-block'>
-                    <div className='w-fit inline-block'>
+                <span> </span>
+                <div className="inline-block">
+                    <div className="w-fit inline-block">
                         <Avatar
                             size="xsm"
                             noShowRole={true}
@@ -31,16 +29,14 @@ const ListActivityItem = ({ activity }) => {
                             createdAt={user?.createdAt}
                         />
                     </div>
-                    <span>{" "}</span>
-                    <span className='font-medium'>
-                        {user?.username}
-                    </span>
+                    <span> </span>
+                    <span className="font-medium">{user?.username}</span>
                 </div>
-                <span>{" "}</span>
+                <span> </span>
                 on {dateFormatter(createdAt)}
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default ListActivityItem
+export default ListActivityItem;

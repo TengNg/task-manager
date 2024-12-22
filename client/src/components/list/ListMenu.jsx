@@ -1,8 +1,14 @@
 import { useRef, useEffect } from "react";
-import dateFormatter from "../../utils/dateFormatter"
+import dateFormatter from "../../utils/dateFormatter";
 import useBoardState from "../../hooks/useBoardState";
 
-export default function ListMenu({ list, setOpen, handleDelete, handleCopy, processingList }) {
+export default function ListMenu({
+    list,
+    setOpen,
+    handleDelete,
+    handleCopy,
+    processingList,
+}) {
     const containerRef = useRef();
 
     const {
@@ -49,48 +55,67 @@ export default function ListMenu({ list, setOpen, handleDelete, handleCopy, proc
         <div
             autoFocus
             ref={containerRef}
-            className={`absolute top-0 left-0 outline-none z-10 bg-gray-200 border-gray-600 border-[2px] shadow-gray-600 box--style w-full p-3 ${theme.itemTheme == 'rounded' ? 'rounded-md shadow-[0_4px_0_0]' : 'shadow-[4px_6px_0_0]'}`}
+            className={`absolute top-0 left-0 outline-none z-10 bg-gray-200 border-gray-600 border-[2px] shadow-gray-600 box--style w-full p-3 ${theme.itemTheme == "rounded" ? "rounded-md shadow-[0_4px_0_0]" : "shadow-[4px_6px_0_0]"}`}
         >
-
-            <div className='flex gap-1 absolute text-gray-100 top-1 right-1'>
+            <div className="flex gap-1 absolute text-gray-100 top-1 right-1">
                 <button
                     onClick={collapse}
-                    className='text-[9px] badge rounded-sm bg-indigo-700'
+                    className="text-[9px] badge rounded-sm bg-indigo-700"
                 >
                     -
                 </button>
                 <button
                     onClick={close}
-                    className='text-[9px] badge rounded-sm bg-rose-700'
+                    className="text-[9px] badge rounded-sm bg-rose-700"
                 >
                     X
                 </button>
             </div>
 
-            <div className='border-b-[1px] border-b-black pb-2'>
-                <div className='text-[12px] sm:text-sm'>title: <span className='font-medium'>{list.title}</span></div>
-                <div className='text-[12px] sm:text-sm mt-1'>created: <span className='font-medium'>{dateFormatter(list.createdAt, { weekdayFormat: true })}</span></div>
+            <div className="border-b-[1px] border-b-black pb-2">
+                <div className="text-[12px] sm:text-sm">
+                    title: <span className="font-medium">{list.title}</span>
+                </div>
+                <div className="text-[12px] sm:text-sm mt-1">
+                    created:{" "}
+                    <span className="font-medium">
+                        {dateFormatter(list.createdAt, { weekdayFormat: true })}
+                    </span>
+                </div>
             </div>
 
-            <div className='flex flex-col gap-3 mt-3'>
+            <div className="flex flex-col gap-3 mt-3">
                 <button
                     onClick={collapse}
-                    className='text-[12px] sm:text-[0.75rem] text-white bg-indigo-800 px-1 py-2 hover:bg-indigo-700'>collapse list</button>
+                    className="text-[12px] sm:text-[0.75rem] text-white bg-indigo-800 px-1 py-2 hover:bg-indigo-700"
+                >
+                    collapse list
+                </button>
                 <button
                     onClick={copy}
-                    className={`${processingList?.processing ? 'cursor-not-allowed' : ''} text-[12px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 hover:bg-gray-500`}>
-                    {processingList.processing ? 'copying...' : 'copy list'}
+                    className={`${processingList?.processing ? "cursor-not-allowed" : ""} text-[12px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 hover:bg-gray-500`}
+                >
+                    {processingList.processing ? "copying..." : "copy list"}
                 </button>
                 <button
                     onClick={handleOpenMoveListForm}
-                    className='text-[12px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 hover:bg-gray-500'>move list</button>
+                    className="text-[12px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 hover:bg-gray-500"
+                >
+                    move list
+                </button>
                 <button
                     onClick={del}
-                    className='text-[12px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 hover:bg-gray-500'>delete list</button>
+                    className="text-[12px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 hover:bg-gray-500"
+                >
+                    delete list
+                </button>
                 <button
                     onClick={close}
-                    className='text-[12px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 hover:bg-gray-500'>close</button>
+                    className="text-[12px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 hover:bg-gray-500"
+                >
+                    close
+                </button>
             </div>
         </div>
-    )
+    );
 }

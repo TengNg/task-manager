@@ -1,29 +1,28 @@
 const PAGES = Object.freeze({
     ABOUT: {
-        path: '/about',
-        title: 'about',
+        path: "/about",
+        title: "about",
     },
 
     BOARDS: {
-        path: '/boards',
-        title: 'boards',
+        path: "/boards",
+        title: "boards",
     },
 
     WRITEDOWNS: {
-        path: '/writedowns',
-        title: 'writedowns',
+        path: "/writedowns",
+        title: "writedowns",
     },
 
     ACTIVITIES: {
-        path: '/activities',
-        title: 'activities',
+        path: "/activities",
+        title: "activities",
     },
 
     PROFILE: {
-        path: '/profile',
-        title: 'profile',
+        path: "/profile",
+        title: "profile",
     },
 });
 
 export default PAGES;
-
