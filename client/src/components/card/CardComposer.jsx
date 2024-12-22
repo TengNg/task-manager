@@ -23,37 +23,37 @@ const CardComposer = ({ list, open, setOpen }) => {
 
     useEffect(() => {
         const closeOnEscape = (e) => {
-            if (e.key === 'Escape') {
+            if (e.key === "Escape") {
                 setOpen(false);
             }
         };
 
-        window.addEventListener('keydown', closeOnEscape);
+        window.addEventListener("keydown", closeOnEscape);
 
         () => {
-            window.removeEventListener('keydown', closeOnEscape);
+            window.removeEventListener("keydown", closeOnEscape);
         };
     }, []);
 
     useEffect(() => {
         if (textAreaRef.current && open === true) {
             textAreaRef.current.focus();
-            composerRef.current.scrollIntoView({ block: 'end' });
+            composerRef.current.scrollIntoView({ block: "end" });
         }
     }, [open]);
 
     const handleTextAreaChanged = () => {
         const textarea = textAreaRef.current;
         setText(textarea.value);
-        textarea.style.height = 'auto';
+        textarea.style.height = "auto";
 
         const littleOffset = 4; // prevent resizing when start typing
         textarea.style.height = `${textarea.scrollHeight + littleOffset}px`;
-        composerRef.current.scrollIntoView({ block: 'end' });
+        composerRef.current.scrollIntoView({ block: "end" });
     };
 
     const handleTextAreaOnEnter = (e) => {
-        if (!isAddingCard && e.key == 'Enter' && !e.shiftKey) {
+        if (!isAddingCard && e.key == "Enter" && !e.shiftKey) {
             e.preventDefault();
             handleAddCard();
         }
@@ -67,9 +67,13 @@ const CardComposer = ({ list, open, setOpen }) => {
             return;
         }
 
-        const currentList = [...boardState.lists].find(el => el._id === list._id);
+        const currentList = [...boardState.lists].find(
+            (el) => el._id === list._id,
+        );
 
-        const [rank, _] = lexorank.insert(currentList.cards[currentList.cards.length - 1]?.order);
+        const [rank, _] = lexorank.insert(
+            currentList.cards[currentList.cards.length - 1]?.order,
+        );
 
         const cardData = {
             trackedId: crypto.randomUUID(),
@@ -90,11 +94,15 @@ const CardComposer = ({ list, open, setOpen }) => {
             const tmpCard = { ...cardData, onLoading: true };
 
             // add temp card to list
-            setBoardState(prev => {
+            setBoardState((prev) => {
                 return {
                     ...prev,
-                    lists: prev.lists.map(el => el._id === list._id ? { ...el, cards: [...el.cards, tmpCard] } : el)
-                }
+                    lists: prev.lists.map((el) =>
+                        el._id === list._id
+                            ? { ...el, cards: [...el.cards, tmpCard] }
+                            : el,
+                    ),
+                };
             });
 
             // reset card composer block
@@ -102,32 +110,38 @@ const CardComposer = ({ list, open, setOpen }) => {
             setOpen(false);
 
             // send post request
-            const response = await axiosPrivate.post("/cards", JSON.stringify(cardData));
+            const response = await axiosPrivate.post(
+                "/cards",
+                JSON.stringify(cardData),
+            );
             const { newCard } = response.data;
 
-            setBoardState(prev => {
+            setBoardState((prev) => {
                 return {
                     ...prev,
-                    lists: prev.lists.map(el => {
+                    lists: prev.lists.map((el) => {
                         if (el._id === newCard.listId) {
                             const cards = el.cards;
-                            const newCards = [...cards].map(c => c.trackedId === newCard.trackedId ? newCard : c);
-                            return { ...el, cards: newCards }
+                            const newCards = [...cards].map((c) =>
+                                c.trackedId === newCard.trackedId ? newCard : c,
+                            );
+                            return { ...el, cards: newCards };
                         } else {
                             return el;
                         }
-                    })
-                }
+                    }),
+                };
             });
 
             setOpen(true);
             socket.emit("addCard", newCard);
         } catch (err) {
             console.log(err);
-            const errMsg = err?.response?.data?.errMsg || 'Failed to add new card';
+            const errMsg =
+                err?.response?.data?.errMsg || "Failed to add new card";
             alert(errMsg);
-            setBoardState(prev => {
-                return { ...prev, lists: tempLists }
+            setBoardState((prev) => {
+                return { ...prev, lists: tempLists };
             });
         }
 
@@ -137,28 +151,34 @@ const CardComposer = ({ list, open, setOpen }) => {
     return (
         <div
             ref={composerRef}
-            className={`flex flex-col py-2 gap-2 items-start justify-start`}>
+            className={`flex flex-col py-2 gap-2 items-start justify-start`}
+        >
             <textarea
                 disabled={isAddingCard}
                 ref={textAreaRef}
                 className="sm:text-sm h-fit bg-gray-50 border-[2px] py-4 px-4 text-gray-600 border-gray-500 shadow-[0_3px_0_0] shadow-gray-500 leading-normal overflow-y-hidden resize-none w-full font-medium placeholder-gray-400 focus:outline-none focus:bg-gray-50"
-                placeholder='card title goes here...'
+                placeholder="card title goes here..."
                 onChange={handleTextAreaChanged}
                 onKeyDown={handleTextAreaOnEnter}
                 value={text}
                 maxLength={200}
-            >
-            </textarea>
+            ></textarea>
             <div className="flex gap-1 w-full">
                 <button
                     onClick={handleAddCard}
-                    className="button--style--dark grid place-items-center w-1/2 font-medium text-[0.8rem]">+ add</button>
+                    className="button--style--dark grid place-items-center w-1/2 font-medium text-[0.8rem]"
+                >
+                    + add
+                </button>
                 <button
                     onClick={() => setOpen(false)}
-                    className="button--style grid place-items-center text-[0.8rem] w-1/2 font-medium text-gray-600 border-gray-600 hover:underline">cancel</button>
+                    className="button--style grid place-items-center text-[0.8rem] w-1/2 font-medium text-gray-600 border-gray-600 hover:underline"
+                >
+                    cancel
+                </button>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default CardComposer
+export default CardComposer;

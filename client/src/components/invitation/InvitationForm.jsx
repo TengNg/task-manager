@@ -3,18 +3,14 @@ import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import useAuth from "../../hooks/useAuth";
 import Avatar from "../avatar/Avatar";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Loading from "../ui/Loading";
 import Member from "./Member";
 
 const InvitationForm = ({ open, setOpen }) => {
     const { auth } = useAuth();
-    const {
-        boardState,
-        removeMemberFromBoard,
-        socket,
-    } = useBoardState();
+    const { boardState, removeMemberFromBoard, socket } = useBoardState();
 
     const axiosPrivate = useAxiosPrivate();
 
@@ -32,7 +28,7 @@ const InvitationForm = ({ open, setOpen }) => {
             usernameInputRef.current.focus();
 
             const handleKeyDown = (e) => {
-                if (e.ctrlKey && e.key === '/') {
+                if (e.ctrlKey && e.key === "/") {
                     e.preventDefault();
                     usernameInputRef.current.focus();
                 }
@@ -42,12 +38,12 @@ const InvitationForm = ({ open, setOpen }) => {
                 setOpen(false);
             };
 
-            dialog.current.addEventListener('close', handleOnClose);
-            dialog.current.addEventListener('keydown', handleKeyDown);
+            dialog.current.addEventListener("close", handleOnClose);
+            dialog.current.addEventListener("keydown", handleKeyDown);
 
             () => {
-                dialog.current.removeEventListener('close', handleOnClose);
-                dialog.current.removeEventListener('keydown', handleKeyDown);
+                dialog.current.removeEventListener("close", handleOnClose);
+                dialog.current.removeEventListener("keydown", handleKeyDown);
             };
         } else {
             dialog.current.close();
@@ -70,13 +66,13 @@ const InvitationForm = ({ open, setOpen }) => {
         return () => {
             if (id1) clearTimeout(id1);
             if (id2) clearTimeout(id2);
-        }
+        };
     }, [errMsg, successMsg]);
 
     const handleCloseOnOutsideClick = (e) => {
         if (e.target === dialog.current) {
             dialog.current.close();
-        };
+        }
     };
 
     const handleClose = () => {
@@ -88,8 +84,11 @@ const InvitationForm = ({ open, setOpen }) => {
             return;
         }
 
-        if (usernameInputRef.current.value.trim() === auth.username ||
-            usernameInputRef.current.value.trim() === boardState.board.createdBy.username) {
+        if (
+            usernameInputRef.current.value.trim() === auth.username ||
+            usernameInputRef.current.value.trim() ===
+                boardState.board.createdBy.username
+        ) {
             setErrMsg("Can't sent invitation");
             return;
         }
@@ -97,26 +96,31 @@ const InvitationForm = ({ open, setOpen }) => {
         try {
             setLoading(true);
             const receiverName = usernameInputRef.current.value.trim();
-            await axiosPrivate.post(`/invitations`, JSON.stringify({ boardId: boardState.board._id, receiverName }));
+            await axiosPrivate.post(
+                `/invitations`,
+                JSON.stringify({ boardId: boardState.board._id, receiverName }),
+            );
             setUsername("");
             setLoading(false);
             setSuccessMsg(`invitation sent to ${receiverName}`);
         } catch (err) {
             setLoading(false);
-            setErrMsg(err?.response?.data?.msg || 'Failed to send invitation');
+            setErrMsg(err?.response?.data?.msg || "Failed to send invitation");
         }
     };
 
     const handleRemoveMemberFromBoard = async (memberName) => {
         try {
             setLoading(true);
-            await axiosPrivate.put(`/boards/${boardState.board._id}/members/${memberName}`);
+            await axiosPrivate.put(
+                `/boards/${boardState.board._id}/members/${memberName}`,
+            );
             removeMemberFromBoard(memberName);
-            socket.emit('kickMember', memberName);
+            socket.emit("kickMember", memberName);
             setLoading(false);
         } catch (err) {
             setLoading(false);
-            setErrMsg(err?.response?.data?.error || 'Failed to remove member');
+            setErrMsg(err?.response?.data?.error || "Failed to remove member");
         }
     };
 
@@ -125,7 +129,7 @@ const InvitationForm = ({ open, setOpen }) => {
             return;
         }
 
-        if (e.key == 'Enter') {
+        if (e.key == "Enter") {
             handleSendInvitation();
         }
     };
@@ -134,23 +138,25 @@ const InvitationForm = ({ open, setOpen }) => {
         <>
             <dialog
                 ref={dialog}
-                className='z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 h-fit min-w-[350px] border-black border-[2px] bg-gray-200 overflow-hidden'
+                className="z-40 backdrop:bg-black/15 box--style gap-4 items-start p-3 h-fit min-w-[350px] border-black border-[2px] bg-gray-200 overflow-hidden"
                 onClick={handleCloseOnOutsideClick}
             >
                 <Loading
                     loading={loading}
-                    position={'absolute'}
-                    fontSize={'0.75rem'}
-                    displayText={'loading...'}
+                    position={"absolute"}
+                    fontSize={"0.75rem"}
+                    displayText={"loading..."}
                 />
 
-                <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
-                    <p className="font-normal text-[1rem] text-gray-700">Invite people this board</p>
+                <div className="flex w-full justify-between items-center border-b-[1px] border-black pb-3">
+                    <p className="font-normal text-[1rem] text-gray-700">
+                        Invite people this board
+                    </p>
                     <button
                         className="text-gray-600 flex justify-center items-center"
                         onClick={handleClose}
                     >
-                        <FontAwesomeIcon icon={faXmark} size='xl' />
+                        <FontAwesomeIcon icon={faXmark} size="xl" />
                     </button>
                 </div>
 
@@ -170,8 +176,16 @@ const InvitationForm = ({ open, setOpen }) => {
                         + invite
                     </button>
 
-                    {successMsg && <p className="absolute -top-2 left-0 text-center h-3 text-blue-700 text-[0.65rem] font-semibold">{successMsg}</p>}
-                    {errMsg && <p className="absolute -top-2 left-1 text-center h-3 text-red-700 text-[0.65rem] font-semibold">{errMsg}</p>}
+                    {successMsg && (
+                        <p className="absolute -top-2 left-0 text-center h-3 text-blue-700 text-[0.65rem] font-semibold">
+                            {successMsg}
+                        </p>
+                    )}
+                    {errMsg && (
+                        <p className="absolute -top-2 left-1 text-center h-3 text-red-700 text-[0.65rem] font-semibold">
+                            {errMsg}
+                        </p>
+                    )}
                 </div>
 
                 <div className="flex flex-col gap-3 w-full max-w-[400px] max-h-[250px] overflow-auto border-[1px] border-t-gray-600 p-0 py-3">
@@ -183,24 +197,35 @@ const InvitationForm = ({ open, setOpen }) => {
                         />
 
                         <div className="flex flex-col justify-center">
-                            <p className="text-[0.75rem] text-gray-800 font-medium">{boardState.board.createdBy.username} {auth?.user?.username === boardState.board.createdBy.username && '(you)'}</p>
-                            <p className="text-[0.75rem] text-gray-800">owner</p>
+                            <p className="text-[0.75rem] text-gray-800 font-medium">
+                                {boardState.board.createdBy.username}{" "}
+                                {auth?.user?.username ===
+                                    boardState.board.createdBy.username &&
+                                    "(you)"}
+                            </p>
+                            <p className="text-[0.75rem] text-gray-800">
+                                owner
+                            </p>
                         </div>
                     </div>
 
                     {boardState.board.members.map((user, index) => {
-                        return <Member
-                            key={index}
-                            handleRemoveMemberFromBoard={handleRemoveMemberFromBoard}
-                            boardState={boardState}
-                            user={user}
-                            auth={auth}
-                        />
+                        return (
+                            <Member
+                                key={index}
+                                handleRemoveMemberFromBoard={
+                                    handleRemoveMemberFromBoard
+                                }
+                                boardState={boardState}
+                                user={user}
+                                auth={auth}
+                            />
+                        );
                     })}
                 </div>
             </dialog>
         </>
-    )
-}
+    );
+};
 
-export default InvitationForm
+export default InvitationForm;

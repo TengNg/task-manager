@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react";
 
 const TextArea = ({ autoFocus = false, initialValue, minHeight, ...props }) => {
     const textAreaRef = useRef(null);
@@ -23,13 +23,15 @@ const TextArea = ({ autoFocus = false, initialValue, minHeight, ...props }) => {
         textarea.style.height = `${textarea.scrollHeight + littleOffset}px`;
     };
 
-    return <textarea
-        ref={textAreaRef}
-        onChange={handleTextAreaChanged}
-        value={text}
-        autoFocus={autoFocus}
-        {...props}
-    />
-}
+    return (
+        <textarea
+            ref={textAreaRef}
+            onChange={handleTextAreaChanged}
+            value={text}
+            autoFocus={autoFocus}
+            {...props}
+        />
+    );
+};
 
-export default TextArea
+export default TextArea;

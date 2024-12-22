@@ -1,22 +1,19 @@
-import { useState, useEffect, useRef } from 'react'
-import Loading from '../ui/Loading';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import VISIBILITY_MAP from '../../data/visibility';
-import useBoardState from '../../hooks/useBoardState';
-import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import { useState, useEffect, useRef } from "react";
+import Loading from "../ui/Loading";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import VISIBILITY_MAP from "../../data/visibility";
+import useBoardState from "../../hooks/useBoardState";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const VisibilityConfig = ({ open, setOpen }) => {
-    const {
-        boardState,
-        setBoardVisibility,
-    } = useBoardState();
+    const { boardState, setBoardVisibility } = useBoardState();
 
     const axiosPrivate = useAxiosPrivate();
 
     const [updating, setUpdating] = useState(false);
 
-    const visibility = boardState?.board?.visibility || 'private'
+    const visibility = boardState?.board?.visibility || "private";
 
     const dialog = useRef();
     const visiblityOptions = Object.keys(VISIBILITY_MAP);
@@ -29,10 +26,10 @@ const VisibilityConfig = ({ open, setOpen }) => {
                 setOpen(false);
             };
 
-            dialog.current.addEventListener('close', handleOnClose);
+            dialog.current.addEventListener("close", handleOnClose);
 
             () => {
-                dialog.current.removeEventListener('close', handleOnClose);
+                dialog.current.removeEventListener("close", handleOnClose);
             };
         } else {
             dialog.current.close();
@@ -44,7 +41,10 @@ const VisibilityConfig = ({ open, setOpen }) => {
 
         try {
             setUpdating(true);
-            const response = await axiosPrivate.put(`/boards/${boardState.board._id}/new-visibility`, JSON.stringify({ visibility }));
+            const response = await axiosPrivate.put(
+                `/boards/${boardState.board._id}/new-visibility`,
+                JSON.stringify({ visibility }),
+            );
             const { newBoard } = response.data;
             setBoardVisibility(newBoard?.visibility);
             setUpdating(false);
@@ -58,7 +58,7 @@ const VisibilityConfig = ({ open, setOpen }) => {
     const handleCloseOnOutsideClick = (e) => {
         if (e.target === dialog.current) {
             dialog.current.close();
-        };
+        }
     };
 
     const handleClose = () => {
@@ -68,51 +68,46 @@ const VisibilityConfig = ({ open, setOpen }) => {
     return (
         <dialog
             ref={dialog}
-            className='z-40 relative backdrop:bg-black/15 box--style gap-4 items-start p-3 pb-4 h-fit min-w-[300px] max-h-[500px] border-black border-[2px] bg-gray-200'
+            className="z-40 relative backdrop:bg-black/15 box--style gap-4 items-start p-3 pb-4 h-fit min-w-[300px] max-h-[500px] border-black border-[2px] bg-gray-200"
             onClick={handleCloseOnOutsideClick}
         >
             <Loading
                 loading={updating}
-                position={'absolute'}
-                displayText={'updating visibility...'}
-                fontSize={'0.9rem'}
+                position={"absolute"}
+                displayText={"updating visibility..."}
+                fontSize={"0.9rem"}
             />
 
-            <div className='flex w-full justify-between items-center border-b-[1px] border-black pb-3'>
-                <p className="font-normal text-[1rem] text-gray-700">board visibility</p>
+            <div className="flex w-full justify-between items-center border-b-[1px] border-black pb-3">
+                <p className="font-normal text-[1rem] text-gray-700">
+                    board visibility
+                </p>
                 <button
                     className="text-gray-600 flex justify-center items-center"
                     onClick={handleClose}
                 >
-                    <FontAwesomeIcon icon={faXmark} size='xl' />
+                    <FontAwesomeIcon icon={faXmark} size="xl" />
                 </button>
             </div>
 
             <div className="w-full relative flex flex-col items-start gap-4 py-2 mt-2">
-                {
-                    visiblityOptions.map((option, index) => {
-                        return (
-                            <button
-                                key={index}
-                                className={`button--style shadow-[0_2px_0_0] shadow-gray-700 text-sm flex justify-between w-full ${visibility == option ? 'bg-gray-500 text-gray-50' : ''}`}
-                                onClick={() => {
-                                    handleSetBoardVisibility(option);
-                                }}
-                            >
-                                <div>
-                                    {option}
-                                </div>
-                                <div>
-                                    {VISIBILITY_MAP[option]}
-                                </div>
-                            </button>
-                        )
-                    })
-                }
+                {visiblityOptions.map((option, index) => {
+                    return (
+                        <button
+                            key={index}
+                            className={`button--style shadow-[0_2px_0_0] shadow-gray-700 text-sm flex justify-between w-full ${visibility == option ? "bg-gray-500 text-gray-50" : ""}`}
+                            onClick={() => {
+                                handleSetBoardVisibility(option);
+                            }}
+                        >
+                            <div>{option}</div>
+                            <div>{VISIBILITY_MAP[option]}</div>
+                        </button>
+                    );
+                })}
             </div>
-
         </dialog>
-    )
-}
+    );
+};
 
 export default VisibilityConfig;

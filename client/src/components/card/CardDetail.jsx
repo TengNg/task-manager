@@ -1,16 +1,25 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import useBoardState from "../../hooks/useBoardState";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark, faDroplet, faCopy } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark, faDroplet, faCopy } from "@fortawesome/free-solid-svg-icons";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HighlightPicker from "./HighlightPicker";
 import CardDetailInfo from "./CardDetailInfo";
 import Loading from "../ui/Loading";
 
-import { useSearchParams } from "react-router-dom"
+import { useSearchParams } from "react-router-dom";
 
-const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCard, handleMoveCardToList, handleMoveCardByIndex, abortController }) => {
+const CardDetail = ({
+    open,
+    setOpen,
+    processing,
+    handleDeleteCard,
+    handleCopyCard,
+    handleMoveCardToList,
+    handleMoveCardByIndex,
+    abortController,
+}) => {
     const {
         openedCard: card,
         boardState,
@@ -25,7 +34,7 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
     } = useBoardState();
 
     const [openHighlightPicker, setOpenHighlightPicker] = useState(false);
-    const [title, setTitle] = useState('');
+    const [title, setTitle] = useState("");
     const [description, setDescription] = useState(card?.description);
     const [cardCount, setCardCount] = useState(0);
     const [position, setPosition] = useState(0);
@@ -58,16 +67,20 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
             setTitle(card?.title);
             setDescription(card?.description);
 
-            const cards = boardState?.lists?.find(list => list._id === card?.listId)?.cards;
+            const cards = boardState?.lists?.find(
+                (list) => list._id === card?.listId,
+            )?.cards;
             const cardCount = cards?.length || 0;
-            const position = cards?.findIndex(el => el._id === card._id) || 0;
+            const position = cards?.findIndex((el) => el._id === card._id) || 0;
             setCardCount(cardCount);
             setPosition(position);
             setCardDescription(card?.description);
 
             const handleKeyDown = (e) => {
-                if (e.ctrlKey && e.key === '/') {
-                    let descTextArea = dialog.current.querySelector('#card__detail__description__textarea');
+                if (e.ctrlKey && e.key === "/") {
+                    let descTextArea = dialog.current.querySelector(
+                        "#card__detail__description__textarea",
+                    );
                     if (descTextArea) {
                         descTextArea.focus();
                     }
@@ -82,36 +95,44 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                     abortController.abort();
                 }
 
-                searchParams.delete('card');
+                searchParams.delete("card");
                 setSearchParams(searchParams, { replace: true });
 
-                document.title = boardState?.board?.title || 'tamago-start';
+                document.title = boardState?.board?.title || "tamago-start";
             };
 
-            dialog.current.addEventListener('close', handleOnClose);
-            dialog.current.addEventListener('keydown', handleKeyDown);
+            dialog.current.addEventListener("close", handleOnClose);
+            dialog.current.addEventListener("keydown", handleKeyDown);
 
             () => {
-                dialog.current.removeEventListener('close', handleOnClose);
-                dialog.current.removeEventListener('keydown', handleKeyDown);
+                dialog.current.removeEventListener("close", handleOnClose);
+                dialog.current.removeEventListener("keydown", handleKeyDown);
             };
         }
     }, [open, card]);
 
     const listSelectOptions = useMemo(() => {
-        return boardState?.lists?.map(list => { return { value: list._id, title: list.title } }) || []
+        return (
+            boardState?.lists?.map((list) => {
+                return { value: list._id, title: list.title };
+            }) || []
+        );
     }, [boardState?.lists]);
 
     const handleClick = (e) => {
-        const hlPicker = dialog.current.querySelector('#card__detail__highlight__picker');
+        const hlPicker = dialog.current.querySelector(
+            "#card__detail__highlight__picker",
+        );
         if (hlPicker && e.target != hlPicker) {
             setOpenHighlightPicker(false);
-        };
+        }
 
-        const deleteConfirm = dialog.current.querySelector('#card__detail__delete__confirm');
+        const deleteConfirm = dialog.current.querySelector(
+            "#card__detail__delete__confirm",
+        );
         if (deleteConfirm && e.target != deleteConfirm) {
             setOpenCardDeleteConfirm(false);
-        };
+        }
 
         if (e.target === dialog.current) {
             if (card?.description !== description) {
@@ -133,15 +154,22 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
 
     const handleCardOwnerChange = async (memberName) => {
         try {
-            const response = await axiosPrivate.put(`/cards/${card._id}/member/update`, JSON.stringify({ ownerName: memberName }));
+            const response = await axiosPrivate.put(
+                `/cards/${card._id}/member/update`,
+                JSON.stringify({ ownerName: memberName }),
+            );
             const cardOwner = response?.data?.newCard?.owner || "";
             setCardOwner(card._id, card.listId, cardOwner);
 
-            setOpenedCard(prev => {
+            setOpenedCard((prev) => {
                 return { ...prev, owner: cardOwner };
             });
 
-            socket.emit("updateCardOwner", { cardId: card._id, listId: card.listId, username: cardOwner });
+            socket.emit("updateCardOwner", {
+                cardId: card._id,
+                listId: card.listId,
+                username: cardOwner,
+            });
         } catch (err) {
             console.log(err);
         }
@@ -149,15 +177,23 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
 
     const handleCardPriorityLevelChange = async (value) => {
         try {
-            const response = await axiosPrivate.put(`/cards/${card._id}/priority/update`, JSON.stringify({ priorityLevel: value }));
-            const priorityLevel = response?.data?.newCard?.priorityLevel || "none";
+            const response = await axiosPrivate.put(
+                `/cards/${card._id}/priority/update`,
+                JSON.stringify({ priorityLevel: value }),
+            );
+            const priorityLevel =
+                response?.data?.newCard?.priorityLevel || "none";
             setCardPriorityLevel(card._id, card.listId, priorityLevel);
 
-            setOpenedCard(prev => {
+            setOpenedCard((prev) => {
                 return { ...prev, priorityLevel };
             });
 
-            socket.emit("updateCardPriorityLevel", { cardId: card._id, listId: card.listId, priorityLevel });
+            socket.emit("updateCardPriorityLevel", {
+                cardId: card._id,
+                listId: card.listId,
+                priorityLevel,
+            });
         } catch (err) {
             console.log(err);
         }
@@ -167,7 +203,9 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         const newListId = e.target.value;
         handleMoveCardToList(card, newListId);
 
-        const cards = boardState?.lists?.find(list => list._id === newListId)?.cards;
+        const cards = boardState?.lists?.find(
+            (list) => list._id === newListId,
+        )?.cards;
         setCardCount(cards?.length + 1 || 0);
         setPosition(cards?.length);
     };
@@ -179,14 +217,20 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
 
         try {
             setIsVerifying(true);
-            const response = await axiosPrivate.put(`/cards/${card._id}/toggle-verified`);
+            const response = await axiosPrivate.put(
+                `/cards/${card._id}/toggle-verified`,
+            );
             const { verified } = response.data;
             card.verified = verified;
             setCardVerifiedStatus(card._id, card.listId, verified);
-            socket.emit("updateCardVerifiedStatus", { id: card._id, listId: card.listId, verified });
+            socket.emit("updateCardVerifiedStatus", {
+                id: card._id,
+                listId: card.listId,
+                verified,
+            });
         } catch (err) {
             console.log(err);
-            alert('Failed to toggle verified');
+            alert("Failed to toggle verified");
         } finally {
             setIsVerifying(false);
         }
@@ -194,34 +238,47 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
 
     const handleChangeDueDate = async (value) => {
         try {
-            const response = await axiosPrivate.put(`/cards/${card._id}/due-date/update`, JSON.stringify({ dueDate: value }));
+            const response = await axiosPrivate.put(
+                `/cards/${card._id}/due-date/update`,
+                JSON.stringify({ dueDate: value }),
+            );
             const { dueDate } = response.data;
 
-            setOpenedCard(prev => {
+            setOpenedCard((prev) => {
                 return { ...prev, dueDate };
             });
 
             card.dueDate = dueDate;
 
             setCardDueDate(card._id, card.listId, dueDate);
-            socket.emit("updateCardDueDate", { id: card._id, listId: card.listId, dueDate });
+            socket.emit("updateCardDueDate", {
+                id: card._id,
+                listId: card.listId,
+                dueDate,
+            });
         } catch (err) {
             console.log(err);
-            alert('Failed to toggle verified');
+            alert("Failed to toggle verified");
         } finally {
             setIsVerifying(false);
         }
-
     };
 
     const confirmDescription = async (value) => {
         try {
-            await axiosPrivate.put(`/cards/${card._id}/new-description`, JSON.stringify({ description: value }));
+            await axiosPrivate.put(
+                `/cards/${card._id}/new-description`,
+                JSON.stringify({ description: value }),
+            );
             setCardDescription(card._id, card.listId, value);
-            socket.emit("updateCardDescription", { id: card._id, listId: card.listId, description: value });
+            socket.emit("updateCardDescription", {
+                id: card._id,
+                listId: card.listId,
+                description: value,
+            });
         } catch (err) {
             console.log(err);
-            alert('Failed to save description');
+            alert("Failed to save description");
         }
     };
 
@@ -235,10 +292,17 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
         }
 
         try {
-            await axiosPrivate.put(`/cards/${card._id}/new-title`, JSON.stringify({ title: e.target.value.trim() }));
+            await axiosPrivate.put(
+                `/cards/${card._id}/new-title`,
+                JSON.stringify({ title: e.target.value.trim() }),
+            );
             setCardTitle(card._id, card.listId, e.target.value.trim());
 
-            socket.emit("updateCardTitle", { id: card._id, listId: card.listId, title: e.target.value.trim() });
+            socket.emit("updateCardTitle", {
+                id: card._id,
+                listId: card.listId,
+                title: e.target.value.trim(),
+            });
         } catch (err) {
             console.log(err);
         }
@@ -247,11 +311,11 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
     const deleteCard = () => {
         handleDeleteCard(card);
         dialog.current.close();
-    }
+    };
 
     const copyCard = () => {
         handleCopyCard(card);
-    }
+    };
 
     const moveByIndex = (e) => {
         const insertedIndex = e.target.value;
@@ -262,62 +326,60 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
 
         handleMoveCardByIndex(card, insertedIndex);
         setPosition(insertedIndex);
-    }
+    };
 
     if (card === undefined) {
-        return <dialog
-            ref={dialog}
-            className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style text-gray-600 p-3 gap-3 pb-4 w-[350px] h-[350px] border-gray-600 border-[2px] bg-gray-200'
-            onClick={handleClick}
-        >
-            <div className='w-100 h-[300px] text-center flex flex-col items-center justify-center'>
-                <span>
-                    getting card data
-                </span>
-                <div className="loader mx-auto mt-8"></div>
-            </div>
-        </dialog>
+        return (
+            <dialog
+                ref={dialog}
+                className="z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style text-gray-600 p-3 gap-3 pb-4 w-[350px] h-[350px] border-gray-600 border-[2px] bg-gray-200"
+                onClick={handleClick}
+            >
+                <div className="w-100 h-[300px] text-center flex flex-col items-center justify-center">
+                    <span>getting card data</span>
+                    <div className="loader mx-auto mt-8"></div>
+                </div>
+            </dialog>
+        );
     }
 
     if (card?.failedToLoad && card?.errMsg) {
-        return <dialog
-            ref={dialog}
-            className='z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style text-gray-600 p-3 gap-3 pb-4 w-[350px] h-[350px] border-gray-600 border-[2px] bg-gray-200'
-            onClick={handleClick}
-        >
-            <div className='w-100 h-[300px] text-center grid items-center'>
-                <span>
-                    {card?.errMsg}
-                </span>
-            </div>
-        </dialog>
+        return (
+            <dialog
+                ref={dialog}
+                className="z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style text-gray-600 p-3 gap-3 pb-4 w-[350px] h-[350px] border-gray-600 border-[2px] bg-gray-200"
+                onClick={handleClick}
+            >
+                <div className="w-100 h-[300px] text-center grid items-center">
+                    <span>{card?.errMsg}</span>
+                </div>
+            </dialog>
+        );
     }
 
     return (
         <>
             <dialog
                 ref={dialog}
-                className='full-in-small-screen z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style p-3 gap-3 pb-4 min-w-[350px] w-[90%] xl:w-[800px] md:w-[80%] h-fit max-h-[90%] border-black border-[2px]'
+                className="full-in-small-screen z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style p-3 gap-3 pb-4 min-w-[350px] w-[90%] xl:w-[800px] md:w-[80%] h-fit max-h-[90%] border-black border-[2px]"
                 style={{ background: "rgb(235, 235, 235)" }}
                 onClick={handleClick}
                 onCancel={handleCancel}
             >
-
                 <Loading
-                    position={'absolute'}
-                    fontSize={'0.85rem'}
+                    position={"absolute"}
+                    fontSize={"0.85rem"}
                     loading={processing.processing}
-                    displayText={'processing...'}
+                    displayText={"processing..."}
                 />
 
-                <div className='w-full h-full flex flex-col gap-3 min-h-[600px] md:min-h-[700px]'>
-                    {
-                        card.highlight != null &&
+                <div className="w-full h-full flex flex-col gap-3 min-h-[600px] md:min-h-[700px]">
+                    {card.highlight != null && (
                         <div
                             className="w-full min-h-[10px] h-[10px] sm:h-[15px]"
                             style={{ backgroundColor: `${card.highlight}` }}
                         ></div>
-                    }
+                    )}
 
                     <div className="flex justify-start items start">
                         <div className="flex flex-col flex-1">
@@ -326,17 +388,17 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                                 className="card__title__textarea font-medium p-1 w-[98%] text-gray-600 bg-transparent leading-normal resize-none focus:bg-gray-100"
                                 value={title}
                                 onKeyDown={(e) => {
-                                    if (e.key == 'Enter') {
+                                    if (e.key == "Enter") {
                                         confirmTitle(e);
                                         e.target.blur();
                                     }
                                 }}
                                 onFocus={(e) => {
-                                    e.target.style.height = 'auto';
+                                    e.target.style.height = "auto";
                                     e.target.style.height = `${e.target.scrollHeight}px`;
                                 }}
                                 onChange={(e) => {
-                                    setTitle(e.target.value)
+                                    setTitle(e.target.value);
                                     //e.target.style.height = 'auto';
                                     //e.target.style.height = `${e.target.scrollHeight}px`;
                                 }}
@@ -346,53 +408,58 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
 
                         <button
                             onClick={handleCancel}
-                            className="text-[0.75rem] py-1 text-gray-500 flex">
-                            <FontAwesomeIcon icon={faXmark} size='xl' />
+                            className="text-[0.75rem] py-1 text-gray-500 flex"
+                        >
+                            <FontAwesomeIcon icon={faXmark} size="xl" />
                         </button>
                     </div>
 
-                    <div className='flex gap-2 md:w-[60%] w-full justify-between items-center'>
-                        <div className='flex flex-1 gap-2'>
+                    <div className="flex gap-2 md:w-[60%] w-full justify-between items-center">
+                        <div className="flex flex-1 gap-2">
                             <select
-                                className={`shadow-[0_2px_0_0] shadow-gray-600 bg-gray-100 appearance-none truncate border-[2px] border-gray-600 text-[0.75rem] font-medium w-3/4 py-2 px-4 text-gray-600 ${listSelectOptions.length === 0 ? 'bg-gray-400' : ''}`}
+                                className={`shadow-[0_2px_0_0] shadow-gray-600 bg-gray-100 appearance-none truncate border-[2px] border-gray-600 text-[0.75rem] font-medium w-3/4 py-2 px-4 text-gray-600 ${listSelectOptions.length === 0 ? "bg-gray-400" : ""}`}
                                 value={card.listId}
                                 onChange={(e) => {
                                     handleMoveCardOnListOptionChanged(e);
                                 }}
                             >
-                                {
-                                    listSelectOptions.map((option, index) => {
-                                        const { value, title } = option;
-                                        return <option key={index} value={value}>{title}</option>
-                                    })
-                                }
+                                {listSelectOptions.map((option, index) => {
+                                    const { value, title } = option;
+                                    return (
+                                        <option key={index} value={value}>
+                                            {title}
+                                        </option>
+                                    );
+                                })}
                             </select>
 
                             <select
-                                className={`shadow-[0_2px_0_0] shadow-gray-600 bg-gray-100 appearance-none truncate border-[2px] border-gray-600 text-[0.75rem] font-medium w-fit py-2 px-4 text-gray-600 ${listSelectOptions.length === 0 ? 'bg-gray-400' : ''}`}
+                                className={`shadow-[0_2px_0_0] shadow-gray-600 bg-gray-100 appearance-none truncate border-[2px] border-gray-600 text-[0.75rem] font-medium w-fit py-2 px-4 text-gray-600 ${listSelectOptions.length === 0 ? "bg-gray-400" : ""}`}
                                 value={position}
                                 onChange={(e) => {
                                     moveByIndex(e);
                                 }}
                             >
-                                {
-                                    Array.from(Array(cardCount).keys()).map(count => {
-                                        return <option key={count} value={count}>{count + 1}</option>
-                                    })
-                                }
+                                {Array.from(Array(cardCount).keys()).map(
+                                    (count) => {
+                                        return (
+                                            <option key={count} value={count}>
+                                                {count + 1}
+                                            </option>
+                                        );
+                                    },
+                                )}
                             </select>
                         </div>
                     </div>
 
                     <div className="w-full flex flex-wrap border-b-[1px] border-t-[1px] py-4 gap-3 border-black z-20">
-
-                        <div className='relative w-full'>
-
+                        <div className="relative w-full">
                             <Loading
-                                position={'absolute'}
-                                fontSize={'0.85rem'}
+                                position={"absolute"}
+                                fontSize={"0.85rem"}
                                 loading={!card && !cardDescriptionInput.current}
-                                displayText={'loading...'}
+                                displayText={"loading..."}
                             />
 
                             <textarea
@@ -407,87 +474,98 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                         </div>
 
                         <div className="relative flex flex-row justify-end w-full gap-3">
-
                             {/* change highlight button */}
-                            <div className='relative h-[40px]'>
+                            <div className="relative h-[40px]">
                                 <button
                                     title="change highlight color"
-                                    onClick={() => setOpenHighlightPicker(prev => !prev)}
-                                    className={`card--details--button border-gray-600 text-gray-600 ${openHighlightPicker && 'bg-slate-500 shadow-black text-white'}`}
+                                    onClick={() =>
+                                        setOpenHighlightPicker((prev) => !prev)
+                                    }
+                                    className={`card--details--button border-gray-600 text-gray-600 ${openHighlightPicker && "bg-slate-500 shadow-black text-white"}`}
                                 >
                                     <FontAwesomeIcon icon={faDroplet} />
-                                    <span>{" "}</span>
+                                    <span> </span>
                                     <span className="hidden sm:inline-block">
                                         highlight
                                     </span>
                                 </button>
 
-                                {
-                                    openHighlightPicker &&
+                                {openHighlightPicker && (
                                     <HighlightPicker
                                         setOpen={setOpenHighlightPicker}
                                         card={card}
                                     />
-                                }
+                                )}
                             </div>
 
-                            <div className='h-[40px]'>
+                            <div className="h-[40px]">
                                 <button
                                     title="create a copy of this card"
                                     onClick={copyCard}
                                     className={`card--details--button border-gray-600 text-gray-600`}
                                 >
                                     <FontAwesomeIcon icon={faCopy} />
-                                    <span>{" "}</span>
+                                    <span> </span>
                                     <span className="hidden sm:inline-block">
                                         copy
                                     </span>
                                 </button>
                             </div>
 
-                            <div className='h-[40px]'>
+                            <div className="h-[40px]">
                                 <button
-                                    className={`card--details--button border-green-700 min-w-[80px] text-green-700 ${card.verified ? 'bg-teal-100' : ''}`}
+                                    className={`card--details--button border-green-700 min-w-[80px] text-green-700 ${card.verified ? "bg-teal-100" : ""}`}
                                     onClick={handleToggleVerified}
-                                    title={card.verified ? 'click to unverify' : 'click to verify'}
-                                >
-                                    {
-                                        isVerifying ? '...' : card.verified ? '✓ verified' : '✓ verify'
+                                    title={
+                                        card.verified
+                                            ? "click to unverify"
+                                            : "click to verify"
                                     }
+                                >
+                                    {isVerifying
+                                        ? "..."
+                                        : card.verified
+                                          ? "✓ verified"
+                                          : "✓ verify"}
                                 </button>
                             </div>
 
-                            <div className='relative h-[40px]'>
+                            <div className="relative h-[40px]">
                                 <button
                                     title="delete this card"
-                                    onClick={() => setOpenCardDeleteConfirm(prev => !prev)}
-                                    className={`card--details--button border-rose-700 text-rose-700 ${openCardDeleteConfirm && 'bg-rose-100'}`}
+                                    onClick={() =>
+                                        setOpenCardDeleteConfirm(
+                                            (prev) => !prev,
+                                        )
+                                    }
+                                    className={`card--details--button border-rose-700 text-rose-700 ${openCardDeleteConfirm && "bg-rose-100"}`}
                                 >
                                     - delete
                                 </button>
 
-                                {
-                                    openCardDeleteConfirm &&
+                                {openCardDeleteConfirm && (
                                     <div
                                         id="card__detail__delete__confirm"
-                                        className='bg-gray-100 border-[2px] shadow-[0_3px_0_0] border-gray-700 shadow-gray-700 absolute text-[10px] sm:text-[0.75rem] w-[200px] left-0 top-0 -translate-x-[140px] sm:-translate-x-[125px] translate-y-[30%] p-2'
+                                        className="bg-gray-100 border-[2px] shadow-[0_3px_0_0] border-gray-700 shadow-gray-700 absolute text-[10px] sm:text-[0.75rem] w-[200px] left-0 top-0 -translate-x-[140px] sm:-translate-x-[125px] translate-y-[30%] p-2"
                                     >
-                                        This action cannot be undone. Are you sure you want to delete this card?
+                                        This action cannot be undone. Are you
+                                        sure you want to delete this card?
                                         <button
                                             className="bg-rose-800 text-white font-medium p-2 w-full mt-1 hover:bg-rose-700"
                                             onClick={deleteCard}
                                         >
                                             confirm delete
                                         </button>
-
                                         <button
                                             className="bg-gray-600 text-white font-medium p-2 w-full mt-1 hover:bg-gray-500"
-                                            onClick={() => setOpenCardDeleteConfirm(false)}
+                                            onClick={() =>
+                                                setOpenCardDeleteConfirm(false)
+                                            }
                                         >
                                             cancel
                                         </button>
                                     </div>
-                                }
+                                )}
                             </div>
                         </div>
                     </div>
@@ -496,15 +574,15 @@ const CardDetail = ({ open, setOpen, processing, handleDeleteCard, handleCopyCar
                         card={card}
                         listSelectOptions={listSelectOptions}
                         handleCardOwnerChange={handleCardOwnerChange}
-                        handleCardPriorityLevelChange={handleCardPriorityLevelChange}
+                        handleCardPriorityLevelChange={
+                            handleCardPriorityLevelChange
+                        }
                         handleChangeDueDate={handleChangeDueDate}
                     />
-
                 </div>
-
             </dialog>
         </>
-    )
-}
+    );
+};
 
-export default CardDetail
+export default CardDetail;

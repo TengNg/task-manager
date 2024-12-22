@@ -13,6 +13,6 @@ const useLocalStorage = (key, defaultValue) => {
     }, [data]);
 
     return [data, setData];
-}
+};
 
 export default useLocalStorage;
