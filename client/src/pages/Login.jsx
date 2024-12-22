@@ -4,7 +4,6 @@ import useAuth from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { axiosPrivate } from '../api/axios';
 import Title from '../components/ui/Title';
-import Loading from '../components/ui/Loading';
 
 export default function Login() {
     const [username, setUsername] = useState("");
@@ -53,6 +52,9 @@ export default function Login() {
                 setErrMsg('No Server Response');
             } else if (err.response?.status === 401 || err.response?.status === 400) {
                 setErrMsg('Username or Password is incorrect');
+            } else if (err.response?.status === 429) {
+                const errMsg = err.response.data?.msg || "Failed to Login";
+                setErrMsg(errMsg);
             } else {
                 setErrMsg('Failed to Login');
             }
@@ -66,12 +68,6 @@ export default function Login() {
     return (
         <>
             <section className='relative w-[100%] h-[100vh] bg-transparent flex items-center flex-col p-5 gap-2'>
-                <Loading
-                    position={'absolute'}
-                    loading={loading}
-                    displayText={'please wait, logging in...'}
-                />
-
                 <Title titleName={"login"} />
 
                 <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 pt-2 bg-gray-100 w-[325px]'>
@@ -103,7 +99,12 @@ export default function Login() {
                     {searchParams.get('authorize-failed') && <p className='text-[0.65rem] text-red-700 ms-0.5 mt-1 font-medium select-none'>Failed to Log in</p>}
 
                     <div className='flex flex-col gap-3 mt-4'>
-                        <button className='button--style--dark flex--center'>Log in</button>
+                        <button
+                            className='button--style--dark flex--center'
+                            disabled={loading}
+                        >
+                            {loading ? 'Logging in...' : 'Log in'}
+                        </button>
                         <a
                             className="button--style border-none text-gray-50 bg-indigo-700 hover:bg-indigo-500 flex--center"
                             href={`${import.meta.env.VITE_SERVER_URL || 'http://localhost:3001'}/auth/discord`}

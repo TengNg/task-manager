@@ -14,6 +14,8 @@ const cors = require("cors");
 const authenticateToken = require("./middlewares/authenticateToken");
 const errorHandler = require('./middlewares/errorHandler');
 const credentials = require('./middlewares/credentials');
+const rateLimiter = require('./middlewares/rateLimiter');
+
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
@@ -93,8 +95,8 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 app.use("/home", require("./routes/home"));
-app.use("/register", require("./routes/register"));
-app.use("/login", require("./routes/login"));
+app.use("/register", rateLimiter, require("./routes/register"));
+app.use("/login", rateLimiter, require("./routes/login"));
 app.use("/logout", require("./routes/logout"));
 app.use("/refresh", require("./routes/refresh"));
 app.use("/check-cookies", require("./routes/checkCookies"));

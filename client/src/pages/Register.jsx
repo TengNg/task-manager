@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { axiosPrivate } from '../api/axios';
 import Title from '../components/ui/Title';
-import Loading from '../components/ui/Loading';
 
 // const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 // const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -91,13 +90,6 @@ export default function Register() {
             <section className='relative w-[100%] h-[100vh] bg-transparent flex flex-col items-center p-5 gap-2'>
                 <Title titleName={"register"} />
 
-                <Loading
-                    position={'absolute'}
-                    loading={loading}
-                    fontSize='0.8rem'
-                    displayText={'please wait, creating new account...'}
-                />
-
                 <form onSubmit={handleSubmit} className='flex flex-col form--style p-4 pt-2 bg-gray-100 w-[325px]'>
                     <label htmlFor="username">Username</label>
                     <input
@@ -140,7 +132,12 @@ export default function Register() {
                     {success === false && <p className='text-[0.65rem] text-red-700 ms-1 mt-1 font-medium select-none'>{errMsg}</p>}
 
                     <div className='flex flex-col gap-3 mt-4'>
-                        <button className='button--style--dark'>Sign up</button>
+                        <button
+                            className='button--style--dark flex--center'
+                            disabled={loading}
+                        >
+                            {loading ? 'Signing up...' : 'Sign up'}
+                        </button>
                         <a
                             className="button--style border-0 text-gray-50 bg-indigo-700 hover:bg-indigo-500 flex--center"
                             href={`${import.meta.env.VITE_SERVER_URL || 'http://localhost:3001'}/auth/discord`}
