@@ -11,9 +11,7 @@
         "dotenv": "^16.0.3",
         "express": "^5.0.0",
         "jsonwebtoken": "^9.0.0",
-        "mongoose": "^8.5.2",
-        "passport": "^0.7.0",
-        "passport-discord-auth": "^1.1.1"
+        "mongoose": "^8.5.2"
     },
     "devDependencies": {
         "jest": "^29.7.0",

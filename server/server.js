@@ -1,13 +1,6 @@
 require('dotenv').config();
-//require('express-async-errors');
 
 const express = require("express");
-
-const passport = require("passport");
-const { Strategy } = require("passport-discord-auth");
-
-const User = require("./models/User");
-
 const mongoose = require("mongoose");
 const cors = require("cors");
 
@@ -22,9 +15,13 @@ const bodyParser = require('body-parser');
 const { sendAuthCookies } = require('./services/createAuthTokensService');
 const { generateRandomHex } = require('./utils/generateRandomHex.js');
 
+const User = require("./models/User");
+
 const app = express();
 
 const PORT = process.env.PORT || 3001;
+const SERVER_URL = process.env.SERVER_URL || `http://localhost:${PORT}`;
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 mongoose.set("strictQuery", true);
 mongoose
@@ -42,57 +39,89 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json())
 
-if (process.env.NODE_ENV !== 'test') {
-    passport.use(
-        new Strategy(
-            {
-                clientId: process.env.DISCORD_CLIENT_ID,
-                clientSecret: process.env.DISCORD_SECRET_ID,
-                callbackUrl: `${process.env.SERVER_URL || `http://localhost:${PORT}`}/auth/discord/callback`,
-                scope: ["identify", "email"],
-            },
+app.get("/auth/discord", (_req, res) => {
+    const CLIENT_ID = process.env.DISCORD_CLIENT_ID;
+    const CALLBACK_URL = `${SERVER_URL}/auth/discord/callback`;
+    const SCOPE = "identify email";
+    const discordAuthURL =
+        "https://discord.com/oauth2/authorize?" +
+        "client_id=" + CLIENT_ID + "&" +
+        "redirect_uri=" + encodeURIComponent(CALLBACK_URL) + "&" +
+        "response_type=code&" +
+        "scope=" + encodeURIComponent(SCOPE);
+    res.redirect(discordAuthURL);
+});
 
-            async (_accessToken, _refreshToken, profile, done) => {
-                const { id: discordId, username, verified } = profile._json;
+app.get("/auth/discord/callback", async (req, res) => {
+    const CLIENT_ID = process.env.DISCORD_CLIENT_ID;
+    const CLIENT_SECRET = process.env.DISCORD_SECRET_ID;
+    const CALLBACK_URL = `${SERVER_URL}/auth/discord/callback`;
+    const FAILURE_REDIRECT_URL = `${FRONTEND_URL}/login?authorize_failed=true`;
 
-                if (!verified) {
-                    return done(null, false);
-                }
+    const code = req.query.code;
 
-                let user = await User.findOne({ discordId });
+    if (!code) {
+        return res.status(400).json({ error: "Authorization code not provided!" });
+    }
 
-                if (!user) {
-                    const secureId = generateRandomHex(10);
-                    const initialUsername = `${username}-${secureId}`;
-                    try {
-                        user = await User.create({
-                            username: initialUsername,
-                            discordId
-                        });
-                    } catch (err) {
-                        done(null, false);
-                    }
-                }
+    try {
+        /*
+         * docs: https://discord.com/developers/docs/topics/oauth2
+         * only accept a content type of application/x-www-form-urlencoded
+         * JSON content is not permitted and will return an error
+         */
+        const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+                client_id: CLIENT_ID,
+                client_secret: CLIENT_SECRET,
+                grant_type: "authorization_code",
+                code,
+                redirect_uri: CALLBACK_URL,
+            }),
+        });
 
-                done(null, user);
-            }
-        )
-    );
-
-    app.get('/auth/discord', passport.authenticate('discord'));
-
-    app.get(
-        '/auth/discord/callback',
-        passport.authenticate('discord', {
-            session: false,
-            failureRedirect: `${process.env.FRONTEND_URL || `http://localhost:5173`}/login?authorize-failed=true`,
-        }),
-        (req, res) => {
-            sendAuthCookies(res, req.user, null);
-            res.redirect(`${process.env.FRONTEND_URL || `http://localhost:5173/boards`}`);
+        const tokenData = await tokenResponse.json();
+        if (!tokenResponse.ok) {
+            throw new Error("Error fetching token");
         }
-    );
-}
+
+        const accessToken = tokenData.access_token;
+        const userResponse = await fetch("https://discord.com/api/users/@me", {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        });
+
+        if (!userResponse.ok) {
+            throw new Error("Error fetching user data");
+        }
+
+        const currentProfile = await userResponse.json();
+        if (!currentProfile.verified) {
+            throw new Error("User is not verified");
+        }
+
+        let user = await User.findOne({ discordId: currentProfile.id });
+        if (!user) {
+            const secureId = generateRandomHex(10);
+            const initialUsername = `${currentProfile.username}-${secureId}`;
+            try {
+                user = await User.create({
+                    username: initialUsername,
+                    discordId: currentProfile.id
+                });
+            } catch (err) {
+                return res.redirect(FAILURE_REDIRECT_URL);
+            }
+        }
+
+        sendAuthCookies(res, user, null);
+        return res.redirect(`${FRONTEND_URL}/boards`);
+    } catch (error) {
+        console.error("Authentication error:", error);
+        return res.redirect(`${FAILURE_REDIRECT_URL}&message=${error.message}`);
+    }
+});
 
 app.use("/home", require("./routes/home"));
 app.use("/register", rateLimiter, require("./routes/register"));
@@ -119,4 +148,3 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 module.exports = app;
-
