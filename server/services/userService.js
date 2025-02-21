@@ -17,7 +17,7 @@ const sanitizeUser = (user) => {
     } = user;
 
     const data = {
-        id: _id,
+        _id,
         username,
         createdAt,
         recentlyViewedBoardId,

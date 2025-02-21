@@ -13,14 +13,42 @@ const saveBoardActivity = require('../services/saveBoardActivity');
 
 const getBoards = async (req, res) => {
     const { userId } = req.user;
+    const { filter } = req.query;
+
     const boards = await Board.find({
-        $or: [
-            { createdBy: userId },
-            { members: userId },
-        ]
+        $or: [{ createdBy: userId }, { members: userId }]
     }).sort({ title: 'asc' }).lean();
 
-    return res.json({ boards });
+    const mapped = boards.map(board => {
+        const owned = board.createdBy.toString() === userId;
+        return {
+            ...board,
+            owned
+        }
+    });
+
+    const ownedBoardsCount = mapped.filter(b => b.owned === true).length;
+    const joinedBoardsCount = mapped.length - ownedBoardsCount;
+
+    let validStatus = "";
+    if (filter && Array.isArray(filter) && filter.length > 0) {
+        validStatus = filter[0];
+    } else {
+        validStatus = filter;
+    }
+
+    let filtered = [...mapped];
+    if (validStatus === "owned") {
+        filtered = filtered.filter(b => b.owned);
+    } else if (validStatus === "joined") {
+        filtered = filtered.filter(b => !b.owned);
+    }
+
+    return res.json({
+        boards: filtered,
+        totalOwned: ownedBoardsCount,
+        totalJoined: joinedBoardsCount
+    });
 };
 
 const getOwnedBoards = async (req, res) => {
