@@ -13,9 +13,9 @@ const rTokenName = 'tamagostart_rtoken';
  * @param {User} user
  */
 const createAccessToken = (user) => {
-    const { username } = user;
+    const { _id: userId, username } = user;
     const accessToken = jwt.sign(
-        { username },
+        { userId, username },
         process.env.ACCESS_TOKEN,
         { expiresIn: '15min' }
     );
@@ -26,9 +26,9 @@ const createAccessToken = (user) => {
  * @param {User} user
  */
 const createRefreshToken = (user) => {
-    const { username, refreshTokenVersion } = user;
+    const { _id: userId, username, refreshTokenVersion } = user;
     const refreshToken = jwt.sign(
-        { username, refreshTokenVersion },
+        { userId, username, refreshTokenVersion },
         process.env.REFRESH_TOKEN,
         { expiresIn: '15d' }
     );
