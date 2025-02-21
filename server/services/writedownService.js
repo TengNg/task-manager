@@ -1,5 +1,16 @@
 const Writedown = require('../models/Writedown');
-const { userByUsername: getUser } = require('./userService');
+
+const isActionAuthorized = async (writedownId) => {
+    const foundWritedown = await findWritedown(writedownId, { lean: false });
+    if (!foundWritedown) {
+        return { authorized: false, error: 'writedown not found' }
+    }
+
+    return {
+        authorized: true,
+        writedown: foundWritedown
+    }
+};
 
 const saveNewWritedown = async (writedownData) => {
     const newWritedown = new Writedown(writedownData);
@@ -7,7 +18,10 @@ const saveNewWritedown = async (writedownData) => {
 };
 
 const writedownsByUserId = async (userId) => {
-    const result = await Writedown.find({ owner: userId }).sort({ pinned: -1, createdAt: -1 }).lean();
+    const result = await Writedown
+        .find({ owner: userId })
+        .sort({ pinned: -1, createdAt: -1 })
+        .lean();
     return result;
 };
 
@@ -17,27 +31,16 @@ const findWritedown = async (writedownId, option = { lean: true }) => {
     return foundWritedown;
 };
 
-const isActionAuthorized = async (writedownId, username) => {
-    const foundUser = await getUser(username);
-    if (!foundUser) return { authorized: false, error: 'user not found' }
-
-    const foundWritedown = await findWritedown(writedownId, { lean: false });
-    if (!foundWritedown) return { authorized: false, error: 'writedown not found' }
-
-    return {
-        authorized: true,
-        writedown: foundWritedown
-    }
-};
-
 const handleAuthorizationAndGetWritedown = async (req, res) => {
     const { writedownId } = req.params;
-    const { username } = req.user;
-
-    const { authorized, error, writedown } = await isActionAuthorized(writedownId, username);
-
-    if (!authorized) return res.status(403).json({ msg: error || "unauthorized" });
-
+    const {
+        authorized,
+        error,
+        writedown,
+    } = await isActionAuthorized(writedownId);
+    if (!authorized) {
+        return res.status(403).json({ msg: error || "unauthorized" });
+    }
     return { writedown };
 };
 

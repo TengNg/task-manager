@@ -1,13 +1,10 @@
 const Writedown = require("../models/Writedown");
 
-const { userByUsername: getUser } = require('../services/userService');
 const { saveNewWritedown, writedownsByUserId, handleAuthorizationAndGetWritedown } = require('../services/writedownService');
 
 const getWritedowns = async (req, res) => {
-    const { username } = req.user;
-    const foundUser = await getUser(username);
-    if (!foundUser) return res.status(403).json({ msg: "user not found" });
-    const writedowns = await writedownsByUserId(foundUser._id);
+    const { userId } = req.user;
+    const writedowns = await writedownsByUserId(userId);
     return res.status(200).json({ writedowns });
 };
 
@@ -17,13 +14,8 @@ const getWritedown = async (req, res) => {
 };
 
 const createWritedown = async (req, res) => {
-    const { username } = req.user;
-
-    const foundUser = await getUser(username);
-    if (!foundUser) return res.status(403).json({ msg: "user not found" });
-
-    const newWritedown = await saveNewWritedown({ owner: foundUser._id });
-
+    const { userId } = req.user;
+    const newWritedown = await saveNewWritedown({ owner: userId });
     return res.status(200).json({ msg: 'new writedown added', newWritedown });
 };
 
