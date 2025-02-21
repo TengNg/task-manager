@@ -2,33 +2,30 @@ const mongoose = require('mongoose');
 const Card = require('../models/Card.js');
 
 const { isActionAuthorized } = require('../services/boardActionAuthorizeService');
-const { userByUsername } = require('../services/userService');
 const saveBoardActivity = require('../services/saveBoardActivity');
 
 const { listById } = require('../services/listService');
 const { cardById } = require('../services/cardService');
 
 const getCard = async (req, res) => {
-    const { username } = req.user;
     const { id } = req.params;
-
-    const foundUser = await userByUsername(username);
-    if (!foundUser) return res.status(403).json({ msg: "user not found" });
-
     const foundCard = await cardById(id);
-    if (!foundCard) return res.status(403).json({ msg: "card not found" });
+    if (!foundCard) {
+        return res.status(403).json({ msg: "card not found" });
+    }
 
     return res.status(201).json({ card: foundCard });
 };
 
 const addCard = async (req, res) => {
+    const { userId } = req.user;
     const { trackedId, title, order, listId } = req.body;
 
     const foundList = await listById(listId);
     if (!foundList) return res.status(403).json({ msg: "list not found" });
 
     const { boardId } = foundList;
-    const { user, authorized } = await isActionAuthorized(boardId, req.user.username);
+    const { authorized } = await isActionAuthorized(boardId, userId);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     const newCard = new Card({
@@ -43,7 +40,7 @@ const addCard = async (req, res) => {
 
     await saveBoardActivity({
         boardId,
-        userId: user._id,
+        userId,
         cardId: newCard._id,
         listId: foundList._id,
         action: "add new card",
@@ -56,6 +53,7 @@ const addCard = async (req, res) => {
 };
 
 const reorder = async (req, res) => {
+    const { userId } = req.user;
     const { id } = req.params;
     const { rank, listId, timestamp, sourceIndex, destinationIndex } = req.body;
 
@@ -72,7 +70,7 @@ const reorder = async (req, res) => {
     const updatedCardListTitle = foundList.title;
 
     const { boardId } = foundList;
-    const { user, authorized } = await isActionAuthorized(boardId, req.user.username);
+    const { authorized } = await isActionAuthorized(boardId, userId);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     foundCard.order = rank;
@@ -82,7 +80,7 @@ const reorder = async (req, res) => {
 
     await saveBoardActivity({
         boardId,
-        userId: user._id,
+        userId,
         cardId: foundCard._id,
         listId: foundList._id,
         action: "update card position",
@@ -95,6 +93,7 @@ const reorder = async (req, res) => {
 };
 
 const updateTitle = async (req, res) => {
+    const { userId } = req.user;
     const { id } = req.params;
     const { title } = req.body;
 
@@ -102,7 +101,7 @@ const updateTitle = async (req, res) => {
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
 
     const { boardId } = foundCard;
-    const { authorized } = await isActionAuthorized(boardId, req.user.username);
+    const { authorized } = await isActionAuthorized(boardId, userId);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     foundCard.title = title.trim();
@@ -112,6 +111,7 @@ const updateTitle = async (req, res) => {
 };
 
 const updateDescription = async (req, res) => {
+    const { userId } = req.user;
     const { id } = req.params;
     const { description } = req.body;
 
@@ -119,7 +119,7 @@ const updateDescription = async (req, res) => {
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
 
     const { boardId } = foundCard;
-    const { authorized } = await isActionAuthorized(boardId, req.user.username);
+    const { authorized } = await isActionAuthorized(boardId, userId);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     foundCard.description = description;
@@ -129,6 +129,7 @@ const updateDescription = async (req, res) => {
 };
 
 const updateHighlight = async (req, res) => {
+    const { userId } = req.user;
     const { id } = req.params;
     const { highlight } = req.body;
 
@@ -136,7 +137,7 @@ const updateHighlight = async (req, res) => {
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
 
     const { boardId } = foundCard;
-    const { authorized } = await isActionAuthorized(boardId, req.user.username);
+    const { authorized } = await isActionAuthorized(boardId, userId);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     foundCard.highlight = highlight;
@@ -146,6 +147,7 @@ const updateHighlight = async (req, res) => {
 };
 
 const updatePriorityLevel = async (req, res) => {
+    const { userId } = req.user;
     const { id } = req.params;
     const { priorityLevel } = req.body;
 
@@ -155,7 +157,7 @@ const updatePriorityLevel = async (req, res) => {
     const currentPriorityLevel = foundCard.priorityLevel;
 
     const { boardId } = foundCard;
-    const { user, authorized } = await isActionAuthorized(boardId, req.user.username);
+    const { authorized } = await isActionAuthorized(boardId, userId);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     foundCard.priorityLevel = priorityLevel;
@@ -163,7 +165,7 @@ const updatePriorityLevel = async (req, res) => {
 
     await saveBoardActivity({
         boardId,
-        userId: user._id,
+        userId,
         cardId: foundCard._id,
         action: "update card priority level",
         type: "card",
@@ -175,20 +177,21 @@ const updatePriorityLevel = async (req, res) => {
 };
 
 const deleteCard = async (req, res) => {
+    const { userId } = req.user;
     const { id } = req.params;
 
     const foundCard = await cardById(id, { lean: true });
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
 
     const { boardId } = foundCard;
-    const { user, authorized } = await isActionAuthorized(boardId, req.user.username);
+    const { authorized } = await isActionAuthorized(boardId, userId);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     await Card.findOneAndDelete({ _id: id });
 
     await saveBoardActivity({
         boardId,
-        userId: user._id,
+        userId,
         action: "delete card",
         type: "card",
         description: `card with title "${foundCard.title}" deleted`,
@@ -198,6 +201,7 @@ const deleteCard = async (req, res) => {
 };
 
 const copyCard = async (req, res) => {
+    const { userId } = req.user;
     const { id } = req.params;
     const { rank } = req.body;
 
@@ -205,7 +209,7 @@ const copyCard = async (req, res) => {
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
 
     const { boardId } = foundCard;
-    const { user, authorized } = await isActionAuthorized(boardId, req.user.username);
+    const { authorized } = await isActionAuthorized(boardId, userId);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     const newCard = new Card({
@@ -218,7 +222,7 @@ const copyCard = async (req, res) => {
 
     await saveBoardActivity({
         boardId,
-        userId: user._id,
+        userId,
         cardId: foundCard._id,
         action: "copy card",
         type: "card",
@@ -229,7 +233,7 @@ const copyCard = async (req, res) => {
 };
 
 const updateOwner = async (req, res) => {
-    const { username } = req.user;
+    const { userId } = req.user;
     const { id } = req.params;
     const { ownerName } = req.body;
 
@@ -237,7 +241,7 @@ const updateOwner = async (req, res) => {
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
 
     const { boardId } = foundCard;
-    const { authorized } = await isActionAuthorized(boardId, username);
+    const { authorized } = await isActionAuthorized(boardId, userId);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     foundCard.owner = ownerName;
@@ -247,14 +251,14 @@ const updateOwner = async (req, res) => {
 };
 
 const toggleVerified = async (req, res) => {
-    const { username } = req.user;
+    const { userId } = req.user;
     const { id } = req.params;
 
     const foundCard = await cardById(id, { lean: false });
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
 
     const { boardId } = foundCard;
-    const { user, authorized } = await isActionAuthorized(boardId, username);
+    const { authorized } = await isActionAuthorized(boardId, userId);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     foundCard.verified = !foundCard.verified;
@@ -264,7 +268,7 @@ const toggleVerified = async (req, res) => {
 
     await saveBoardActivity({
         boardId,
-        userId: user._id,
+        userId,
         cardId: foundCard._id,
         action: action,
         type: "card",
@@ -275,14 +279,14 @@ const toggleVerified = async (req, res) => {
 };
 
 const updateDueDate = async (req, res) => {
-    const { username } = req.user;
+    const { userId } = req.user;
     const { id } = req.params;
 
     const foundCard = await cardById(id, { lean: false });
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
 
     const { boardId } = foundCard;
-    const { authorized } = await isActionAuthorized(boardId, username);
+    const { authorized } = await isActionAuthorized(boardId, userId);
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     foundCard.dueDate = req.body.dueDate;
