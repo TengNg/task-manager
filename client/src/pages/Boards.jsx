@@ -56,7 +56,7 @@ const Boards = () => {
 
     function handleRefreshData() {
         queryClient.invalidateQueries({
-            queryKey: ["invitations", boardFilter],
+            queryKey: ["boards", boardFilter],
             exact: true,
         });
     }

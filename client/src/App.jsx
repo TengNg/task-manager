@@ -1,23 +1,26 @@
 import "./App.css";
 import "./index.css";
-import { useState, useEffect } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import About from "./pages/About";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import NavBar from "./components/ui/NavBar";
-import Boards from "./pages/Boards";
-import Board from "./pages/Board";
-import Activities from "./pages/Activities";
-import Profile from "./pages/Profile";
-import NotFound from "./pages/NotFound";
-import Writedowns from "./pages/Writedowns";
-import PersistLogin from "./components/auth/PersistLogin";
+
+import NavBar from './components/ui/NavBar'
+import ThemesDialog from "./components/ui/ThemesDialog";
+
+import PersistLogin from './components/auth/PersistLogin'
+import NotFound from './pages/NotFound'
+import Login from './pages/Login'
+import Register from './pages/Register'
+
+const About = lazy(() => import("./pages/About"));
+const Boards = lazy(() => import("./pages/Boards"));
+const Board = lazy(() => import("./pages/Board"));
+const Activities = lazy(() => import("./pages/Activities"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Writedowns = lazy(() => import("./pages/Writedowns"));
+const SomethingWentWrong = lazy(() => import("./pages/SomethingWentWrong"));
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPalette } from "@fortawesome/free-solid-svg-icons";
-
-import ThemesDialog from "./components/ui/ThemesDialog";
 
 import { BoardStateContextProvider } from "./context/BoardStateContext";
 
@@ -25,7 +28,6 @@ import useLocalStorage from "./hooks/useLocalStorage";
 
 import PAGES from "./data/pages";
 import LOCAL_STORAGE_KEYS from "./data/localStorageKeys";
-import SomethingWentWrong from "./pages/SomethingWentWrong";
 
 const noNavPaths = ["/login", "/register"];
 
@@ -57,30 +59,32 @@ function App() {
     return (
         <>
             {!noNavPaths.includes(pathname) && <NavBar />}
-            <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+            <Suspense fallback={<div className="loader mx-auto my-8"></div>}>
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
 
-                <Route element={<PersistLogin />}>
-                    <Route path="/" element={<About />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/boards" element={<Boards />} />
-                    <Route path="/writedowns" element={<Writedowns />} />
-                    <Route path="/activities" element={<Activities />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route
-                        path="/b/:boardId/"
-                        element={
-                            <BoardStateContextProvider>
-                                <Board />
-                            </BoardStateContextProvider>
-                        }
-                    />
-                </Route>
+                    <Route element={<PersistLogin />}>
+                        <Route path="/" element={<About />} />
+                        <Route path="/about" element={<About />} />
+                        <Route path="/boards" element={<Boards />} />
+                        <Route path="/writedowns" element={<Writedowns />} />
+                        <Route path="/activities" element={<Activities />} />
+                        <Route path="/profile" element={<Profile />} />
+                        <Route
+                            path="/b/:boardId/"
+                            element={
+                                <BoardStateContextProvider>
+                                    <Board />
+                                </BoardStateContextProvider>
+                            }
+                        />
+                    </Route>
 
-                <Route path="/error" element={<SomethingWentWrong />} />
-                <Route path="*" element={<NotFound />} />
-            </Routes>
+                    <Route path="/error" element={<SomethingWentWrong />} />
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+            </Suspense>
 
             <ThemesDialog
                 open={openThemesDialog}

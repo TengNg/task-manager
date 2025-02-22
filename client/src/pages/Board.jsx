@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import useBoardState from "../hooks/useBoardState";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
@@ -129,6 +129,7 @@ const Board = () => {
     const [title, setTitle] = useState("");
     const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [error, setError] = useState({ msg: undefined });
+    const [chatError, setChatError] = useState({ msg: undefined });
 
     const [openVisibilityConfig, setOpenVisibilityConfig] = useState(false);
     const [processingCard, setProcessingCard] = useState({
@@ -138,8 +139,6 @@ const Board = () => {
 
     const { boardId } = useParams();
     const navigate = useNavigate();
-    const location = useLocation();
-    const { pathname } = location;
 
     useEffect(() => {
         if (isRemoved) {
@@ -169,14 +168,10 @@ const Board = () => {
     });
 
     useEffect(() => {
-        if (!socket) return;
-
         setAuth((prev) => {
             prev.user.recentlyViewedBoardId = boardId;
             return prev;
         });
-
-        socket.emit("joinBoard", { boardId, username: auth?.user?.username });
 
         setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
 
@@ -210,15 +205,15 @@ const Board = () => {
 
         fetchChat().catch((err) => {
             const errMsg = err?.response?.data?.msg || "Failed to load Chat";
-            alert(errMsg);
+            setChatError(errMsg);
         });
 
         setIsDataLoaded(true);
 
         return () => {
-            socket.emit("disconnectFromBoard");
-        };
-    }, [pathname]);
+            socket.disconnect();
+        }
+    }, [boardId]);
 
     // fetching chat messages from current board =======================================================================
     const fetchMessages = async () => {
@@ -731,6 +726,7 @@ const Board = () => {
             />
 
             <ChatBox
+                error={chatError}
                 open={openChatBox}
                 setOpen={setOpenChatBox}
                 setOpenFloat={setOpenFloatingChat}
@@ -745,20 +741,24 @@ const Board = () => {
                 setHasReceivedNewMessage={setHasReceivedNewMessage}
             />
 
-            <FloatingChat
-                open={openFloatingChat}
-                setOpen={setOpenFloatingChat}
-                setOpenChatBox={setOpenChatBox}
-                sendMessage={handleSendMessage}
-                deleteMessage={handleDeleteMessage}
-                clearMessages={handleClearChatMessages}
-                isFetchingMore={isFetchingMoreMessages}
-                allMessagesFetched={allMessagesFetched}
-                isFetching={isDataLoaded}
-                fetchMessages={fetchMessages}
-                hasReceivedNewMessage={hasReceivedNewMessage}
-                setHasReceivedNewMessage={setHasReceivedNewMessage}
-            />
+            {
+                !chatError.msg &&
+                <FloatingChat
+                    error={chatError}
+                    open={openFloatingChat}
+                    setOpen={setOpenFloatingChat}
+                    setOpenChatBox={setOpenChatBox}
+                    sendMessage={handleSendMessage}
+                    deleteMessage={handleDeleteMessage}
+                    clearMessages={handleClearChatMessages}
+                    isFetchingMore={isFetchingMoreMessages}
+                    allMessagesFetched={allMessagesFetched}
+                    isFetching={isDataLoaded}
+                    fetchMessages={fetchMessages}
+                    hasReceivedNewMessage={hasReceivedNewMessage}
+                    setHasReceivedNewMessage={setHasReceivedNewMessage}
+                />
+            }
 
             {boardState?.board?.visibility && (
                 <div
