@@ -314,7 +314,7 @@ const leaveBoard = async (req, res) => {
     const { board, authorized } = await isActionAuthorized(id, userId, { ownerOnly: false });
     if (!authorized) return res.status(403).json({ msg: "unauthorized" });
 
-    const indexOfMember = board.members.indexOf(user._id);
+    const indexOfMember = board.members.indexOf(userId);
     if (indexOfMember !== -1) {
         board.members.splice(indexOfMember, 1);
         await board.save();
