@@ -1,13 +1,10 @@
 import { useEffect, useRef } from "react";
 import useBoardState from "../../hooks/useBoardState";
 import useAuth from "../../hooks/useAuth";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark, faExpand } from "@fortawesome/free-solid-svg-icons";
-
 import Chat from "./Chat";
 import ChatInput from "./ChatInput";
 import Loading from "../ui/Loading";
+import Icon from "../shared/Icon";
 
 const ChatBox = ({
     error,
@@ -88,14 +85,14 @@ const ChatBox = ({
                     <p className="flex-1 font-semibold text-gray-600">Chat</p>
 
                     <button onClick={handleOpenFloat} className="text-gray-600">
-                        <FontAwesomeIcon icon={faExpand} size="lg" />
+                        <Icon className="w-4 h-4" name="expand" />
                     </button>
 
                     <button
                         onClick={() => setOpen(false)}
                         className="text-gray-600"
                     >
-                        <FontAwesomeIcon icon={faXmark} size="lg" />
+                        <Icon className="w-4 h-4" name="xmark" />
                     </button>
                 </div>
 
@@ -114,29 +111,31 @@ const ChatBox = ({
             ref={chatContainer}
             className={`${open ? "flex" : "hidden"} fixed flex-col border-[2px] border-black right-0 bottom-0 sm:right-1 sm:bottom-1 bg-slate-100 w-[325px] h-[400px] overflow-auto z-30`}
         >
-            <div className="relative flex items-center gap-3 border-b-2 border-black px-3 py-2">
+            <div className="relative flex items-center justify-center gap-3 border-b-2 border-black px-3 py-2">
                 <p className="flex-1 font-semibold text-gray-600">Chat</p>
 
-                {auth.user?.username ===
-                    boardState.board.createdBy.username && (
-                    <button
-                        onClick={handleClearMessages}
-                        className="text-[0.65rem] border-[2px] border-rose-400 text-rose-400 px-2 me-3 font-semibold"
-                    >
-                        Clear
+                <div className="flex items-center gap-2">
+                    {auth.user?.username ===
+                        boardState.board.createdBy.username && (
+                        <button
+                            onClick={handleClearMessages}
+                            className="text-[0.65rem] border-[2px] border-rose-400 text-rose-400 px-2 me-2 font-semibold"
+                        >
+                            clear
+                        </button>
+                    )}
+
+                    <button onClick={handleOpenFloat} className="text-gray-600">
+                        <Icon className="w-4 h-4" name="expand" />
                     </button>
-                )}
 
-                <button onClick={handleOpenFloat} className="text-gray-600">
-                    <FontAwesomeIcon icon={faExpand} size="lg" />
-                </button>
-
-                <button
-                    onClick={() => setOpen(false)}
-                    className="text-gray-600"
-                >
-                    <FontAwesomeIcon icon={faXmark} size="lg" />
-                </button>
+                    <button
+                        onClick={() => setOpen(false)}
+                        className="text-gray-600"
+                    >
+                        <Icon className="w-4 h-4" name="xmark" />
+                    </button>
+                </div>
             </div>
 
             <div

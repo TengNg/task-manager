@@ -114,7 +114,6 @@ const Profile = () => {
         const newUsername = usernameInputRef.current.value.trim();
 
         if (newUsername === "" || newUsername === auth?.user?.username) {
-            alert("Nothing to update. Please provide new username");
             return;
         }
 

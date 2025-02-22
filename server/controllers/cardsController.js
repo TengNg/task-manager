@@ -55,14 +55,15 @@ const addCard = async (req, res) => {
 const reorder = async (req, res) => {
     const { userId } = req.user;
     const { id } = req.params;
-    const { rank, listId, timestamp, sourceIndex, destinationIndex } = req.body;
+    const { rank, listId, timestamp } = req.body;
 
     const foundCard = await Card.findById(id).populate({
         path: 'listId',
-        select: '-_id title'
+        select: '_id title'
     });
 
     if (!foundCard) return res.status(404).json({ error: 'Card not found' });
+    const currentListId = foundCard.listId._id;
     const currentCardListTitle = foundCard.listId.title;
 
     const foundList = await listById(listId);
@@ -85,11 +86,14 @@ const reorder = async (req, res) => {
         listId: foundList._id,
         action: "update card position",
         type: "card",
-        description: `${currentCardListTitle} (${+sourceIndex + 1}) > ${updatedCardListTitle} (${+destinationIndex + 1})`,
+        description: `${currentCardListTitle} > ${updatedCardListTitle}`,
         createdAt: foundCard.updatedAt,
-    })
+    });
 
-    res.status(200).json({ newCard: foundCard });
+    res.status(200).json({
+        oldListId: currentListId,
+        newCard: foundCard,
+    });
 };
 
 const updateTitle = async (req, res) => {

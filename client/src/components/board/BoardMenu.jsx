@@ -1,18 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    faAngleLeft,
-    faCopy,
-    faGear,
-    faClockRotateLeft,
-    faCircleXmark,
-    faLightbulb,
-} from "@fortawesome/free-solid-svg-icons";
 import useAuth from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import useBoardState from "../../hooks/useBoardState";
 import { useNavigate } from "react-router-dom";
 import { formatDateToYYYYMMDD } from "../../utils/dateFormatter";
+import Icon from "../shared/Icon";
 
 const BoardMenu = ({
     setOpen,
@@ -58,7 +50,7 @@ const BoardMenu = ({
                 navigate("/boards");
             } catch (err) {
                 console.log(err);
-                navigate("/boards");
+                alert("Failed to close this board, something went wrong");
             }
         }
     };
@@ -102,36 +94,39 @@ const BoardMenu = ({
                 <div className="flex justify-start">
                     <button
                         onClick={() => setShowDescription(true)}
-                        className="button--style--dark ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
+                        className="button--style--dark flex gap-2 ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
                     >
-                        <FontAwesomeIcon icon={faLightbulb} /> information
+                        <Icon className="w-4 h-4" name="lightbulb" />
+                        information
                     </button>
                 </div>
 
                 <div className="flex justify-start">
                     <button
                         onClick={() => setOpenCopyBoardForm(true)}
-                        className="button--style--dark ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
+                        className="button--style--dark flex gap-2 ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
                     >
-                        <FontAwesomeIcon icon={faCopy} /> create a copy
+                        <Icon className="w-4 h-4" name="copy" />
+                        create a copy
                     </button>
                 </div>
 
                 <div className="flex justify-start">
                     <button
                         onClick={() => setOpenBoardConfiguration(true)}
-                        className="button--style--dark ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
+                        className="button--style--dark flex gap-2 ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
                     >
-                        <FontAwesomeIcon icon={faGear} /> configuration
+                        <Icon className="w-4 h-4" name="gear" />
+                        configuration
                     </button>
                 </div>
 
                 <div className="flex justify-start">
                     <button
                         onClick={() => setOpenBoardActivities(true)}
-                        className="button--style--dark ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
+                        className="button--style--dark flex gap-2 ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
                     >
-                        <FontAwesomeIcon icon={faClockRotateLeft} /> board
+                        <Icon className="w-4 h-4" name="clock-rotate-left" />
                         activities
                     </button>
                 </div>
@@ -141,18 +136,20 @@ const BoardMenu = ({
                     <div className="flex justify-start">
                         <button
                             onClick={() => handleCloseBoard()}
-                            className="button--style--dark ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
+                            className="button--style--dark flex gap-2 ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
                         >
-                            <FontAwesomeIcon icon={faCircleXmark} /> close board
+                            <Icon className="w-4 h-4" name="circle-xmark" />
+                            close board
                         </button>
                     </div>
                 ) : (
                     <div className="flex justify-start">
                         <button
                             onClick={() => handleLeaveBoard()}
-                            className="button--style--dark ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
+                            className="button--style--dark flex gap-2 ps-20 text-[0.75rem] font-medium text-start text-gray-200 w-full"
                         >
-                            <FontAwesomeIcon icon={faCircleXmark} /> leave board
+                            <Icon className="w-4 h-4" name="circle-xmark" />
+                            leave board
                         </button>
                     </div>
                 )}
@@ -162,9 +159,9 @@ const BoardMenu = ({
                 >
                     <button
                         onClick={() => setShowDescription(false)}
-                        className="absolute top-3 left-5 text-gray-600"
+                        className="absolute top-3.5 left-5 text-gray-600"
                     >
-                        <FontAwesomeIcon icon={faAngleLeft} size="lg" />
+                        <Icon className="w-4 h-4" name="arrow" />
                     </button>
 
                     <div className="font-medium text-gray-600 my-3 border-b-gray-400 flex--center">

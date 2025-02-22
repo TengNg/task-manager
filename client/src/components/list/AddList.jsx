@@ -70,12 +70,12 @@ const AddList = ({ open, setOpen }) => {
     return (
         <div
             ref={containerRef}
-            className={`${theme.itemTheme == "rounded" ? "rounded-md" : ""} board--style--sm overflow-hidden bg-gray-100 text-[10px] sm:text-[0.75rem] sm:min-w-[250px] min-w-[300px] border-[2px] min-h-[3rem] select-none cursor-pointer me-3 border-gray-500 shadow-gray-500 text-gray-500 font-medium`}
+            className={`${theme.itemTheme == "rounded" ? "rounded-md" : ""} group board--style--sm overflow-hidden bg-gray-100 w-[300px] min-w-[300px] border-[2px] min-h-[3rem] select-none cursor-pointer border-gray-500 shadow-gray-500 text-gray-500 font-medium`}
             style={{ backgroundColor: "rgba(241, 241, 241, 0.75)" }}
         >
             {open === false && (
                 <button
-                    className="w-full h-full text-start p-3 flex gap-2 text-sm"
+                    className="w-full h-full text-start p-3 flex gap-2 text-sm group-hover:bg-gray-500/10"
                     onClick={handleOpenAddListForm}
                 >
                     + new list
@@ -83,10 +83,10 @@ const AddList = ({ open, setOpen }) => {
             )}
 
             <div
-                className={`flex-col flex py-2 px-2 min-w-[200px] h-[fit] gap-3 -mt-[100%] ${open && "mt-0"}`}
+                className={`flex-col flex h-[113px] py-2 px-2 gap-3 -mt-[100%] ${open && "mt-0"}`}
             >
                 <input
-                    className="border-[1px] border-gray-500 text-gray-500 font-medium text-[1rem] sm:text-[0.85rem] p-2 focus:outline-none"
+                    className="border-[1px] text-sm border-gray-500 text-gray-500 font-medium p-2 focus:outline-none"
                     type="text"
                     autoComplete="off"
                     placeholder="list title goes here..."

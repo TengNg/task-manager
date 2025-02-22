@@ -1,10 +1,12 @@
 const jwt = require('jsonwebtoken');
 
+const __prod__ = process.env.MODE === 'production';
+
 const cookieOpts = {
     httpOnly: true,
-    sameSite: 'None',
-    secure: true,
-    maxAge: 15 * 24 * 60 * 60 * 1000
+    sameSite: __prod__ ? 'Lax' : 'None',
+    secure: __prod__,
+    maxAge: 15 * 24 * 60 * 60 * 1000 // 15 days
 };
 
 const rTokenName = 'tamagostart_rtoken';

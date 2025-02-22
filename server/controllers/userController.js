@@ -1,9 +1,6 @@
 const User = require('../models/User.js');
-
-const bcrypt = require('bcrypt');
-
+const bcrypt = require('bcryptjs');
 const { createAuthTokens, sendAuthCookies } = require('../services/createAuthTokensService');
-
 const { usernameRegex } = require('../data/regex');
 
 const getUserInfo = async (req, res) => {
@@ -44,7 +41,7 @@ const updatePassword = async (req, res) => {
 
     if (foundUser.discordId) return res.status(400).json({ msg: "Cannot change password" });
 
-    const validPwd = bcrypt.compare(currentPassword, foundUser.password);
+    const validPwd = await bcrypt.compare(currentPassword, foundUser.password);
     if (!validPwd) return res.status(400).json({ msg: "Password is incorrect" });
 
     if (newPassword === currentPassword) return res.status(200).json({ notice: 'PASSWORD_NOT_CHANGED', msg: "New password is the same as current password" });

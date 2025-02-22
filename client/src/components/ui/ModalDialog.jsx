@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import Icon from "../shared/Icon";
 
 const ModalDialog = ({ children, ...props }) => {
     const dialog = useRef();
@@ -55,7 +54,7 @@ const ModalDialog = ({ children, ...props }) => {
                     className="text-gray-600 flex justify-center items-center"
                     onClick={handleClose}
                 >
-                    <FontAwesomeIcon icon={faXmark} size="xl" />
+                    <Icon className="w-4 h-4" name="xmark" />
                 </button>
             </div>
 

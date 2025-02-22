@@ -1,10 +1,9 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Loading from "../ui/Loading";
 import dateFormatter from "../../utils/dateFormatter";
 import PRIORITY_LEVELS from "../../data/priorityLevels";
+import Icon from "../shared/Icon";
 
 const BoardStats = ({ boardStatsModal, setBoardStatsModal }) => {
     const dialog = useRef();
@@ -63,7 +62,7 @@ const BoardStats = ({ boardStatsModal, setBoardStatsModal }) => {
                     className="text-gray-600 flex justify-center items-center"
                     onClick={handleClose}
                 >
-                    <FontAwesomeIcon icon={faXmark} size="xl" />
+                    <Icon className="w-4 h-4" name="xmark" />
                 </button>
             </div>
 

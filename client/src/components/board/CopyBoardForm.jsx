@@ -1,16 +1,17 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useRef, useState } from "react";
 import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Loading from "../ui/Loading";
+import Icon from "../shared/Icon";
 
 const CopyBoardForm = ({ setOpen }) => {
     const { boardState } = useBoardState();
 
     const nameInputEl = useRef();
     const [loading, setLoading] = useState(false);
-    const [title, setTitle] = useState("");
+    const [title, setTitle] = useState(
+        (boardState.board?.title || "") + " (copy)",
+    );
     const [desciption, setDescription] = useState("");
     const axiosPrivate = useAxiosPrivate();
 
@@ -32,6 +33,7 @@ const CopyBoardForm = ({ setOpen }) => {
                     JSON.stringify({ title: title, desciption }),
                 );
                 alert("Board copied successfully");
+                setOpen(false);
             } catch (err) {
                 console.log(err);
                 alert("Failed to copy this board");
@@ -63,7 +65,7 @@ const CopyBoardForm = ({ setOpen }) => {
                         className="text-gray-600 flex justify-center items-center"
                         onClick={handleClose}
                     >
-                        <FontAwesomeIcon icon={faXmark} size="xl" />
+                        <Icon className="w-4 h-4" name="xmark" />
                     </button>
                 </div>
 

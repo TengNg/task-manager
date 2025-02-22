@@ -57,21 +57,6 @@ export default function ListMenu({
             ref={containerRef}
             className={`absolute top-0 left-0 outline-none z-10 bg-gray-200 border-gray-600 border-[2px] shadow-gray-600 box--style w-full p-3 ${theme.itemTheme == "rounded" ? "rounded-md shadow-[0_4px_0_0]" : "shadow-[4px_6px_0_0]"}`}
         >
-            <div className="flex gap-1 absolute text-gray-100 top-1 right-1">
-                <button
-                    onClick={collapse}
-                    className="text-[9px] badge rounded-sm bg-indigo-700"
-                >
-                    -
-                </button>
-                <button
-                    onClick={close}
-                    className="text-[9px] badge rounded-sm bg-rose-700"
-                >
-                    X
-                </button>
-            </div>
-
             <div className="border-b-[1px] border-b-black pb-2">
                 <div className="text-[12px] sm:text-sm">
                     title: <span className="font-medium">{list.title}</span>
@@ -82,12 +67,17 @@ export default function ListMenu({
                         {dateFormatter(list.createdAt, { weekdayFormat: true })}
                     </span>
                 </div>
+
+                <div className="text-[12px] sm:text-sm mt-1">
+                    cards:{" "}
+                    <span className="font-medium">{list.cards.length}</span>
+                </div>
             </div>
 
             <div className="flex flex-col gap-3 mt-3">
                 <button
                     onClick={collapse}
-                    className="text-[12px] sm:text-[0.75rem] text-white bg-indigo-800 px-1 py-2 hover:bg-indigo-700"
+                    className="text-[14px] sm:text-[0.75rem] text-white bg-indigo-800 px-1 py-2 hover:bg-indigo-700"
                 >
                     collapse list
                 </button>
@@ -99,19 +89,19 @@ export default function ListMenu({
                 </button>
                 <button
                     onClick={handleOpenMoveListForm}
-                    className="text-[12px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 hover:bg-gray-500"
+                    className="text-[14px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 hover:bg-gray-500"
                 >
                     move list
                 </button>
                 <button
                     onClick={del}
-                    className="text-[12px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 hover:bg-gray-500"
+                    className="text-[14px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 hover:bg-gray-500"
                 >
                     delete list
                 </button>
                 <button
                     onClick={close}
-                    className="text-[12px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 hover:bg-gray-500"
+                    className="text-[14px] sm:text-[0.75rem] text-white bg-gray-600 px-1 py-2 hover:bg-gray-500"
                 >
                     close
                 </button>

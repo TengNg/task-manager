@@ -1,14 +1,12 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import useBoardState from "../../hooks/useBoardState";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark, faDroplet, faCopy } from "@fortawesome/free-solid-svg-icons";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HighlightPicker from "./HighlightPicker";
 import CardDetailInfo from "./CardDetailInfo";
 import Loading from "../ui/Loading";
 
 import { useSearchParams } from "react-router-dom";
+import Icon from "../shared/Icon";
 
 const CardDetail = ({
     open,
@@ -410,7 +408,7 @@ const CardDetail = ({
                             onClick={handleCancel}
                             className="text-[0.75rem] py-1 text-gray-500 flex"
                         >
-                            <FontAwesomeIcon icon={faXmark} size="xl" />
+                            <Icon className="w-4 h-4" name="xmark" />
                         </button>
                     </div>
 
@@ -483,8 +481,7 @@ const CardDetail = ({
                                     }
                                     className={`card--details--button border-gray-600 text-gray-600 ${openHighlightPicker && "bg-slate-500 shadow-black text-white"}`}
                                 >
-                                    <FontAwesomeIcon icon={faDroplet} />
-                                    <span> </span>
+                                    <Icon className="w-3 h-3" name="droplet" />
                                     <span className="hidden sm:inline-block">
                                         highlight
                                     </span>
@@ -504,8 +501,7 @@ const CardDetail = ({
                                     onClick={copyCard}
                                     className={`card--details--button border-gray-600 text-gray-600`}
                                 >
-                                    <FontAwesomeIcon icon={faCopy} />
-                                    <span> </span>
+                                    <Icon className="w-3 h-3" name="copy" />
                                     <span className="hidden sm:inline-block">
                                         copy
                                     </span>
@@ -514,7 +510,7 @@ const CardDetail = ({
 
                             <div className="h-[40px]">
                                 <button
-                                    className={`card--details--button border-green-700 min-w-[80px] text-green-700 ${card.verified ? "bg-teal-100" : ""}`}
+                                    className={`card--details--button border-green-700 w-fit text-green-700 ${card.verified ? "bg-teal-100" : ""}`}
                                     onClick={handleToggleVerified}
                                     title={
                                         card.verified
@@ -522,11 +518,14 @@ const CardDetail = ({
                                             : "click to verify"
                                     }
                                 >
-                                    {isVerifying
-                                        ? "..."
-                                        : card.verified
-                                          ? "✓ verified"
-                                          : "✓ verify"}
+                                    <Icon className="w-3 h-3" name="complete" />
+                                    <span className="hidden sm:inline-block">
+                                        {isVerifying
+                                            ? "..."
+                                            : card.verified
+                                              ? "verified"
+                                              : "verify"}
+                                    </span>
                                 </button>
                             </div>
 
@@ -540,7 +539,13 @@ const CardDetail = ({
                                     }
                                     className={`card--details--button border-rose-700 text-rose-700 ${openCardDeleteConfirm && "bg-rose-100"}`}
                                 >
-                                    - delete
+                                    <Icon
+                                        className="w-2.5 h-2.5"
+                                        name="minus"
+                                    />
+                                    <span className="hidden sm:inline-block">
+                                        delete
+                                    </span>
                                 </button>
 
                                 {openCardDeleteConfirm && (

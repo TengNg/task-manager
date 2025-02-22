@@ -1,19 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import Loading from "../ui/Loading";
-import Editor from "react-simple-wysiwyg";
 
 import dateFormatter from "../../utils/dateFormatter";
 
-const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
+const Editor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
     const dialog = useRef();
     const setTitleDialog = useRef();
     const setTitleInput = useRef();
     const textarea = useRef();
 
     const { title, content, createdAt, updatedAt } = writedown?.data;
-    const [writedownTitle, setWritedownTitle] = useState("");
-
-    const [html, setHtml] = useState("");
+    const [writedownTitle, setWritedownTitle] = useState(title);
 
     useEffect(() => {
         if (writedown.open) {
@@ -23,7 +20,6 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
             textarea.current.focus();
 
             setWritedownTitle(title);
-            setHtml(content);
 
             const handleOnClose = () => {
                 setWritedown((prev) => {
@@ -59,7 +55,7 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
     const handleClose = () => {
         const { _id } = writedown.data;
         try {
-            saveWritedown(_id, html);
+            saveWritedown(_id, textarea.current.value);
         } catch (err) {
             alert("Failed to save writedown");
         }
@@ -142,7 +138,7 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
                     fontSize="1rem"
                 />
 
-                <div className="font-medium text-[12px] absolute top-3 left-2 max-w-[300px] max-h-[100px] overflow-hidden text-slate-500 whitespace-nowrap text-ellipsis">
+                <div className="font-medium text-[12px] absolute top-2 left-2 max-w-[300px] max-h-[100px] overflow-hidden text-slate-500 whitespace-nowrap text-ellipsis">
                     <span>&#128205; title:</span>
                     <span> </span>
                     <span>{writedownTitle ? writedownTitle : "..."}</span>
@@ -150,7 +146,7 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
 
                 <button
                     title="set title for this writedown"
-                    className="absolute bg-teal-600 w-[12px] h-[12px] rounded-full right-[36px] top-4 z-20 opacity-[65%]"
+                    className="absolute bg-teal-600 w-[12px] h-[12px] rounded-full right-[36px] top-3 z-20 opacity-[65%]"
                     onClick={() => {
                         setTitleDialog.current.showModal();
                     }}
@@ -158,27 +154,18 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
 
                 <button
                     title="save & close"
-                    className="absolute bg-rose-600 w-[12px] h-[12px] rounded-full right-3 top-4 z-20 opacity-[65%]"
+                    className="absolute bg-rose-600 w-[12px] h-[12px] rounded-full right-3 top-3 z-20 opacity-[65%]"
                     onClick={handleClose}
                 ></button>
 
-                <div className="w-full h-[97%] pt-8 pb-4 px-8">
+                <div className="w-full h-[97%] pt-10 pb-4 px-6">
                     <textarea
                         ref={textarea}
-                        className="hidden font-medium w-full max-h-full overflow-y-scroll bg-transparent focus:bg-transparent text-[11px] px-2 sm:text-sm text-gray-600 leading-6 resize-none focus:outline-none"
+                        className="font-medium w-full max-h-full overflow-y-scroll bg-transparent focus:bg-transparent text-[11px] px-2 sm:text-sm text-gray-600 leading-6 resize-none focus:outline-none"
                         placeholder="writedown something..."
                         onChange={(e) => {
                             e.target.style.height = "auto";
                             e.target.style.height = `${e.target.scrollHeight}px`;
-                        }}
-                    />
-
-                    <div className="h-[1px] bg-transparent my-2"></div>
-
-                    <Editor
-                        value={html}
-                        onChange={(e) => {
-                            setHtml(e.target.value);
                         }}
                     />
                 </div>
@@ -196,4 +183,4 @@ const REditor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
     );
 };
 
-export default REditor;
+export default Editor;

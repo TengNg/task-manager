@@ -3,10 +3,9 @@ import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import useAuth from "../../hooks/useAuth";
 import Avatar from "../avatar/Avatar";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Loading from "../ui/Loading";
 import Member from "./Member";
+import Icon from "../shared/Icon";
 
 const InvitationForm = ({ open, setOpen }) => {
     const { auth } = useAuth();
@@ -156,7 +155,7 @@ const InvitationForm = ({ open, setOpen }) => {
                         className="text-gray-600 flex justify-center items-center"
                         onClick={handleClose}
                     >
-                        <FontAwesomeIcon icon={faXmark} size="xl" />
+                        <Icon className="w-4 h-4" name="xmark" />
                     </button>
                 </div>
 

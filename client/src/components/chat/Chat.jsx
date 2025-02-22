@@ -1,10 +1,7 @@
 import dateFormatter from "../../utils/dateFormatter";
 import useAuth from "../../hooks/useAuth";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark, faCircleUser } from "@fortawesome/free-solid-svg-icons";
-
 import { useLocation, Link } from "react-router-dom";
+import Icon from "../shared/Icon";
 
 const MESSAGE_PADDING = {
     x: {
@@ -50,19 +47,17 @@ const Chat = ({
             <div className="flex flex-col w-full">
                 <div className="flex w-full justify-start items-start">
                     <div className="flex w-full gap-2 justify-between flex-wrap">
-                        <p
-                            className={`text-[0.75rem] font-bold ${chat.sentBy?.username === auth?.user?.username ? "text-teal-700" : "text-gray-700"}`}
+                        <div
+                            className={`flex items-center gap-1 text-[0.75rem] font-bold ${chat.sentBy?.username === auth?.user?.username ? "text-teal-700" : "text-gray-700"}`}
                         >
-                            {sentBy?.username}
+                            <p>{sentBy?.username}</p>
 
                             {withUserIcon &&
                                 chat.sentBy?.username ===
                                     auth?.user?.username && (
-                                    <span className="ms-1">
-                                        <FontAwesomeIcon icon={faCircleUser} />
-                                    </span>
+                                    <Icon className="w-3 h-3" name="profile" />
                                 )}
-                        </p>
+                        </div>
                         {!error ? (
                             <p className="text-[0.65rem] text-gray-600">
                                 {createdAt
@@ -131,7 +126,7 @@ const Chat = ({
                         onClick={() => deleteMessage(trackedId)}
                         className="absolute top-[1.1rem] right-[0.2rem] text-transparent group-hover:text-gray-400"
                     >
-                        <FontAwesomeIcon icon={faXmark} size="sm" />
+                        <Icon className="w-3 h-3" name="xmark" />
                     </button>
                 )}
             </div>

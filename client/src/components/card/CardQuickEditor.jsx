@@ -257,7 +257,7 @@ const CardQuickEditor = ({
                         onClick={handleSaveButtonOnClick}
                         className="w-[110px] text-[0.75rem] text-white hover:bg-gray-700 bg-gray-800 px-4 py-2 flex--center opacity-80 z-0"
                     >
-                        Save
+                        save
                     </button>
 
                     <button
@@ -267,8 +267,8 @@ const CardQuickEditor = ({
                         {isVerifying
                             ? "..."
                             : cardVerifiedStatus
-                              ? "✓ Verified"
-                              : "Verify"}
+                              ? "verified"
+                              : "verify"}
                     </button>
                 </div>
             </div>

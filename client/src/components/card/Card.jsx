@@ -1,14 +1,16 @@
-import { useRef } from "react";
-import { Draggable } from "react-beautiful-dnd";
+import { useSortable } from "@dnd-kit/sortable";
 import useBoardState from "../../hooks/useBoardState";
 import dateFormatter, { dateToCompare } from "../../utils/dateFormatter";
-import Loading from "../ui/Loading";
-import { highlightColorsRGBA } from "../../data/highlights";
 import PRIORITY_LEVELS from "../../data/priorityLevels";
-
+import { highlightColorsRGBA } from "../../data/highlights";
+import { useRef } from "react";
 import { useSearchParams } from "react-router-dom";
+import Icon from "../shared/Icon";
+import Loading from "../ui/Loading";
 
-const Card = ({ index, card }) => {
+export default function Card({ card }) {
+    const cardRef = useRef();
+    const [searchParams, setSearchParams] = useSearchParams();
     const {
         setOpenedCardQuickEditor,
         focusedCard,
@@ -17,9 +19,19 @@ const Card = ({ index, card }) => {
         debugModeEnabled,
     } = useBoardState();
 
-    const cardRef = useRef();
+    const { attributes, listeners, setNodeRef, isDragging } = useSortable({
+        id: card._id,
+        data: {
+            type: "card",
+            card,
+        },
+    });
 
-    const [searchParams, setSearchParams] = useSearchParams();
+    const style = {
+        opacity: isDragging ? 0.2 : 1,
+        boxShadow: `${card.highlight == null ? "0 3px 0 0 #4b5563" : `0 3px 0 0 ${card.highlight}`}`,
+        borderColor: `${card.highlight == null ? "#4b5563" : `${card.highlight}`}`,
+    };
 
     const handleOpenQuickEditor = (e) => {
         e.stopPropagation();
@@ -50,18 +62,10 @@ const Card = ({ index, card }) => {
         setFocusedCard({ id: card._id, listId: card.listId, focused: true });
     };
 
-    const getStyle = (style, _) => {
-        return {
-            ...style,
-            boxShadow: `${card.highlight == null ? "0 3px 0 0 #4b5563" : `0 3px 0 0 ${card.highlight}`}`,
-            borderColor: `${card.highlight == null ? "#4b5563" : `${card.highlight}`}`,
-        };
-    };
-
     if (card.onLoading === true) {
         return (
             <div
-                className={`card__item ${card.hiddenByFilter && "hidden"} relative d-flex justify-center items-center text-[0.75rem] text-gray-500 w-full h-[110px] border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 cursor-not-allowed`}
+                className={`card__item ${card.hiddenByFilter && "hidden"} relative d-flex justify-center items-center text-[0.75rem] text-gray-500 w-full h-[110px] border-[2px] border-gray-600 px-2 py-4 flex flex-col shadow-[0_2px_0_0] shadow-gray-600 cursor-not-allowed`}
             >
                 <p className="w-full h-full bg-inherit font-semibold text-gray-600 rounded-md py-1 px-2 focus:outline-none text-sm break-words whitespace-pre-line">
                     {card.title}
@@ -79,131 +83,120 @@ const Card = ({ index, card }) => {
     }
 
     return (
-        <>
-            <Draggable key={card._id} draggableId={card._id} index={index}>
-                {(provided, snapshot) => (
-                    <div
-                        ref={(element) => {
-                            provided.innerRef(element);
-                            cardRef.current = element;
-                        }}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        data-card-item={`${card._id}-${card.listId}`}
-                        onKeyDown={(e) => {
-                            if (e.key == "Enter") {
-                                e.preventDefault();
-                                handleOpenCardDetail();
-                                return;
-                            }
-                            if (e.key == "q") {
-                                e.preventDefault();
-                                handleOpenQuickEditor(e);
-                                return;
-                            }
-                        }}
-                        onContextMenu={(e) => {
-                            e.preventDefault();
-                            handleOpenQuickEditor(e);
-                        }}
-                        onClick={handleOpenCardDetail}
-                        className={`card__item
-                            ${focusedCard?.id === card._id && focusedCard?.focused && "focused"}
-                            ${card.hiddenByFilter && "hidden"} ${theme.itemTheme == "rounded" ? "rounded" : ""} w-full group border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 relative
-                            ${dateToCompare(card?.dueDate) ? "past__due__card" : ""}
-                        `}
-                        style={getStyle(
-                            provided.draggableProps.style,
-                            snapshot,
-                        )}
-                    >
-                        <p className="group-hover:underline w-full h-full bg-transparent font-medium sm:font-semibold text-gray-700 rounded-md px-2 focus:outline-none text-sm break-words whitespace-pre-line">
-                            {card.title}
-                        </p>
+        <div
+            ref={(element) => {
+                setNodeRef(element);
+                cardRef.current = element;
+            }}
+            style={style}
+            {...attributes}
+            {...listeners}
+            className={`card__item
+                ${focusedCard?.id === card._id && focusedCard?.focused ? "focused" : ""}
+                ${card.hiddenByFilter ? "hidden" : ""}
+                ${theme.itemTheme == "rounded" ? "rounded" : ""}
+                ${dateToCompare(card?.dueDate) ? "past__due__card" : ""}
+                relative touch-none select-none w-full group border-[2px] border-gray-600 p-4 flex flex-col gap-2
+                shadow-[0_2px_0_0] shadow-gray-600 hover:shadow-[0_4px_0_0]
+            `}
+            onKeyDown={(e) => {
+                if (e.key == "Enter") {
+                    e.preventDefault();
+                    handleOpenCardDetail();
+                    return;
+                }
+                if (e.key == "q") {
+                    e.preventDefault();
+                    handleOpenQuickEditor(e);
+                    return;
+                }
+            }}
+            onContextMenu={(e) => {
+                e.preventDefault();
+                handleOpenQuickEditor(e);
+            }}
+            onClick={handleOpenCardDetail}
+        >
+            <p className="w-full h-full bg-transparent font-medium sm:font-semibold text-gray-700 rounded-md focus:outline-none text-sm break-words whitespace-pre-line">
+                {card.title}
+            </p>
 
-                        {card.verified && (
-                            <div className="absolute bottom-1 right-1 w-[18px] h-[18px] p-2 bg-green-800 opacity-45 text-gray-50 flex justify-center items-center rounded-sm">
-                                <span className="font-medium">✓</span>
-                            </div>
-                        )}
-
-                        <div className="flex justify-start items-center ms-2 text-gray-500 gap-2 mt-1">
-                            {card.priorityLevel &&
-                                card.priorityLevel !== "none" && (
-                                    <div
-                                        className="p-2 bg-gray-200 flex justify-center items-center rounded"
-                                        style={{
-                                            backgroundColor:
-                                                PRIORITY_LEVELS[
-                                                    `${card.priorityLevel}`
-                                                ]?.color?.rgba,
-                                        }}
-                                    >
-                                        <span className="text-[0.55rem] sm:text-[0.65rem] text-gray-50 font-medium tracking-wider">
-                                            {card.priorityLevel.toUpperCase()}
-                                        </span>
-                                    </div>
-                                )}
-
-                            {card.owner && (
-                                <div
-                                    className="p-2 bg-slate-300 text-gray-700 border-slate-400 flex justify-center items-center rounded"
-                                    style={{
-                                        backgroundColor:
-                                            highlightColorsRGBA[
-                                                `${card.highlight}`
-                                            ],
-                                    }}
-                                >
-                                    <span className="text-[0.55rem] sm:text-[0.65rem] font-medium">
-                                        {card.owner}
-                                    </span>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="text-[12px] text-gray-700 font-medium mt-3 ms-[0.5rem]">
-                            {card.createdAt ? (
-                                <span>
-                                    created:{" "}
-                                    {dateFormatter(card.createdAt, {
-                                        weekdayFormat: true,
-                                        withTime: false,
-                                    })}
-                                </span>
-                            ) : (
-                                <span className="text-red-600">error</span>
-                            )}
-                        </div>
-
-                        {card?.dueDate && (
-                            <div className="text-[12px] text-gray-700 font-medium mt-1 ms-[0.5rem]">
-                                due date:{" "}
-                                {dateFormatter(card?.dueDate, {
-                                    weekdayFormat: true,
-                                })}
-                            </div>
-                        )}
-
-                        {debugModeEnabled.enabled && (
-                            <div className="text-[0.65rem] text-gray-700 font-medium mt-1 ms-[0.5rem]">
-                                rank: {card.order}
-                            </div>
-                        )}
-
-                        <button
-                            onClick={(e) => {
-                                handleOpenQuickEditor(e);
-                            }}
-                            className="absolute hidden sm:block right-1 top-1 font-bold text-[10px] text-transparent hover:bg-zinc-200 group-hover:text-gray-600 w-[25px] h-[25px] d-flex justify-center items-center rounded-sm"
-                        >
-                            ...
-                        </button>
+            <div className="flex justify-start items-center text-gray-500 gap-1">
+                {card.verified && (
+                    <div className="bg-green-800/45 p-2 grid place-items-center text-white rounded-full">
+                        <Icon name="complete" className="w-2.5 h-2.5" />
                     </div>
                 )}
-            </Draggable>
-        </>
-    );
-};
 
-export default Card;
+                {card.priorityLevel && card.priorityLevel !== "none" && (
+                    <div
+                        className="p-2 bg-gray-200 flex justify-center items-center rounded"
+                        style={{
+                            backgroundColor:
+                                PRIORITY_LEVELS[`${card.priorityLevel}`]?.color
+                                    ?.rgba,
+                        }}
+                    >
+                        <span className="text-[0.55rem] sm:text-[0.65rem] text-gray-50 font-medium tracking-wider">
+                            {card.priorityLevel.toUpperCase()}
+                        </span>
+                    </div>
+                )}
+
+                {card.owner && (
+                    <div
+                        className="p-2 bg-slate-300 text-gray-700 border-slate-400 flex justify-center items-center rounded"
+                        style={{
+                            backgroundColor:
+                                highlightColorsRGBA[`${card.highlight}`],
+                        }}
+                    >
+                        <span className="text-[0.55rem] sm:text-[0.65rem] font-medium">
+                            {card.owner}
+                        </span>
+                    </div>
+                )}
+            </div>
+
+            <div className="flex flex-col gap-1">
+                <div className="text-[12px] text-gray-700 font-medium">
+                    {card.createdAt ? (
+                        <span>
+                            created:{" "}
+                            {dateFormatter(card.createdAt, {
+                                weekdayFormat: true,
+                                withTime: false,
+                            })}
+                        </span>
+                    ) : (
+                        <span className="text-red-600">error</span>
+                    )}
+                </div>
+
+                {card?.dueDate && (
+                    <div className="text-[12px] text-gray-700 font-medium">
+                        due date:{" "}
+                        {dateFormatter(card?.dueDate, {
+                            weekdayFormat: true,
+                        })}
+                    </div>
+                )}
+
+                {debugModeEnabled.enabled && (
+                    <div className="text-[0.65rem] text-gray-700 font-medium">
+                        rank: {card.order}
+                    </div>
+                )}
+            </div>
+
+            <button
+                onClick={(e) => {
+                    handleOpenQuickEditor(e);
+                }}
+                className="absolute hidden sm:block right-1 top-1 font-bold text-[12px] pb-1 text-transparent hover:bg-gray-500/10 group-hover:text-gray-600 w-[25px] h-[25px] d-flex justify-center items-center rounded-md"
+            >
+                ...
+            </button>
+        </div>
+    );
+}

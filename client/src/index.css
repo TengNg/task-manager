@@ -76,7 +76,7 @@
     }
 
     .card--details--button {
-        @apply w-fit min-w-[40px] border-2 shadow-[0_2px_0_0] bg-gray-100 text-[9px] sm:text-[0.75rem] p-2 font-semibold hover:shadow-[0_1px_0_0] hover:mt-[1px]
+        @apply flex items-center justify-center gap-1 w-fit min-w-[40px] h-[35px] border-2 shadow-[0_2px_0_0] bg-gray-100 text-[9px] sm:text-[0.75rem] p-2 font-semibold hover:shadow-[0_1px_0_0] hover:mt-[1px]
     }
 }
 
@@ -159,6 +159,10 @@ dialog button:focus {
 
 .list__item {
     background: rgba(241, 241, 241, 0.55);
+}
+
+.list__item__wrapper {
+    height: calc(100vh - 15rem);
 }
 
 #header-section {

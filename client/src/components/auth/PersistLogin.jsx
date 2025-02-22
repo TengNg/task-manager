@@ -35,9 +35,7 @@ const PersistLogin = () => {
                 <Outlet />
             ) : isLoading ? (
                 <div className="flex flex-col gap-4 font-medium mx-auto mt-20 text-gray-700 px-8 md:px-20">
-                    <p className="text-[0.75rem] sm:text-[1rem] text-center">
-                        Loading profile data
-                    </p>
+                    <p className="text-center">Loading profile data</p>
 
                     <div className="loader mx-auto my-4"></div>
 
