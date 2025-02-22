@@ -3,13 +3,13 @@ import "./index.css";
 import { lazy, Suspense, useState, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
-import NavBar from './components/ui/NavBar'
+import NavBar from "./components/ui/NavBar";
 import ThemesDialog from "./components/ui/ThemesDialog";
 
-import PersistLogin from './components/auth/PersistLogin'
-import NotFound from './pages/NotFound'
-import Login from './pages/Login'
-import Register from './pages/Register'
+import PersistLogin from "./components/auth/PersistLogin";
+import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 const About = lazy(() => import("./pages/About"));
 const Boards = lazy(() => import("./pages/Boards"));

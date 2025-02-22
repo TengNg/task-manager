@@ -109,16 +109,18 @@ export default function Login() {
                             {errMsg}
                         </p>
                     )}
-                    {searchParams.get("authorize_failed") && (<div className="flex flex-col">
-                        <p className="text-[0.65rem] text-red-700 ms-0.5 mt-1 font-medium select-none">
-                            Failed to Log in
-                        </p>
-                        {searchParams.get("message") && (
+                    {searchParams.get("authorize_failed") && (
+                        <div className="flex flex-col">
                             <p className="text-[0.65rem] text-red-700 ms-0.5 mt-1 font-medium select-none">
-                                {searchParams.get("message")}
+                                Failed to Log in
                             </p>
-                        )}
-                    </div>)}
+                            {searchParams.get("message") && (
+                                <p className="text-[0.65rem] text-red-700 ms-0.5 mt-1 font-medium select-none">
+                                    {searchParams.get("message")}
+                                </p>
+                            )}
+                        </div>
+                    )}
 
                     <div className="flex flex-col gap-3 mt-4">
                         <button

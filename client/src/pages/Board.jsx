@@ -212,7 +212,7 @@ const Board = () => {
 
         return () => {
             socket.disconnect();
-        }
+        };
     }, [boardId]);
 
     // fetching chat messages from current board =======================================================================
@@ -741,8 +741,7 @@ const Board = () => {
                 setHasReceivedNewMessage={setHasReceivedNewMessage}
             />
 
-            {
-                !chatError.msg &&
+            {!chatError.msg && (
                 <FloatingChat
                     error={chatError}
                     open={openFloatingChat}
@@ -758,7 +757,7 @@ const Board = () => {
                     hasReceivedNewMessage={hasReceivedNewMessage}
                     setHasReceivedNewMessage={setHasReceivedNewMessage}
                 />
-            }
+            )}
 
             {boardState?.board?.visibility && (
                 <div

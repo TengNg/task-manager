@@ -50,7 +50,7 @@ const Boards = () => {
         };
     }, []);
 
-    async function fetchBoards(filter = '') {
+    async function fetchBoards(filter = "") {
         const response = await axiosPrivate.get(`/boards?filter=${filter}`);
         return response.data;
     }
@@ -219,12 +219,7 @@ const Boards = () => {
                                 </div>
                             </div>
 
-                            {
-                                openBoardForm &&
-                                <BoardForm
-                                    ref={boardFormRef}
-                                />
-                            }
+                            {openBoardForm && <BoardForm ref={boardFormRef} />}
                         </div>
                     </div>
 

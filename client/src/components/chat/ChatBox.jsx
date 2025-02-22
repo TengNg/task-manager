@@ -46,7 +46,11 @@ const ChatBox = ({
     }, [open]);
 
     useEffect(() => {
-        if (hasReceivedNewMessage && isAtBottomOfChat && messageEndRef.current) {
+        if (
+            hasReceivedNewMessage &&
+            isAtBottomOfChat &&
+            messageEndRef.current
+        ) {
             messageEndRef.current.scrollIntoView({ block: "end" });
         }
     }, [hasReceivedNewMessage, chats.length]);
@@ -74,32 +78,34 @@ const ChatBox = ({
     };
 
     if (error.msg) {
-        return <div
-            id="chat-box"
-            ref={chatContainer}
-            className={`${open ? "flex" : "hidden"} fixed flex-col border-[2px] border-black right-0 bottom-0 sm:right-1 sm:bottom-1 bg-slate-100 w-[325px] h-[400px] overflow-auto z-30`}
-        >
-            <div className="relative flex items-center gap-3 border-b-2 border-black px-3 py-2">
-                <p className="flex-1 font-semibold text-gray-600">Chat</p>
-
-                <button onClick={handleOpenFloat} className="text-gray-600">
-                    <FontAwesomeIcon icon={faExpand} size="lg" />
-                </button>
-
-                <button
-                    onClick={() => setOpen(false)}
-                    className="text-gray-600"
-                >
-                    <FontAwesomeIcon icon={faXmark} size="lg" />
-                </button>
-            </div>
-
+        return (
             <div
-                className="relative flex-1 w-full border-red-100 flex flex-col gap-3 overflow-y-auto p-1 justify-center items-center"
+                id="chat-box"
+                ref={chatContainer}
+                className={`${open ? "flex" : "hidden"} fixed flex-col border-[2px] border-black right-0 bottom-0 sm:right-1 sm:bottom-1 bg-slate-100 w-[325px] h-[400px] overflow-auto z-30`}
             >
-                <div className="text-gray-400 text-sm">{error.msg || "something went wrong :("}</div>
+                <div className="relative flex items-center gap-3 border-b-2 border-black px-3 py-2">
+                    <p className="flex-1 font-semibold text-gray-600">Chat</p>
+
+                    <button onClick={handleOpenFloat} className="text-gray-600">
+                        <FontAwesomeIcon icon={faExpand} size="lg" />
+                    </button>
+
+                    <button
+                        onClick={() => setOpen(false)}
+                        className="text-gray-600"
+                    >
+                        <FontAwesomeIcon icon={faXmark} size="lg" />
+                    </button>
+                </div>
+
+                <div className="relative flex-1 w-full border-red-100 flex flex-col gap-3 overflow-y-auto p-1 justify-center items-center">
+                    <div className="text-gray-400 text-sm">
+                        {error.msg || "something went wrong :("}
+                    </div>
+                </div>
             </div>
-        </div>
+        );
     }
 
     return (
@@ -113,13 +119,13 @@ const ChatBox = ({
 
                 {auth.user?.username ===
                     boardState.board.createdBy.username && (
-                        <button
-                            onClick={handleClearMessages}
-                            className="text-[0.65rem] border-[2px] border-rose-400 text-rose-400 px-2 me-3 font-semibold"
-                        >
-                            Clear
-                        </button>
-                    )}
+                    <button
+                        onClick={handleClearMessages}
+                        className="text-[0.65rem] border-[2px] border-rose-400 text-rose-400 px-2 me-3 font-semibold"
+                    >
+                        Clear
+                    </button>
+                )}
 
                 <button onClick={handleOpenFloat} className="text-gray-600">
                     <FontAwesomeIcon icon={faExpand} size="lg" />
