@@ -37,12 +37,13 @@ const Boards = () => {
     const createBoardButtonRef = useRef();
 
     const boardsQuery = useQuery({
-        staleTime: Infinity,
         queryKey: ["boards", boardFilter],
-        queryFn: () => fetchBoards(boardFilter)
+        refetchOnMount: true,
+        queryFn: () => fetchBoards(boardFilter),
     });
 
     useEffect(() => {
+        handleRefreshData();
         document.addEventListener("keydown", handleKeyDown);
         () => {
             document.removeEventListener("keydown", handleKeyDown);

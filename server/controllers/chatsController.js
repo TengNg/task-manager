@@ -17,7 +17,7 @@ const getMessages = async (req, res) => {
     page = +page || 1;
 
     const foundBoard = await boardById(boardId);
-    if (!foundBoard) return res.status(403).json({ msg: "cannot fetch chat, board not found" });
+    if (!foundBoard) return res.status(400).json({ msg: "cannot fetch chat, board not found" });
 
     const messages = await Chat
         .find({ boardId })

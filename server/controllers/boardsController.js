@@ -62,7 +62,7 @@ const getBoard = async (req, res) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404);
+        return res.status(400).json({ msg: 'invalid board-id' });
     }
 
     const board = await Board
@@ -84,7 +84,7 @@ const getBoard = async (req, res) => {
         })
 
     if (!board) {
-        return res.status(404);
+        return res.status(400).json({ msg: 'board not found' });
     }
 
     // this current update list-count & card-count logic is ugly

@@ -22,7 +22,7 @@ const sanitizeUser = (user) => {
         createdAt,
         recentlyViewedBoardId,
         pinnedBoardIdCollection: Object.fromEntries(pinnedBoardIdCollection),
-        discordId,
+        loginWithDiscord: !!discordId,
     }
 
     return data;
