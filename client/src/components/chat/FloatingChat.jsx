@@ -1,13 +1,10 @@
 import { useRef, useEffect } from "react";
 import useBoardState from "../../hooks/useBoardState";
 import useAuth from "../../hooks/useAuth";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark, faCompress } from "@fortawesome/free-solid-svg-icons";
-
 import Chat from "./Chat";
 import ChatInput from "./ChatInput";
 import Loading from "../ui/Loading";
+import Icon from "../shared/Icon";
 
 const FloatingChat = ({
     open,
@@ -89,12 +86,12 @@ const FloatingChat = ({
 
             <div
                 ref={chatContainer}
-                className={`fixed ${!open ? "hidden" : "block"} box--style flex pt-1 flex-col top-[5rem] right-0 left-[50%] overflow-auto -translate-x-[50%] w-[90%] md:w-[80%] lg:w-[80%] xl:w-[50%] 2xl:w-[50%] h-[75%] border-[2px] border-black z-50 cursor-auto bg-slate-100`}
+                className={`fixed ${!open ? "hidden" : "block"} box--style flex pt-2 flex-col top-[5rem] right-0 left-[50%] overflow-auto -translate-x-[50%] w-[90%] md:w-[80%] lg:w-[80%] xl:w-[50%] 2xl:w-[50%] h-[75%] border-[2px] border-black z-50 cursor-auto bg-slate-100`}
             >
                 <div className="flex justify-between items-center pb-2 mx-3">
                     <div>Chat</div>
 
-                    <div className="d-flex justify-center items-center">
+                    <div className="flex justify-center items-center">
                         {auth.user?.username ===
                             boardState.board.createdBy.username && (
                             <button
@@ -106,21 +103,21 @@ const FloatingChat = ({
                         )}
                         <button
                             onClick={handleCloseFloatAndOpenChatBox}
-                            className="text-[0.75rem] py-1 text-gray-500"
+                            className="text-[0.75rem] text-gray-500"
                         >
-                            <FontAwesomeIcon icon={faCompress} size="2xl" />
+                            <Icon className="w-4 h-4" name="compress" />
                         </button>
 
                         <button
                             onClick={handleClose}
-                            className="text-[0.75rem] py-1 ms-5 text-gray-500"
+                            className="text-[0.75rem] ms-5 text-gray-500"
                         >
-                            <FontAwesomeIcon icon={faXmark} size="2xl" />
+                            <Icon className="w-4 h-4" name="xmark" />
                         </button>
                     </div>
                 </div>
 
-                <div className="h-[1px] bg-gray-700 w-full"></div>
+                <div className="h-[1px] bg-gray-300 w-full"></div>
 
                 <div
                     onScroll={handleLoadMoreOnScroll}

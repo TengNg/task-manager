@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import Loading from "../ui/Loading";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import VISIBILITY_MAP from "../../data/visibility";
 import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import Icon from "../shared/Icon";
 
 const VisibilityConfig = ({ open, setOpen }) => {
     const { boardState, setBoardVisibility } = useBoardState();
@@ -86,7 +85,7 @@ const VisibilityConfig = ({ open, setOpen }) => {
                     className="text-gray-600 flex justify-center items-center"
                     onClick={handleClose}
                 >
-                    <FontAwesomeIcon icon={faXmark} size="xl" />
+                    <Icon className="w-4 h-4" name="xmark" />
                 </button>
             </div>
 

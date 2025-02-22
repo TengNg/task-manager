@@ -151,7 +151,7 @@ const CardComposer = ({ list, open, setOpen }) => {
     return (
         <div
             ref={composerRef}
-            className={`flex flex-col py-2 gap-2 items-start justify-start`}
+            className={`flex flex-col gap-2 items-start justify-start mb-2`}
         >
             <textarea
                 disabled={isAddingCard}

@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import Icon from "../shared/Icon";
 
 const JoinBoardRequestForm = ({ open, setOpen }) => {
     const dialog = useRef();
@@ -89,7 +88,7 @@ const JoinBoardRequestForm = ({ open, setOpen }) => {
                     className="text-gray-600 flex justify-center items-center"
                     onClick={handleClose}
                 >
-                    <FontAwesomeIcon icon={faXmark} size="xl" />
+                    <Icon className="w-4 h-4" name="xmark" />
                 </button>
             </div>
 

@@ -1,18 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
+import { lexorank } from "../utils/class/Lexorank";
 import useBoardState from "../hooks/useBoardState";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import useAuth from "../hooks/useAuth";
 import useKeyBinds from "../hooks/useKeyBinds";
 import useCardActions from "../hooks/useCardActions";
 import useFetchCardDetail from "../hooks/useFetchCardDetail";
-
-import { lexorank } from "../utils/class/Lexorank";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faThumbtack } from "@fortawesome/free-solid-svg-icons";
-
 import ListContainer from "../components/list/ListContainer";
 import InvitationForm from "../components/invitation/InvitationForm";
 import BoardMenu from "../components/board/BoardMenu";
@@ -779,11 +773,11 @@ const Board = () => {
                 </div>
             )}
 
-            <div className="w-full h-[calc(100vh-125px)] flex flex-col justify-start gap-3 items-start bg-transparent">
+            <div className="w-full h-[calc(100vh-8rem)] flex flex-col justify-start gap-3 items-start bg-transparent">
                 <div className="flex flex-wrap justify-between w-full z-20 px-4">
                     <div>
                         <input
-                            maxLength={70}
+                            maxLength={80}
                             className={`flex-1 bg-transparent overflow-hidden text-gray-700 whitespace-nowrap text-ellipsis border-b-[2px] bg-gray-100 border-gray-700 py-1 font-medium sm:font-bold select-none mb-2 focus:outline-none`}
                             id="board-title-input"
                             style={{
@@ -863,10 +857,7 @@ const Board = () => {
                     </div>
                 </div>
 
-                <div
-                    id="list-container-wrapper"
-                    className="w-[100vw] h-full overflow-x-auto"
-                >
+                <div className="w-[100vw] overflow-x-auto">
                     <ListContainer
                         openAddList={openAddList}
                         setOpenAddList={setOpenAddList}
@@ -903,8 +894,7 @@ const Board = () => {
                 >
                     {pinned ? (
                         <div className="flex justify-center items-center gap-2">
-                            <FontAwesomeIcon icon={faThumbtack} />
-                            <span>pinned</span>
+                            <span>*pinned</span>
                         </div>
                     ) : (
                         <div className="flex justify-center items-center gap-1">
@@ -929,26 +919,25 @@ const Board = () => {
                     </p>
 
                     <button
-                        className="sm:block hidden w-[16px] h-[16px] bg-pink-400 hover:bg-pink-500 rounded-full"
-                        onClick={() => {
+                        className="sm:block hidden w-5 h-5 bg-pink-400 rounded-full"
+                        onClick={(e) => {
                             navigator.clipboard
                                 .writeText(boardState?.board?._id)
                                 .then(() => {
-                                    alert("copied board code to clipboard");
+                                    e.target.style.backgroundColor =
+                                        "lightpink";
                                 });
                         }}
                         title="copy board code"
                     ></button>
 
                     <button
-                        className="sm:block hidden w-[16px] h-[16px] bg-gray-600 hover:bg-gray-700 text-white rounded-full"
+                        className="sm:block hidden w-5 h-5 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-full"
                         onClick={() => {
                             setOpenKeyBindings((prev) => !prev);
                         }}
                         title="open help"
-                    >
-                        ?
-                    </button>
+                    ></button>
                 </div>
             </div>
 

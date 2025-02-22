@@ -19,7 +19,7 @@ const BoardForm = forwardRef(({}, ref) => {
                 err?.response?.data?.errMsg || "Failed to create new board";
             alert(errMsg);
         },
-    })
+    });
 
     const handleCreateBoard = async (e) => {
         e.preventDefault();
@@ -29,7 +29,7 @@ const BoardForm = forwardRef(({}, ref) => {
         }
 
         mutate();
-    }
+    };
 
     const createBoard = async () => {
         const response = await axiosPrivate.post(
@@ -39,7 +39,6 @@ const BoardForm = forwardRef(({}, ref) => {
 
         return response.data;
     };
-
 
     return (
         <>

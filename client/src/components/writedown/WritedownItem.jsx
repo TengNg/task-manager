@@ -1,7 +1,6 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import dateFormatter from "../../utils/dateFormatter";
 import Loading from "../ui/Loading";
+import Icon from "../shared/Icon";
 
 const WritedownItem = ({ writedown, open, remove, pin }) => {
     const { _id: id, title, content, isPinning, pinned, createdAt } = writedown;
@@ -29,7 +28,7 @@ const WritedownItem = ({ writedown, open, remove, pin }) => {
                     className="text-gray-400 flex justify-center items-center hover:text-rose-400"
                     onClick={() => remove(id)}
                 >
-                    <FontAwesomeIcon icon={faXmark} size="lg" />
+                    <Icon className="w-4 h-4" name="xmark" />
                 </button>
             </div>
 

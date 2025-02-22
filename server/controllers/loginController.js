@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const { createAuthTokens, sendAuthCookies } = require('../services/createAuthTokensService');
 const { sanitizeUser } = require('../services/userService');

@@ -19,15 +19,13 @@ const Profile = lazy(() => import("./pages/Profile"));
 const Writedowns = lazy(() => import("./pages/Writedowns"));
 const SomethingWentWrong = lazy(() => import("./pages/SomethingWentWrong"));
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPalette } from "@fortawesome/free-solid-svg-icons";
-
 import { BoardStateContextProvider } from "./context/BoardStateContext";
 
 import useLocalStorage from "./hooks/useLocalStorage";
 
 import PAGES from "./data/pages";
 import LOCAL_STORAGE_KEYS from "./data/localStorageKeys";
+import Icon from "./components/shared/Icon";
 
 const noNavPaths = ["/login", "/register"];
 
@@ -35,6 +33,15 @@ const titleMap = Object.values(PAGES).reduce((obj, p, index) => {
     const title = `0${index} ${p.title}`;
     return { ...obj, [p.path]: title };
 }, {});
+
+function Loading() {
+    return (
+        <>
+            <div className="font-medium mx-auto text-center mt-20 text-gray-600"></div>
+            <div className="loader mx-auto my-8"></div>
+        </>
+    );
+}
 
 function App() {
     const location = useLocation();
@@ -59,7 +66,7 @@ function App() {
     return (
         <>
             {!noNavPaths.includes(pathname) && <NavBar />}
-            <Suspense fallback={<div className="loader mx-auto my-8"></div>}>
+            <Suspense fallback={<Loading />}>
                 <Routes>
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
@@ -95,11 +102,11 @@ function App() {
 
             <button
                 onClick={() => setOpenThemesDialog(true)}
-                className="fixed sm:right-4 sm:bottom-4 text-[13px] sm:text-[1rem] right-1 bottom-2 sm:w-[35px] sm:h-[35px] w-[30px] h-[30px] rounded-full bg-gray-500 text-transparent hover:bg-gray-500/75"
+                className="fixed grid place-items-center sm:right-4 sm:bottom-4 text-[13px] sm:text-[1rem] right-1 bottom-2 sm:w-[35px] sm:h-[35px] w-[30px] h-[30px] rounded-full bg-gray-500 text-transparent hover:bg-gray-500/75"
                 style={{ color: backgroundTheme?.hex || "#f1f1f1" }}
                 title={backgroundTheme?.theme}
             >
-                <FontAwesomeIcon icon={faPalette} />
+                <Icon className="w-4 h-4" name="pallete" />
             </button>
         </>
     );

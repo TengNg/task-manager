@@ -1,14 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-
 import ActivityItem from "./ActivityItem";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Loading from "../ui/Loading";
 
 import useAuth from "../../hooks/useAuth";
 import useBoardState from "../../hooks/useBoardState";
+import Icon from "../shared/Icon";
 
 const ACTIVITIES_PER_PAGE = 50;
 
@@ -61,7 +58,7 @@ const BoardActivities = ({ open, setOpen }) => {
             setLoading(true);
 
             const response = await axiosPrivate.get(
-                `/board_activities/${boardState?.board?.boardId}?perPage=${ACTIVITIES_PER_PAGE}&page=${activitiesPage}`,
+                `/board_activities/${boardState?.board?._id}?perPage=${ACTIVITIES_PER_PAGE}&page=${activitiesPage}`,
             );
 
             if (response.data.activities.length === 0) {
@@ -142,11 +139,11 @@ const BoardActivities = ({ open, setOpen }) => {
                     className="text-gray-600 flex justify-center items-center"
                     onClick={handleClose}
                 >
-                    <FontAwesomeIcon icon={faXmark} size="xl" />
+                    <Icon className="w-4 h-4" name="xmark" />
                 </button>
             </div>
 
-            <div className="border-b-[1px] border-black mx-3"></div>
+            <div className="border-b-[1px] border-gray-300"></div>
 
             <div className="relative flex flex-col gap-3 p-3 text-gray-600 text-[0.65rem] sm:text-[0.75rem] max-h-[600px] overflow-auto">
                 <Loading

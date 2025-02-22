@@ -43,7 +43,7 @@ const Boards = () => {
     });
 
     useEffect(() => {
-        handleRefreshData();
+        boardsQuery.refetch();
         document.addEventListener("keydown", handleKeyDown);
         () => {
             document.removeEventListener("keydown", handleKeyDown);
@@ -169,27 +169,31 @@ const Boards = () => {
                                 </span>
                             </div>
 
-                            {
-                                boardsQuery.data.totalOwned > 0 && <div>
+                            {boardsQuery.data.totalOwned > 0 && (
+                                <div>
                                     <span
                                         className={`cursor-pointer ${boardFilter === FILTERS.OWNED ? "underline" : ""}`}
-                                        onClick={() => handleFilter(FILTERS.OWNED)}
+                                        onClick={() =>
+                                            handleFilter(FILTERS.OWNED)
+                                        }
                                     >
                                         owned:{boardsQuery.data.totalOwned}/10
                                     </span>
                                 </div>
-                            }
+                            )}
 
-                            {
-                                boardsQuery.data.totalJoined > 0 && <div>
+                            {boardsQuery.data.totalJoined > 0 && (
+                                <div>
                                     <span
                                         className={`cursor-pointer ${boardFilter === FILTERS.JOINED ? "underline" : ""}`}
-                                        onClick={() => handleFilter(FILTERS.JOINED)}
+                                        onClick={() =>
+                                            handleFilter(FILTERS.JOINED)
+                                        }
                                     >
                                         joined:{boardsQuery.data.totalJoined}
                                     </span>
                                 </div>
-                            }
+                            )}
                         </div>
 
                         <div className="flex gap-3">

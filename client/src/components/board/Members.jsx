@@ -2,9 +2,8 @@ import { useRef, useEffect } from "react";
 import useAuth from "../../hooks/useAuth";
 import Avatar from "../avatar/Avatar";
 import useBoardState from "../../hooks/useBoardState";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import dateFormatter from "../../utils/dateFormatter";
+import Icon from "../shared/Icon";
 
 const Members = ({ open, setOpen }) => {
     const dialog = useRef();
@@ -56,7 +55,7 @@ const Members = ({ open, setOpen }) => {
                         className="text-gray-600 flex justify-center items-center focus:outline-none"
                         onClick={handleClose}
                     >
-                        <FontAwesomeIcon icon={faXmark} size="xl" />
+                        <Icon className="w-4 h-4" name="xmark" />
                     </button>
                 </div>
 

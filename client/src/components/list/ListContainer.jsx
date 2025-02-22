@@ -1,29 +1,51 @@
-import React, { useRef, useEffect } from "react";
-import { DragDropContext } from "react-beautiful-dnd";
-import { StrictModeDroppable as Droppable } from "../../helpers/StrictModeDroppable";
+import React, { useRef, useMemo, useState } from "react";
 import List from "./List";
 import useBoardState from "../../hooks/useBoardState";
 import AddList from "./AddList";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { lexorank } from "../../utils/class/Lexorank";
 import useAuth from "../../hooks/useAuth";
+import {
+    closestCenter,
+    DndContext,
+    DragOverlay,
+    PointerSensor,
+    TouchSensor,
+    useSensor,
+    useSensors,
+} from "@dnd-kit/core";
+import {
+    SortableContext,
+    horizontalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { createPortal } from "react-dom";
+import Card from "../card/Card";
 
 const ListContainer = ({ openAddList, setOpenAddList }) => {
     const { boardState, setBoardState, socket } = useBoardState();
+    const [clonedBoardState, setClonedBoardState] = useState(null);
+
+    const [activeList, setActiveList] = useState(undefined);
+    const [activeCard, setActiveCard] = useState(undefined);
 
     const { auth } = useAuth();
 
-    const listContainerRef = useRef();
-
     const axiosPrivate = useAxiosPrivate();
 
-    useEffect(() => {
-        if (listContainerRef.current) {
-            listContainerRef.current.scrollLeft = 0;
-        }
-    }, []);
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 10,
+            },
+        }),
+        useSensor(TouchSensor, {
+            activationConstraint: {
+                distance: 10,
+            },
+        }),
+    );
 
-    const handleOnDragEnd = async (result) => {
+    function validateBoardMember() {
         if (
             boardState?.board?.createdBy?._id !== auth?.user?._id &&
             !boardState?.board?.members
@@ -33,24 +55,50 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
             alert("You don't have permission, please join the board first");
             return;
         }
+    }
 
-        const { destination, source, type } = result;
+    async function handleOnDragEnd(e) {
+        setActiveCard(null);
+        setActiveList(null);
 
-        if (!destination) return;
+        validateBoardMember();
 
-        const { index: destIndex } = destination;
-        const { index: srcIndex } = source;
+        const { active, over } = e;
+        if (!over) {
+            return;
+        }
 
-        // deep copy, need this when failed to reorder
-        let tempLists = JSON.parse(JSON.stringify([...boardState.lists]));
+        const activeData = active.data.current;
+        const overData = over.data.current;
+        const activeType = activeData.type;
+        const overType = overData.type;
 
-        if (type === "LIST") {
+        if (activeType === "list" && overType === "card") {
+            return;
+        }
+
+        if (activeType === "list") {
+            let overId = "";
+            if (overType === "list") {
+                overId = over.id;
+            } else if (overType === "card") {
+                overId = over.data.current.card.listId;
+            }
+
+            const srcIndex = lists.findIndex((l) => l._id == active.id);
+            const destIndex = lists.findIndex((l) => l._id == overId);
+
+            // deep copy, need this when failed to reorder
+            const initialLists = structuredClone(boardState.lists);
+
             const newLists = [...boardState.lists];
-            const [removed] = newLists.splice(source.index, 1);
+            const [removed] = newLists.splice(srcIndex, 1);
 
-            if (destIndex === srcIndex) return;
+            if (destIndex === srcIndex) {
+                return;
+            }
 
-            newLists.splice(destination.index, 0, removed);
+            newLists.splice(destIndex, 0, removed);
 
             let prevRank = newLists[destIndex - 1]?.order;
             let nextRank = newLists[destIndex + 1]?.order;
@@ -59,160 +107,300 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
 
             // failed to reorder
             if (!ok) {
-                alert(
-                    "Failed to reorder list, rank is not valid. You can try to drag to another place, then drag back to this position again.",
-                );
+                console.error("failed to reorder item");
                 return;
             }
 
-            const removedId = removed._id;
-
-            removed.order = rank;
-
             try {
                 setBoardState((prev) => {
+                    removed.order = rank;
                     return { ...prev, lists: newLists };
                 });
 
                 await axiosPrivate.put(
-                    `/lists/${removedId}/reorder`,
+                    `/lists/${removed._id}/reorder`,
                     JSON.stringify({
                         rank,
                         sourceIndex: srcIndex,
                         destinationIndex: destIndex,
                     }),
                 );
+
                 socket.emit("moveList", {
-                    listId: removedId,
+                    listId: removed._id,
                     fromIndex: srcIndex,
                     toIndex: destIndex,
                 });
             } catch (err) {
                 alert("Failed to reorder list");
                 setBoardState((prev) => {
-                    return { ...prev, lists: tempLists };
+                    return { ...prev, lists: initialLists };
                 });
             }
 
             return;
         }
 
-        // type CARD ============================================================================================
+        // type card
 
-        let currentLists = boardState.lists;
+        const activeId = active.id;
+        const activeListId = activeData.card.listId;
 
-        const fromList = currentLists.find(
-            (list) => list._id === source.droppableId,
-        );
-        const toList = currentLists.find(
-            (list) => list._id === destination.droppableId,
-        );
+        const activeList = boardState.lists.find((l) => l._id === activeListId);
+        const cards = activeList.cards;
 
-        // dragging outside
-        if (!fromList || !toList) return;
+        const activeIndex = cards.findIndex((c) => c._id == activeId);
 
-        // dragging to the same location
-        if (fromList._id === toList._id && source.index === destination.index)
-            return;
+        const prevOrder = cards[activeIndex - 1]?.order;
+        const nextOrder = cards[activeIndex + 1]?.order;
 
-        const fromListCards = fromList.cards;
-        const toListCards = toList.cards;
-
-        // get dragged card
-        const [removed] = fromListCards.splice(source.index, 1);
-        const removedId = removed._id;
-
-        let prevRank = "";
-        let nextRank = "";
-
-        if (fromList._id === toList._id) {
-            fromListCards.splice(destination.index, 0, removed);
-            prevRank = fromListCards[destIndex - 1]?.order;
-            nextRank = fromListCards[destIndex + 1]?.order;
-        } else {
-            toListCards.splice(destination.index, 0, removed);
-            removed.listId = destination.droppableId;
-            prevRank = toListCards[destIndex - 1]?.order;
-            nextRank = toListCards[destIndex + 1]?.order;
-        }
-
-        let [rank, ok] = lexorank.insert(prevRank, nextRank);
-
+        const [rank, ok] = lexorank.insert(prevOrder, nextOrder);
         if (!ok) {
-            alert(
-                "Failed to reorder card, rank is not valid. You can try to drag to another place, then drag back to this position again.",
-            );
+            alert("Failed to reorder card. Error: invalid order");
+            setBoardState(clonedBoardState);
             return;
         }
-
-        removed.order = rank;
-        removed.updatedAt = new Date();
 
         try {
-            setBoardState((prev) => {
-                return { ...prev, lists: currentLists };
-            });
-
             const response = await axiosPrivate.put(
-                `/cards/${removedId}/reorder`,
+                `/cards/${activeId}/reorder`,
                 JSON.stringify({
                     rank,
-                    listId: removed.listId,
-                    timestamp: removed.updatedAt,
-                    sourceIndex: srcIndex,
-                    destinationIndex: destIndex,
+                    listId: activeListId,
+                    timestamp: new Date(),
                 }),
             );
+
             const newCard = response.data.newCard;
+            setBoardState((prev) => {
+                const lists = [...prev.lists];
+                return {
+                    ...prev,
+                    lists: lists.map((l) => {
+                        if (l._id === activeListId) {
+                            return {
+                                ...l,
+                                cards: l.cards.map((c) => {
+                                    return c._id == newCard._id ? newCard : c;
+                                }),
+                            };
+                        }
+                        return l;
+                    }),
+                };
+            });
 
             socket.emit("moveCardToList", {
-                oldListId: source.droppableId,
+                oldListId: response.data.oldListId,
                 newListId: newCard.listId,
-                insertedIndex: destIndex,
+                insertedIndex: activeIndex,
                 card: newCard,
             });
         } catch (err) {
+            console.log(err);
             alert("Failed to reorder card");
-            setBoardState((prev) => {
-                return { ...prev, lists: tempLists };
-            });
+            setBoardState(clonedBoardState);
         }
-    };
+    }
+
+    function handleOnDragOver(e) {
+        const { active, over } = e;
+        if (!over) {
+            return;
+        }
+
+        const activeId = active.id;
+        const overId = over.id;
+
+        if (activeId === overId || !over?.id) {
+            return;
+        }
+
+        const isActiveTypeCard = active.data.current?.type === "card";
+        const isOverACard = over.data.current?.type === "card";
+
+        if (!isActiveTypeCard) {
+            return;
+        }
+
+        const isOverAList = over.data.current?.type === "list";
+        if (isActiveTypeCard && isOverAList) {
+            const newLists = [...boardState.lists];
+            const overList = newLists.find((l) => l._id === over.id);
+            if (!overList) {
+                return;
+            }
+
+            const activeListId = active.data.current.card.listId;
+            if (activeListId === over.id) {
+                return;
+            }
+
+            const activeList = [...newLists].find(
+                (l) => l._id === activeListId,
+            );
+            const newActiveCards = [...activeList.cards];
+            const newOverCards = [...overList.cards];
+
+            const activeIndex = newActiveCards.findIndex(
+                (c) => c._id === active.id,
+            );
+            const [removed] = newActiveCards.splice(activeIndex, 1);
+
+            removed.listId = overList._id;
+            newOverCards.push(removed);
+
+            setBoardState((prev) => {
+                return {
+                    ...prev,
+                    lists: prev.lists.map((l) => {
+                        if (l._id === activeListId) {
+                            l.cards = newActiveCards;
+                        } else if (l._id === overList._id) {
+                            l.cards = newOverCards;
+                        }
+
+                        return l;
+                    }),
+                };
+            });
+
+            return;
+        }
+
+        if (isActiveTypeCard && isOverACard) {
+            const newLists = [...boardState.lists];
+            const activeListId = active.data.current.card.listId;
+            const overListId = over.data.current.card.listId;
+
+            if (activeListId === overListId) {
+                const currentList = newLists.find(
+                    (l) => l._id === activeListId,
+                );
+                const newCards = [...currentList.cards];
+
+                const activeIndex = newCards.findIndex(
+                    (c) => c._id === activeId,
+                );
+                const overIndex = newCards.findIndex((c) => c._id === overId);
+
+                const [removed] = newCards.splice(activeIndex, 1);
+                newCards.splice(overIndex, 0, removed);
+
+                setBoardState((prev) => {
+                    return {
+                        ...prev,
+                        lists: prev.lists.map((l) => {
+                            if (l._id === activeListId) {
+                                l.cards = newCards;
+                            }
+                            return l;
+                        }),
+                    };
+                });
+            } else {
+                const activeList = newLists.find((l) => l._id === activeListId);
+                const overList = newLists.find((l) => l._id === overListId);
+
+                const newActiveCards = [...activeList.cards];
+                const newOverCards = [...overList.cards];
+
+                const activeIndex = newActiveCards.findIndex(
+                    (c) => c._id === activeId,
+                );
+                const [removed] = newActiveCards.splice(activeIndex, 1);
+
+                removed.listId = overList._id;
+                newOverCards.push(removed);
+
+                setBoardState((prev) => {
+                    return {
+                        ...prev,
+                        lists: prev.lists.map((l) => {
+                            if (l._id === activeList._id) {
+                                l.cards = newActiveCards;
+                            } else if (l._id === overList._id) {
+                                l.cards = newOverCards;
+                            }
+                            return l;
+                        }),
+                    };
+                });
+            }
+        }
+    }
+
+    function handleOnDragStart(e) {
+        setActiveCard(null);
+        setActiveList(null);
+        setClonedBoardState(structuredClone(boardState));
+
+        if (e.active.data.current?.type === "list") {
+            setActiveList(e.active.data.current.list);
+            return;
+        }
+        if (e.active.data.current?.type === "card") {
+            setActiveCard(e.active.data.current.card);
+            return;
+        }
+    }
+
+    function handleOnDragCancel() {
+        if (clonedBoardState) {
+            setClonedBoardState(clonedBoardState);
+            return;
+        }
+
+        setActiveCard(null);
+        setActiveList(null);
+        setClonedBoardState(null);
+    }
+
+    const lists = boardState.lists || [];
+
+    const listIds = useMemo(() => {
+        return lists.map((list) => list._id);
+    }, [lists]);
 
     return (
-        <DragDropContext onDragEnd={handleOnDragEnd}>
-            <Droppable
-                droppableId="list-container"
-                direction="horizontal"
-                type="LIST"
+        <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={handleOnDragEnd}
+            onDragStart={handleOnDragStart}
+            onDragOver={handleOnDragOver}
+            onDragCancel={handleOnDragCancel}
+            sensors={sensors}
+        >
+            <div
+                id="list-container"
+                className="flex justify-start items-start gap-4 px-4 pb-4 overflow-y-auto"
             >
-                {(provided) => (
-                    <div
-                        {...provided.droppableProps}
-                        ref={(element) => {
-                            provided.innerRef(element);
-                            listContainerRef.current = element;
-                        }}
-                        id="list-container"
-                        ignoreContainerClipping={true}
-                        className="flex justify-start items-start h-full overflow-x-auto border-black px-4 pb-4"
-                    >
-                        {boardState.lists.map((list, index) => (
-                            <List
-                                key={list._id}
-                                list={list}
-                                index={index}
-                                cards={list?.cards || []}
-                            />
-                        ))}
+                <SortableContext
+                    items={listIds}
+                    strategy={horizontalListSortingStrategy}
+                >
+                    {lists.map((list, index) => (
+                        <List
+                            key={list._id}
+                            index={index}
+                            list={list}
+                            cards={list.cards || []}
+                        />
+                    ))}
+                </SortableContext>
+                <AddList open={openAddList} setOpen={setOpenAddList} />
+            </div>
 
-                        {provided.placeholder}
-
-                        <AddList open={openAddList} setOpen={setOpenAddList} />
-                    </div>
-                )}
-            </Droppable>
-        </DragDropContext>
+            {createPortal(
+                <DragOverlay>
+                    {activeList && (
+                        <List list={activeList} cards={activeList.cards} />
+                    )}
+                    {activeCard && <Card card={activeCard} />}
+                </DragOverlay>,
+                document.getElementById("root"),
+            )}
+        </DndContext>
     );
 };
 

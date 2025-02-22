@@ -1,6 +1,5 @@
 import Avatar from "../avatar/Avatar";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import Icon from "../shared/Icon";
 
 const Member = ({ auth, user, boardState, handleRemoveMemberFromBoard }) => {
     return (
@@ -29,7 +28,7 @@ const Member = ({ auth, user, boardState, handleRemoveMemberFromBoard }) => {
                         className="text-gray-400 me-2"
                         title="remove member"
                     >
-                        <FontAwesomeIcon icon={faXmark} size="lg" />
+                        <Icon className="w-4 h-4" name="xmark" />
                     </button>
                 )}
             </div>

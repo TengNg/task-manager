@@ -1,8 +1,7 @@
 import highlightColors from "../../data/highlights";
 import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import Icon from "../shared/Icon";
 
 const QuickEditorHighlightPicker = ({ card }) => {
     const { setCardQuickEditorHighlight, setCardHighlight, socket } =
@@ -48,7 +47,7 @@ const QuickEditorHighlightPicker = ({ card }) => {
                 className={`w-full h-[25px] mt-1 bg-transparent flex--center font-bold border-[2px] hover:border-blue-400 hover:text-blue-400 text-gray-400 border-gray-400 text-[0.75rem]`}
                 onClick={() => handleSetCardHighlight(null)}
             >
-                <FontAwesomeIcon icon={faXmark} />
+                <Icon className="w-2 h-2" name="xmark" />
             </div>
         </div>
     );

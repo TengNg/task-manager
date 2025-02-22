@@ -1,72 +1,103 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import useAuth from "../../hooks/useAuth";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Loading from "../ui/Loading";
-import { DragDropContext, Draggable } from "react-beautiful-dnd";
-import { StrictModeDroppable as Droppable } from "../../helpers/StrictModeDroppable";
+import {
+    SortableContext,
+    useSortable,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
+    closestCenter,
+    DndContext,
+    DragOverlay,
+    PointerSensor,
+    TouchSensor,
+    useSensor,
+    useSensors,
+} from "@dnd-kit/core";
+import { createPortal } from "react-dom";
+import Icon from "../shared/Icon";
+
+const Pinned = ({
+    boardId,
+    title,
+    handleOpenBoard,
+    handleDeletePinnedBoard,
+}) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({
+        id: boardId,
+        data: {
+            boardId,
+            title,
+        },
+    });
+
+    const style = {
+        transform: transform ? CSS.Translate.toString(transform) : undefined,
+        transition,
+        opacity: isDragging ? 0.2 : 1,
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+            <div
+                className="flex items-center justify-between relative max-w-[300px] overflow-hidden whitespace-nowrap text-ellipsis top-left-auto board--style--sm bg-gray-50 text-[0.75rem] flex-1 border-[2px] border-gray-700 shadow-gray-700 p-3"
+                onClick={() => handleOpenBoard(boardId)}
+            >
+                <p>{title}</p>
+                <button
+                    onClick={(e) => handleDeletePinnedBoard(e, boardId)}
+                    className="button--style--sm text-gray-400 hover:bg-red-300 hover:text-white p-1 rounded-sm"
+                >
+                    <Icon className="w-4 h-4" name="xmark" />
+                </button>
+            </div>
+        </div>
+    );
+};
 
 const PinnedBoards = ({ setOpen, setPinned }) => {
     const { auth, setAuth } = useAuth();
 
-    const [pinnedBoards, setPinnedBoards] = useState([]);
+    const [activeItem, setActiveItem] = useState(null);
     const [cleaned, setCleaned] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
     const axiosPrivate = useAxiosPrivate();
 
-    useEffect(() => {
+    useEffect(() => {}, [auth.user?.pinnedBoardIdCollection]);
+
+    const pinnedBoards = useMemo(() => {
         const boards = auth?.user?.pinnedBoardIdCollection;
         if (boards) {
-            // map => result => obj: { boardId: boardTitle }
             const entries = Object.entries(boards).map((entry, _) => {
                 const [boardId, obj] = entry;
                 return [boardId, obj.title];
             });
 
-            setPinnedBoards(entries);
+            return entries;
         }
+
+        return [];
     }, [auth?.user?.pinnedBoardIdCollection]);
 
     const handleClose = () => {
         setOpen(false);
     };
 
-    const handleOnDragEnd = (result) => {
-        const { destination, source } = result;
-        if (!destination) return;
-
-        const { index: destIndex } = destination;
-        const { index: srcIndex } = source;
-
-        const newPinnedBoards = [...pinnedBoards];
-        const [removed] = newPinnedBoards.splice(srcIndex, 1);
-
-        if (destIndex === srcIndex) return;
-
-        newPinnedBoards.splice(destIndex, 0, removed);
-        setPinnedBoards(newPinnedBoards);
-
-        const newObj = newPinnedBoards.reduce((obj, board) => {
-            const [boardId, boardTitle] = board;
-            obj[boardId] = { title: boardTitle };
-            return obj;
-        }, {});
-
-        setAuth((prev) => {
-            return {
-                ...prev,
-                user: { ...prev.user, pinnedBoardIdCollection: newObj },
-            };
-        });
-
-        setSaved(false);
-    };
-
     const handleOpenBoard = (boardId) => {
+        setOpen(false);
         navigate(`/b/${boardId}`);
     };
 
@@ -125,6 +156,73 @@ const PinnedBoards = ({ setOpen, setPinned }) => {
         }
     };
 
+    const handleOnDragStart = (e) => {
+        const { active } = e;
+        setActiveItem(active);
+    };
+
+    const handleOnDragEnd = (_e) => {
+        setActiveItem(null);
+    };
+
+    const handleOnDragOver = (e) => {
+        const { active, over } = e;
+        if (!over) {
+            return;
+        }
+
+        if (active.id === over.id) {
+            return;
+        }
+
+        const activeIndex = pinnedBoards.findIndex(
+            (board) => board[0] === active.id,
+        );
+
+        const overIndex = pinnedBoards.findIndex(
+            (board) => board[0] === over.id,
+        );
+
+        if (activeIndex === overIndex) {
+            return;
+        }
+
+        const newPinnedBoards = [...pinnedBoards];
+        const [removed] = newPinnedBoards.splice(activeIndex, 1);
+        newPinnedBoards.splice(overIndex, 0, removed);
+
+        const mapped = {};
+        newPinnedBoards.forEach((board) => {
+            const [boardId, boardTitle] = board;
+            mapped[boardId] = { title: boardTitle };
+        });
+
+        setAuth((prev) => {
+            return {
+                ...prev,
+                user: {
+                    ...prev.user,
+                    pinnedBoardIdCollection: mapped,
+                },
+            };
+        });
+
+        return;
+    };
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 10,
+            },
+        }),
+        useSensor(TouchSensor, {
+            activationConstraint: {
+                distance: 10,
+            },
+        }),
+    );
+
     return (
         <>
             <div
@@ -160,68 +258,53 @@ const PinnedBoards = ({ setOpen, setPinned }) => {
                         className="text-gray-600 flex justify-center items-center"
                         onClick={() => setOpen(false)}
                     >
-                        <FontAwesomeIcon icon={faXmark} size="xl" />
+                        <Icon className="w-4 h-4" name="xmark" />
                     </button>
                 </div>
 
-                <div className="h-full w-full flex flex-col gap-3 overflow-auto">
-                    <DragDropContext onDragEnd={handleOnDragEnd}>
-                        <Droppable droppableId="pinned-boards-container">
-                            {(provided) => (
-                                <div
-                                    {...provided.droppableProps}
-                                    ref={provided.innerRef}
-                                    ignoreContainerClipping={true}
-                                >
-                                    {pinnedBoards.map((entry, index) => {
-                                        const [boardId, boardTitle] = entry;
-                                        return (
-                                            <Draggable
-                                                key={boardId}
-                                                draggableId={boardId}
-                                                index={index}
-                                            >
-                                                {(provided2, _) => (
-                                                    <div
-                                                        {...provided2.draggableProps}
-                                                        {...provided2.dragHandleProps}
-                                                        ref={provided2.innerRef}
-                                                        key={boardId}
-                                                        index={index}
-                                                        className="relative max-w-[300px] overflow-hidden whitespace-nowrap text-ellipsis top-left-auto mb-3 board--style--sm bg-gray-50 text-[0.75rem] flex-1 border-[2px] border-gray-700 shadow-gray-700 p-3"
-                                                        onClick={() =>
-                                                            handleOpenBoard(
-                                                                boardId,
-                                                            )
-                                                        }
-                                                    >
-                                                        {boardTitle}
-                                                        <button
-                                                            onClick={(e) =>
-                                                                handleDeletePinnedBoard(
-                                                                    e,
-                                                                    boardId,
-                                                                )
-                                                            }
-                                                            className="absolute top-1 -right-1 button--style--sm text-gray-400 me-2 hover:bg-red-300 hover:text-white px-1 rounded"
-                                                        >
-                                                            <FontAwesomeIcon
-                                                                icon={faXmark}
-                                                                size="sm"
-                                                            />
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </Draggable>
-                                        );
-                                    })}
+                <DndContext
+                    collisionDetection={closestCenter}
+                    onDragStart={handleOnDragStart}
+                    onDragOver={handleOnDragOver}
+                    onDragEnd={handleOnDragEnd}
+                    sensors={sensors}
+                >
+                    <div className="h-full w-full flex flex-col gap-3 pb-3 overflow-auto">
+                        <SortableContext
+                            items={pinnedBoards.map((_el, index) => index)}
+                            strategy={verticalListSortingStrategy}
+                        >
+                            {pinnedBoards.map(([id, title], index) => (
+                                <Pinned
+                                    key={id}
+                                    index={index}
+                                    boardId={id}
+                                    title={title}
+                                    handleOpenBoard={handleOpenBoard}
+                                    handleDeletePinnedBoard={
+                                        handleDeletePinnedBoard
+                                    }
+                                />
+                            ))}
+                        </SortableContext>
+                    </div>
 
-                                    {provided.placeholder}
-                                </div>
+                    {createPortal(
+                        <DragOverlay>
+                            {activeItem && (
+                                <Pinned
+                                    boardId={activeItem.id}
+                                    title={activeItem.data.current.title}
+                                    handleOpenBoard={handleOpenBoard}
+                                    handleDeletePinnedBoard={
+                                        handleDeletePinnedBoard
+                                    }
+                                />
                             )}
-                        </Droppable>
-                    </DragDropContext>
-                </div>
+                        </DragOverlay>,
+                        document.getElementById("root"),
+                    )}
+                </DndContext>
             </div>
         </>
     );

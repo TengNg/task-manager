@@ -88,53 +88,15 @@ const getBoard = async (req, res) => {
         return res.status(400).json({ msg: 'board not found' });
     }
 
-    // this current update list-count & card-count logic is ugly
-    // but with this I will not need to update anything on production db
-    // and it should be ok for now
+    // sync list count
+    const listCount = await List.countDocuments({ boardId: id });
+    board.listCount = listCount;
 
-    if (board.listCount === 0) {
-        const lists = await List.find({ boardId: id });
-        if (lists.length > 0) {
-            board.listCount = lists.length;
-            await board.save();
-        }
-    }
+    // sync card count
+    const cardCount = await Card.countDocuments({ boardId: id });
+    board.cardCount = cardCount;
 
-    if (board.cardCount === 0) {
-        const cards = await Card.find({ boardId: id });
-        if (cards.length > 0) {
-            board.cardCount = cards.length;
-            await board.save();
-        }
-    }
-
-    //const listsWithCardsPromises = lists.map(async (list) => {
-    //    const cards = await Card.find({ listId: list._id }).select('-trackedId -updatedAt').sort({ order: 'asc' }).lean();
-    //
-    //    //const cards = await Card.aggregate([
-    //    //    { $match: { listId: list._id } },
-    //    //    { $sort: { order: 1 } },
-    //    //    {
-    //    //        $project: {
-    //    //            title: 1,
-    //    //            listId: 1,
-    //    //            order: 1,
-    //    //            higlight: 1,
-    //    //            priorityLevel: 1,
-    //    //            owner: 1,
-    //    //            createdAt: 1,
-    //    //            hasDescription: { $cond: { if: { $gt: [{ $strLenCP: "$description" }, 0] }, then: true, else: false } }
-    //    //        }
-    //    //    }
-    //    //]).exec();
-    //
-    //    return {
-    //        ...list.toObject(),
-    //        cards
-    //    }
-    //})
-    //
-    // const listsWithCards = await Promise.all(listsWithCardsPromises);
+    await board.save();
 
     const listsWithCards = await List.aggregate([
         {
@@ -363,74 +325,96 @@ const removeMemberFromBoard = async (req, res) => {
 };
 
 const closeBoard = async (req, res) => {
-    // TODO: should wrap these in a transaction
+    const session = await mongoose.startSession();
+    try {
+        session.startTransaction();
 
-    const { userId } = req.user;
-    const { id } = req.params;
+        const { userId } = req.user;
+        const { id } = req.params;
 
-    const { board: _board, user: _user, authorized } = await isActionAuthorized(id, userId, { ownerOnly: true });
-    if (!authorized) return res.status(403).json({ msg: "unauthorized" });
+        const { board: _board, user: _user, authorized } = await isActionAuthorized(id, userId, { ownerOnly: true });
+        if (!authorized) return res.status(403).json({ msg: "unauthorized" });
 
-    await Card.deleteMany({ boardId: id });
-    await List.deleteMany({ boardId: id });
-    await BoardMembership.deleteMany({ boardId: id });
-    await Board.deleteOne({ _id: id });
+        await Card.deleteMany({ boardId: id }, { session });
+        await List.deleteMany({ boardId: id }, { session });
+        await BoardMembership.deleteMany({ boardId: id }, { session });
+        await Board.deleteOne({ _id: id }, { session });
 
-    res.status(200).json({ msg: 'board closed' });
+        throw "Close board: Testing"
+
+        await session.commitTransaction();
+
+        res.status(200).json({ msg: 'board closed' });
+    } catch (error) {
+        await session.abortTransaction();
+        res.status(400).json({ error: error.message });
+    } finally {
+        session.endSession();
+    }
 };
 
 const copyBoard = async (req, res) => {
-    // TODO: should wrap these in a transaction
+    const session = mongoose.startSession();
 
-    const { id } = req.params;
-    const { title, description } = req.body;
-    const { userId } = req.user
+    try {
 
-    const { board: foundBoard, authorized } = await isActionAuthorized(id, userId, { ownerOnly: true });
-    if (!authorized) return res.status(403).json({ msg: "unauthorized" });
+        const { id } = req.params;
+        const { title, description } = req.body;
+        const { userId } = req.user
 
-    const newBoardId = new mongoose.Types.ObjectId();
-    const lists = await List.find({ boardId: foundBoard.id });
+        const { board: foundBoard, authorized } = await isActionAuthorized(id, userId, { ownerOnly: true });
+        if (!authorized) return res.status(403).json({ msg: "unauthorized" });
 
-    const newBoard = new Board({
-        _id: newBoardId,
-        title: title || foundBoard.title,
-        description: description || foundBoard.description,
-        createdBy: userId,
-    });
+        const newBoardId = new mongoose.Types.ObjectId();
+        const lists = await List.find({ boardId: foundBoard.id });
 
-    await newBoard.save();
-
-    for (const list of lists) {
-        const newListId = new mongoose.Types.ObjectId();
-        const { _id, title, order } = list;
-        const newList = new List({
-            _id: newListId,
-            title,
-            order,
-            boardId: newBoardId,
+        const newBoard = new Board({
+            _id: newBoardId,
+            title: title || foundBoard.title,
+            description: description || foundBoard.description,
+            createdBy: userId,
         });
 
-        await newList.save();
+        await newBoard.save();
 
-        const cards = await Card.find({ listId: _id });
-        for (const card of cards) {
-            const { title, description, order, highlight, priorityLevel } = card;
-            const newCard = new Card({
+        for (const list of lists) {
+            const newListId = new mongoose.Types.ObjectId();
+            const { _id, title, order } = list;
+            const newList = new List({
+                _id: newListId,
                 title,
-                description,
                 order,
-                highlight,
-                priorityLevel,
                 boardId: newBoardId,
-                listId: newListId,
             });
 
-            await newCard.save();
-        }
-    }
+            await newList.save();
 
-    return res.status(200).json({ msg: 'board copied' });
+            const cards = await Card.find({ listId: _id });
+            for (const card of cards) {
+                const { title, description, order, highlight, priorityLevel } = card;
+                const newCard = new Card({
+                    title,
+                    description,
+                    order,
+                    highlight,
+                    priorityLevel,
+                    boardId: newBoardId,
+                    listId: newListId,
+                });
+
+                await newCard.save();
+            }
+        }
+
+        await session.commitTransaction();
+
+        return res.status(200).json({ msg: 'board copied' });
+    } catch (error) {
+        await session.abortTransaction();
+        res.status(400).json({ error: error.message });
+    } finally {
+        session.endSession();
+    }
 };
 
 const togglePinBoard = async (req, res) => {

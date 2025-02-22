@@ -108,7 +108,7 @@ const deleteList = async (req, res) => {
 
     await saveBoardActivity({
         boardId,
-        userId: user._id,
+        userId,
         action: "delete list",
         type: "list",
         description: `list with title "${foundList.title}" deleted`,
