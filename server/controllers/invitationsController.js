@@ -11,17 +11,13 @@ const getUser = (username) => {
 };
 
 const getInvitations = async (req, res) => {
-    const { username } = req.user;
-
+    const { userId } = req.user;
     const perPage = MAX_INVITATION_PAGE;
     let { page } = req.query;
     page = +page || 1;
 
-    const foundUser = await getUser(username);
-    if (!foundUser) return res.status(403).json({ msg: "user not found" });
-
     const invitations = await Invitation
-        .find({ invitedUserId: foundUser._id })
+        .find({ invitedUserId: userId })
         .populate({
             path: 'invitedUserId',
             select: 'username profileImage createdAt'

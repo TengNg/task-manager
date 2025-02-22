@@ -36,13 +36,13 @@ const findRequest = async (req, res) => {
 };
 
 const getAllRequests = async (req, res) => {
+    const { userId } = req.user;
+
     const perPage = MAX_REQUEST_PAGE;
     let { page } = req.query;
     page = +page || 1;
 
-    const foundUser = await findUser(req, res);
-
-    const ownedBoardIds = await Board.find({ createdBy: foundUser._id }).distinct('_id').lean();
+    const ownedBoardIds = await Board.find({ createdBy: userId }).distinct('_id').lean();
 
     const joinRequests = await JoinBoardRequest
         .find({
