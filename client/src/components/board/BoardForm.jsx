@@ -1,6 +1,7 @@
 import { useState, forwardRef } from "react";
 import { axiosPrivate } from "../../api/axios";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 
 const BoardForm = forwardRef(({}, ref) => {
     const [title, setTitle] = useState("");
@@ -8,31 +9,37 @@ const BoardForm = forwardRef(({}, ref) => {
 
     const navigate = useNavigate();
 
-    const handleCreateBoard = async (e) => {
-        e.preventDefault();
-
-        if (!title) {
-            return;
-        }
-
-        try {
-            const response = await axiosPrivate.post(
-                "/boards",
-                JSON.stringify({ title, description }),
-            );
-            navigate(`/b/${response.data.newBoard._id}`);
-        } catch (err) {
+    const { mutate, isLoading } = useMutation({
+        mutationFn: () => createBoard(),
+        onSuccess: (data, _variables, _context) => {
+            navigate(`/b/${data.newBoard._id}`);
+        },
+        onError: (err, _, _context) => {
             const errMsg =
                 err?.response?.data?.errMsg || "Failed to create new board";
             alert(errMsg);
+        },
+    })
+
+    const handleCreateBoard = async (e) => {
+        e.preventDefault();
+
+        if (!title || isLoading) {
+            return;
         }
+
+        mutate();
+    }
+
+    const createBoard = async () => {
+        const response = await axiosPrivate.post(
+            "/boards",
+            JSON.stringify({ title, description }),
+        );
+
+        return response.data;
     };
 
-    const handleInputOnEnter = async (e) => {
-        if (e.key == "Enter") {
-            handleCreateBoard(e);
-        }
-    };
 
     return (
         <>
@@ -45,11 +52,10 @@ const BoardForm = forwardRef(({}, ref) => {
 
                 <input
                     autoFocus={true}
-                    onKeyDown={handleInputOnEnter}
                     className="border-[2px] border-gray-400 text-gray-600 font-semibold p-2"
                     type="text"
                     autoComplete="off"
-                    placeholder="title..."
+                    placeholder="title (required)"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
@@ -57,7 +63,6 @@ const BoardForm = forwardRef(({}, ref) => {
 
                 <input
                     className="border-[2px] border-gray-400 text-gray-600 font-semibold p-2"
-                    onKeyDown={handleInputOnEnter}
                     type="text"
                     autoComplete="off"
                     placeholder="description..."
@@ -65,8 +70,12 @@ const BoardForm = forwardRef(({}, ref) => {
                     onChange={(e) => setDescription(e.target.value)}
                 />
 
-                <button type="submit" className="button--style--dark">
-                    create
+                <button
+                    disabled={isLoading}
+                    type="submit"
+                    className="button--style--dark"
+                >
+                    {isLoading ? "creating..." : "create"}
                 </button>
             </form>
         </>

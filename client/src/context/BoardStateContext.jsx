@@ -1,12 +1,12 @@
-import io from "socket.io-client";
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
+import socket from "../services/socket";
 
-import { createContext, useEffect, useMemo, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
 import useLocalStorage from "../hooks/useLocalStorage";
 import LOCAL_STORAGE_KEYS from "../data/localStorageKeys";
-import useAuth from "../hooks/useAuth";
 import dateFormatter from "../utils/dateFormatter";
+import useAuth from "../hooks/useAuth";
+import { useParams } from "react-router-dom";
 
 const BoardStateContext = createContext({});
 
@@ -18,6 +18,7 @@ const filterParams = () => {
 };
 
 export const BoardStateContextProvider = ({ children }) => {
+    const { boardId } = useParams();
     const [boardState, setBoardState] = useState({});
     const [chats, setChats] = useState([]);
     const [isRemoved, setIsRemoved] = useState(false);
@@ -53,27 +54,25 @@ export const BoardStateContextProvider = ({ children }) => {
 
     const { auth } = useAuth();
 
-    const socket = useMemo(() => {
-        if (!auth?.accessToken) {
-            return null;
-        }
-        return io(SOCKET_URL);
-    }, [auth?.accessToken]);
-
     const notify = ({ message, timeSent, duration, from }) => {
         setToast({ open: true, message, timeSent, duration, from });
     };
 
     useEffect(() => {
-        if (!socket) {
-            return;
-        }
+        socket.connect();
 
         const onConnect = async () => {
-            setIsConnected(true);
+            if (auth && auth.user && boardId) {
+                socket.emit("joinBoard", {
+                    boardId,
+                    username: auth.user.username,
+                });
+                setIsConnected(true);
+            }
         };
 
         const onDisconnect = () => {
+            socket.emit("disconnectFromBoard");
             setIsConnected(false);
         };
 
@@ -342,7 +341,7 @@ export const BoardStateContextProvider = ({ children }) => {
             // socket.off('receiveMessage');
             socket.off();
         };
-    }, []);
+    }, [boardId]);
 
     const setBoardVisibility = (value) => {
         setBoardState((prev) => {

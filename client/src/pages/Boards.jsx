@@ -1,15 +1,14 @@
 import { useEffect, useRef } from "react";
 import { useState } from "react";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { useNavigate } from "react-router-dom";
 import useKeyBinds from "../hooks/useKeyBinds";
 import BoardItem from "../components/board/BoardItem";
 import BoardForm from "../components/board/BoardForm";
 import PinnedBoards from "../components/board/PinnedBoards";
 import Title from "../components/ui/Title";
 import JoinBoardRequestForm from "../components/board/JoinBoardRequestForm";
-import useAuth from "../hooks/useAuth";
 import BoardsHelp from "../components/ui/BoardsHelp";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const FILTERS = Object.freeze({
     ALL: "all",
@@ -21,15 +20,10 @@ const FILTERS = Object.freeze({
 });
 
 const Boards = () => {
-    const [isDataLoaded, setIsDataLoaded] = useState(false);
+    const queryClient = useQueryClient();
 
-    const [boards, setBoards] = useState([]);
-    const [ownedBoards, setOwnedBoards] = useState([]);
-    const [joinedBoards, setJoinedBoards] = useState([]);
     const [boardFilter, setBoardFilter] = useState(FILTERS.ALL);
     const [openHelp, setOpenHelp] = useState(false);
-
-    const [recentlyViewedBoard, setRecentlyViewedBoard] = useState();
 
     const [openBoardForm, setOpenBoardForm] = useState(false);
     const [openJoinBoardRequestForm, setOpenJoinBoardRequestForm] =
@@ -37,45 +31,50 @@ const Boards = () => {
 
     const axiosPrivate = useAxiosPrivate();
 
-    const { auth } = useAuth();
-
     const { openPinnedBoards, setOpenPinnedBoards } = useKeyBinds();
 
     const boardFormRef = useRef();
     const createBoardButtonRef = useRef();
 
-    const navigate = useNavigate();
+    const boardsQuery = useQuery({
+        queryKey: ["boards", boardFilter],
+        refetchOnMount: true,
+        queryFn: () => fetchBoards(boardFilter),
+    });
 
     useEffect(() => {
-        fetchBoards();
-
+        handleRefreshData();
         document.addEventListener("keydown", handleKeyDown);
         () => {
             document.removeEventListener("keydown", handleKeyDown);
         };
     }, []);
 
-    useEffect(() => {
-        const closeBoxOutside = (event) => {
-            if (
-                boardFormRef.current &&
-                !boardFormRef.current.contains(event.target) &&
-                !createBoardButtonRef.current.contains(event.target)
-            ) {
-                setOpenBoardForm(false);
-            }
-        };
+    async function fetchBoards(filter = "") {
+        const response = await axiosPrivate.get(`/boards?filter=${filter}`);
+        return response.data;
+    }
 
-        if (open) {
-            document.addEventListener("click", closeBoxOutside);
-        } else {
-            document.removeEventListener("click", closeBoxOutside);
+    function handleFilter(status) {
+        setBoardFilter(status);
+    }
+
+    function handleRefreshData() {
+        queryClient.invalidateQueries({
+            queryKey: ["boards", boardFilter],
+            exact: true,
+        });
+    }
+
+    function handleCloseBoxOnClickOutside(event) {
+        if (
+            boardFormRef.current &&
+            !boardFormRef.current.contains(event.target) &&
+            !createBoardButtonRef.current.contains(event.target)
+        ) {
+            setOpenBoardForm(false);
         }
-
-        return () => {
-            document.removeEventListener("click", closeBoxOutside);
-        };
-    }, [openBoardForm]);
+    }
 
     function handleKeyDown(e) {
         const key = e.key;
@@ -108,58 +107,7 @@ const Boards = () => {
         }
     }
 
-    function fetchBoards() {
-        setIsDataLoaded(false);
-        const getBoards = async () => {
-            const response = await axiosPrivate.get(`/boards`);
-            const { boards, recentlyViewedBoard } = response.data;
-            const owned = [...boards].filter(
-                (board) => board?.createdBy === auth?.user?._id,
-            );
-            const joined = [...boards].filter((board) =>
-                board?.members?.some(
-                    (memberId) => memberId === auth?.user?._id,
-                ),
-            );
-            setOwnedBoards(owned);
-            setJoinedBoards(joined);
-            setBoards([...owned, ...joined]);
-            setRecentlyViewedBoard(recentlyViewedBoard);
-        };
-        getBoards()
-            .catch((err) => {
-                if (
-                    err.response?.status === 403 ||
-                    err.response?.status === 401
-                ) {
-                    navigate("/login", { replace: true });
-                } else {
-                    alert("Failed to get boards. Please try again.");
-                }
-            })
-            .finally(() => {
-                setIsDataLoaded(true);
-            });
-    }
-
-    function handleRefreshData() {
-        fetchBoards();
-    }
-
-    const filteredBoards = (filterValue) => {
-        switch (filterValue) {
-            case FILTERS.ALL:
-                return boards;
-            case FILTERS.OWNED:
-                return ownedBoards;
-            case FILTERS.JOINED:
-                return joinedBoards;
-            default:
-                return boards;
-        }
-    };
-
-    if (!isDataLoaded) {
+    if (boardsQuery.isLoading) {
         return (
             <section id="boards" className="w-full h-full overflow-auto pb-4">
                 <div className="mx-auto sm:w-3/4 w-[90%]">
@@ -169,6 +117,19 @@ const Boards = () => {
                     getting boards
                 </div>
                 <div className="loader mx-auto my-8"></div>
+            </section>
+        );
+    }
+
+    if (boardsQuery.isError) {
+        return (
+            <section id="boards" className="w-full h-full overflow-auto pb-4">
+                <div className="mx-auto sm:w-3/4 w-[90%]">
+                    <Title titleName="boards" />
+                </div>
+                <div className="font-medium mx-auto text-center mt-20 text-gray-600">
+                    something went wrong :(
+                </div>
             </section>
         );
     }
@@ -189,36 +150,46 @@ const Boards = () => {
 
             <BoardsHelp open={openHelp} setOpen={setOpenHelp} />
 
-            <section id="boards" className="w-full h-full overflow-auto pb-8">
+            <section
+                onClick={handleCloseBoxOnClickOutside}
+                id="boards"
+                className="w-full h-full overflow-auto pb-8"
+            >
                 <div className="mx-auto sm:w-3/4 w-[90%]">
                     <Title titleName="boards" />
 
                     <div className="flex flex-col sm:flex-row gap-1 sm:gap-0 mb-1 sm:mb-0 justify-between items-center">
-                        <div className="text-[0.75rem] text-gray-700 mb-1 sm:mb-0">
-                            <span
-                                className="cursor-pointer"
-                                onClick={() => setBoardFilter(FILTERS.ALL)}
-                            >
-                                total: {boards.length}
-                            </span>
+                        <div className="flex gap-3 text-[0.75rem] text-gray-700 mb-1 sm:mb-0">
+                            <div>
+                                <span
+                                    className={`cursor-pointer ${boardFilter === FILTERS.ALL || boardFilter === "" ? "underline" : ""}`}
+                                    onClick={() => handleFilter(FILTERS.ALL)}
+                                >
+                                    total:{boardsQuery.data.total}
+                                </span>
+                            </div>
 
-                            <span>{", "}</span>
+                            {
+                                boardsQuery.data.totalOwned > 0 && <div>
+                                    <span
+                                        className={`cursor-pointer ${boardFilter === FILTERS.OWNED ? "underline" : ""}`}
+                                        onClick={() => handleFilter(FILTERS.OWNED)}
+                                    >
+                                        owned:{boardsQuery.data.totalOwned}/10
+                                    </span>
+                                </div>
+                            }
 
-                            <span
-                                className="cursor-pointer"
-                                onClick={() => setBoardFilter(FILTERS.OWNED)}
-                            >
-                                owned: {ownedBoards.length} / 8
-                            </span>
-
-                            <span>{", "}</span>
-
-                            <span
-                                className="cursor-pointer"
-                                onClick={() => setBoardFilter(FILTERS.JOINED)}
-                            >
-                                joined: {joinedBoards.length}
-                            </span>
+                            {
+                                boardsQuery.data.totalJoined > 0 && <div>
+                                    <span
+                                        className={`cursor-pointer ${boardFilter === FILTERS.JOINED ? "underline" : ""}`}
+                                        onClick={() => handleFilter(FILTERS.JOINED)}
+                                    >
+                                        joined:{boardsQuery.data.totalJoined}
+                                    </span>
+                                </div>
+                            }
                         </div>
 
                         <div className="flex gap-3">
@@ -241,7 +212,7 @@ const Boards = () => {
                     </div>
 
                     <div className="relative flex flex-col items-center mx-auto sm:m-0 sm:justify-start sm:items-start sm:flex-row sm:flex-wrap gap-4 p-6 sm:p-8 border-[2px] box--style shadow-gray-600 border-gray-600 w-[280px] sm:w-full">
-                        {filteredBoards(boardFilter).map((item) => {
+                        {boardsQuery.data.boards.map((item) => {
                             return <BoardItem key={item._id} item={item} />;
                         })}
 
@@ -262,7 +233,7 @@ const Boards = () => {
                         </div>
                     </div>
 
-                    {recentlyViewedBoard && (
+                    {boardsQuery.data.recentlyViewedBoard && (
                         <div className="w-full sm:w-fit sm:block flex justify-center">
                             <div className="w-[280px] sm:w-fit flex flex-col flex-wrap gap-1 px-8 pt-3 pb-8 mt-8 box--style justify-start items-start box--style border-[2px] shadow-gray-600 border-gray-600">
                                 <p className="text-gray-600 text-[0.75rem] font-medium ms-1 my-1">

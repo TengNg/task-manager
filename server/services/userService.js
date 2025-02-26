@@ -16,17 +16,19 @@ const sanitizeUser = (user) => {
         discordId,
     } = user;
 
-    return {
+    const data = {
         _id,
         username,
         createdAt,
         recentlyViewedBoardId,
-        pinnedBoardIdCollection,
+        pinnedBoardIdCollection: pinnedBoardIdCollection ? Object.fromEntries(pinnedBoardIdCollection) : {},
         loginWithDiscord: !!discordId,
-    };
+    }
+
+    return data;
 };
 
 module.exports = {
-   userByUsername,
-   sanitizeUser,
+    userByUsername,
+    sanitizeUser,
 };

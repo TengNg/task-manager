@@ -116,7 +116,7 @@ app.get("/auth/discord/callback", async (req, res) => {
         }
 
         sendAuthCookies(res, user, null);
-        return res.redirect(`${FRONTEND_URL}/boards`);
+        return res.redirect(`${FRONTEND_URL}`);
     } catch (error) {
         console.error("Authentication error:", error);
         return res.redirect(`${FAILURE_REDIRECT_URL}&message=${error.message}`);

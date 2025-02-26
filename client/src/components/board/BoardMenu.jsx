@@ -55,9 +55,10 @@ const BoardMenu = ({
             try {
                 await axiosPrivate.delete(`/boards/${boardState.board._id}`);
                 socket.emit("closeBoard");
-                navigate("/notfound");
+                navigate("/boards");
             } catch (err) {
                 console.log(err);
+                navigate("/boards");
             }
         }
     };

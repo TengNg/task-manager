@@ -91,8 +91,8 @@ const cardSchema = new mongoose.Schema({
     // }],
 });
 
-cardSchema.index({ boardId: 1 });
-cardSchema.index({ listId: 1 });
+cardSchema.index({ boardId: 1, order: 1 });
+cardSchema.index({ listId: 1, order: 1 });
 
 cardSchema.pre('save', async function(next) {
     if (this.isNew) {

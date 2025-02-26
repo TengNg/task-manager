@@ -64,7 +64,7 @@ const NavBar = () => {
         return (
             <section
                 id="header-section"
-                className="w-full h-[70px] flex--center relative gap-2 py-3 px-2 sm:px-4"
+                className="w-full flex--center relative gap-2 py-3 px-2 sm:px-4"
             >
                 <nav className="h-full top-4 m-auto border-gray-700 border-[2px] bg-transparent px-2 z-30 drop-shadow-sm">
                     <ul className="w-[100%] h-[100%] flex justify-around items-center sm:gap-4 gap-2">
@@ -122,7 +122,7 @@ const NavBar = () => {
         <>
             <section
                 id="header-section"
-                className="w-full h-[70px] flex--center relative gap-2 py-3 px-2 sm:px-4"
+                className="w-full flex--center relative gap-2 py-3 px-2 sm:px-4"
             >
                 <div className="md:block hidden w-[40px] h-[40px]"></div>
 

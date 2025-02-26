@@ -25,7 +25,7 @@ const listSchema = new mongoose.Schema({
     },
 });
 
-listSchema.index({ boardId: 1 });
+listSchema.index({ boardId: 1, order: 1 });
 
 listSchema.pre('save', async function(next) {
     if (this.isNew) {

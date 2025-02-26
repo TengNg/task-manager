@@ -21,10 +21,10 @@ const getListCount = async (req, res) => {
 };
 
 const addList = async (req, res) => {
-    const { username } = req.user;
+    const { userId } = req.user;
     const { title, order, boardId } = req.body;
 
-    const { user, authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
+    const { authorized } = await isActionAuthorized(boardId, userId, { ownerOnly: false });
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     const newList = new List({
@@ -37,7 +37,7 @@ const addList = async (req, res) => {
 
     await saveBoardActivity({
         boardId,
-        userId: user._id,
+        userId,
         listId: newList._id,
         action: "add new list",
         type: "list",
@@ -48,7 +48,7 @@ const addList = async (req, res) => {
 }
 
 const reorder = async (req, res) => {
-    const { username } = req.user;
+    const { userId } = req.user;
     const { id } = req.params;
     const { rank, sourceIndex, destinationIndex } = req.body;
 
@@ -56,7 +56,7 @@ const reorder = async (req, res) => {
     if (!foundList) return res.status(403).json({ msg: "list not found" });
 
     const { boardId } = foundList;
-    const { user, authorized } = await isActionAuthorized(boardId, username);
+    const { authorized } = await isActionAuthorized(boardId, userId);
     if (!authorized) return res.status(403).json({ msg: "unauthorized" });
 
     foundList.order = rank;
@@ -64,7 +64,7 @@ const reorder = async (req, res) => {
 
     await saveBoardActivity({
         boardId,
-        userId: user._id,
+        userId,
         listId: foundList._id,
         action: "update list rank",
         type: "list",
@@ -76,8 +76,7 @@ const reorder = async (req, res) => {
 };
 
 const updateTitle = async (req, res) => {
-    const { username } = req.user;
-
+    const { userId } = req.user;
     const { id } = req.params;
     const { title } = req.body;
 
@@ -85,7 +84,7 @@ const updateTitle = async (req, res) => {
     if (!foundList) return res.status(403).json({ msg: "list not found" });
 
     const { boardId } = foundList;
-    const { user: _, authorized } = await isActionAuthorized(boardId, username);
+    const { authorized } = await isActionAuthorized(boardId, userId);
     if (!authorized) return res.status(403).json({ msg: "unauthorized" });
 
     foundList.title = title;
@@ -95,14 +94,14 @@ const updateTitle = async (req, res) => {
 };
 
 const deleteList = async (req, res) => {
-    const { username } = req.user;
+    const { userId } = req.user;
     const { id } = req.params;
 
     const foundList = await List.findById(id);
     if (!foundList) return res.status(403).json({ msg: "list not found" });
 
     const { boardId } = foundList;
-    const { user, authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
+    const { authorized } = await isActionAuthorized(boardId, userId, { ownerOnly: false });
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     await List.findByIdAndDelete(id);
@@ -119,7 +118,7 @@ const deleteList = async (req, res) => {
 };
 
 const copyList = async (req, res) => {
-    const { username } = req.user;
+    const { userId } = req.user;
     const { id } = req.params;
     const { rank } = req.body;
 
@@ -128,7 +127,7 @@ const copyList = async (req, res) => {
     if (!foundList) return res.status(403).json({ msg: "List not found" });
 
     const { title, boardId } = foundList;
-    const { user, authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
+    const { authorized } = await isActionAuthorized(boardId, userId, { ownerOnly: false });
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     const newListId = new mongoose.Types.ObjectId();
@@ -162,7 +161,7 @@ const copyList = async (req, res) => {
 
     await saveBoardActivity({
         boardId,
-        userId: user._id,
+        userId,
         listId: foundList._id,
         action: "copy list",
         type: "list",
@@ -173,13 +172,13 @@ const copyList = async (req, res) => {
 };
 
 const moveList = async (req, res) => {
-    const { username } = req.user;
+    const { userId } = req.user;
     const { id, boardId, index } = req.params;
 
     const foundList = await List.findById(id);
     if (!foundList) return res.status(403).json({ msg: "List not found" });
 
-    const { board: _, authorized } = await isActionAuthorized(boardId, username, { ownerOnly: false });
+    const { board: _, authorized } = await isActionAuthorized(boardId, userId, { ownerOnly: false });
     if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
 
     const sortedLists = await List.find({ boardId }).sort({ order: 'asc' });

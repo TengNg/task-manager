@@ -1,27 +1,27 @@
-const User = require('../models/User');
 const Board = require('../models/Board');
 
-const isActionAuthorized = async (boardId, username, option = { ownerOnly: false }) => {
-    const foundUser = await User.findOne({ username }).lean();
-    if (!foundUser) return false;
-
+/**
+ * Check if this action authorized (by user and board)
+ *
+ * @param {String} boardId
+ * @param {String} userId
+ */
+const isActionAuthorized = async (boardId, userId, opt = { ownerOnly: false }) => {
     const board = await Board.findById(boardId);
     if (!board) return false;
 
-    const { ownerOnly } = option;
+    const ownerOnly = opt.ownerOnly;
 
-    if (ownerOnly === false && (board.createdBy.toString() === foundUser._id.toString() || board.members.includes(foundUser._id))) {
+    if (ownerOnly === false && (board.createdBy.toString() === userId || board.members.includes(userId))) {
         return {
             board,
-            user: foundUser,
             authorized: true
         }
     }
 
-    if (ownerOnly === true && board.createdBy.toString() === foundUser._id.toString()) {
+    if (ownerOnly === true && board.createdBy.toString() === userId) {
         return {
             board,
-            user: foundUser,
             authorized: true
         }
     }

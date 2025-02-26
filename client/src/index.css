@@ -60,11 +60,11 @@
     }
 
     .anchor--style {
-        @apply flex justify-center items-center py-1 px-2 text-gray-700 hover:underline
+        @apply flex justify-center items-center py-1 px-2 text-gray-700 hover:underline select-none
     }
 
     .anchor--style--selected {
-        @apply text-gray-50 bg-gray-600 flex justify-center items-center py-1 px-2
+        @apply text-gray-50 bg-gray-600 flex justify-center items-center py-1 px-2 select-none
     }
 
     .card--detail--button {
@@ -161,6 +161,11 @@ dialog button:focus {
     background: rgba(241, 241, 241, 0.55);
 }
 
+#header-section {
+    height: 70px;
+    min-height: 70px;
+}
+
 /* Writedown Editor ========================================================================================== */
 
 .rsw-editor * {
@@ -234,6 +239,7 @@ dialog button:focus {
 
     #header-section {
         height: 50px;
+        min-height: 50px;
         padding: 0.5rem;
     }
 

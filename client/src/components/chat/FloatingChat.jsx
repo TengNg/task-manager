@@ -34,7 +34,7 @@ const FloatingChat = ({
     const chatContainer = useRef();
 
     useEffect(() => {
-        if (open) {
+        if (open && messageEndRef.current) {
             messageEndRef.current.scrollIntoView({ block: "end" });
             if (chatContainer.current) {
                 const chatInput =
@@ -45,7 +45,11 @@ const FloatingChat = ({
     }, [open]);
 
     useEffect(() => {
-        if (hasReceivedNewMessage && isAtBottomOfChat) {
+        if (
+            hasReceivedNewMessage &&
+            isAtBottomOfChat &&
+            messageEndRef.current
+        ) {
             messageEndRef.current.scrollIntoView({ block: "end" });
         }
     }, [hasReceivedNewMessage, chats.length]);
