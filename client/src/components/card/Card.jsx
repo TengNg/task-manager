@@ -18,13 +18,14 @@ export default function Card({ card }) {
         debugModeEnabled,
     } = useBoardState();
 
-    const { attributes, listeners, setNodeRef, isDragging } = useSortable({
-        id: card._id,
-        data: {
-            type: "card",
-            card,
-        },
-    });
+    const { attributes, listeners, setNodeRef, isDragging } =
+        useSortable({
+            id: card._id,
+            data: {
+                type: "card",
+                card,
+            },
+        });
 
     const style = {
         opacity: isDragging ? 0.2 : 1,

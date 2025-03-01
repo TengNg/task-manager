@@ -131,7 +131,7 @@ export default function Login() {
                         </button>
                         <a
                             className="button--style border-none text-gray-50 bg-indigo-700 hover:bg-indigo-500 flex--center"
-                            href={`${import.meta.env.VITE_SERVER_URL || "http://localhost:3001"}/auth/discord`}
+                            href={`${import.meta.env.SERVER_URL || "http://localhost:3001"}/auth/discord`}
                         >
                             Log in with Discord
                         </a>

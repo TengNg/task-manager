@@ -1,9 +1,11 @@
 const jwt = require('jsonwebtoken');
 
+const __prod__ = process.env.NODE_ENV === 'production';
+
 const cookieOpts = {
     httpOnly: true,
-    sameSite: 'None',
-    secure: true,
+    sameSite: __prod__ ? 'lax' : 'none',
+    secure: __prod__,
     maxAge: 15 * 24 * 60 * 60 * 1000
 };
 
