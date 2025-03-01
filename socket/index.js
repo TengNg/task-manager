@@ -1,9 +1,12 @@
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
+const APP_URL = process.env.APP_URL || "http://localhost:3001"
 
 const { Server } = require('socket.io');
-const io = new Server({ cors: "*" });
+const io = new Server({
+    cors: APP_URL,
+});
 
 const boardIdMap = new Map();
 const usernameMap = {};
