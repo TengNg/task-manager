@@ -248,7 +248,7 @@ const List = ({ index, list, cards }) => {
             >
                 <div
                     {...listeners}
-                    className="w-full bg-transparent flex justify-between items-center px-3"
+                    className="w-full bg-transparent flex justify-between items-center px-3 touch-none"
                 >
                     <div
                         ref={titleRef}

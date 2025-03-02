@@ -9,7 +9,9 @@ const CopyBoardForm = ({ setOpen }) => {
 
     const nameInputEl = useRef();
     const [loading, setLoading] = useState(false);
-    const [title, setTitle] = useState("");
+    const [title, setTitle] = useState(
+        (boardState.board?.title || "") + " (copy)",
+    );
     const [desciption, setDescription] = useState("");
     const axiosPrivate = useAxiosPrivate();
 
@@ -31,6 +33,7 @@ const CopyBoardForm = ({ setOpen }) => {
                     JSON.stringify({ title: title, desciption }),
                 );
                 alert("Board copied successfully");
+                setOpen(false);
             } catch (err) {
                 console.log(err);
                 alert("Failed to copy this board");

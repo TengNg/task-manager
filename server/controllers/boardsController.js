@@ -326,9 +326,9 @@ const removeMemberFromBoard = async (req, res) => {
 
 const closeBoard = async (req, res) => {
     const session = await mongoose.startSession();
-    try {
-        session.startTransaction();
+    session.startTransaction();
 
+    try {
         const { userId } = req.user;
         const { id } = req.params;
 
@@ -339,8 +339,6 @@ const closeBoard = async (req, res) => {
         await List.deleteMany({ boardId: id }, { session });
         await BoardMembership.deleteMany({ boardId: id }, { session });
         await Board.deleteOne({ _id: id }, { session });
-
-        throw "Close board: Testing"
 
         await session.commitTransaction();
 
@@ -354,10 +352,10 @@ const closeBoard = async (req, res) => {
 };
 
 const copyBoard = async (req, res) => {
-    const session = mongoose.startSession();
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
     try {
-
         const { id } = req.params;
         const { title, description } = req.body;
         const { userId } = req.user
@@ -375,7 +373,7 @@ const copyBoard = async (req, res) => {
             createdBy: userId,
         });
 
-        await newBoard.save();
+        await newBoard.save({ session });
 
         for (const list of lists) {
             const newListId = new mongoose.Types.ObjectId();
@@ -387,7 +385,7 @@ const copyBoard = async (req, res) => {
                 boardId: newBoardId,
             });
 
-            await newList.save();
+            await newList.save({ session });
 
             const cards = await Card.find({ listId: _id });
             for (const card of cards) {
@@ -402,7 +400,7 @@ const copyBoard = async (req, res) => {
                     listId: newListId,
                 });
 
-                await newCard.save();
+                await newCard.save({ session });
             }
         }
 

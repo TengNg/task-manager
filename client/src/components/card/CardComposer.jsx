@@ -76,6 +76,7 @@ const CardComposer = ({ list, open, setOpen }) => {
         );
 
         const cardData = {
+            _id: crypto.randomUUID(),
             trackedId: crypto.randomUUID(),
             boardId: boardId,
             listId: list._id,

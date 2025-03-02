@@ -6,6 +6,7 @@ import { highlightColorsRGBA } from "../../data/highlights";
 import { useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import Icon from "../shared/Icon";
+import Loading from "../ui/Loading";
 
 export default function Card({ card }) {
     const cardRef = useRef();
@@ -18,14 +19,13 @@ export default function Card({ card }) {
         debugModeEnabled,
     } = useBoardState();
 
-    const { attributes, listeners, setNodeRef, isDragging } =
-        useSortable({
-            id: card._id,
-            data: {
-                type: "card",
-                card,
-            },
-        });
+    const { attributes, listeners, setNodeRef, isDragging } = useSortable({
+        id: card._id,
+        data: {
+            type: "card",
+            card,
+        },
+    });
 
     const style = {
         opacity: isDragging ? 0.2 : 1,
@@ -65,7 +65,7 @@ export default function Card({ card }) {
     if (card.onLoading === true) {
         return (
             <div
-                className={`card__item ${card.hiddenByFilter && "hidden"} relative d-flex justify-center items-center text-[0.75rem] text-gray-500 w-full h-[110px] border-[2px] border-gray-600 px-2 py-4 flex flex-col mt-3 shadow-[0_2px_0_0] shadow-gray-600 cursor-not-allowed`}
+                className={`card__item ${card.hiddenByFilter && "hidden"} relative d-flex justify-center items-center text-[0.75rem] text-gray-500 w-full h-[110px] border-[2px] border-gray-600 px-2 py-4 flex flex-col shadow-[0_2px_0_0] shadow-gray-600 cursor-not-allowed`}
             >
                 <p className="w-full h-full bg-inherit font-semibold text-gray-600 rounded-md py-1 px-2 focus:outline-none text-sm break-words whitespace-pre-line">
                     {card.title}
@@ -96,7 +96,7 @@ export default function Card({ card }) {
                 ${card.hiddenByFilter ? "hidden" : ""}
                 ${theme.itemTheme == "rounded" ? "rounded" : ""}
                 ${dateToCompare(card?.dueDate) ? "past__due__card" : ""}
-                relative select-none w-full group border-[2px] border-gray-600 p-4 flex flex-col gap-2
+                relative touch-none select-none w-full group border-[2px] border-gray-600 p-4 flex flex-col gap-2
                 shadow-[0_2px_0_0] shadow-gray-600 hover:shadow-[0_4px_0_0]
             `}
             onKeyDown={(e) => {

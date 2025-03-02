@@ -50,7 +50,7 @@ const BoardMenu = ({
                 navigate("/boards");
             } catch (err) {
                 console.log(err);
-                navigate("/boards");
+                alert("Failed to close this board, something went wrong");
             }
         }
     };

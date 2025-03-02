@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import List from "./List";
 import useBoardState from "../../hooks/useBoardState";
 import AddList from "./AddList";
@@ -38,11 +38,7 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
                 distance: 10,
             },
         }),
-        useSensor(TouchSensor, {
-            activationConstraint: {
-                distance: 10,
-            },
-        }),
+        useSensor(TouchSensor),
     );
 
     function validateBoardMember() {
