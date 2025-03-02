@@ -420,7 +420,7 @@ const Activities = () => {
             </section>
 
             <button
-                className="fixed bottom-4 left-4 w-[20px] h-[20px] text-[12px] bg-gray-500 hover:bg-gray-600 text-white rounded-full"
+                className="fixed sm:bottom-4 sm:left-4 bottom-2.5 left-2.5 w-[20px] h-[20px] text-[12px] bg-gray-500 hover:bg-gray-600 text-white rounded-full"
                 onClick={() => {
                     setOpenHelp((prev) => !prev);
                 }}

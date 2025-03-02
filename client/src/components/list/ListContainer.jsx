@@ -139,6 +139,12 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
 
         // type card
 
+        // Note: for when user keep moving the card around containers fast
+        if (Object.keys(active).length === 0) {
+            setBoardState(clonedBoardState);
+            return;
+        }
+
         const activeId = active.id;
         const activeListId = activeData.card.listId;
 
@@ -267,6 +273,7 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
         if (isActiveTypeCard && isOverACard) {
             const newLists = [...boardState.lists];
             const activeListId = active.data.current.card.listId;
+
             const overListId = over.data.current.card.listId;
 
             if (activeListId === overListId) {
@@ -297,6 +304,9 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
             } else {
                 const activeList = newLists.find((l) => l._id === activeListId);
                 const overList = newLists.find((l) => l._id === overListId);
+                if (!overList) {
+                    return;
+                }
 
                 const newActiveCards = [...activeList.cards];
                 const newOverCards = [...overList.cards];
@@ -307,7 +317,14 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
                 const [removed] = newActiveCards.splice(activeIndex, 1);
 
                 removed.listId = overList._id;
-                newOverCards.push(removed);
+                if (newOverCards.length === 0) {
+                    newOverCards.push(removed);
+                } else {
+                    const overIndex = newOverCards.findIndex(
+                        (c) => c._id === overId,
+                    );
+                    newOverCards.splice(overIndex, 0, removed);
+                }
 
                 setBoardState((prev) => {
                     return {

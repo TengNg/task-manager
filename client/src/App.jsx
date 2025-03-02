@@ -102,7 +102,7 @@ function App() {
 
             <button
                 onClick={() => setOpenThemesDialog(true)}
-                className="fixed grid place-items-center sm:right-4 sm:bottom-4 text-[13px] sm:text-[1rem] right-1 bottom-2 sm:w-[35px] sm:h-[35px] w-[30px] h-[30px] rounded-full bg-gray-500 text-transparent hover:bg-gray-500/75"
+                className="fixed grid place-items-center sm:right-4 sm:bottom-4 text-[13px] sm:text-[1rem] right-2.5 bottom-2.5 sm:w-[35px] sm:h-[35px] w-[30px] h-[30px] rounded-full bg-gray-500 text-transparent hover:bg-gray-500/75"
                 style={{ color: backgroundTheme?.hex || "#f1f1f1" }}
                 title={backgroundTheme?.theme}
             >

@@ -5,7 +5,7 @@ const __prod__ = process.env.MODE === 'production';
 const cookieOpts = {
     httpOnly: true,
     sameSite: __prod__ ? 'Lax' : 'None',
-    secure: __prod__,
+    secure: true,
     maxAge: 15 * 24 * 60 * 60 * 1000 // 15 days
 };
 
