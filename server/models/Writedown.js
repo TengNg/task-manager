@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const WritedownSchema = new mongoose.Schema({
+const writedownSchema = new mongoose.Schema({
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -27,6 +27,11 @@ const WritedownSchema = new mongoose.Schema({
         default: false
     },
 
+    order: {
+        type: String,
+        default: ""
+    },
+
     createdAt: {
         type: Date,
         required: true,
@@ -39,7 +44,9 @@ const WritedownSchema = new mongoose.Schema({
     },
 });
 
-WritedownSchema.pre('save', function (next) {
+writedownSchema.index({ userId: 1, order: 1 });
+
+writedownSchema.pre('save', function (next) {
     if (!this.isNew) {
         this.updatedAt = Date.now();
     }
@@ -47,4 +54,4 @@ WritedownSchema.pre('save', function (next) {
     next();
 });
 
-module.exports = mongoose.model('Writedown', WritedownSchema);
+module.exports = mongoose.model('Writedown', writedownSchema);

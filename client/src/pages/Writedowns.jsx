@@ -1,14 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Title from "../components/ui/Title";
 import Editor from "../components/writedown/Editor";
 
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import WritedownItem from "../components/writedown/WritedownItem";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { closestCenter, DndContext, DragOverlay } from "@dnd-kit/core";
+import { rectSwappingStrategy, SortableContext } from "@dnd-kit/sortable";
+import { createPortal } from "react-dom";
+import { lexorank } from "../utils/class/Lexorank";
 
 const Writedown = () => {
+    const [activeWritedown, setActiveWritedown] = useState(null);
     const [writedowns, setWritedowns] = useState([]);
+    const [clonedWritedowns, setClonedWritedowns] = useState([]);
     const [writedown, setWritedown] = useState({
         open: false,
         loading: false,
@@ -19,6 +25,8 @@ const Writedown = () => {
     const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [isCreatingWritedown, setIsCreatingWritedown] = useState(false);
 
+    const [searchParams, setSearchParams] = useSearchParams();
+
     const axiosPrivate = useAxiosPrivate();
 
     const navigate = useNavigate();
@@ -26,6 +34,17 @@ const Writedown = () => {
     useEffect(() => {
         fetchWritedowns();
     }, []);
+
+    const handleFilterPinned = () => {
+        if (searchParams.get("filter") === "pinned") {
+            searchParams.delete("filter");
+            setSearchParams(searchParams, { replace: true });
+            return;
+        }
+
+        searchParams.set("filter", "pinned");
+        setSearchParams(searchParams, { replace: true });
+    };
 
     async function fetchWritedowns() {
         setIsDataLoaded(false);
@@ -74,7 +93,11 @@ const Writedown = () => {
         if (isCreatingWritedown) return;
 
         try {
-            const response = await axiosPrivate.post("/personal_writedowns");
+            const rank = writedowns[writedowns.length - 1]?.order;
+            const response = await axiosPrivate.post(
+                "/personal_writedowns",
+                JSON.stringify({ rank }),
+            );
             const { newWritedown } = response.data;
             setWritedowns((prev) => {
                 return [...prev, newWritedown];
@@ -171,21 +194,68 @@ const Writedown = () => {
 
                     return writedown;
                 });
-
-                const sortedWritedowns = newWritedowns.sort((a, b) => {
-                    if (a.pinned !== b.pinned) {
-                        return b.pinned - a.pinned;
-                    }
-
-                    return new Date(b.createdAt) - new Date(a.createdAt);
-                });
-
-                return sortedWritedowns;
+                return newWritedowns;
             });
         } catch (err) {
             alert("Failed to pin writedown");
         }
     }
+
+    async function handleOnDragEnd(e) {
+        const { active, over } = e;
+
+        if (!over || active.id == over.id) {
+            return;
+        }
+
+        try {
+            const items = [...writedowns];
+            const oldIndex = items.findIndex((w) => w._id == active.id);
+            const newIndex = items.findIndex((w) => w._id == over.id);
+            if (oldIndex === newIndex) {
+                return;
+            }
+
+            const [removed] = items.splice(oldIndex, 1);
+            const prevRank = items[newIndex - 1]?.order;
+            const nextRank = items[newIndex + 1]?.order;
+            let [rank, ok] = lexorank.insert(prevRank, nextRank);
+            if (!ok) {
+                alert(
+                    "invalid order, please try to drag this writedown to other position",
+                );
+                setClonedWritedowns(clonedWritedowns);
+                return;
+            }
+
+            removed.order = rank;
+            items.splice(newIndex, 0, removed);
+            setWritedowns(items);
+
+            await axiosPrivate.put(
+                `/personal_writedowns/${removed._id}/reorder`,
+                JSON.stringify({ rank }),
+            );
+        } catch (err) {
+            alert("something went wrong, please try again");
+            setClonedWritedowns(clonedWritedowns);
+        } finally {
+            setActiveWritedown(null);
+        }
+    }
+
+    function handleOnDragStart(e) {
+        const activeWd = e.active.data.current.writedown;
+        setActiveWritedown(activeWd);
+    }
+
+    function handleOnDragCancel() {
+        setActiveWritedown(null);
+    }
+
+    const writedownIds = useMemo(() => {
+        return writedowns.map((w) => w._id);
+    }, [writedowns]);
 
     return (
         <>
@@ -203,7 +273,7 @@ const Writedown = () => {
                     <div className="flex flex-col justify-center items-center gap-4 text-sm text-gray-600">
                         <button
                             onClick={handleCreateWritedown}
-                            className="w-[180px] grid place-items-center text-gray-600 text-sm border-[2px] border-gray-600 border-dashed py-4 px-6 hover:bg-gray-600 hover:text-gray-100"
+                            className="w-[180px] grid place-items-center text-gray-600 text-sm border-[2px] border-gray-600 border-dashed py-4 px-6 hover:bg-gray-600 hover:text-gray-50"
                         >
                             {isCreatingWritedown
                                 ? "creating..."
@@ -232,29 +302,70 @@ const Writedown = () => {
                                     </p>
                                 </div>
                             ) : (
-                                <div className="w-full grid place-items-center my-4">
-                                    <button
-                                        className="text-[0.75rem] text-gray-600 pe-1 text-center underline cursor-pointer sm:mb-0 mb-1 mx-auto"
-                                        onClick={fetchWritedowns}
-                                    >
-                                        refresh
-                                    </button>
+                                <div className="flex gap-4 items-center justify-center">
+                                    <div className="w-fit grid place-items-center my-4">
+                                        <button
+                                            className="text-[0.75rem] text-gray-600 pe-1 text-center underline cursor-pointer sm:mb-0 mb-1 mx-auto"
+                                            onClick={fetchWritedowns}
+                                        >
+                                            refresh
+                                        </button>
+                                    </div>
+
+                                    <div className="w-fit grid place-items-center my-4">
+                                        <button
+                                            className={`${searchParams.has("filter") ? "text-amber-600" : "text-gray-600"} text-[0.75rem] pe-1 text-center underline cursor-pointer sm:mb-0 mb-1 mx-auto`}
+                                            onClick={handleFilterPinned}
+                                        >
+                                            pinned
+                                        </button>
+                                    </div>
                                 </div>
                             )}
 
-                            <div className="flex flex-wrap gap-4 justify-center items-center mt-4">
-                                {writedowns.map((w) => {
-                                    return (
-                                        <WritedownItem
-                                            key={w._id}
-                                            writedown={w}
-                                            open={handleOpenWritedown}
-                                            remove={handleDeleteWritedown}
-                                            pin={handlePinWritedown}
-                                        />
-                                    );
-                                })}
-                            </div>
+                            <DndContext
+                                collisionDetection={closestCenter}
+                                onDragEnd={handleOnDragEnd}
+                                onDragStart={handleOnDragStart}
+                                onDragCancel={handleOnDragCancel}
+                            >
+                                <SortableContext
+                                    strategy={rectSwappingStrategy}
+                                    items={writedownIds}
+                                >
+                                    <div className="flex flex-wrap gap-4 justify-center items-center mt-4">
+                                        {writedowns.map((w) => {
+                                            return (
+                                                <WritedownItem
+                                                    key={w._id}
+                                                    writedown={w}
+                                                    open={handleOpenWritedown}
+                                                    remove={
+                                                        handleDeleteWritedown
+                                                    }
+                                                    pin={handlePinWritedown}
+                                                />
+                                            );
+                                        })}
+                                    </div>
+                                </SortableContext>
+                                {createPortal(
+                                    <DragOverlay
+                                        adjustScale
+                                        style={{ transformOrigin: "0 0" }}
+                                    >
+                                        {activeWritedown && (
+                                            <WritedownItem
+                                                writedown={activeWritedown}
+                                                open={handleOpenWritedown}
+                                                remove={handleDeleteWritedown}
+                                                pin={handlePinWritedown}
+                                            />
+                                        )}
+                                    </DragOverlay>,
+                                    document.getElementById("root"),
+                                )}
+                            </DndContext>
                         </>
                     )}
                 </div>

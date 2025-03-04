@@ -1,6 +1,10 @@
 const Writedown = require("../models/Writedown");
 
-const { saveNewWritedown, writedownsByUserId, handleAuthorizationAndGetWritedown } = require('../services/writedownService');
+const {
+    saveNewWritedown,
+    writedownsByUserId,
+    handleAuthorizationAndGetWritedown,
+} = require('../services/writedownService');
 
 const getWritedowns = async (req, res) => {
     const { userId } = req.user;
@@ -15,7 +19,8 @@ const getWritedown = async (req, res) => {
 
 const createWritedown = async (req, res) => {
     const { userId } = req.user;
-    const newWritedown = await saveNewWritedown({ owner: userId });
+    const { rank } = req.body;
+    const newWritedown = await saveNewWritedown({ owner: userId, order: rank });
     return res.status(200).json({ msg: 'new writedown added', newWritedown });
 };
 
@@ -53,6 +58,14 @@ const deleteWritedown = async (req, res) => {
     return res.status(200).json({ message: 'writedown deleted' });
 };
 
+const reorder = async (req, res) => {
+    const { writedown } = await handleAuthorizationAndGetWritedown(req, res);
+    const { rank } = req.body;
+    writedown.order = rank;
+    await writedown.save();
+    return res.status(204);
+};
+
 module.exports = {
     getWritedowns,
     getWritedown,
@@ -61,4 +74,5 @@ module.exports = {
     pinWritedown,
     updateTitle,
     deleteWritedown,
+    reorder,
 };

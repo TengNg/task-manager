@@ -9,6 +9,7 @@ const {
     saveWritedown,
     pinWritedown,
     deleteWritedown,
+    reorder,
 } = require('../../controllers/writedownsController');
 
 router.route("/")
@@ -22,6 +23,9 @@ router.route("/:writedownId")
 
 router.route("/:writedownId/pin")
     .put(pinWritedown)
+
+router.route("/:writedownId/reorder")
+    .put(reorder)
 
 router.route("/:writedownId/update-title")
     .put(updateTitle);

@@ -20,7 +20,7 @@ const saveNewWritedown = async (writedownData) => {
 const writedownsByUserId = async (userId) => {
     const result = await Writedown
         .find({ owner: userId })
-        .sort({ pinned: -1, createdAt: -1 })
+        .sort({ order: 'asc' })
         .lean();
     return result;
 };
