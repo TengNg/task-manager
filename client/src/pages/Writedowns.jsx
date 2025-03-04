@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Title from "../components/ui/Title";
 import Editor from "../components/writedown/Editor";
 
@@ -6,9 +6,14 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import WritedownItem from "../components/writedown/WritedownItem";
 
 import { useNavigate } from "react-router-dom";
+import { closestCenter, DndContext, DragOverlay } from "@dnd-kit/core";
+import { arrayMove, rectSortingStrategy, SortableContext } from "@dnd-kit/sortable";
+import { createPortal } from "react-dom";
 
 const Writedown = () => {
+    const [activeWritedown, setActiveWritedown] = useState(null);
     const [writedowns, setWritedowns] = useState([]);
+    const [clonedWritedowns, setClonedWritedowns] = useState([]);
     const [writedown, setWritedown] = useState({
         open: false,
         loading: false,
@@ -187,6 +192,33 @@ const Writedown = () => {
         }
     }
 
+    function handleOnDragEnd(e) {
+        setActiveWritedown(null);
+
+        const { active, over } = e;
+        if (active.id == over.id) {
+            return;
+        }
+
+        const items = [...writedowns];
+        const oldIndex = items.findIndex(w => w._id == active.id);
+        const newIndex = items.findIndex(w => w._id == over.id);
+        const [removed] = items.splice(oldIndex, 1);
+        items.splice(newIndex, 0, removed);
+        setWritedowns(items);
+    }
+
+    function handleOnDragStart(e) {
+        setActiveWritedown(null);
+        setClonedWritedowns(structuredClone(writedowns));
+
+        if (e.active.data.current?.type === "writedown") {
+            const activeWd = e.active.data.current.writedown;
+            setActiveWritedown(activeWd);
+            return;
+        }
+    }
+
     return (
         <>
             <Editor
@@ -203,7 +235,7 @@ const Writedown = () => {
                     <div className="flex flex-col justify-center items-center gap-4 text-sm text-gray-600">
                         <button
                             onClick={handleCreateWritedown}
-                            className="w-[180px] grid place-items-center text-gray-600 text-sm border-[2px] border-gray-600 border-dashed py-4 px-6 hover:bg-gray-600 hover:text-gray-100"
+                            className="w-[180px] grid place-items-center text-gray-600 text-sm border-[2px] border-gray-600 border-dashed py-4 px-6 hover:bg-gray-600 hover:text-gray-50"
                         >
                             {isCreatingWritedown
                                 ? "creating..."
@@ -242,19 +274,43 @@ const Writedown = () => {
                                 </div>
                             )}
 
-                            <div className="flex flex-wrap gap-4 justify-center items-center mt-4">
-                                {writedowns.map((w) => {
-                                    return (
-                                        <WritedownItem
-                                            key={w._id}
-                                            writedown={w}
-                                            open={handleOpenWritedown}
-                                            remove={handleDeleteWritedown}
-                                            pin={handlePinWritedown}
-                                        />
-                                    );
-                                })}
-                            </div>
+                            <DndContext
+                                collisionDetection={closestCenter}
+                                onDragEnd={handleOnDragEnd}
+                                onDragStart={handleOnDragStart}
+                            >
+                                <div className="flex flex-wrap gap-4 justify-center items-center mt-4">
+                                    <SortableContext
+                                        strategy={rectSortingStrategy}
+                                        items={writedowns.map((w) => w._id)}
+                                    >
+                                        {writedowns.map((w) => {
+                                            return (
+                                                <WritedownItem
+                                                    key={w._id}
+                                                    writedown={w}
+                                                    open={handleOpenWritedown}
+                                                    remove={handleDeleteWritedown}
+                                                    pin={handlePinWritedown}
+                                                />
+                                            );
+                                        })}
+                                    </SortableContext>
+                                </div>
+                                {createPortal(
+                                    <DragOverlay>
+                                        {activeWritedown && (
+                                            <WritedownItem
+                                                writedown={activeWritedown}
+                                                open={handleOpenWritedown}
+                                                remove={handleDeleteWritedown}
+                                                pin={handlePinWritedown}
+                                            />
+                                        )}
+                                    </DragOverlay>,
+                                    document.getElementById("root"),
+                                )}
+                            </DndContext>
                         </>
                     )}
                 </div>
