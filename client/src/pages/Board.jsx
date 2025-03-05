@@ -24,6 +24,7 @@ import VisibilityConfig from "../components/board/VisibilityConfig";
 import KeyBindings from "../components/ui/KeyBindings";
 import BoardActivities from "../components/activity-history/BoardActivities";
 import Toast from "../components/ui/Toast";
+import VISIBILITY_MAP from "../data/visibility";
 
 const chatsPerPage = 50;
 
@@ -755,24 +756,6 @@ const Board = () => {
                 />
             )}
 
-            {boardState?.board?.visibility && (
-                <div
-                    className="sm:block hidden absolute sm:left-4 sm:top-3 cursor-pointer"
-                    title={`this board is in ${boardState.board.visibility === "private" ? "private" : "public"} mode`}
-                    onClick={setOpenVisibilityConfig}
-                >
-                    {boardState.board.visibility === "private" ? (
-                        <span className="sm:text-[14px] text-gray-700 font-medium">
-                            [private]
-                        </span>
-                    ) : (
-                        <span className="sm:text-[14px] text-gray-700 font-medium">
-                            [public]
-                        </span>
-                    )}
-                </div>
-            )}
-
             <div className="w-full h-[calc(100vh-8rem)] flex flex-col justify-start gap-3 items-start bg-transparent">
                 <div className="flex flex-wrap justify-between w-full z-20 px-4">
                     <div>
@@ -906,11 +889,14 @@ const Board = () => {
                 <button
                     onClick={() => setOpenVisibilityConfig((prev) => !prev)}
                     className={`
-                        w-[100px] ${openVisibilityConfig ? "mt-1 text-gray-100 shadow-[0_1px_0_0]" : "shadow-gray-600 shadow-[0_3px_0_0]"}
+                        w-fit ${openVisibilityConfig ? "mt-1 text-gray-100 shadow-[0_1px_0_0]" : "shadow-gray-600 shadow-[0_3px_0_0]"}
                         bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium
                     `}
                 >
-                    visibility
+                    visibility:
+                    <span className="text-sm">
+                        {VISIBILITY_MAP[boardState.board?.visibility]}
+                    </span>
                 </button>
 
                 <div className="flex gap-3 ms-3 text-[0.65rem] items-center justify-center text-gray-700">

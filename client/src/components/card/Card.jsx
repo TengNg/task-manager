@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import Icon from "../shared/Icon";
 import Loading from "../ui/Loading";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function Card({ card }) {
     const cardRef = useRef();
@@ -17,9 +18,17 @@ export default function Card({ card }) {
         setFocusedCard,
         theme,
         debugModeEnabled,
+        windowWidth,
     } = useBoardState();
 
-    const { attributes, listeners, setNodeRef, isDragging } = useSortable({
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        isDragging,
+        transform,
+        transition,
+    } = useSortable({
         id: card._id,
         data: {
             type: "card",
@@ -28,6 +37,10 @@ export default function Card({ card }) {
     });
 
     const style = {
+        transition,
+        transform: CSS.Transform.toString(
+            transform && { ...transform, scaleY: 1 },
+        ),
         opacity: isDragging ? 0.2 : 1,
         boxShadow: `${card.highlight == null ? "0 3px 0 0 #4b5563" : `0 3px 0 0 ${card.highlight}`}`,
         borderColor: `${card.highlight == null ? "#4b5563" : `${card.highlight}`}`,
@@ -82,6 +95,8 @@ export default function Card({ card }) {
         );
     }
 
+    const isLargeScreen = windowWidth >= 768;
+
     return (
         <div
             ref={(element) => {
@@ -90,7 +105,7 @@ export default function Card({ card }) {
             }}
             style={style}
             {...attributes}
-            {...listeners}
+            {...(isLargeScreen ? listeners : {})}
             className={`card__item
                 ${focusedCard?.id === card._id && focusedCard?.focused ? "focused" : ""}
                 ${card.hiddenByFilter ? "hidden" : ""}
@@ -197,6 +212,17 @@ export default function Card({ card }) {
             >
                 ...
             </button>
+            {!isLargeScreen && (
+                <button
+                    {...listeners}
+                    className="absolute right-2 top-1 font-bold opacity-90"
+                    style={{
+                        color: `${card.highlight == null ? "#4b5563" : `${card.highlight}`}`,
+                    }}
+                >
+                    <Icon name="grip-lines" className="w-5 h-5" />
+                </button>
+            )}
         </div>
     );
 }
