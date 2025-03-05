@@ -7,6 +7,7 @@ import LOCAL_STORAGE_KEYS from "../data/localStorageKeys";
 import dateFormatter from "../utils/dateFormatter";
 import useAuth from "../hooks/useAuth";
 import { useParams } from "react-router-dom";
+import useWindowSize from "../hooks/useWindowSize";
 
 const BoardStateContext = createContext({});
 
@@ -18,6 +19,8 @@ const filterParams = () => {
 };
 
 export const BoardStateContextProvider = ({ children }) => {
+    const { width: windowWidth } = useWindowSize();
+
     const { boardId } = useParams();
     const [boardState, setBoardState] = useState({});
     const [chats, setChats] = useState([]);
@@ -741,6 +744,8 @@ export const BoardStateContextProvider = ({ children }) => {
                 setHasReceivedNewMessage,
                 isAtBottomOfChat,
                 setIsAtBottomOfChat,
+
+                windowWidth,
 
                 socket,
             }}

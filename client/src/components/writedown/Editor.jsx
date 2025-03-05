@@ -138,7 +138,7 @@ const Editor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
                     fontSize="1rem"
                 />
 
-                <div className="font-medium text-[12px] absolute top-2 left-2 max-w-[300px] max-h-[100px] overflow-hidden text-slate-500 whitespace-nowrap text-ellipsis">
+                <div className="font-medium text-sm absolute top-2 left-2 max-w-[300px] max-h-[100px] overflow-hidden text-slate-500 whitespace-nowrap text-ellipsis">
                     <span>&#128205; title:</span>
                     <span> </span>
                     <span>{writedownTitle ? writedownTitle : "..."}</span>
@@ -161,7 +161,7 @@ const Editor = ({ writedown, setWritedown, saveWritedown, updateTitle }) => {
                 <div className="w-full h-[97%] pt-10 pb-4 px-6">
                     <textarea
                         ref={textarea}
-                        className="font-medium w-full max-h-full overflow-y-scroll bg-transparent focus:bg-transparent text-[11px] px-2 sm:text-sm text-gray-600 leading-6 resize-none focus:outline-none"
+                        className="font-medium w-full max-h-full overflow-y-scroll bg-transparent focus:bg-transparent px-2 text-gray-600 leading-6 resize-none focus:outline-none"
                         placeholder="writedown something..."
                         onChange={(e) => {
                             e.target.style.height = "auto";

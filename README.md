@@ -16,6 +16,8 @@ Task Manager application built with MERN stack and Socket.io (come with drag and
 
 Demo: [https://task-manager-1-server.onrender.com/](https://task-manager-1-server.onrender.com/)
 
+> Currently free-tier hosting service, so connecting to the board (including the socket service) might take a while sometimes :)
+
 ---
 
 ### Quickstart

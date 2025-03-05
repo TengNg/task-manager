@@ -302,19 +302,19 @@ const Writedown = () => {
                                     </p>
                                 </div>
                             ) : (
-                                <div className="flex gap-4 items-center justify-center">
-                                    <div className="w-fit grid place-items-center my-4">
+                                <div className="flex gap-4 items-center justify-center my-4">
+                                    <div className="w-fit grid place-items-center">
                                         <button
-                                            className="text-[0.75rem] text-gray-600 pe-1 text-center underline cursor-pointer sm:mb-0 mb-1 mx-auto"
+                                            className="text-[0.75rem] text-gray-600 pe-1 text-center hover:underline cursor-pointer sm:mb-0 mb-1 mx-auto"
                                             onClick={fetchWritedowns}
                                         >
                                             refresh
                                         </button>
                                     </div>
 
-                                    <div className="w-fit grid place-items-center my-4">
+                                    <div className="w-fit grid place-items-center">
                                         <button
-                                            className={`${searchParams.has("filter") ? "text-amber-600" : "text-gray-600"} text-[0.75rem] pe-1 text-center underline cursor-pointer sm:mb-0 mb-1 mx-auto`}
+                                            className={`${searchParams.has("filter") ? "text-amber-600" : "text-gray-600"} text-[0.75rem] pe-1 text-center hover:underline cursor-pointer sm:mb-0 mb-1 mx-auto`}
                                             onClick={handleFilterPinned}
                                         >
                                             pinned
@@ -333,7 +333,7 @@ const Writedown = () => {
                                     strategy={rectSwappingStrategy}
                                     items={writedownIds}
                                 >
-                                    <div className="flex flex-wrap gap-4 justify-center items-center mt-4">
+                                    <div className="flex flex-wrap gap-4 justify-center items-center">
                                         {writedowns.map((w) => {
                                             return (
                                                 <WritedownItem

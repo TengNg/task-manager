@@ -243,12 +243,12 @@ const List = ({ index, list, cards }) => {
             <div
                 className={`
                     ${theme.itemTheme == "rounded" ? "rounded-md shadow-[0_4px_0_0]" : "shadow-[4px_6px_0_0]"}
-                    list__item relative flex flex-col justify-start w-[300px] max-h-[100%] overflow-auto border-[2px] select-none pt-2 cursor-pointer border-gray-700 shadow-gray-700
+                    list__item relative flex flex-col justify-start w-[300px] max-h-[100%] overflow-auto border-[2px] select-none pt-2 border-gray-700 shadow-gray-700
                 `}
             >
                 <div
                     {...listeners}
-                    className="w-full bg-transparent flex justify-between items-center px-3 touch-none"
+                    className="w-full bg-transparent flex justify-between items-center px-3 cursor-pointer touch-none"
                 >
                     <div
                         ref={titleRef}
@@ -306,7 +306,7 @@ const List = ({ index, list, cards }) => {
                     {openCardComposer === false && (
                         <div className="mx-3 mt-2 mb-3 group">
                             <button
-                                className="w-full py-2 px-4 flex text-gray-400 text-sm group-hover:bg-gray-600/10 rounded-sm font-semibold text-start"
+                                className="w-full py-2 px-4 flex text-gray-400 text-sm group-hover:bg-gray-600/10 font-medium rounded-sm text-start"
                                 onClick={() => setOpenCardComposer(true)}
                             >
                                 <span>+ new card</span>

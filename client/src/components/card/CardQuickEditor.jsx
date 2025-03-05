@@ -131,6 +131,7 @@ const CardQuickEditor = ({
             alert("Failed to toggle verified");
         } finally {
             setIsVerifying(false);
+            setOpenedCardQuickEditor(false);
         }
     };
 

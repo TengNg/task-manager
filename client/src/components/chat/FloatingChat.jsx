@@ -96,7 +96,7 @@ const FloatingChat = ({
                             boardState.board.createdBy.username && (
                             <button
                                 onClick={handleClearMessages}
-                                className="me-6 text-[0.75rem] border-[2px] border-rose-400 text-rose-400 px-2 font-semibold"
+                                className="me-6 text-[0.75rem] border-[2px] border-rose-400 text-rose-400 px-2 font-medium"
                             >
                                 Clear
                             </button>

@@ -551,7 +551,7 @@ const CardDetail = ({
                                 {openCardDeleteConfirm && (
                                     <div
                                         id="card__detail__delete__confirm"
-                                        className="bg-gray-100 border-[2px] shadow-[0_3px_0_0] border-gray-700 shadow-gray-700 absolute text-[10px] sm:text-[0.75rem] w-[200px] left-0 top-0 -translate-x-[140px] sm:-translate-x-[125px] translate-y-[30%] p-2"
+                                        className="bg-gray-100 border-[1px] shadow-[0_3px_0_0] border-gray-700 shadow-gray-700 absolute text-[10px] sm:text-[0.75rem] w-[200px] left-0 top-0 -translate-x-[100%] sm:-translate-x-[125px] translate-y-[30%] p-2"
                                     >
                                         This action cannot be undone. Are you
                                         sure you want to delete this card?

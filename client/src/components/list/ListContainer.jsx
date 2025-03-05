@@ -83,6 +83,9 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
 
             const srcIndex = lists.findIndex((l) => l._id == active.id);
             const destIndex = lists.findIndex((l) => l._id == overId);
+            if (destIndex === srcIndex) {
+                return;
+            }
 
             // deep copy, need this when failed to reorder
             const initialLists = structuredClone(boardState.lists);
@@ -90,12 +93,7 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
             const newLists = [...boardState.lists];
             const [removed] = newLists.splice(srcIndex, 1);
 
-            if (destIndex === srcIndex) {
-                return;
-            }
-
             newLists.splice(destIndex, 0, removed);
-
             let prevRank = newLists[destIndex - 1]?.order;
             let nextRank = newLists[destIndex + 1]?.order;
 

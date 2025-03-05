@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import Icon from "../shared/Icon";
 import Loading from "../ui/Loading";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function Card({ card }) {
     const cardRef = useRef();
@@ -17,9 +18,17 @@ export default function Card({ card }) {
         setFocusedCard,
         theme,
         debugModeEnabled,
+        windowWidth,
     } = useBoardState();
 
-    const { attributes, listeners, setNodeRef, isDragging } = useSortable({
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        isDragging,
+        transform,
+        transition,
+    } = useSortable({
         id: card._id,
         data: {
             type: "card",
@@ -28,6 +37,10 @@ export default function Card({ card }) {
     });
 
     const style = {
+        transition,
+        transform: CSS.Transform.toString(
+            transform && { ...transform, scaleY: 1 },
+        ),
         opacity: isDragging ? 0.2 : 1,
         boxShadow: `${card.highlight == null ? "0 3px 0 0 #4b5563" : `0 3px 0 0 ${card.highlight}`}`,
         borderColor: `${card.highlight == null ? "#4b5563" : `${card.highlight}`}`,
@@ -82,6 +95,8 @@ export default function Card({ card }) {
         );
     }
 
+    const isLargeScreen = windowWidth >= 769;
+
     return (
         <div
             ref={(element) => {
@@ -90,13 +105,14 @@ export default function Card({ card }) {
             }}
             style={style}
             {...attributes}
-            {...listeners}
+            {...(isLargeScreen ? listeners : {})}
             className={`card__item
                 ${focusedCard?.id === card._id && focusedCard?.focused ? "focused" : ""}
                 ${card.hiddenByFilter ? "hidden" : ""}
                 ${theme.itemTheme == "rounded" ? "rounded" : ""}
+                ${isLargeScreen ? "touch-none" : ""}
                 ${dateToCompare(card?.dueDate) ? "past__due__card" : ""}
-                relative touch-none select-none w-full group border-[2px] border-gray-600 p-4 flex flex-col gap-2
+                relative select-none w-full group border-[2px] border-gray-600 p-4 flex flex-col gap-2
                 shadow-[0_2px_0_0] shadow-gray-600 hover:shadow-[0_4px_0_0]
             `}
             onKeyDown={(e) => {
@@ -197,6 +213,17 @@ export default function Card({ card }) {
             >
                 ...
             </button>
+            {!isLargeScreen && (
+                <button
+                    {...listeners}
+                    className="touch-none absolute right-2 top-1 font-bold opacity-90"
+                    style={{
+                        color: `${card.highlight == null ? "#4b5563" : `${card.highlight}`}`,
+                    }}
+                >
+                    <Icon name="grip-lines" className="w-5 h-5" />
+                </button>
+            )}
         </div>
     );
 }

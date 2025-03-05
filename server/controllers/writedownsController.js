@@ -63,7 +63,7 @@ const reorder = async (req, res) => {
     const { rank } = req.body;
     writedown.order = rank;
     await writedown.save();
-    return res.status(204);
+    return res.status(200).json({ message: "writedown updated" });
 };
 
 module.exports = {

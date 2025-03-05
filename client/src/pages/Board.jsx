@@ -24,6 +24,7 @@ import VisibilityConfig from "../components/board/VisibilityConfig";
 import KeyBindings from "../components/ui/KeyBindings";
 import BoardActivities from "../components/activity-history/BoardActivities";
 import Toast from "../components/ui/Toast";
+import VISIBILITY_MAP from "../data/visibility";
 
 const chatsPerPage = 50;
 
@@ -647,6 +648,13 @@ const Board = () => {
                 >
                     Back to Boards
                 </button>
+
+                <br />
+                <p className="text-[11px] text-center text-gray-500">(initialize connection, it might take sometimes)</p>
+                <p className="text-[11px] text-center text-gray-500">
+                    If this is taking longer than expected. <br />
+                    Please check your internet connection or try again in a moment.
+                </p>
             </section>
         );
     }
@@ -753,24 +761,6 @@ const Board = () => {
                     hasReceivedNewMessage={hasReceivedNewMessage}
                     setHasReceivedNewMessage={setHasReceivedNewMessage}
                 />
-            )}
-
-            {boardState?.board?.visibility && (
-                <div
-                    className="sm:block hidden absolute sm:left-4 sm:top-3 cursor-pointer"
-                    title={`this board is in ${boardState.board.visibility === "private" ? "private" : "public"} mode`}
-                    onClick={setOpenVisibilityConfig}
-                >
-                    {boardState.board.visibility === "private" ? (
-                        <span className="sm:text-[14px] text-gray-700 font-medium">
-                            [private]
-                        </span>
-                    ) : (
-                        <span className="sm:text-[14px] text-gray-700 font-medium">
-                            [public]
-                        </span>
-                    )}
-                </div>
             )}
 
             <div className="w-full h-[calc(100vh-8rem)] flex flex-col justify-start gap-3 items-start bg-transparent">
@@ -906,20 +896,23 @@ const Board = () => {
                 <button
                     onClick={() => setOpenVisibilityConfig((prev) => !prev)}
                     className={`
-                        w-[100px] ${openVisibilityConfig ? "mt-1 text-gray-100 shadow-[0_1px_0_0]" : "shadow-gray-600 shadow-[0_3px_0_0]"}
+                        w-fit ${openVisibilityConfig ? "mt-1 text-gray-100 shadow-[0_1px_0_0]" : "shadow-gray-600 shadow-[0_3px_0_0]"}
                         bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium
                     `}
                 >
-                    visibility
+                    visibility:
+                    <span>
+                        {VISIBILITY_MAP[boardState.board?.visibility]}
+                    </span>
                 </button>
 
-                <div className="flex gap-3 ms-3 text-[0.65rem] items-center justify-center text-gray-700">
+                <div className="flex gap-3 ms-3 text-[0.75rem] items-center justify-center text-gray-700">
                     <p className="md:block hidden select-none m-0 p-0">
                         lists: {boardState?.board?.listCount || 0} / 20
                     </p>
 
                     <button
-                        className="sm:block hidden w-5 h-5 bg-pink-400 rounded-full"
+                        className="sm:block hidden w-[1.5rem] h-[1.5rem] bg-pink-400 rounded-full"
                         onClick={(e) => {
                             navigator.clipboard
                                 .writeText(boardState?.board?._id)
@@ -932,12 +925,12 @@ const Board = () => {
                     ></button>
 
                     <button
-                        className="sm:block hidden w-5 h-5 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-full"
+                        className="sm:grid place-items-center text-[11px] hidden w-[1.5rem] h-[1.5rem] bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-full"
                         onClick={() => {
                             setOpenKeyBindings((prev) => !prev);
                         }}
                         title="open help"
-                    ></button>
+                    >?</button>
                 </div>
             </div>
 
