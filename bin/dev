@@ -6,8 +6,8 @@
 # Navigate to the server directory and run npm run dev in the background
 (cd server && npm run dev) &
 
-# Navigate to the socket directory and run npm run dev in the background
-(cd socket && npm run dev) &
+# # Navigate to the socket directory and run npm run dev in the background
+# (cd socket && npm run dev) &
 
 # Wait for all background processes to finish
 wait
