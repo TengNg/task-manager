@@ -650,10 +650,13 @@ const Board = () => {
                 </button>
 
                 <br />
-                <p className="text-[11px] text-center text-gray-500">(initialize connection, it might take sometimes)</p>
+                <p className="text-[11px] text-center text-gray-500">
+                    (initialize connection, it might take sometimes)
+                </p>
                 <p className="text-[11px] text-center text-gray-500">
                     If this is taking longer than expected. <br />
-                    Please check your internet connection or try again in a moment.
+                    Please check your internet connection or try again in a
+                    moment.
                 </p>
             </section>
         );
@@ -901,9 +904,7 @@ const Board = () => {
                     `}
                 >
                     visibility:
-                    <span>
-                        {VISIBILITY_MAP[boardState.board?.visibility]}
-                    </span>
+                    <span>{VISIBILITY_MAP[boardState.board?.visibility]}</span>
                 </button>
 
                 <div className="flex gap-3 ms-3 text-[0.75rem] items-center justify-center text-gray-700">
@@ -930,7 +931,9 @@ const Board = () => {
                             setOpenKeyBindings((prev) => !prev);
                         }}
                         title="open help"
-                    >?</button>
+                    >
+                        ?
+                    </button>
                 </div>
             </div>
 
