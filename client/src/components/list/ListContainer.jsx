@@ -20,7 +20,7 @@ import {
 } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import Card from "../card/Card";
-import { useDragScroll } from "../../hooks/useDragScroll";
+import { useMouseDragScroll } from "../../hooks/useMouseDragScroll";
 
 const ListContainer = ({ openAddList, setOpenAddList }) => {
     const { boardState, setBoardState, socket } = useBoardState();
@@ -29,7 +29,7 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
     const [activeList, setActiveList] = useState(undefined);
     const [activeCard, setActiveCard] = useState(undefined);
 
-    const listContaineRef = useDragScroll();
+    const listContaineRef = useMouseDragScroll();
 
     const { auth } = useAuth();
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 
-export const useDragScroll = () => {
+export const useMouseDragScroll = () => {
     const [el, setEl] = useState(null);
 
     const ref = useCallback((el) => {
@@ -44,52 +44,15 @@ export const useDragScroll = () => {
         },
         [el],
     );
-
-    const handleTouchStart = useCallback(
-        (e) => {
-            if (!el) {
-                return;
-            }
-
-            const touch = e.touches[0];
-            const startPos = {
-                left: el.scrollLeft,
-                top: el.scrollTop,
-                x: touch.clientX,
-                y: touch.clientY,
-            };
-
-            const handleTouchMove = (e) => {
-                const touch = e.touches[0];
-                const dx = touch.clientX - startPos.x;
-                const dy = touch.clientY - startPos.y;
-                el.scrollTop = startPos.top - dy;
-                el.scrollLeft = startPos.left - dx;
-                updateCursor(el);
-            };
-
-            const handleTouchEnd = () => {
-                document.removeEventListener("touchmove", handleTouchMove);
-                document.removeEventListener("touchend", handleTouchEnd);
-            };
-
-            document.addEventListener("touchmove", handleTouchMove);
-            document.addEventListener("touchend", handleTouchEnd);
-        },
-        [el],
-    );
-
     useEffect(() => {
         if (!el) {
             return;
         }
 
         el.addEventListener("mousedown", handleMouseDown);
-        el.addEventListener("touchstart", handleTouchStart);
 
         return () => {
             el.removeEventListener("mousedown", handleMouseDown);
-            el.removeEventListener("touchstart", handleTouchStart);
         };
     }, [el]);
 
