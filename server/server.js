@@ -156,8 +156,13 @@ if (process.env.MODE === "production") {
 
 app.use(errorHandler);
 
-if (process.env.MODE !== 'test') {
-    app.listen(PORT, () => console.log(`app is listening on PORT ${PORT}`));
-}
+// Init socket =================================================================
 
-module.exports = app;
+const { initSocket } = require('./socket.js');
+const { createServer } = require('http');
+const server = createServer(app);
+initSocket(server);
+
+if (process.env.MODE !== 'test') {
+    server.listen(PORT, () => console.log(`app is listening on PORT ${PORT}`));
+}
