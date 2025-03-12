@@ -16,7 +16,7 @@ const { generateRandomHex } = require('./utils/generateRandomHex.js');
 
 const app = express();
 
-const __prod__ = process.env.MODE;
+const __prod__ = process.env.MODE === "production";
 const PORT = process.env.PORT || 3001;
 const SERVER_URL = process.env.SERVER_URL || `http://localhost:${PORT}`;
 const FRONTEND_URL = __prod__ ? SERVER_URL : (process.env.FRONTEND_URL || "http://localhost:5173");

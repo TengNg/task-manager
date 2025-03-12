@@ -1,12 +1,15 @@
+require('dotenv').config();
+
 const { Server } = require("socket.io");
+
+const __prod__ = process.env.MODE === "production";
 
 const boardIdMap = new Map();
 const usernameMap = {};
 
 const initSocket = (server) => {
-    const io = new Server(server, {
-        cors: "*"
-    });
+    const opts = __prod__ ? {} : { cors: "*", methods: ["GET", "POST"] };
+    const io = new Server(server, opts);
 
     io.on('connection', (socket) => {
         socket.on("joinBoard", (data) => {
