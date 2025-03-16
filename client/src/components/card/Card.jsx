@@ -7,7 +7,6 @@ import { useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import Icon from "../shared/Icon";
 import Loading from "../ui/Loading";
-import { CSS } from "@dnd-kit/utilities";
 
 export default function Card({ card }) {
     const cardRef = useRef();
@@ -18,17 +17,10 @@ export default function Card({ card }) {
         setFocusedCard,
         theme,
         debugModeEnabled,
-        windowWidth,
+        isLargeScreen,
     } = useBoardState();
 
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        isDragging,
-        transform,
-        transition,
-    } = useSortable({
+    const { attributes, listeners, setNodeRef, isDragging } = useSortable({
         id: card._id,
         data: {
             type: "card",
@@ -37,10 +29,6 @@ export default function Card({ card }) {
     });
 
     const style = {
-        transition,
-        transform: CSS.Transform.toString(
-            transform && { ...transform, scaleY: 1 },
-        ),
         opacity: isDragging ? 0.2 : 1,
         boxShadow: `${card.highlight == null ? "0 3px 0 0 #4b5563" : `0 3px 0 0 ${card.highlight}`}`,
         borderColor: `${card.highlight == null ? "#4b5563" : `${card.highlight}`}`,
@@ -94,8 +82,6 @@ export default function Card({ card }) {
             </div>
         );
     }
-
-    const isLargeScreen = windowWidth >= 769;
 
     return (
         <div
@@ -205,14 +191,17 @@ export default function Card({ card }) {
                 )}
             </div>
 
-            <button
-                onClick={(e) => {
-                    handleOpenQuickEditor(e);
-                }}
-                className="absolute hidden sm:block right-1 top-1 font-bold text-[12px] pb-1 text-transparent hover:bg-gray-500/10 group-hover:text-gray-600 w-[25px] h-[25px] d-flex justify-center items-center rounded-md"
-            >
-                ...
-            </button>
+            {isLargeScreen && (
+                <button
+                    onClick={(e) => {
+                        handleOpenQuickEditor(e);
+                    }}
+                    className="absolute hidden sm:block right-1 top-1 font-bold text-[12px] pb-1 text-transparent hover:bg-gray-500/10 group-hover:text-gray-600 w-[25px] h-[25px] d-flex justify-center items-center rounded-md"
+                >
+                    ...
+                </button>
+            )}
+
             {!isLargeScreen && (
                 <button
                     {...listeners}

@@ -10,7 +10,6 @@ import {
     DndContext,
     DragOverlay,
     PointerSensor,
-    TouchSensor,
     useSensor,
     useSensors,
 } from "@dnd-kit/core";
@@ -41,7 +40,6 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
                 distance: 10,
             },
         }),
-        useSensor(TouchSensor),
     );
 
     function validateBoardMember() {
@@ -208,14 +206,11 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
 
     function handleOnDragOver(e) {
         const { active, over } = e;
-        if (!over) {
-            return;
-        }
 
         const activeId = active.id;
-        const overId = over.id;
+        const overId = over?.id;
 
-        if (activeId === overId || !over?.id) {
+        if (overId == null || activeId == overId) {
             return;
         }
 
@@ -226,9 +221,87 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
             return;
         }
 
+        if (isActiveTypeCard && isOverACard) {
+            const newLists = [...boardState.lists];
+
+            const activeListId = active.data.current.card.listId;
+            const overListId = over.data.current.card.listId;
+
+            if (activeListId === overListId) {
+                const currentList = newLists.find(
+                    (l) => l._id === activeListId,
+                );
+                const newCards = [...currentList.cards];
+
+                const activeIndex = newCards.findIndex(
+                    (c) => c._id === activeId,
+                );
+                const overIndex = newCards.findIndex((c) => c._id === overId);
+
+                const [removed] = newCards.splice(activeIndex, 1);
+                newCards.splice(overIndex, 0, removed);
+
+                setBoardState((prev) => {
+                    return {
+                        ...prev,
+                        lists: prev.lists.map((l) => {
+                            if (l._id === activeListId) {
+                                l.cards = newCards;
+                            }
+                            return l;
+                        }),
+                    };
+                });
+            } else {
+                const activeList = newLists.find((l) => l._id === activeListId);
+                const overList = newLists.find((l) => l._id === overListId);
+                if (!activeList || !overList) {
+                    return;
+                }
+
+                const newActiveCards = [...activeList.cards];
+                const newOverCards = [...overList.cards];
+
+                const activeIndex = newActiveCards.findIndex(
+                    (c) => c._id === activeId,
+                );
+
+                const [removed] = newActiveCards.splice(activeIndex, 1);
+                const newCard = { ...removed, listId: overList._id };
+
+                if (newOverCards.length === 0) {
+                    newOverCards.push(newCard);
+                } else {
+                    // FIXME: this cause the card jumps
+                    const overIndex = newOverCards.findIndex(
+                        (c) => c._id === overId,
+                    );
+                    if (overIndex !== -1) {
+                        newOverCards.splice(overIndex, 0, newCard);
+                    }
+                }
+
+                setBoardState((prev) => {
+                    return {
+                        ...prev,
+                        lists: prev.lists.map((l) => {
+                            if (l._id === activeList._id) {
+                                l.cards = newActiveCards;
+                            } else if (l._id === overList._id) {
+                                l.cards = newOverCards;
+                            }
+                            return l;
+                        }),
+                    };
+                });
+            }
+            return;
+        }
+
         const isOverAList = over.data.current?.type === "list";
         if (isActiveTypeCard && isOverAList) {
             const newLists = [...boardState.lists];
+
             const overList = newLists.find((l) => l._id === over.id);
             if (!overList) {
                 return;
@@ -262,85 +335,10 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
                         } else if (l._id === overList._id) {
                             l.cards = newOverCards;
                         }
-
                         return l;
                     }),
                 };
             });
-
-            return;
-        }
-
-        if (isActiveTypeCard && isOverACard) {
-            const newLists = [...boardState.lists];
-            const activeListId = active.data.current.card.listId;
-
-            const overListId = over.data.current.card.listId;
-
-            if (activeListId === overListId) {
-                const currentList = newLists.find(
-                    (l) => l._id === activeListId,
-                );
-                const newCards = [...currentList.cards];
-
-                const activeIndex = newCards.findIndex(
-                    (c) => c._id === activeId,
-                );
-                const overIndex = newCards.findIndex((c) => c._id === overId);
-
-                const [removed] = newCards.splice(activeIndex, 1);
-                newCards.splice(overIndex, 0, removed);
-
-                setBoardState((prev) => {
-                    return {
-                        ...prev,
-                        lists: prev.lists.map((l) => {
-                            if (l._id === activeListId) {
-                                l.cards = newCards;
-                            }
-                            return l;
-                        }),
-                    };
-                });
-            } else {
-                const activeList = newLists.find((l) => l._id === activeListId);
-                const overList = newLists.find((l) => l._id === overListId);
-                if (!overList) {
-                    return;
-                }
-
-                const newActiveCards = [...activeList.cards];
-                const newOverCards = [...overList.cards];
-
-                const activeIndex = newActiveCards.findIndex(
-                    (c) => c._id === activeId,
-                );
-                const [removed] = newActiveCards.splice(activeIndex, 1);
-
-                removed.listId = overList._id;
-                if (newOverCards.length === 0) {
-                    newOverCards.push(removed);
-                } else {
-                    const overIndex = newOverCards.findIndex(
-                        (c) => c._id === overId,
-                    );
-                    newOverCards.splice(overIndex, 0, removed);
-                }
-
-                setBoardState((prev) => {
-                    return {
-                        ...prev,
-                        lists: prev.lists.map((l) => {
-                            if (l._id === activeList._id) {
-                                l.cards = newActiveCards;
-                            } else if (l._id === overList._id) {
-                                l.cards = newOverCards;
-                            }
-                            return l;
-                        }),
-                    };
-                });
-            }
         }
     }
 

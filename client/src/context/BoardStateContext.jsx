@@ -20,6 +20,7 @@ const filterParams = () => {
 
 export const BoardStateContextProvider = ({ children }) => {
     const { width: windowWidth } = useWindowSize();
+    const isLargeScreen = windowWidth >= 769;
 
     const { boardId } = useParams();
     const [boardState, setBoardState] = useState({});
@@ -746,6 +747,7 @@ export const BoardStateContextProvider = ({ children }) => {
                 setIsAtBottomOfChat,
 
                 windowWidth,
+                isLargeScreen,
 
                 socket,
             }}
