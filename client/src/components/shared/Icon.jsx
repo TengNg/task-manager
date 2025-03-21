@@ -189,6 +189,17 @@ const Icon = ({ name, className }) => {
                     <path d="M32 288c-17.7 0-32 14.3-32 32s14.3 32 32 32l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 288zm0-128c-17.7 0-32 14.3-32 32s14.3 32 32 32l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 160z" />
                 </svg>
             );
+        case "exclaimation":
+            return (
+                <svg
+                    fill="currentColor"
+                    className={className}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 128 512"
+                >
+                    <path d="M96 64c0-17.7-14.3-32-32-32S32 46.3 32 64l0 256c0 17.7 14.3 32 32 32s32-14.3 32-32L96 64zM64 480a40 40 0 1 0 0-80 40 40 0 1 0 0 80z" />
+                </svg>
+            );
     }
 };
 

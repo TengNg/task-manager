@@ -163,6 +163,8 @@ const Board = () => {
     });
 
     useEffect(() => {
+        socket.connect();
+
         setAuth((prev) => {
             if (prev && prev.user) {
                 prev.user.recentlyViewedBoardId = boardId;
@@ -664,6 +666,17 @@ const Board = () => {
 
     return (
         <>
+            <CardDetail
+                abortController={cardDetailAbortController}
+                open={openCardDetail}
+                setOpen={setOpenCardDetail}
+                processing={processingCard}
+                handleDeleteCard={handleDeleteCard}
+                handleCopyCard={handleCopyCard}
+                handleMoveCardToList={handleMoveCardToList}
+                handleMoveCardByIndex={handleMoveCardByIndex}
+            />
+
             {openPinnedBoards && (
                 <PinnedBoards
                     open={openPinnedBoards}
@@ -695,17 +708,6 @@ const Board = () => {
             />
 
             <KeyBindings open={openKeyBindings} setOpen={setOpenKeyBindings} />
-
-            <CardDetail
-                abortController={cardDetailAbortController}
-                open={openCardDetail}
-                setOpen={setOpenCardDetail}
-                processing={processingCard}
-                handleDeleteCard={handleDeleteCard}
-                handleCopyCard={handleCopyCard}
-                handleMoveCardToList={handleMoveCardToList}
-                handleMoveCardByIndex={handleMoveCardByIndex}
-            />
 
             <MoveListForm />
 

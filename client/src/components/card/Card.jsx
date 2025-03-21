@@ -119,7 +119,7 @@ export default function Card({ card }) {
             }}
             onClick={handleOpenCardDetail}
         >
-            <p className="w-full h-full bg-transparent font-medium sm:font-semibold text-gray-700 rounded-md focus:outline-none text-sm break-words whitespace-pre-line">
+            <p className="w-full h-full bg-transparent font-medium text-gray-700 hover:text-gray-900 focus:outline-none text-sm break-words whitespace-pre-line">
                 {card.title}
             </p>
 
@@ -132,14 +132,14 @@ export default function Card({ card }) {
 
                 {card.priorityLevel && card.priorityLevel !== "none" && (
                     <div
-                        className="p-2 bg-gray-200 flex justify-center items-center rounded"
+                        className="text-[10px] py-[6px] px-2 bg-gray-200 flex justify-center items-center rounded-sm"
                         style={{
                             backgroundColor:
                                 PRIORITY_LEVELS[`${card.priorityLevel}`]?.color
                                     ?.rgba,
                         }}
                     >
-                        <span className="text-[0.55rem] sm:text-[0.65rem] text-gray-50 font-medium tracking-wider">
+                        <span className="text-gray-50 font-medium tracking-wider">
                             {card.priorityLevel.toUpperCase()}
                         </span>
                     </div>
@@ -153,7 +153,7 @@ export default function Card({ card }) {
                                 highlightColorsRGBA[`${card.highlight}`],
                         }}
                     >
-                        <span className="text-[0.55rem] sm:text-[0.65rem] font-medium">
+                        <span className="text-[12px] font-medium">
                             {card.owner}
                         </span>
                     </div>
@@ -185,7 +185,7 @@ export default function Card({ card }) {
                 )}
 
                 {debugModeEnabled.enabled && (
-                    <div className="text-[0.65rem] text-gray-700 font-medium">
+                    <div className="text-[12px] text-gray-700 font-medium">
                         rank: {card.order}
                     </div>
                 )}

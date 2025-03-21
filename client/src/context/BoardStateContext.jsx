@@ -63,8 +63,6 @@ export const BoardStateContextProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        socket.connect();
-
         const onConnect = async () => {
             if (auth && auth.user && boardId) {
                 socket.emit("joinBoard", {

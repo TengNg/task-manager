@@ -7,6 +7,7 @@ import PRIORITY_LEVELS from "../../data/priorityLevels";
 import { formatDateToYYYYMMDD } from "../../utils/dateFormatter";
 
 import { dateToCompare } from "../../utils/dateFormatter";
+import Icon from "../shared/Icon";
 
 const CardDetailInfo = ({
     card,
@@ -45,7 +46,7 @@ const CardDetailInfo = ({
                     onChange={(e) =>
                         handleCardPriorityLevelChange(e.target.value)
                     }
-                    className={`${priorityLevel && priorityLevel !== "none" && "text-gray-50"} font-medium max-w-[10rem] rounded-md px-2 py-1 appearance-none bg-transparent hover:bg-gray-300`}
+                    className={`${priorityLevel && priorityLevel !== "none" && "text-gray-50"} font-medium h-[30px] max-w-[10rem] rounded-sm px-2 cursor-pointer py-1 appearance-none bg-transparent hover:bg-gray-300`}
                     style={{
                         backgroundColor: priorityLevel
                             ? PRIORITY_LEVELS[`${priorityLevel}`]?.color?.rgba
@@ -68,7 +69,7 @@ const CardDetailInfo = ({
                 <select
                     value={card.owner || ownerValue}
                     onChange={(e) => handleCardOwnerChange(e.target.value)}
-                    className={`font-medium max-w-[10rem] rounded-md px-2 py-1 appearance-none bg-transparent hover:bg-gray-300`}
+                    className={`max-w-[10rem] rounded-sm h-[30px] px-2 py-1 cursor-pointer appearance-none bg-transparent text-gray-600 hover:bg-gray-300`}
                     style={{
                         backgroundColor:
                             highlightColorsRGBA[`${card.highlight}`],
@@ -97,7 +98,7 @@ const CardDetailInfo = ({
                 </select>
 
                 <button
-                    className={`text-white text-[1rem] w-[25px] h-[25px] rounded-md ms-1 d-flex align-items-center justify-content-center hover:opacity-50 ${!openOwnerInput ? "opacity-20" : "opacity-50"}`}
+                    className={`text-white w-[30px] h-[30px] grid place-items-center rounded-sm ms-1 d-flex align-items-center justify-content-center hover:opacity-50 ${!openOwnerInput ? "opacity-20" : "opacity-50"}`}
                     style={{
                         backgroundColor: card.highlight
                             ? highlightColors[card.highlight]
@@ -107,7 +108,7 @@ const CardDetailInfo = ({
                         setOpenOwnerInput((prev) => !prev);
                     }}
                 >
-                    +
+                    <Icon name="xmark" className="w-3 h-3 rotate-45" />
                 </button>
 
                 {openOwnerInput && (
@@ -117,8 +118,7 @@ const CardDetailInfo = ({
                         type="text"
                         value={ownerValue}
                         placeholder="owner name..."
-                        className="text-[0.75rem] max-w-[140px] bg-gray-200 border-[1px] border-gray-400 rounded-md py-1 px-2 ms-2"
-                        onBlur={() => setOpenOwnerInput(false)}
+                        className="text-[0.75rem] max-w-[140px] h-[30px] bg-gray-200 border-[1px] border-gray-400 rounded-sm py-1 px-2 ms-2 focus:outline-none"
                         onChange={(e) => setOwnerValue(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {

@@ -16,6 +16,11 @@ const {
     toggleVerified,
 } = require('../../controllers/cardsController');
 
+const { 
+    getCardComments,
+    createCardComment,
+} = require('../../controllers/cardCommentsController');
+
 let cardActionLocks = {};
 
 const withLock = (action, fn) => async (req, res) => {
@@ -81,5 +86,10 @@ router.route("/:id/toggle-verified")
 
 router.route("/:id/due-date/update")
     .put(updateDueDate)
+
+// Comments
+router.route("/:cardId/comments")
+    .get(getCardComments)
+    .post(createCardComment)
 
 module.exports = router;
