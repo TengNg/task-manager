@@ -13,6 +13,31 @@ const AddList = ({ open, setOpen }) => {
     const axiosPrivate = useAxiosPrivate();
 
     useEffect(() => {
+        const closeOnEscape = (e) => {
+            if (e.key === "Escape") {
+                setOpen(false);
+            }
+        };
+
+        const handleClickOutside = (event) => {
+            if (
+                containerRef.current &&
+                !containerRef.current.contains(event.target)
+            ) {
+                setOpen(false);
+            }
+        };
+
+        window.addEventListener("keydown", closeOnEscape);
+        window.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            window.removeEventListener("keydown", closeOnEscape);
+            window.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    useEffect(() => {
         if (titleInputRef.current && open === true) {
             titleInputRef.current.focus();
             containerRef.current.scrollIntoView({ block: "end" });

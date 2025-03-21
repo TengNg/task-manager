@@ -12,6 +12,8 @@ const initSocket = (server) => {
     const io = new Server(server, opts);
 
     io.on('connection', (socket) => {
+        // BOARD ===============================================================
+
         socket.on("joinBoard", (data) => {
             const { boardId, username } = data;
             boardIdMap.set(socket.id, boardId);
@@ -64,6 +66,9 @@ const initSocket = (server) => {
             socket.to(boardId).emit("getBoardWithUpdatedDescription", data);
         });
 
+
+        // LIST ================================================================
+
         socket.on("updateLists", (data) => {
             const boardId = boardIdMap.get(socket.id);
             if (!boardId) return;
@@ -92,6 +97,8 @@ const initSocket = (server) => {
             if (!boardId) return;
             socket.to(boardId).emit("deletedList", data);
         });
+
+        // CARD ================================================================
 
         socket.on("addCard", (data) => {
             const boardId = boardIdMap.get(socket.id);
@@ -177,6 +184,8 @@ const initSocket = (server) => {
             socket.to(boardId).emit("updatedCardDueDate", data);
         });
 
+        // CHAT_MESSAGE ========================================================
+
         socket.on("sendMessage", (data) => {
             const boardId = boardIdMap.get(socket.id);
             if (!boardId) return;
@@ -194,6 +203,22 @@ const initSocket = (server) => {
             if (!boardId) return;
             socket.to(boardId).emit("messagesCleared");
         });
+
+        // CARD_COMMENT ========================================================
+
+        socket.on("addCardComment", (data) => {
+            const boardId = boardIdMap.get(socket.id);
+            if (!boardId) return;
+            socket.to(boardId).emit("cardCommentAdded", data);
+        });
+
+        socket.on("deleteCardComment", (data) => {
+            const boardId = boardIdMap.get(socket.id);
+            if (!boardId) return;
+            socket.to(boardId).emit("cardCommentDeleted", data);
+        });
+
+        // DISCONNECTION =======================================================
 
         socket.on("disconnectFromBoard", () => {
             const boardId = boardIdMap.get(socket.id);

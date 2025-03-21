@@ -116,6 +116,10 @@ input, textarea {
     border-radius: 0;
 }
 
+select:focus {
+    outline: none;
+}
+
 div:focus, dialog:focus {
     outline: none;
 }
@@ -152,9 +156,7 @@ dialog button:focus {
 }
 
 .card__item.focused {
-    background: rgba(173, 216, 230, 0.75) !important;
-    border: 2px solid #00008B !important;
-    box-shadow: 0 3px 0 0 #00008B !important;
+    background: rgba(173, 216, 230, 0.55) !important;
 }
 
 .list__item {
