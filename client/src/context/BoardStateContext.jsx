@@ -8,6 +8,7 @@ import dateFormatter from "../utils/dateFormatter";
 import useAuth from "../hooks/useAuth";
 import { useParams } from "react-router-dom";
 import useWindowSize from "../hooks/useWindowSize";
+import { useQueryClient } from "@tanstack/react-query";
 
 const BoardStateContext = createContext({});
 
@@ -19,6 +20,8 @@ const filterParams = () => {
 };
 
 export const BoardStateContextProvider = ({ children }) => {
+    const queryClient = useQueryClient();
+
     const { width: windowWidth } = useWindowSize();
     const isLargeScreen = windowWidth >= 769;
 
@@ -63,8 +66,6 @@ export const BoardStateContextProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        socket.connect();
-
         const onConnect = async () => {
             if (auth && auth.user && boardId) {
                 socket.emit("joinBoard", {
@@ -337,8 +338,75 @@ export const BoardStateContextProvider = ({ children }) => {
             });
         });
 
-        socket.on("messagesCleared", (_) => {
-            setChats([]);
+        // CARD_COMMENT ========================================================
+
+        socket.on("cardCommentAdded", (data) => {
+            const { comment } = data;
+            queryClient.setQueryData(
+                ["card-comments", comment.cardId],
+                (old) => {
+                    if (!old) {
+                        return old;
+                    }
+
+                    const currentPages = [...old.pages];
+                    const currentFirstPage = currentPages[0];
+
+                    const newFirstPage = {
+                        ...currentFirstPage,
+                        comments: [
+                            comment,
+                            ...currentFirstPage.comments.slice(
+                                0,
+                                currentFirstPage.comments.length - 1,
+                            ),
+                        ],
+                    };
+
+                    if (old.pages.length === 1) {
+                        return {
+                            ...old,
+                            pages: [newFirstPage],
+                        };
+                    }
+
+                    currentPages[0] = newFirstPage;
+                    return {
+                        ...old,
+                        pages: currentPages,
+                    };
+                },
+            );
+        });
+
+        socket.on("cardCommentDeleted", (data) => {
+            const { commentId, cardId } = data;
+            queryClient.setQueryData(["card-comments", cardId], (old) => {
+                if (!old) {
+                    return old;
+                }
+
+                const currentPages = [...old.pages];
+                const newPages = currentPages.map((page) => {
+                    return {
+                        ...page,
+                        comments: page.comments.map((comment) => {
+                            if (comment._id === commentId) {
+                                return {
+                                    ...comment,
+                                    deleted: true,
+                                };
+                            }
+                            return comment;
+                        }),
+                    };
+                });
+
+                return {
+                    ...old,
+                    pages: newPages,
+                };
+            });
         });
 
         return () => {

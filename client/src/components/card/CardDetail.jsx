@@ -7,6 +7,7 @@ import Loading from "../ui/Loading";
 
 import { useSearchParams } from "react-router-dom";
 import Icon from "../shared/Icon";
+import CardComments from "./CardComments";
 
 const CardDetail = ({
     open,
@@ -359,8 +360,18 @@ const CardDetail = ({
         <>
             <dialog
                 ref={dialog}
-                className="full-in-small-screen z-40 backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style p-3 gap-3 pb-4 min-w-[350px] w-[90%] xl:w-[800px] md:w-[80%] h-fit max-h-[90%] border-black border-[2px]"
-                style={{ background: "rgb(235, 235, 235)" }}
+                className="full-in-small-screen backdrop:bg-black/15 overflow-y-auto overflow-x-hidden box--style p-3 gap-3 pb-4 min-w-[350px] w-[90%] xl:w-[800px] md:w-[80%] h-fit max-h-[90%]"
+                style={{
+                    background: "rgb(235, 235, 235)",
+                    boxShadow:
+                        card.highlight == null
+                            ? "6px 8px 0 0 #4b5563"
+                            : `6px 8px 0 0 ${card.highlight}`,
+                    border:
+                        card.highlight == null
+                            ? "3px solid #4b5563"
+                            : `3px solid ${card.highlight}`,
+                }}
                 onClick={handleClick}
                 onCancel={handleCancel}
             >
@@ -371,14 +382,7 @@ const CardDetail = ({
                     displayText={"processing..."}
                 />
 
-                <div className="w-full h-full flex flex-col gap-3 min-h-[600px] md:min-h-[700px]">
-                    {card.highlight != null && (
-                        <div
-                            className="w-full min-h-[10px] h-[10px] sm:h-[15px]"
-                            style={{ backgroundColor: `${card.highlight}` }}
-                        ></div>
-                    )}
-
+                <div className="w-full h-full flex flex-col gap-3 min-h-[38rem] md:min-h-[44rem]">
                     <div className="flex justify-start items start">
                         <div className="flex flex-col flex-1">
                             <textarea
@@ -406,16 +410,23 @@ const CardDetail = ({
 
                         <button
                             onClick={handleCancel}
-                            className="text-[0.75rem] py-1 text-gray-500 flex"
+                            style={{
+                                color:
+                                    card.highlight == null
+                                        ? "#4b5563"
+                                        : `${card.highlight}`,
+                                opacity: card.highlight == null ? 1 : 0.75,
+                            }}
+                            className="text-[0.75rem] grid place-items-center rounded-sm absolute top-1 right-1 p-1 hover:bg-gray-400/20"
                         >
-                            <Icon className="w-4 h-4" name="xmark" />
+                            <Icon className="w-5 h-5" name="xmark" />
                         </button>
                     </div>
 
                     <div className="flex gap-2 md:w-[60%] w-full justify-between items-center">
                         <div className="flex flex-1 gap-2">
                             <select
-                                className={`shadow-[0_2px_0_0] shadow-gray-600 bg-gray-100 appearance-none truncate border-[2px] border-gray-600 text-[0.75rem] font-medium w-3/4 py-2 px-4 text-gray-600 ${listSelectOptions.length === 0 ? "bg-gray-400" : ""}`}
+                                className={`shadow-[0_2px_0_0] shadow-gray-600 bg-gray-100 appearance-none cursor-pointer hover:bg-gray-200 truncate border-[2px] border-gray-600 text-[0.75rem] font-medium w-3/4 py-2 px-4 text-gray-600 ${listSelectOptions.length === 0 ? "bg-gray-400" : ""}`}
                                 value={card.listId}
                                 onChange={(e) => {
                                     handleMoveCardOnListOptionChanged(e);
@@ -432,7 +443,7 @@ const CardDetail = ({
                             </select>
 
                             <select
-                                className={`shadow-[0_2px_0_0] shadow-gray-600 bg-gray-100 appearance-none truncate border-[2px] border-gray-600 text-[0.75rem] font-medium w-fit py-2 px-4 text-gray-600 ${listSelectOptions.length === 0 ? "bg-gray-400" : ""}`}
+                                className={`shadow-[0_2px_0_0] shadow-gray-600 bg-gray-100 appearance-none cursor-pointer hover:bg-gray-200 truncate border-[2px] border-gray-600 text-[0.75rem] font-medium w-fit py-2 px-4 text-gray-600 ${listSelectOptions.length === 0 ? "bg-gray-400" : ""}`}
                                 value={position}
                                 onChange={(e) => {
                                     moveByIndex(e);
@@ -584,6 +595,8 @@ const CardDetail = ({
                         }
                         handleChangeDueDate={handleChangeDueDate}
                     />
+
+                    {card && <CardComments card={card} />}
                 </div>
             </dialog>
         </>

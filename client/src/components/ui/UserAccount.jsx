@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import useAuth from "../../hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -14,6 +14,39 @@ const UserAccount = () => {
 
     const userProfileImageRef = useRef();
     const userInfoRef = useRef();
+    const containerRef = useRef();
+
+    useEffect(() => {
+        const abortController = new AbortController();
+
+        window.addEventListener(
+            "keydown",
+            (e) => {
+                if (e.key === "Escape" && collapse) {
+                    setCollapse(true);
+                }
+            },
+            { signal: abortController.signal },
+        );
+
+        window.addEventListener(
+            "mousedown",
+            (e) => {
+                if (
+                    containerRef.current &&
+                    !containerRef.current.contains(e.target) &&
+                    collapse
+                ) {
+                    setCollapse(true);
+                }
+            },
+            { signal: abortController.signal },
+        );
+
+        return () => {
+            abortController.abort();
+        };
+    }, []);
 
     const handleLogout = async () => {
         try {
@@ -41,6 +74,7 @@ const UserAccount = () => {
         <>
             <div
                 id="user-account"
+                ref={containerRef}
                 className="md:block hidden relative h-fit gap-2 z-30"
             >
                 <div
@@ -83,13 +117,13 @@ const UserAccount = () => {
                                 <div className="flex flex-col gap-2">
                                     <Link
                                         to={`/profile`}
-                                        className="button--style text-[0.75rem] font-medium hover:underline grid place-items-center"
+                                        className="p-2 bg-violet-800 text-gray-50 text-[0.75rem] font-medium hover:bg-violet-700 grid place-items-center"
                                     >
                                         Profile
                                     </Link>
                                     <button
                                         onClick={handleLogout}
-                                        className="button--style--dark text-[0.75rem] font-medium text-gray-200"
+                                        className="p-2 bg-gray-700 hover:bg-gray-600 text-[0.75rem] font-medium text-gray-200"
                                     >
                                         Log out
                                     </button>

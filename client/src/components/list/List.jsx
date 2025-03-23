@@ -294,7 +294,7 @@ const List = ({ index, list, cards }) => {
                             })}
                         </SortableContext>
 
-                        {openCardComposer === true && (
+                        {openCardComposer && (
                             <CardComposer
                                 list={list}
                                 open={openCardComposer}

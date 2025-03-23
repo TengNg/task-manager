@@ -28,10 +28,21 @@ const CardComposer = ({ list, open, setOpen }) => {
             }
         };
 
-        window.addEventListener("keydown", closeOnEscape);
+        const handleClickOutside = (event) => {
+            if (
+                composerRef.current &&
+                !composerRef.current.contains(event.target)
+            ) {
+                setOpen(false);
+            }
+        };
 
-        () => {
+        window.addEventListener("keydown", closeOnEscape);
+        window.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
             window.removeEventListener("keydown", closeOnEscape);
+            window.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
 
