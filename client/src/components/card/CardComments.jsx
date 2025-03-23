@@ -85,6 +85,10 @@ const CardComments = ({ card }) => {
             return;
         }
 
+        if (addCommentQuery.isPending) {
+            return;
+        }
+
         const content = commentTextareaRef.current.value;
         addCommentQuery.mutate(content);
         commentTextareaRef.current.value = "";
@@ -128,11 +132,15 @@ const CardComments = ({ card }) => {
     }, [commentsQuery.data]);
 
     if (commentsQuery.isLoading) {
-        return <div>loading comments...</div>;
+        return <div className="relative flex flex-col gap-4 text-[0.65rem] sm:text-[0.8rem] text-gray-700 p-4 border-[1px] border-gray-700">
+            <div>loading comments...</div>
+        </div>
     }
 
     if (commentsQuery.isLoading) {
-        return <div>failed to load comments :( please try again.</div>;
+        return <div className="relative flex flex-col gap-4 text-[0.65rem] sm:text-[0.8rem] text-gray-700 p-4 border-[1px] border-gray-700">
+            <div>failed to load comments :( please try again.</div>
+        </div>
     }
 
     return (
@@ -192,7 +200,7 @@ const CardComments = ({ card }) => {
                                     </button>
                                 )}
                             </div>
-                            <div className="text-sm flex flex-row justify-start items-start gap-1">
+                            <div className="text-[0.75rem] text-gray-700 flex flex-row justify-start items-start gap-1">
                                 <div className="font-medium">
                                     {comment.userId.username}:
                                 </div>
