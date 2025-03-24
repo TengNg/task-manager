@@ -26,7 +26,7 @@ const CardDetailInfo = ({
     return (
         <div className="relative flex flex-col gap-5 text-[0.65rem] sm:text-[0.8rem] text-gray-700 p-4 border-[1px] border-gray-700">
             <button
-                className="absolute bottom-4 right-4 border-[1px] border-slate-600 border-dashed py-1 px-2 text-slate-500 text-[9px] sm:text-[12px] hover:underline"
+                className="absolute top-2 right-2 border-[1px] border-slate-600 border-dashed py-1 px-2 text-slate-500 text-[9px] sm:text-[12px] hover:underline"
                 onClick={(e) => {
                     const button = e.currentTarget;
                     if (button.textContent === "✓ copied") return;

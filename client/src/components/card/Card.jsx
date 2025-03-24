@@ -147,13 +147,13 @@ export default function Card({ card }) {
 
                 {card.owner && (
                     <div
-                        className="p-2 bg-slate-300 text-gray-700 border-slate-400 flex justify-center items-center rounded"
+                        className="text-[10px] py-[6px] px-2 bg-gray-200 flex justify-center items-center rounded-sm"
                         style={{
                             backgroundColor:
                                 highlightColorsRGBA[`${card.highlight}`],
                         }}
                     >
-                        <span className="text-[12px] font-medium">
+                        <span className="text-gray-600 font-medium">
                             {card.owner}
                         </span>
                     </div>

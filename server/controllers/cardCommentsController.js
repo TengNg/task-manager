@@ -1,5 +1,6 @@
 const CardComment = require("../models/CardComment");
 const { cardById } = require("../services/cardService");
+const saveBoardActivity = require('../services/saveBoardActivity');
 
 const getCardComments = async (req, res) => {
     const { cardId } = req.params;
@@ -45,6 +46,14 @@ const createCardComment = async (req, res) => {
         .findById(newComment._id)
         .populate('userId', '_id username avatar')
         .lean();
+
+    await saveBoardActivity({
+        boardId: foundCard.boardId,
+        userId,
+        cardId: foundCard._id,
+        action: "add new comment to",
+        type: "card",
+    });
 
     res.status(200).json({ comment: commentWithUser });
 };
