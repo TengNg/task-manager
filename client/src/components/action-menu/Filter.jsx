@@ -156,7 +156,7 @@ const Filter = ({ open, setOpen }) => {
 
                     <div className="w-full flex flex-col gap-2">
                         <div
-                            className="text-[0.75rem] cursor-pointer w-full p-1 px-3 text-gray-50 font-semibold bg-gray-400 rounded-sm hover:brightness-105"
+                            className="text-[0.75rem] cursor-pointer w-full p-1 px-3 text-gray-50 font-medium bg-gray-400 rounded-sm hover:brightness-105"
                             style={{
                                 textDecoration:
                                     searchParams.get("priority") === "none"
@@ -178,7 +178,7 @@ const Filter = ({ open, setOpen }) => {
                             return (
                                 <div
                                     key={title}
-                                    className="text-[0.75rem] cursor-pointer w-full p-1 px-3 text-gray-50 font-semibold uppercase rounded-sm hover:brightness-105"
+                                    className="text-[0.75rem] cursor-pointer w-full p-1 px-3 text-gray-50 font-medium uppercase rounded-sm hover:brightness-105"
                                     onClick={() => {
                                         searchParams.set("priority", value);
                                         setSearchParams(searchParams, {
@@ -203,7 +203,7 @@ const Filter = ({ open, setOpen }) => {
                     <div className="h-[1px] bg-black w-full"></div>
 
                     <div
-                        className="text-[0.75rem] cursor-pointer w-full py-1 px-3 text-pink-800 font-semibold bg-pink-100 border-[2px] border-pink-800 hover:brightness-105"
+                        className="text-[0.75rem] cursor-pointer w-full py-1 px-3 text-pink-800 font-medium bg-pink-100 border-[2px] border-pink-800 hover:brightness-105"
                         style={{
                             textDecoration:
                                 searchParams.get("stale") === "true"

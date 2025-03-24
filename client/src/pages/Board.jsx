@@ -670,7 +670,7 @@ const Board = () => {
                 abortController={cardDetailAbortController}
                 open={openCardDetail}
                 setOpen={setOpenCardDetail}
-                processing={processingCard}
+                processingCard={processingCard}
                 handleDeleteCard={handleDeleteCard}
                 handleCopyCard={handleCopyCard}
                 handleMoveCardToList={handleMoveCardToList}

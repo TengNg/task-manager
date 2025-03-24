@@ -12,7 +12,7 @@ import CardComments from "./CardComments";
 const CardDetail = ({
     open,
     setOpen,
-    processing,
+    processingCard,
     handleDeleteCard,
     handleCopyCard,
     handleMoveCardToList,
@@ -375,19 +375,23 @@ const CardDetail = ({
                 onClick={handleClick}
                 onCancel={handleCancel}
             >
-                <Loading
-                    position={"absolute"}
-                    fontSize={"0.85rem"}
-                    loading={processing.processing}
-                    displayText={"processing..."}
-                />
+                <div className="relative w-full h-full flex flex-col gap-3 min-h-[38rem] md:min-h-[44rem]">
+                    <Loading
+                        position={"absolute"}
+                        fontSize={"1rem"}
+                        loading={processingCard.processing}
+                        displayText={"action is in process, please wait"}
+                        displayTextClassName={
+                            "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                        }
+                        withLoader={true}
+                    />
 
-                <div className="w-full h-full flex flex-col gap-3 min-h-[38rem] md:min-h-[44rem]">
                     <div className="flex justify-start items start">
                         <div className="flex flex-col flex-1">
                             <textarea
                                 rows="1"
-                                className="card__title__textarea font-medium p-1 w-[98%] text-gray-600 bg-transparent leading-normal resize-none focus:bg-gray-100"
+                                className="card__title__textarea font-medium p-1 w-[90%] md:w-[95%] text-gray-600 bg-transparent leading-normal resize-none focus:bg-gray-100"
                                 value={title}
                                 onKeyDown={(e) => {
                                     if (e.key == "Enter") {
@@ -417,7 +421,7 @@ const CardDetail = ({
                                         : `${card.highlight}`,
                                 opacity: card.highlight == null ? 1 : 0.75,
                             }}
-                            className="text-[0.75rem] grid place-items-center rounded-sm absolute top-1 right-1 p-1 hover:bg-gray-400/20"
+                            className="text-[0.75rem] grid place-items-center rounded-sm absolute top-0 right-0 p-1 hover:bg-gray-400/20"
                         >
                             <Icon className="w-5 h-5" name="xmark" />
                         </button>
@@ -474,7 +478,7 @@ const CardDetail = ({
                             <textarea
                                 ref={cardDescriptionInput}
                                 id="card__detail__description__textarea"
-                                className="font-text-composer overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[250px] max-h-[400px] break-words box-border text-[0.85rem] py-2 px-3 w-full text-gray-600 bg-gray-100 leading-normal resize-none font-medium placeholder-gray-400 focus:outline-none"
+                                className="font-text-composer overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[250px] max-h-[400px] break-words box-border text-sm py-2 px-3 w-full text-gray-600 bg-gray-100 leading-normal font-medium placeholder-gray-400 focus:outline-none"
                                 autoFocus={true}
                                 placeholder={"add description..."}
                                 value={description}
@@ -562,7 +566,7 @@ const CardDetail = ({
                                 {openCardDeleteConfirm && (
                                     <div
                                         id="card__detail__delete__confirm"
-                                        className="bg-gray-100 border-[1px] shadow-[0_3px_0_0] border-gray-700 shadow-gray-700 absolute text-[10px] sm:text-[0.75rem] w-[200px] left-0 top-0 -translate-x-[100%] sm:-translate-x-[125px] translate-y-[30%] p-2"
+                                        className="bg-gray-100 border-[2px] shadow-[0_3px_0_0] border-gray-600 shadow-gray-600 absolute text-sm w-[200px] right-0 top-[120%] p-2"
                                     >
                                         This action cannot be undone. Are you
                                         sure you want to delete this card?

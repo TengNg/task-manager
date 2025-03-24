@@ -98,7 +98,7 @@ const Avatar = ({
                         </div>
 
                         <div className="select-none text-gray-700 max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis">
-                            <p className="text-[0.85rem] font-semibold">
+                            <p className="text-[0.85rem] font-medium">
                                 @{username}
                             </p>
                             {noShowRole === false && (

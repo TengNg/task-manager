@@ -68,7 +68,7 @@ export default function Card({ card }) {
             <div
                 className={`card__item ${card.hiddenByFilter && "hidden"} relative d-flex justify-center items-center text-[0.75rem] text-gray-500 w-full h-[110px] border-[2px] border-gray-600 px-2 py-4 flex flex-col shadow-[0_2px_0_0] shadow-gray-600 cursor-not-allowed`}
             >
-                <p className="w-full h-full bg-inherit font-semibold text-gray-600 rounded-md py-1 px-2 focus:outline-none text-sm break-words whitespace-pre-line">
+                <p className="w-full h-full bg-inherit font-medium text-gray-600 rounded-md py-1 px-2 focus:outline-none text-sm break-words whitespace-pre-line">
                     {card.title}
                 </p>
 
@@ -147,13 +147,13 @@ export default function Card({ card }) {
 
                 {card.owner && (
                     <div
-                        className="p-2 bg-slate-300 text-gray-700 border-slate-400 flex justify-center items-center rounded"
+                        className="text-[10px] py-[6px] px-2 bg-gray-200 flex justify-center items-center rounded-sm"
                         style={{
                             backgroundColor:
                                 highlightColorsRGBA[`${card.highlight}`],
                         }}
                     >
-                        <span className="text-[12px] font-medium">
+                        <span className="text-gray-600 font-medium">
                             {card.owner}
                         </span>
                     </div>
