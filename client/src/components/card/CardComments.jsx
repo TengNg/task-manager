@@ -5,19 +5,27 @@ import {
 } from "@tanstack/react-query";
 import useBoardState from "../../hooks/useBoardState";
 import dateFormatter from "../../utils/dateFormatter";
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Icon from "../shared/Icon";
 import useAuth from "../../hooks/useAuth";
+import { useSearchParams } from "react-router-dom";
 
 const CardComments = ({ card }) => {
     const queryClient = useQueryClient();
     const axiosPrivate = useAxiosPrivate();
     const { socket } = useBoardState();
     const { auth } = useAuth();
-
     const commentTextareaRef = useRef();
     const [content, setContent] = useState("");
+    const [linkedCommentId, setLinkedCommentId] = useState(null);
+    const [searchParams, _setSearchParams] = useSearchParams();
+
+    useEffect(() => {
+        if (searchParams.get("comment")) {
+            setLinkedCommentId(searchParams.get("comment"));
+        }
+    }, [searchParams]);
 
     const fetchComments = async ({ page = 1 }) => {
         const response = await axiosPrivate.get(
@@ -40,6 +48,13 @@ const CardComments = ({ card }) => {
             `/cards/${card._id}/comments/${commentId}`,
         );
         return response?.data?.comment;
+    };
+
+    const copyCommentLink = (id) => {
+        const url = window.location.href;
+        const urlWithCommentId = `${url}&comment=${id}`;
+        navigator.clipboard.writeText(urlWithCommentId);
+        alert("Link copied to clipboard");
     };
 
     const commentsQuery = useInfiniteQuery({
@@ -183,16 +198,26 @@ const CardComments = ({ card }) => {
                         return (
                             <div
                                 key={comment._id}
-                                className="group hover:bg-gray-300/50 px-1 py-1 pb-2"
+                                className={`${linkedCommentId === comment._id ? "bg-indigo-200/50 rounded-md" : "group hover:bg-gray-300/50"} px-1 py-1 pb-2`}
                             >
                                 <div className="flex flex-col">
                                     <div className="h-6 flex items-center justify-between">
                                         <div className="text-[12px] text-gray-500">
-                                            {dateFormatter(comment.createdAt)}
+                                            {dateFormatter(comment.createdAt)} - {comment._id}
                                         </div>
                                         {comment.userId._id ===
                                             auth?.user?._id && (
                                             <div>
+                                                <button
+                                                    onClick={() => { copyCommentLink(comment._id); }}
+                                                    className="group-hover:opacity-100 opacity-0 font-medium border-red-800 text-gray-400 hover:bg-blue-800 p-1 hover:text-blue-50 rounded-sm"
+                                                    title="copy link to comment"
+                                                >
+                                                    <Icon
+                                                        className="w-4 h-4"
+                                                        name="link"
+                                                    />
+                                                </button>
                                                 <button
                                                     onClick={() => {
                                                         navigator.clipboard

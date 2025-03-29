@@ -2,6 +2,7 @@ import dateFormatter from "../../utils/dateFormatter";
 import useAuth from "../../hooks/useAuth";
 import { useLocation, Link } from "react-router-dom";
 import Icon from "../shared/Icon";
+import validUrl from "../../utils/validUrl";
 
 const MESSAGE_PADDING = {
     x: {
@@ -40,6 +41,18 @@ const Chat = ({
 
     const chatContent = type !== "MESSAGE" ? content.split(" ")[1] : content;
 
+    const handleOpenLink = (chatContent) => {
+        if (!validUrl(chatContent)) {
+            return;
+        }
+
+        if (!confirm("Be careful! This link will open in a new tab.")) {
+            return;
+        }
+
+        window.open(chatContent, "_blank");
+    };
+
     return (
         <div
             className={`group relative w-full h-fit flex justify-start items-start px-1 gap-2 ${withSeparator && "border-b-[1px] border-gray-300 pb-2"}`}
@@ -54,7 +67,7 @@ const Chat = ({
 
                             {withUserIcon &&
                                 chat.sentBy?.username ===
-                                    auth?.user?.username && (
+                                auth?.user?.username && (
                                     <Icon className="w-3 h-3" name="profile" />
                                 )}
                         </div>
@@ -79,7 +92,12 @@ const Chat = ({
                         <div
                             className={`max-w-[95%] w-fit flex justify-center items-center ${highlightOwnMessages && chat.sentBy?.username === auth?.user?.username ? "bg-teal-50 border-[1px] border-teal-600" : `bg-slate-100 ${inMiniChat && "bg-slate-50 border-[1px] border-gray-500"}`} rounded ${padding.x} ${padding.y}`}
                         >
-                            <div className="w-full break-words whitespace-pre-line text-[0.75rem] px-[1px] text-gray-600 font-medium">
+                            <div
+                                className={`${validUrl(chatContent) ? "cursor-pointer hover:underline" : ""} w-full break-words whitespace-pre-line text-[0.75rem] px-[1px] text-gray-600 font-medium`}
+                                onClick={() => {
+                                    handleOpenLink(chatContent);
+                                }}
+                            >
                                 {chatContent}
                             </div>
                         </div>

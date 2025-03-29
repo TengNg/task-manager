@@ -166,7 +166,7 @@ const ChatBox = ({
                 ></div>
             </div>
 
-            <div className="bg-gray-100 px-2 mt-2">
+            <div className="bg-gray-100 px-2 border-t-[2px] border-black">
                 <ChatInput
                     withSentButton={true}
                     sendMessage={sendMessage}
