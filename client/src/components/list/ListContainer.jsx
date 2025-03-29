@@ -162,6 +162,14 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
             return;
         }
 
+        // drag to the same list, and same position
+        if (
+            activeCard.listId === activeListId &&
+            activeCard.srcIndex === activeIndex
+        ) {
+            return;
+        }
+
         try {
             const response = await axiosPrivate.put(
                 `/cards/${activeId}/reorder`,
@@ -169,6 +177,10 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
                     rank,
                     listId: activeListId,
                     timestamp: new Date(),
+                    oldPos: activeCard.srcIndex
+                        ? activeCard.srcIndex + 1
+                        : "...",
+                    newPos: activeIndex + 1,
                 }),
             );
 
@@ -352,7 +364,17 @@ const ListContainer = ({ openAddList, setOpenAddList }) => {
             return;
         }
         if (e.active.data.current?.type === "card") {
-            setActiveCard(e.active.data.current.card);
+            const srcList = boardState.lists.find((list) => {
+                return list._id === e.active.data.current.card.listId;
+            });
+            const srcIndex =
+                srcList?.cards.findIndex((c) => {
+                    return c._id === e.active.id;
+                }) ?? -1;
+            setActiveCard({
+                ...e.active.data.current.card,
+                srcIndex,
+            });
             return;
         }
     }

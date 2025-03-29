@@ -55,7 +55,7 @@ const addCard = async (req, res) => {
 const reorder = async (req, res) => {
     const { userId } = req.user;
     const { id } = req.params;
-    const { rank, listId, timestamp } = req.body;
+    const { rank, listId, timestamp, oldPos, newPos } = req.body;
 
     const foundCard = await Card.findById(id).populate({
         path: 'listId',
@@ -86,7 +86,7 @@ const reorder = async (req, res) => {
         listId: foundList._id,
         action: "update card position",
         type: "card",
-        description: `${currentCardListTitle} > ${updatedCardListTitle}`,
+        description: `${currentCardListTitle} (${oldPos}) > ${updatedCardListTitle} (${newPos})`,
         createdAt: foundCard.updatedAt,
     });
 

@@ -95,6 +95,7 @@ const CardDetail = ({
                 }
 
                 searchParams.delete("card");
+                searchParams.delete("comment");
                 setSearchParams(searchParams, { replace: true });
 
                 document.title = boardState?.board?.title || "tamago-start";

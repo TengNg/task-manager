@@ -5,25 +5,55 @@ import {
 } from "@tanstack/react-query";
 import useBoardState from "../../hooks/useBoardState";
 import dateFormatter from "../../utils/dateFormatter";
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Icon from "../shared/Icon";
 import useAuth from "../../hooks/useAuth";
+import { useSearchParams } from "react-router-dom";
 
 const CardComments = ({ card }) => {
     const queryClient = useQueryClient();
     const axiosPrivate = useAxiosPrivate();
     const { socket } = useBoardState();
     const { auth } = useAuth();
-
     const commentTextareaRef = useRef();
+    const linkedCommentRef = useRef();
     const [content, setContent] = useState("");
+    const [linkedComment, setLinkedComment] = useState(null);
+    const [searchParams, _setSearchParams] = useSearchParams();
+
+    useEffect(() => {
+        const fetchLinkedComment = async (id) => {
+            try {
+                const response = await axiosPrivate.get(
+                    `/cards/${card._id}/comments/${id}`,
+                );
+                setLinkedComment({
+                    ...response.data.comment,
+                    collapsed: false,
+                });
+            } catch (err) {
+                console.log(err);
+            }
+        };
+
+        if (searchParams.get("comment")) {
+            fetchLinkedComment(searchParams.get("comment"));
+        }
+    }, [searchParams]);
+
+    useEffect(() => {
+        if (linkedComment && linkedCommentRef && linkedCommentRef.current) {
+            linkedCommentRef.current.scrollIntoView({
+                block: "center",
+            });
+        }
+    }, [linkedComment, linkedCommentRef]);
 
     const fetchComments = async ({ page = 1 }) => {
         const response = await axiosPrivate.get(
             `/cards/${card._id}/comments?page=${page}`,
         );
-
         return response?.data || [];
     };
 
@@ -40,6 +70,18 @@ const CardComments = ({ card }) => {
             `/cards/${card._id}/comments/${commentId}`,
         );
         return response?.data?.comment;
+    };
+
+    const copyCommentLink = (id) => {
+        const url = `${window.location.origin}/b/${card.boardId}?card=${card._id}&comment=${id}`;
+        navigator.clipboard.writeText(url);
+        alert("Link copied to clipboard");
+    };
+
+    const copyCommentContent = (content) => {
+        navigator.clipboard.writeText(content).then(() => {
+            alert("Content copied to clipboard");
+        });
     };
 
     const commentsQuery = useInfiniteQuery({
@@ -179,41 +221,130 @@ const CardComments = ({ card }) => {
                 </div>
             ) : (
                 <div className="flex flex-col gap-1">
+                    {linkedComment && !linkedComment.onFirstPage && (
+                        <div ref={linkedCommentRef}>
+                            <div className="bg-indigo-200/50 border-[1px] border-b-[4px] border-indigo-500 px-2 py-1 pb-2">
+                                <div className="flex flex-col">
+                                    <div className="h-6 flex items-center justify-between">
+                                        <div className="text-[12px] text-gray-500">
+                                            {dateFormatter(
+                                                linkedComment.createdAt,
+                                            )}{" "}
+                                            - (old comment quick preview)
+                                        </div>
+                                        <div>
+                                            <button
+                                                onClick={copyCommentContent}
+                                                className="text-gray-400 hover:bg-violet-800 p-1 hover:text-violet-50 rounded-sm"
+                                                title="Copy content"
+                                            >
+                                                <Icon
+                                                    className="w-4 h-4"
+                                                    name="copy"
+                                                />
+                                            </button>
+                                            <button
+                                                className="text-gray-400 hover:bg-violet-800 p-1 hover:text-violet-50 rounded-sm"
+                                                title="Collapse this comment"
+                                                onClick={() => {
+                                                    setLinkedComment((prev) => {
+                                                        return {
+                                                            ...prev,
+                                                            collapsed:
+                                                                !prev.collapsed,
+                                                        };
+                                                    });
+                                                }}
+                                            >
+                                                <Icon
+                                                    className="w-4 h-4"
+                                                    name="caret"
+                                                />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="text-sm text-gray-700 flex flex-row justify-start items-start gap-1">
+                                        <div className="flex items-center gap-1">
+                                            {linkedComment.userId._id ===
+                                                auth?.user?._id && (
+                                                <div className="font-medium mx-auto">
+                                                    <Icon
+                                                        className="w-3.5 h-3.5"
+                                                        name="profile"
+                                                    />
+                                                </div>
+                                            )}
+                                            <div className="font-medium">
+                                                {linkedComment.userId.username}:
+                                            </div>
+                                        </div>
+
+                                        {linkedComment.collapsed &&
+                                        linkedComment.content.length > 50 ? (
+                                            <p>
+                                                {linkedComment.content.substring(
+                                                    0,
+                                                    50,
+                                                ) + "..."}
+                                            </p>
+                                        ) : (
+                                            <pre className="overflow-x-auto break-words whitespace-pre-wrap pt-[1px]">
+                                                {linkedComment.content}
+                                            </pre>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="h-[1px] my-4 bg-gray-800"></div>
+                        </div>
+                    )}
+
                     {comments.map((comment) => {
                         return (
                             <div
+                                ref={
+                                    comment._id === linkedComment?._id
+                                        ? linkedCommentRef
+                                        : null
+                                }
                                 key={comment._id}
-                                className="group hover:bg-gray-300/50 px-1 py-1 pb-2"
+                                className={`${linkedComment?._id === comment._id ? "bg-indigo-200/50 border-l-[3px] border-indigo-500" : "hover:bg-gray-300/50"} group px-1 py-1 pb-2`}
                             >
                                 <div className="flex flex-col">
                                     <div className="h-6 flex items-center justify-between">
                                         <div className="text-[12px] text-gray-500">
                                             {dateFormatter(comment.createdAt)}
                                         </div>
-                                        {comment.userId._id ===
-                                            auth?.user?._id && (
-                                            <div>
-                                                <button
-                                                    onClick={() => {
-                                                        navigator.clipboard
-                                                            .writeText(
-                                                                comment.content,
-                                                            )
-                                                            .then(() => {
-                                                                alert(
-                                                                    "copied to clipboard",
-                                                                );
-                                                            });
-                                                    }}
-                                                    className="group-hover:opacity-100 opacity-0 font-medium border-red-800 text-gray-400 hover:bg-violet-800 p-1 hover:text-violet-50 rounded-sm"
-                                                    title="copy this comment to clipboard"
-                                                >
-                                                    <Icon
-                                                        className="w-4 h-4"
-                                                        name="copy"
-                                                    />
-                                                </button>
 
+                                        <div>
+                                            <button
+                                                onClick={() => {
+                                                    copyCommentLink(
+                                                        comment._id,
+                                                    );
+                                                }}
+                                                className="group-hover:opacity-100 opacity-0 font-medium border-red-800 text-gray-400 hover:bg-blue-800 p-1 hover:text-blue-50 rounded-sm"
+                                                title="Copy link to comment"
+                                            >
+                                                <Icon
+                                                    className="w-4 h-4"
+                                                    name="link"
+                                                />
+                                            </button>
+
+                                            <button
+                                                onClick={copyCommentContent}
+                                                className="group-hover:opacity-100 opacity-0 font-medium border-red-800 text-gray-400 hover:bg-violet-800 p-1 hover:text-violet-50 rounded-sm"
+                                                title="Copy content"
+                                            >
+                                                <Icon
+                                                    className="w-4 h-4"
+                                                    name="copy"
+                                                />
+                                            </button>
+
+                                            {comment.userId._id ===
+                                                auth?.user?._id && (
                                                 <button
                                                     onClick={() =>
                                                         handleDeleteComment(
@@ -228,8 +359,8 @@ const CardComments = ({ card }) => {
                                                         name="xmark"
                                                     />
                                                 </button>
-                                            </div>
-                                        )}
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="text-sm text-gray-700 flex flex-row justify-start items-start gap-1">
                                         <div className="flex items-center gap-1">

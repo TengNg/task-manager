@@ -18,6 +18,7 @@ const {
 
 const { 
     getCardComments,
+    getCardComment,
     createCardComment,
     deleteCardComment,
 } = require('../../controllers/cardCommentsController');
@@ -94,6 +95,7 @@ router.route("/:cardId/comments")
     .post(createCardComment)
 
 router.route("/:cardId/comments/:commentId")
+    .get(getCardComment)
     .delete(deleteCardComment)
 
 module.exports = router;

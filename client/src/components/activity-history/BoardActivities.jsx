@@ -87,7 +87,7 @@ const BoardActivities = ({ open, setOpen }) => {
                 confirm("Are you sure you want to clear all board activities ?")
             ) {
                 await axiosPrivate.delete(
-                    `/board_activities/${boardState?.board?.boardId}`,
+                    `/board_activities/${boardState?.board?._id}`,
                 );
                 setActivities([]);
             }

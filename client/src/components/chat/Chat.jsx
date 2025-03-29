@@ -2,6 +2,7 @@ import dateFormatter from "../../utils/dateFormatter";
 import useAuth from "../../hooks/useAuth";
 import { useLocation, Link } from "react-router-dom";
 import Icon from "../shared/Icon";
+import validUrl from "../../utils/validUrl";
 
 const MESSAGE_PADDING = {
     x: {
@@ -39,6 +40,14 @@ const Chat = ({
     const { trackedId, content, sentBy, createdAt, error, type } = chat;
 
     const chatContent = type !== "MESSAGE" ? content.split(" ")[1] : content;
+
+    const handleOpenLink = (chatContent) => {
+        if (!validUrl(chatContent)) {
+            return;
+        }
+
+        window.open(chatContent, "_blank");
+    };
 
     return (
         <div
@@ -79,7 +88,12 @@ const Chat = ({
                         <div
                             className={`max-w-[95%] w-fit flex justify-center items-center ${highlightOwnMessages && chat.sentBy?.username === auth?.user?.username ? "bg-teal-50 border-[1px] border-teal-600" : `bg-slate-100 ${inMiniChat && "bg-slate-50 border-[1px] border-gray-500"}`} rounded ${padding.x} ${padding.y}`}
                         >
-                            <div className="w-full break-words whitespace-pre-line text-[0.75rem] px-[1px] text-gray-600 font-medium">
+                            <div
+                                className={`${validUrl(chatContent) ? "cursor-pointer hover:underline" : ""} w-full break-words whitespace-pre-line text-[0.75rem] px-[1px] text-gray-600 font-medium`}
+                                onClick={() => {
+                                    handleOpenLink(chatContent);
+                                }}
+                            >
                                 {chatContent}
                             </div>
                         </div>

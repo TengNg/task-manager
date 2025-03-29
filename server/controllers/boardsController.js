@@ -44,11 +44,30 @@ const getBoards = async (req, res) => {
         filtered = filtered.filter(b => !b.owned);
     }
 
+    const foundUser = await User.findById(userId);
+    const foundRecentlyViewedBoard = await Board.findById(foundUser.recentlyViewedBoardId);
+    if (!foundRecentlyViewedBoard) {
+        return res.json({
+            boards,
+            total: mapped.length,
+            totalOwned: ownedBoardsCount,
+            totalJoined: joinedBoardsCount
+        });
+    }
+
+    let recentlyViewedBoard = undefined;
+    const indexOfMember = foundRecentlyViewedBoard.members.indexOf(foundUser._id);
+    const isOwner = foundRecentlyViewedBoard.createdBy.toString() === foundUser._id.toString();
+    if (indexOfMember !== -1 || isOwner) {
+        recentlyViewedBoard = foundRecentlyViewedBoard;
+    }
+
     return res.json({
         boards: filtered,
         total: mapped.length,
         totalOwned: ownedBoardsCount,
-        totalJoined: joinedBoardsCount
+        totalJoined: joinedBoardsCount,
+        recentlyViewedBoard,
     });
 };
 
@@ -126,8 +145,31 @@ const getBoard = async (req, res) => {
         },
         {
             $sort: { order: 1 }
-        }
+        },
+        // {
+        //     $set: {
+        //         cards: {
+        //             $map: {
+        //                 input: '$cards',
+        //                 as: 'card',
+        //                 in: {
+        //                     $mergeObjects: [
+        //                         '$$card',
+        //                         { index: { $indexOfArray: ['$cards', '$$card'] } }
+        //                     ]
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
     ]);
+
+    // update recently viewed board
+    const foundUser = await User.findById(userId);
+    if (foundUser.recentlyViewedBoardId !== board._id) {
+        foundUser.recentlyViewedBoardId = board._id;
+        foundUser.save();
+    }
 
     const memberships = await BoardMembership
         .find({ boardId: board._id })
