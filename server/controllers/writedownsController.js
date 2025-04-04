@@ -58,11 +58,15 @@ const deleteWritedown = async (req, res) => {
     return res.status(200).json({ message: 'writedown deleted' });
 };
 
+const deleteAllWritedowns = async (req, res) => {
+    await Writedown.deleteMany({ owner: req.user.userId });
+    return res.status(200).json({ message: 'all writedowns deleted' });
+};
+
 const reorder = async (req, res) => {
     const { writedown } = await handleAuthorizationAndGetWritedown(req, res);
     const { rank } = req.body;
-    writedown.order = rank;
-    await writedown.save();
+    await Writedown.findOneAndUpdate({ _id: writedown._id }, { order: rank });
     return res.status(200).json({ message: "writedown updated" });
 };
 
@@ -74,5 +78,6 @@ module.exports = {
     pinWritedown,
     updateTitle,
     deleteWritedown,
+    deleteAllWritedowns,
     reorder,
 };

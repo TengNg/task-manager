@@ -243,7 +243,9 @@ const Boards = () => {
                                 <p className="text-gray-600 text-[0.75rem] font-medium ms-1 my-1">
                                     recently viewed board
                                 </p>
-                                <BoardItem item={boardsQuery.data.recentlyViewedBoard} />
+                                <BoardItem
+                                    item={boardsQuery.data.recentlyViewedBoard}
+                                />
                             </div>
                         </div>
                     )}

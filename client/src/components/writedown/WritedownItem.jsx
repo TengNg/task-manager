@@ -17,7 +17,6 @@ const WritedownItem = ({ writedown, open, remove, pin }) => {
         transition,
         isDragging,
     } = useSortable({
-        animateLayoutChanges: () => false,
         id: writedown._id,
         data: {
             type: "writedown",
@@ -70,7 +69,9 @@ const WritedownItem = ({ writedown, open, remove, pin }) => {
                 <button
                     title="delete"
                     className="text-gray-400 flex justify-center items-center hover:text-rose-400"
-                    onClick={() => remove(id)}
+                    onClick={() =>
+                        remove(id, content?.length === 0 && title?.length === 0)
+                    }
                 >
                     <Icon className="w-4 h-4" name="xmark" />
                 </button>

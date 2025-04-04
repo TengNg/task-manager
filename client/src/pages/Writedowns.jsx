@@ -93,7 +93,10 @@ const Writedown = () => {
         if (isCreatingWritedown) return;
 
         try {
-            const rank = writedowns[writedowns.length - 1]?.order;
+            const rank = lexorank.insert(
+                writedowns[writedowns.length - 1]?.order,
+                undefined,
+            )[0];
             const response = await axiosPrivate.post(
                 "/personal_writedowns",
                 JSON.stringify({ rank }),
@@ -144,8 +147,13 @@ const Writedown = () => {
         }
     }
 
-    async function handleDeleteWritedown(id) {
-        if (!confirm("Are you sure you want to delete this writedown?")) return;
+    async function handleDeleteWritedown(id, isEmpty) {
+        if (
+            !isEmpty &&
+            !confirm("Are you sure you want to delete this writedown?")
+        ) {
+            return;
+        }
 
         try {
             await axiosPrivate.delete(`/personal_writedowns/${id}`);
@@ -154,6 +162,17 @@ const Writedown = () => {
             });
         } catch (err) {
             alert("Failed to delete writedown");
+        }
+    }
+
+    async function handleDeleteAllWritedowns() {
+        if (!confirm("Are you sure you want to delete all writedowns?")) return;
+
+        try {
+            await axiosPrivate.delete(`/personal_writedowns/`);
+            setWritedowns([]);
+        } catch (err) {
+            alert("Failed to delete writedowns");
         }
     }
 
@@ -217,8 +236,11 @@ const Writedown = () => {
             }
 
             const [removed] = items.splice(oldIndex, 1);
+
+            items.splice(newIndex, 0, removed);
             const prevRank = items[newIndex - 1]?.order;
             const nextRank = items[newIndex + 1]?.order;
+
             let [rank, ok] = lexorank.insert(prevRank, nextRank);
             if (!ok) {
                 alert(
@@ -229,7 +251,6 @@ const Writedown = () => {
             }
 
             removed.order = rank;
-            items.splice(newIndex, 0, removed);
             setWritedowns(items);
 
             await axiosPrivate.put(
@@ -309,6 +330,15 @@ const Writedown = () => {
                                             onClick={fetchWritedowns}
                                         >
                                             refresh
+                                        </button>
+                                    </div>
+
+                                    <div className="w-fit grid place-items-center">
+                                        <button
+                                            className="text-[0.75rem] text-gray-600 pe-1 text-center hover:underline cursor-pointer sm:mb-0 mb-1 mx-auto"
+                                            onClick={handleDeleteAllWritedowns}
+                                        >
+                                            delete all
                                         </button>
                                     </div>
 

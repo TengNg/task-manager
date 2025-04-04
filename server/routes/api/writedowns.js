@@ -9,12 +9,14 @@ const {
     saveWritedown,
     pinWritedown,
     deleteWritedown,
+    deleteAllWritedowns,
     reorder,
 } = require('../../controllers/writedownsController');
 
 router.route("/")
     .get(getWritedowns)
     .post(createWritedown)
+    .delete(deleteAllWritedowns)
 
 router.route("/:writedownId")
     .get(getWritedown)
