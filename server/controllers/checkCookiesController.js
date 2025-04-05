@@ -12,9 +12,9 @@ const isLoggedIn = async (req, res) => {
     const refreshToken = cookies[rTokenName];
 
     const data = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
-    const { username, refreshTokenVersion } = data;
+    const { userId,refreshTokenVersion } = data;
 
-    const foundUser = await User.findOne({ username });
+    const foundUser = await User.findById(userId);
     if (!foundUser) {
         return res.status(500).json({ msg: "user not found" });
     }
