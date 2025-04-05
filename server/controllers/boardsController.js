@@ -184,10 +184,12 @@ const getBoard = async (req, res) => {
 
 const getBoardStats = async (req, res) => {
     const { id } = req.params;
+    const { userId } = req.user;
+
     const foundBoard = await Board.findById(id)
         .populate({
             path: 'createdBy',
-            select: 'username'
+            select: '_id username'
         })
         .populate({
             path: 'members',
@@ -195,7 +197,17 @@ const getBoardStats = async (req, res) => {
         })
         .lean();
 
-    if (!foundBoard) return res.status(403).json({ msg: "board not found" });
+    if (!foundBoard) {
+        return res.status(403).json({ msg: "board not found" });
+    }
+
+    const isOwner = foundBoard.createdBy._id.toString() === userId;
+    const isMember = foundBoard.members.some(member => {
+        return member._id.toString() === userId
+    });
+    if (!isOwner && !isMember) {
+        return res.status(403).json({ msg: "unauthorized" });
+    }
 
     const priorityLevelStats = await Card.aggregate([
         {
