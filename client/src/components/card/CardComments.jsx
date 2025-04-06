@@ -234,7 +234,11 @@ const CardComments = ({ card }) => {
                                         </div>
                                         <div>
                                             <button
-                                                onClick={copyCommentContent}
+                                                onClick={() =>
+                                                    copyCommentContent(
+                                                        linkedComment.content,
+                                                    )
+                                                }
                                                 className="text-gray-400 hover:bg-violet-800 p-1 hover:text-violet-50 rounded-sm"
                                                 title="Copy content"
                                             >
@@ -333,7 +337,11 @@ const CardComments = ({ card }) => {
                                             </button>
 
                                             <button
-                                                onClick={copyCommentContent}
+                                                onClick={() =>
+                                                    copyCommentContent(
+                                                        comment.content,
+                                                    )
+                                                }
                                                 className="group-hover:opacity-100 opacity-0 font-medium border-red-800 text-gray-400 hover:bg-violet-800 p-1 hover:text-violet-50 rounded-sm"
                                                 title="Copy content"
                                             >

@@ -39,6 +39,7 @@ const CardDetail = ({
     const [position, setPosition] = useState(0);
     const [isVerifying, setIsVerifying] = useState(false);
     const [openCardDeleteConfirm, setOpenCardDeleteConfirm] = useState(false);
+    const [isSavingDescription, setIsSavingDescription] = useState(false);
 
     const axiosPrivate = useAxiosPrivate();
 
@@ -135,9 +136,6 @@ const CardDetail = ({
         }
 
         if (e.target === dialog.current) {
-            if (card?.description !== description) {
-                confirmDescription(description);
-            }
             dialog.current.close();
         }
     };
@@ -146,7 +144,7 @@ const CardDetail = ({
         e.preventDefault();
 
         if (card?.description !== description) {
-            confirmDescription(description);
+            alert("You have unsaved changes");
         }
 
         dialog.current.close();
@@ -264,21 +262,32 @@ const CardDetail = ({
         }
     };
 
-    const confirmDescription = async (value) => {
+    const confirmDescription = async () => {
+        if (card?.description == description) {
+            return;
+        }
+
+        setIsSavingDescription(true);
         try {
             await axiosPrivate.put(
                 `/cards/${card._id}/new-description`,
-                JSON.stringify({ description: value }),
+                JSON.stringify({ description }),
             );
-            setCardDescription(card._id, card.listId, value);
+            setCardDescription(card._id, card.listId, description);
             socket.emit("updateCardDescription", {
                 id: card._id,
                 listId: card.listId,
-                description: value,
+                description,
+            });
+
+            setOpenedCard((prev) => {
+                return { ...prev, description };
             });
         } catch (err) {
             console.log(err);
             alert("Failed to save description");
+        } finally {
+            setIsSavingDescription(false);
         }
     };
 
@@ -479,7 +488,7 @@ const CardDetail = ({
                             <textarea
                                 ref={cardDescriptionInput}
                                 id="card__detail__description__textarea"
-                                className="font-text-composer overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[250px] max-h-[400px] break-words box-border text-sm py-2 px-3 w-full text-gray-600 bg-gray-100 leading-normal font-medium placeholder-gray-400 focus:outline-none"
+                                className="font-text-composer overflow-y-auto border-[2px] shadow-[0_2px_0_0] border-gray-600 shadow-gray-600 min-h-[250px] break-words box-border text-sm py-2 px-3 w-full text-gray-600 bg-gray-100 leading-normal font-medium placeholder-gray-400 focus:outline-none"
                                 autoFocus={true}
                                 placeholder={"add description..."}
                                 value={description}
@@ -487,106 +496,138 @@ const CardDetail = ({
                             />
                         </div>
 
-                        <div className="relative flex flex-row justify-end w-full gap-3">
-                            {/* change highlight button */}
-                            <div className="relative h-[40px]">
-                                <button
-                                    title="change highlight color"
-                                    onClick={() =>
-                                        setOpenHighlightPicker((prev) => !prev)
-                                    }
-                                    className={`card--details--button border-gray-600 text-gray-600 ${openHighlightPicker && "bg-slate-500 shadow-black text-white"}`}
-                                >
-                                    <Icon className="w-3 h-3" name="droplet" />
-                                    <span className="hidden sm:inline-block">
-                                        highlight
-                                    </span>
-                                </button>
-
-                                {openHighlightPicker && (
-                                    <HighlightPicker
-                                        setOpen={setOpenHighlightPicker}
-                                        card={card}
-                                    />
-                                )}
-                            </div>
-
-                            <div className="h-[40px]">
-                                <button
-                                    title="create a copy of this card"
-                                    onClick={copyCard}
-                                    className={`card--details--button border-gray-600 text-gray-600`}
-                                >
-                                    <Icon className="w-3 h-3" name="copy" />
-                                    <span className="hidden sm:inline-block">
-                                        copy
-                                    </span>
-                                </button>
-                            </div>
-
-                            <div className="h-[40px]">
-                                <button
-                                    className={`card--details--button border-green-700 w-fit text-green-700 ${card.verified ? "bg-teal-100" : ""}`}
-                                    onClick={handleToggleVerified}
-                                    title={
-                                        card.verified
-                                            ? "click to unverify"
-                                            : "click to verify"
-                                    }
-                                >
-                                    <Icon className="w-3 h-3" name="complete" />
-                                    <span className="hidden sm:inline-block">
-                                        {isVerifying
-                                            ? "..."
-                                            : card.verified
-                                              ? "verified"
-                                              : "verify"}
-                                    </span>
-                                </button>
-                            </div>
-
-                            <div className="relative h-[40px]">
-                                <button
-                                    title="delete this card"
-                                    onClick={() =>
-                                        setOpenCardDeleteConfirm(
-                                            (prev) => !prev,
-                                        )
-                                    }
-                                    className={`card--details--button border-rose-700 text-rose-700 ${openCardDeleteConfirm && "bg-rose-100"}`}
-                                >
-                                    <Icon
-                                        className="w-2.5 h-2.5"
-                                        name="minus"
-                                    />
-                                    <span className="hidden sm:inline-block">
-                                        delete
-                                    </span>
-                                </button>
-
-                                {openCardDeleteConfirm && (
-                                    <div
-                                        id="card__detail__delete__confirm"
-                                        className="bg-gray-100 border-[2px] shadow-[0_3px_0_0] border-gray-600 shadow-gray-600 absolute text-sm w-[200px] right-0 top-[120%] p-2"
+                        <div className="relative flex flex-row justify-between w-full gap-3">
+                            <div className="flex items-center gap-2">
+                                <div className="h-[40px]">
+                                    <button
+                                        title={`${card?.description == description ? "nothing to save" : "save description"}`}
+                                        onClick={confirmDescription}
+                                        className={`card--details--button border-gray-600 text-gray-600 px-2 w-[7.5rem] ${card?.description == description ? "opacity-60" : ""}`}
                                     >
-                                        This action cannot be undone. Are you
-                                        sure you want to delete this card?
-                                        <button
-                                            className="bg-rose-800 text-white font-medium p-2 w-full mt-1 hover:bg-rose-700"
-                                            onClick={deleteCard}
-                                        >
-                                            confirm delete
-                                        </button>
-                                        <button
-                                            className="bg-gray-600 text-white font-medium p-2 w-full mt-1 hover:bg-gray-500"
-                                            onClick={() =>
-                                                setOpenCardDeleteConfirm(false)
-                                            }
-                                        >
-                                            cancel
-                                        </button>
-                                    </div>
+                                        {isSavingDescription
+                                            ? "saving..."
+                                            : "save"}
+                                    </button>
+                                </div>
+                                {card?.description != description && (
+                                    <p className="text-[0.75rem] text-gray-400">
+                                        unsaved
+                                    </p>
                                 )}
+                            </div>
+
+                            <div className="flex gap-3">
+                                {/* change highlight button */}
+                                <div className="relative h-[40px]">
+                                    <button
+                                        title="change highlight color"
+                                        onClick={() =>
+                                            setOpenHighlightPicker(
+                                                (prev) => !prev,
+                                            )
+                                        }
+                                        className={`card--details--button border-gray-600 text-gray-600 ${openHighlightPicker && "bg-slate-500 shadow-black text-white"}`}
+                                    >
+                                        <Icon
+                                            className="w-3 h-3"
+                                            name="droplet"
+                                        />
+                                        <span className="hidden sm:inline-block">
+                                            highlight
+                                        </span>
+                                    </button>
+
+                                    {openHighlightPicker && (
+                                        <HighlightPicker
+                                            setOpen={setOpenHighlightPicker}
+                                            card={card}
+                                        />
+                                    )}
+                                </div>
+
+                                <div className="h-[40px]">
+                                    <button
+                                        title="create a copy of this card"
+                                        onClick={copyCard}
+                                        className={`card--details--button border-gray-600 text-gray-600`}
+                                    >
+                                        <Icon className="w-3 h-3" name="copy" />
+                                        <span className="hidden sm:inline-block">
+                                            copy
+                                        </span>
+                                    </button>
+                                </div>
+
+                                <div className="h-[40px]">
+                                    <button
+                                        className={`card--details--button border-green-700 w-fit text-green-700 ${card.verified ? "bg-teal-100" : ""}`}
+                                        onClick={handleToggleVerified}
+                                        title={
+                                            card.verified
+                                                ? "click to unverify"
+                                                : "click to verify"
+                                        }
+                                    >
+                                        <Icon
+                                            className="w-3 h-3"
+                                            name="complete"
+                                        />
+                                        <span className="hidden sm:inline-block">
+                                            {isVerifying
+                                                ? "..."
+                                                : card.verified
+                                                  ? "verified"
+                                                  : "verify"}
+                                        </span>
+                                    </button>
+                                </div>
+
+                                <div className="relative h-[40px]">
+                                    <button
+                                        title="delete this card"
+                                        onClick={() =>
+                                            setOpenCardDeleteConfirm(
+                                                (prev) => !prev,
+                                            )
+                                        }
+                                        className={`card--details--button border-rose-700 text-rose-700 ${openCardDeleteConfirm && "bg-rose-100"}`}
+                                    >
+                                        <Icon
+                                            className="w-2.5 h-2.5"
+                                            name="minus"
+                                        />
+                                        <span className="hidden sm:inline-block">
+                                            delete
+                                        </span>
+                                    </button>
+
+                                    {openCardDeleteConfirm && (
+                                        <div
+                                            id="card__detail__delete__confirm"
+                                            className="bg-gray-100 border-[2px] shadow-[0_3px_0_0] border-gray-600 shadow-gray-600 absolute text-sm w-[200px] right-0 top-[120%] p-2"
+                                        >
+                                            This action cannot be undone. Are
+                                            you sure you want to delete this
+                                            card?
+                                            <button
+                                                className="bg-rose-800 text-white font-medium p-2 w-full mt-1 hover:bg-rose-700"
+                                                onClick={deleteCard}
+                                            >
+                                                confirm delete
+                                            </button>
+                                            <button
+                                                className="bg-gray-600 text-white font-medium p-2 w-full mt-1 hover:bg-gray-500"
+                                                onClick={() =>
+                                                    setOpenCardDeleteConfirm(
+                                                        false,
+                                                    )
+                                                }
+                                            >
+                                                cancel
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>

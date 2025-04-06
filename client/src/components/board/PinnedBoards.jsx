@@ -175,13 +175,15 @@ const PinnedBoards = ({ setOpen, setPinned }) => {
             return;
         }
 
-        const activeIndex = pinnedBoards.findIndex(
-            (board) => board[0] === active.id,
-        );
+        const activeIndex = pinnedBoards.findIndex((item) => {
+            const [id, _title] = item;
+            return id === active.id;
+        });
 
-        const overIndex = pinnedBoards.findIndex(
-            (board) => board[0] === over.id,
-        );
+        const overIndex = pinnedBoards.findIndex((item) => {
+            const [id, _title] = item;
+            return id === over.id;
+        });
 
         if (activeIndex === overIndex) {
             return;
