@@ -17,6 +17,7 @@ const {
     togglePinBoard,
     deletePinnedBoard,
     cleanPinnedBoardsCollection,
+    updatePinnedBoardsCollection,
 } = require('../../controllers/boardsController');
 
 router.route("/")
@@ -54,6 +55,9 @@ router.route("/copy/:id")
 router.route("/:id/pinned")
     .put(togglePinBoard)
     .delete(deletePinnedBoard)
+
+router.route("/pinned/update")
+    .put(updatePinnedBoardsCollection)
 
 router.route("/pinned/clean")
     .put(cleanPinnedBoardsCollection)

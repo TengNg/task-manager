@@ -161,8 +161,19 @@ const PinnedBoards = ({ setOpen, setPinned }) => {
         setActiveItem(active);
     };
 
-    const handleOnDragEnd = (_e) => {
+    const handleOnDragEnd = async (_e) => {
         setActiveItem(null);
+
+        try {
+            await axiosPrivate.put(
+                `/boards/pinned/update`,
+                JSON.stringify({
+                    pinnedBoards: auth.user.pinnedBoardIdCollection,
+                }),
+            );
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     const handleOnDragOver = (e) => {
@@ -232,7 +243,7 @@ const PinnedBoards = ({ setOpen, setPinned }) => {
                 className="fixed box-border top-0 left-0 text-gray-600 font-bold h-[100vh] text-[1.25rem] w-full bg-gray-500 opacity-40 z-50 cursor-auto"
             ></div>
 
-            <div className="fixed box--style flex flex-col gap-4 items-start p-3 top-[5rem] right-0 left-[50%] -translate-x-[50%] w-fit min-w-[300px] max-h-[300px] max-w-[400px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
+            <div className="fixed box--style flex flex-col gap-4 items-start p-3 top-[5rem] right-0 left-[50%] -translate-x-[50%] w-fit min-w-[300px] max-h-[30rem] max-w-[400px] border-black border-[2px] z-50 cursor-auto bg-gray-200">
                 <Loading
                     loading={loading}
                     position={"absolute"}

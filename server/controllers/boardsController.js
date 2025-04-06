@@ -470,13 +470,19 @@ const copyBoard = async (req, res) => {
 };
 
 const togglePinBoard = async (req, res) => {
-    const { userId, username } = req.user;
+    const { userId } = req.user;
     const { id } = req.params;
 
     const { board: foundBoard, authorized } = await isActionAuthorized(id, userId, { ownerOnly: false });
-    if (!authorized) return res.status(403).json({ msg: "unauthorized" });
+    if (!authorized || !foundBoard) {
+        return res.status(403).json({ msg: "unauthorized" });
+    }
 
-    const foundUser = await getUser(username, { lean: false });
+    const foundUser = await User.findById(userId);
+    if (!foundUser) {
+        return res.status(403).json({ msg: "user not found" });
+    }
+
     if (foundUser.pinnedBoardIdCollection && foundUser.pinnedBoardIdCollection.has(id)) {
         const result = await User.findOneAndUpdate(
             { _id: userId },
@@ -484,26 +490,28 @@ const togglePinBoard = async (req, res) => {
             { new: true }
         ).select('pinnedBoardIdCollection');
         return res.status(200).json({ result });
-    } else {
-        const result = await User.findOneAndUpdate(
-            { _id: userId },
-            { $set: { [`pinnedBoardIdCollection.${id}`]: { title: foundBoard?.title } } },
-            { new: true, upsert: true }
-        ).select('pinnedBoardIdCollection');
-        return res.status(200).json({ result });
     }
+
+    const result = await User.findOneAndUpdate(
+        { _id: userId },
+        { $set: { [`pinnedBoardIdCollection.${id}`]: { title: foundBoard?.title } } },
+        { new: true, upsert: true }
+    ).select('pinnedBoardIdCollection');
+    return res.status(200).json({ result });
 };
 
 const deletePinnedBoard = async (req, res) => {
-    const { username } = req.user;
+    const { userId } = req.user;
     const { id } = req.params;
 
-    const foundUser = await getUser(username, { lean: false });
-    if (!foundUser) return res.status(403).json({ msg: "user not found" });
+    const foundUser = await User.findById(userId);
+    if (!foundUser) {
+        return res.status(403).json({ msg: "user not found" });
+    }
 
     if (foundUser.pinnedBoardIdCollection && foundUser.pinnedBoardIdCollection.has(id)) {
         const result = await User.findOneAndUpdate(
-            { username },
+            { _id: userId },
             { $unset: { [`pinnedBoardIdCollection.${id}`]: 1 } },
             { new: true }
         ).select('pinnedBoardIdCollection');
@@ -513,14 +521,22 @@ const deletePinnedBoard = async (req, res) => {
     return res.status(404).json({ msg: 'pinned board not found' });
 };
 
-const cleanPinnedBoardsCollection = async (req, res) => {
-    const { username } = req.user;
-
-    const foundUser = await getUser(username, { lean: false });
-    if (!foundUser) return res.status(403).json({ msg: "user not found" });
-
+const updatePinnedBoardsCollection = async (req, res) => {
+    const { userId } = req.user;
+    const { pinnedBoards } = req.body;
     const result = await User.findOneAndUpdate(
-        { username },
+        { _id: userId },
+        { pinnedBoardIdCollection: pinnedBoards },
+        { new: true }
+    ).select('pinnedBoardIdCollection');
+
+    return res.status(200).json({ result });
+};
+
+const cleanPinnedBoardsCollection = async (req, res) => {
+    const { userId } = req.user;
+    const result = await User.findOneAndUpdate(
+        { _id: userId },
         { pinnedBoardIdCollection: {} },
         { new: true }
     ).select('pinnedBoardIdCollection');
@@ -544,4 +560,5 @@ module.exports = {
     togglePinBoard,
     deletePinnedBoard,
     cleanPinnedBoardsCollection,
+    updatePinnedBoardsCollection,
 };

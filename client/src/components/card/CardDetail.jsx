@@ -500,9 +500,10 @@ const CardDetail = ({
                             <div className="flex items-center gap-2">
                                 <div className="h-[40px]">
                                     <button
+                                        disabled={isSavingDescription}
                                         title={`${card?.description == description ? "nothing to save" : "save description"}`}
                                         onClick={confirmDescription}
-                                        className={`card--details--button border-gray-600 text-gray-600 px-2 w-[7.5rem] ${card?.description == description ? "opacity-60" : ""}`}
+                                        className={`card--details--button border-gray-600 text-gray-600 px-2 w-[6rem] sm:w-[7.5rem] ${card?.description == description ? "opacity-60" : ""}`}
                                     >
                                         {isSavingDescription
                                             ? "saving..."
