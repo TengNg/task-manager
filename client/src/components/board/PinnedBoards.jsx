@@ -26,6 +26,7 @@ const Pinned = ({
     title,
     handleOpenBoard,
     handleDeletePinnedBoard,
+    isDeleting,
 }) => {
     const {
         attributes,
@@ -49,29 +50,33 @@ const Pinned = ({
     };
 
     return (
-        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-            <div
-                className="flex items-center justify-between relative max-w-[300px] overflow-hidden whitespace-nowrap text-ellipsis top-left-auto board--style--sm bg-gray-50 text-[0.75rem] flex-1 border-[2px] border-gray-700 shadow-gray-700 p-3"
-                onClick={() => handleOpenBoard(boardId)}
+        <div
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
+            className={`${isDeleting ? "opacity-20 bg-red-200 line-through" : ""} touch-none flex items-center justify-between relative max-w-[300px] overflow-hidden whitespace-nowrap text-ellipsis top-left-auto board--style--sm bg-gray-50 text-[0.75rem] flex-1 border-[2px] border-gray-700 shadow-gray-700 p-3`}
+            onClick={() => handleOpenBoard(boardId)}
+        >
+            <p>{title}</p>
+            <button
+                onClick={(e) => handleDeletePinnedBoard(e, boardId)}
+                disabled={isDeleting}
+                className="button--style--sm text-gray-400 hover:bg-red-300 hover:text-white p-1 rounded-sm"
             >
-                <p>{title}</p>
-                <button
-                    onClick={(e) => handleDeletePinnedBoard(e, boardId)}
-                    className="button--style--sm text-gray-400 hover:bg-red-300 hover:text-white p-1 rounded-sm"
-                >
-                    <Icon className="w-4 h-4" name="xmark" />
-                </button>
-            </div>
+                <Icon className="w-4 h-4" name="xmark" />
+            </button>
         </div>
     );
 };
 
-const PinnedBoards = ({ setOpen, setPinned }) => {
+const PinnedBoards = ({ setOpen }) => {
     const { auth, setAuth } = useAuth();
 
     const [activeItem, setActiveItem] = useState(null);
     const [cleaned, setCleaned] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [deletingBoardId, setDeletingBoardId] = useState(null);
 
     const navigate = useNavigate();
     const axiosPrivate = useAxiosPrivate();
@@ -104,7 +109,7 @@ const PinnedBoards = ({ setOpen, setPinned }) => {
     const handleDeletePinnedBoard = async (e, boardId) => {
         e.stopPropagation();
         try {
-            setLoading(true);
+            setDeletingBoardId(boardId);
 
             const response = await axiosPrivate.delete(
                 `/boards/${boardId}/pinned`,
@@ -119,16 +124,11 @@ const PinnedBoards = ({ setOpen, setPinned }) => {
                     },
                 };
             });
-
-            if (setPinned !== undefined) {
-                setPinned(false);
-            }
-
-            setLoading(false);
         } catch (err) {
             console.log(err);
             alert("Failed to removed this board");
-            setLoading(false);
+        } finally {
+            setDeletingBoardId(null);
         }
     };
 
@@ -148,7 +148,6 @@ const PinnedBoards = ({ setOpen, setPinned }) => {
 
             setLoading(false);
             setCleaned(true);
-            setPinned(false);
         } catch (err) {
             console.log(err);
             setLoading(false);
@@ -161,8 +160,31 @@ const PinnedBoards = ({ setOpen, setPinned }) => {
         setActiveItem(active);
     };
 
-    const handleOnDragEnd = async (_e) => {
+    const handleOnDragEnd = async (e) => {
         setActiveItem(null);
+
+        const { active, over } = e;
+        if (!over) {
+            return;
+        }
+
+        if (active.id === over.id) {
+            return;
+        }
+
+        const activeIndex = pinnedBoards.findIndex((item) => {
+            const [id, _title] = item;
+            return id === active.id;
+        });
+
+        const overIndex = pinnedBoards.findIndex((item) => {
+            const [id, _title] = item;
+            return id === over.id;
+        });
+
+        if (activeIndex === overIndex) {
+            return;
+        }
 
         try {
             await axiosPrivate.put(
@@ -293,6 +315,7 @@ const PinnedBoards = ({ setOpen, setPinned }) => {
                                     index={index}
                                     boardId={id}
                                     title={title}
+                                    isDeleting={deletingBoardId === id}
                                     handleOpenBoard={handleOpenBoard}
                                     handleDeletePinnedBoard={
                                         handleDeletePinnedBoard

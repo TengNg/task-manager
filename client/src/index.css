@@ -60,11 +60,11 @@
     }
 
     .anchor--style {
-        @apply flex justify-center items-center py-1 px-2 text-gray-700 hover:underline select-none
+        @apply flex justify-center items-center py-1 md:px-2 px-1 text-gray-700 hover:underline select-none
     }
 
     .anchor--style--selected {
-        @apply text-gray-50 bg-gray-600 flex justify-center items-center py-1 px-2 select-none
+        @apply text-gray-50 bg-gray-600 flex justify-center items-center py-1 md:px-2 px-1 select-none
     }
 
     .card--detail--button {

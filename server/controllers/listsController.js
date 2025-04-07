@@ -57,7 +57,15 @@ const reorder = async (req, res) => {
 
     const { boardId } = foundList;
     const { authorized } = await isActionAuthorized(boardId, userId);
-    if (!authorized) return res.status(403).json({ msg: "unauthorized" });
+    if (!authorized) {
+        return res.status(403).json({ msg: "unauthorized" });
+    }
+
+    if (foundList.order === rank) {
+        return res.status(200).json({
+            newList: foundList,
+        });
+    }
 
     foundList.order = rank;
     foundList.save();

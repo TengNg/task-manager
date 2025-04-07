@@ -524,6 +524,14 @@ const deletePinnedBoard = async (req, res) => {
 const updatePinnedBoardsCollection = async (req, res) => {
     const { userId } = req.user;
     const { pinnedBoards } = req.body;
+
+    const foundUser = await User.findById(userId);
+    if (JSON.stringify(foundUser.pinnedBoardIdCollection) === JSON.stringify(pinnedBoards)) {
+        return res.status(200).json({
+            result: foundUser.pinnedBoardIdCollection,
+        });
+    }
+
     const result = await User.findOneAndUpdate(
         { _id: userId },
         { pinnedBoardIdCollection: pinnedBoards },

@@ -14,7 +14,6 @@ import ChatBox from "../components/chat/ChatBox";
 import CopyBoardForm from "../components/board/CopyBoardForm";
 import FloatingChat from "../components/chat/FloatingChat";
 import MoveListForm from "../components/list/MoveListForm";
-import PinnedBoards from "../components/board/PinnedBoards";
 import CardDetail from "../components/card/CardDetail";
 import CardQuickEditor from "../components/card/CardQuickEditor";
 import Members from "../components/board/Members";
@@ -88,8 +87,6 @@ const Board = () => {
         setOpenMembers,
         openFilter,
         setOpenFilter,
-        openPinnedBoards,
-        setOpenPinnedBoards,
         openChatBox,
         setOpenChatBox,
         openFloatingChat,
@@ -110,7 +107,6 @@ const Board = () => {
 
     const [openBoardMenu, setOpenBoardMenu] = useState(false);
     const [openCopyBoardForm, setOpenCopyBoardForm] = useState(false);
-    const [pinned, setPinned] = useState(false);
 
     const [cardDetailAbortController, setCardDetailAbortController] =
         useState(null);
@@ -171,8 +167,6 @@ const Board = () => {
             }
             return prev;
         });
-
-        setPinned(auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId));
 
         setChats([]);
         setIsDataLoaded(false);
@@ -303,11 +297,6 @@ const Board = () => {
             const response = await axiosPrivate.put(
                 `/boards/${boardState.board._id}/pinned/`,
             );
-            const result =
-                response.data?.result?.pinnedBoardIdCollection?.hasOwnProperty(
-                    boardId,
-                );
-            setPinned(result);
             setAuth((prev) => {
                 return {
                     ...prev,
@@ -677,14 +666,6 @@ const Board = () => {
                 handleMoveCardByIndex={handleMoveCardByIndex}
             />
 
-            {openPinnedBoards && (
-                <PinnedBoards
-                    open={openPinnedBoards}
-                    setOpen={setOpenPinnedBoards}
-                    setPinned={setPinned}
-                />
-            )}
-
             {openCopyBoardForm && (
                 <CopyBoardForm
                     open={openCopyBoardForm}
@@ -878,16 +859,14 @@ const Board = () => {
 
                 <button
                     onClick={handlePinBoard}
-                    onContextMenu={(e) => {
-                        e.preventDefault();
-                        setOpenPinnedBoards(true);
-                    }}
                     className={`
-                        w-[100px] ${pinned ? "mt-1 text-gray-100 shadow-[0_1px_0_0]" : "shadow-gray-600 shadow-[0_3px_0_0]"}
+                        w-[100px] ${auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(boardId) ? "mt-1 text-gray-100 shadow-[0_1px_0_0]" : "shadow-gray-600 shadow-[0_3px_0_0]"}
                         bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium
                     `}
                 >
-                    {pinned ? (
+                    {auth?.user?.pinnedBoardIdCollection?.hasOwnProperty(
+                        boardId,
+                    ) ? (
                         <div className="flex justify-center items-center gap-2">
                             <span>*pinned</span>
                         </div>
@@ -911,24 +890,11 @@ const Board = () => {
 
                 <div className="flex gap-3 ms-3 text-[0.75rem] items-center justify-center text-gray-700">
                     <p className="md:block hidden select-none m-0 p-0">
-                        lists: {boardState?.board?.listCount || 0} / 20
+                        lists: {boardState?.lists?.length || 0} / 20
                     </p>
 
                     <button
-                        className="sm:block hidden w-[1.5rem] h-[1.5rem] bg-pink-400 rounded-full"
-                        onClick={(e) => {
-                            navigator.clipboard
-                                .writeText(boardState?.board?._id)
-                                .then(() => {
-                                    e.target.style.backgroundColor =
-                                        "lightpink";
-                                });
-                        }}
-                        title="copy board code"
-                    ></button>
-
-                    <button
-                        className="sm:grid place-items-center text-[11px] hidden w-[1.5rem] h-[1.5rem] bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-full"
+                        className="sm:grid place-items-center hidden w-[1.5rem] h-[1.5rem] bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-full"
                         onClick={() => {
                             setOpenKeyBindings((prev) => !prev);
                         }}
