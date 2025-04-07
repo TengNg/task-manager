@@ -1,12 +1,8 @@
 import { useState, useEffect } from "react";
-import useAuth from "./useAuth";
 
 const useKeyBinds = () => {
-    const { auth } = useAuth();
-
     const [openMembers, setOpenMembers] = useState(false);
     const [openFilter, setOpenFilter] = useState(false);
-    const [openPinnedBoards, setOpenPinnedBoards] = useState(false);
     const [openChatBox, setOpenChatBox] = useState(false);
     const [openFloatingChat, setOpenFloatingChat] = useState(false);
 
@@ -24,7 +20,6 @@ const useKeyBinds = () => {
             if (key === "Escape") {
                 setOpenFloatingChat(false);
                 setOpenChatBox(false);
-                setOpenPinnedBoards(false);
                 return;
             }
 
@@ -37,7 +32,6 @@ const useKeyBinds = () => {
 
             const formOpen =
                 openFilter ||
-                openPinnedBoards ||
                 openFloatingChat ||
                 openInvitationForm ||
                 openAddList;
@@ -93,13 +87,6 @@ const useKeyBinds = () => {
                 if (key === ".") {
                     setOpenBoardActivities((prev) => !prev);
                     return;
-                }
-
-                if (!formOpen && !isTextFieldFocused && !isTextAreaFocused) {
-                    if (key === "e") {
-                        setOpenPinnedBoards((prev) => !prev);
-                        return;
-                    }
                 }
             }
 
@@ -158,15 +145,7 @@ const useKeyBinds = () => {
         return () => {
             document.removeEventListener("keydown", handleKeyDown);
         };
-    }, [
-        openPinnedBoards,
-        openFloatingChat,
-        openChatBox,
-        openFilter,
-        openInvitationForm,
-        openAddList,
-        auth,
-    ]);
+    }, []);
 
     return {
         openMembers,
@@ -174,9 +153,6 @@ const useKeyBinds = () => {
 
         openFilter,
         setOpenFilter,
-
-        openPinnedBoards,
-        setOpenPinnedBoards,
 
         openChatBox,
         setOpenChatBox,

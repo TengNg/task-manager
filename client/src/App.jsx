@@ -26,6 +26,7 @@ import useLocalStorage from "./hooks/useLocalStorage";
 import PAGES from "./data/pages";
 import LOCAL_STORAGE_KEYS from "./data/localStorageKeys";
 import Icon from "./components/shared/Icon";
+import PinnedBoards from "./components/board/PinnedBoards";
 
 const noNavPaths = ["/login", "/register"];
 
@@ -47,11 +48,30 @@ function App() {
     const location = useLocation();
     const { pathname } = location;
 
+    const [openPinnedBoards, setOpenPinnedBoards] = useState(false);
     const [openThemesDialog, setOpenThemesDialog] = useState(false);
     const [backgroundTheme, setBackgroundTheme] = useLocalStorage(
         LOCAL_STORAGE_KEYS.APP_BACKGROUND_THEME,
         { theme: "offwhite", hex: "#f1f1f1" },
     );
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.ctrlKey && event.key === "e") {
+                event.preventDefault();
+                setOpenPinnedBoards((prev) => !prev);
+            }
+
+            if (event.key === "Escape") {
+                setOpenPinnedBoards(false);
+            }
+        };
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
 
     useEffect(() => {
         document.querySelector("#root").style.backgroundColor =
@@ -65,7 +85,9 @@ function App() {
 
     return (
         <>
-            {!noNavPaths.includes(pathname) && <NavBar />}
+            {!noNavPaths.includes(pathname) && (
+                <NavBar setOpenPinnedBoards={setOpenPinnedBoards} />
+            )}
             <Suspense fallback={<Loading />}>
                 <Routes>
                     <Route path="/login" element={<Login />} />
@@ -108,6 +130,13 @@ function App() {
             >
                 <Icon className="w-4 h-4" name="pallete" />
             </button>
+
+            {openPinnedBoards && (
+                <PinnedBoards
+                    open={openPinnedBoards}
+                    setOpen={setOpenPinnedBoards}
+                />
+            )}
         </>
     );
 }

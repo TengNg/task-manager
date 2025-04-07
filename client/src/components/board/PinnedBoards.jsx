@@ -49,19 +49,21 @@ const Pinned = ({
     };
 
     return (
-        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-            <div
-                className="flex items-center justify-between relative max-w-[300px] overflow-hidden whitespace-nowrap text-ellipsis top-left-auto board--style--sm bg-gray-50 text-[0.75rem] flex-1 border-[2px] border-gray-700 shadow-gray-700 p-3"
-                onClick={() => handleOpenBoard(boardId)}
+        <div
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
+            className="touch-none flex items-center justify-between relative max-w-[300px] overflow-hidden whitespace-nowrap text-ellipsis top-left-auto board--style--sm bg-gray-50 text-[0.75rem] flex-1 border-[2px] border-gray-700 shadow-gray-700 p-3"
+            onClick={() => handleOpenBoard(boardId)}
+        >
+            <p>{title}</p>
+            <button
+                onClick={(e) => handleDeletePinnedBoard(e, boardId)}
+                className="button--style--sm text-gray-400 hover:bg-red-300 hover:text-white p-1 rounded-sm"
             >
-                <p>{title}</p>
-                <button
-                    onClick={(e) => handleDeletePinnedBoard(e, boardId)}
-                    className="button--style--sm text-gray-400 hover:bg-red-300 hover:text-white p-1 rounded-sm"
-                >
-                    <Icon className="w-4 h-4" name="xmark" />
-                </button>
-            </div>
+                <Icon className="w-4 h-4" name="xmark" />
+            </button>
         </div>
     );
 };

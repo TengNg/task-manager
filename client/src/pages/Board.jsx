@@ -88,8 +88,6 @@ const Board = () => {
         setOpenMembers,
         openFilter,
         setOpenFilter,
-        openPinnedBoards,
-        setOpenPinnedBoards,
         openChatBox,
         setOpenChatBox,
         openFloatingChat,
@@ -677,14 +675,6 @@ const Board = () => {
                 handleMoveCardByIndex={handleMoveCardByIndex}
             />
 
-            {openPinnedBoards && (
-                <PinnedBoards
-                    open={openPinnedBoards}
-                    setOpen={setOpenPinnedBoards}
-                    setPinned={setPinned}
-                />
-            )}
-
             {openCopyBoardForm && (
                 <CopyBoardForm
                     open={openCopyBoardForm}
@@ -878,10 +868,6 @@ const Board = () => {
 
                 <button
                     onClick={handlePinBoard}
-                    onContextMenu={(e) => {
-                        e.preventDefault();
-                        setOpenPinnedBoards(true);
-                    }}
                     className={`
                         w-[100px] ${pinned ? "mt-1 text-gray-100 shadow-[0_1px_0_0]" : "shadow-gray-600 shadow-[0_3px_0_0]"}
                         bg-gray-50 border-[2px] border-gray-600 text-gray-600 px-3 py-2 text-[0.65rem] sm:text-[0.65rem] font-medium

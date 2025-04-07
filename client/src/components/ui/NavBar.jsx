@@ -4,6 +4,7 @@ import UserAccount from "./UserAccount";
 import useAuth from "../../hooks/useAuth";
 
 import PAGES from "../../data/pages";
+import Icon from "../shared/Icon";
 
 const NAV_PAGES = [
     PAGES.BOARDS,
@@ -20,7 +21,7 @@ const KEYS = Object.freeze({
     4: PAGES.PROFILE,
 });
 
-const NavBar = () => {
+const NavBar = ({ setOpenPinnedBoards }) => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
     const { auth } = useAuth();
@@ -126,26 +127,43 @@ const NavBar = () => {
             >
                 <div className="md:block hidden w-[40px] h-[40px]"></div>
 
-                {!pathname.includes("/b/") &&
-                    auth?.user?.recentlyViewedBoardId && (
-                        <>
-                            <div
-                                title="Go to last viewed board"
-                                className="absolute hidden lg:block cursor-pointer top-3 left-3 bg-transparent hover:bg-gray-600 hover:text-gray-50 text-slate-600 border-slate-600 border-[2px] border-dashed text-[0.75rem] p-2 font-medium"
-                                onClick={() => {
-                                    const recentlyViewedBoardId =
-                                        auth?.user?.recentlyViewedBoardId;
-                                    if (recentlyViewedBoardId) {
-                                        navigate(`/b/${recentlyViewedBoardId}`);
-                                    }
-                                }}
-                            >
-                                05 last viewed board
-                            </div>
-                        </>
+                <div className="absolute lg:flex hidden items-center gap-2 lg:top-4 lg:left-4 top-2 left-2 text-[0.75rem] font-medium">
+                    {auth?.user?.recentlyViewedBoardId && (
+                        <button
+                            title="Go to last viewed board"
+                            className="bg-transparent hover:bg-gray-600 hover:text-gray-50 text-slate-600 border-slate-600 border-[1px] border-dashed text-[0.75rem] lg:p-2 p-1 font-medium"
+                            onClick={() => {
+                                const recentlyViewedBoardId =
+                                    auth?.user?.recentlyViewedBoardId;
+                                if (recentlyViewedBoardId) {
+                                    navigate(`/b/${recentlyViewedBoardId}`);
+                                }
+                            }}
+                        >
+                            <span className="lg:block hidden">
+                                05 recently viewed board
+                            </span>
+                            <Icon
+                                name="rotate-right"
+                                className="lg:hidden block lg:w-4 lg:h-4 w-2.5 h-2.5 -scale-x-100"
+                            />
+                        </button>
                     )}
+                    <button
+                        className="bg-transparent hover:bg-gray-600 hover:text-gray-50 text-slate-600 border-slate-600 border-[1px] border-dashed text-[0.75rem] lg:p-2 p-1 font-medium"
+                        title="Open your pinned boards"
+                        onClick={() => {
+                            setOpenPinnedBoards(true);
+                        }}
+                    >
+                        <Icon
+                            name="pin"
+                            className="lg:w-4 lg:h-4 w-2.5 h-2.5"
+                        />
+                    </button>
+                </div>
 
-                <nav className="h-full top-4 m-auto border-gray-700 border-[2px] bg-transparent px-2 z-30 drop-shadow-sm">
+                <nav className="h-full top-4 m-auto border-gray-700 border-[1px] bg-transparent px-2 z-30 drop-shadow-sm">
                     <ul className="w-[100%] h-[100%] flex justify-around items-center sm:gap-4 gap-2">
                         {NAV_PAGES.map((el, index) => {
                             const { path, title } = el;
@@ -173,6 +191,42 @@ const NavBar = () => {
                                 </li>
                             );
                         })}
+
+                        <li className="lg:hidden block">
+                            <div className="flex gap-2">
+                                {auth?.user?.recentlyViewedBoardId && (
+                                    <button
+                                        className="bg-transparent hover:bg-gray-600 hover:text-gray-50 text-slate-600 border-slate-600 border-[1px] border-dashed text-[0.75rem] lg:p-2 p-1 font-normal"
+                                        onClick={() => {
+                                            const recentlyViewedBoardId =
+                                                auth?.user
+                                                    ?.recentlyViewedBoardId;
+                                            if (recentlyViewedBoardId) {
+                                                navigate(
+                                                    `/b/${recentlyViewedBoardId}`,
+                                                );
+                                            }
+                                        }}
+                                    >
+                                        <Icon
+                                            name="rotate-right"
+                                            className="lg:hidden block lg:w-4 lg:h-4 w-3 h-3 -scale-x-100"
+                                        />
+                                    </button>
+                                )}
+                                <button
+                                    className="bg-transparent hover:bg-gray-600 hover:text-gray-50 text-slate-600 border-slate-600 border-[1px] border-dashed text-[0.75rem] lg:p-2 p-1 font-medium"
+                                    onClick={() => {
+                                        setOpenPinnedBoards(true);
+                                    }}
+                                >
+                                    <Icon
+                                        name="pin"
+                                        className="lg:w-4 lg:h-4 w-3 h-3"
+                                    />
+                                </button>
+                            </div>
+                        </li>
                     </ul>
                 </nav>
 

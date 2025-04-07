@@ -31,8 +31,6 @@ const Boards = () => {
 
     const axiosPrivate = useAxiosPrivate();
 
-    const { openPinnedBoards, setOpenPinnedBoards } = useKeyBinds();
-
     const boardFormRef = useRef();
     const createBoardButtonRef = useRef();
 
@@ -136,13 +134,6 @@ const Boards = () => {
 
     return (
         <>
-            {openPinnedBoards && (
-                <PinnedBoards
-                    open={openPinnedBoards}
-                    setOpen={setOpenPinnedBoards}
-                />
-            )}
-
             <JoinBoardRequestForm
                 open={openJoinBoardRequestForm}
                 setOpen={setOpenJoinBoardRequestForm}
