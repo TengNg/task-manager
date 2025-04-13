@@ -6,6 +6,7 @@ import useBoardState from "../../hooks/useBoardState";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import CardComposer from "../card/CardComposer";
 import ListMenu from "./ListMenu";
+import { lexorank } from "../../utils/class/Lexorank";
 
 const List = ({ index, list, cards }) => {
     const {
@@ -163,6 +164,8 @@ const List = ({ index, list, cards }) => {
 
             socket.emit("updateLists", lists);
         } catch (err) {
+            console.log(err);
+
             alert(
                 "Failed to create a copy of this list, action cannot be performed at this time, please try again",
             );
@@ -193,7 +196,7 @@ const List = ({ index, list, cards }) => {
                 {...attributes}
                 {...listeners}
                 style={style}
-                className="select-none w-[4rem] h-[20rem] bg-gray-100 touch-none"
+                className="select-none w-[4rem] h-[20rem] bg-transparent touch-none"
             >
                 <div
                     className={`${theme.itemTheme == "rounded" ? "rounded shadow-[0_3px_0_0]" : "shadow-[3px_4px_0_0]"} border-[2px] border-gray-700 shadow-gray-700 p-2 relative`}

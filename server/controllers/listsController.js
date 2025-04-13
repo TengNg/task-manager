@@ -136,7 +136,9 @@ const copyList = async (req, res) => {
 
     const { title, boardId } = foundList;
     const { authorized } = await isActionAuthorized(boardId, userId, { ownerOnly: false });
-    if (!authorized) return res.status(403).json({ msg: 'unauthorized' });
+    if (!authorized) {
+        return res.status(403).json({ msg: 'unauthorized' });
+    }
 
     const newListId = new mongoose.Types.ObjectId();
 

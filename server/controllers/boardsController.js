@@ -414,8 +414,13 @@ const copyBoard = async (req, res) => {
         const { title, description } = req.body;
         const { userId } = req.user
 
-        const { board: foundBoard, authorized } = await isActionAuthorized(id, userId, { ownerOnly: true });
-        if (!authorized) return res.status(403).json({ msg: "unauthorized" });
+        const {
+            board: foundBoard,
+            authorized,
+        } = await isActionAuthorized(id, userId, { ownerOnly: false });
+        if (!authorized) {
+            return res.status(403).json({ msg: "unauthorized" });
+        }
 
         const newBoardId = new mongoose.Types.ObjectId();
         const lists = await List.find({ boardId: foundBoard.id });

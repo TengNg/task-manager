@@ -5,6 +5,7 @@ import { lexorank } from "../../utils/class/Lexorank";
 
 const AddList = ({ open, setOpen }) => {
     const [listTitle, setListTitle] = useState("");
+    const [addingList, setAddingList] = useState(false);
     const titleInputRef = useRef();
     const containerRef = useRef();
 
@@ -45,7 +46,9 @@ const AddList = ({ open, setOpen }) => {
     }, [open]);
 
     const handleAddList = async () => {
-        if (listTitle.trim() === "") return;
+        if (listTitle.trim() === "" || addingList) {
+            return;
+        }
 
         let prevOrder = "";
         if (boardState.lists.length > 0) {
@@ -61,6 +64,8 @@ const AddList = ({ open, setOpen }) => {
         };
 
         try {
+            setAddingList(true);
+
             const response = await axiosPrivate.post(
                 "/lists",
                 JSON.stringify(newList),
@@ -73,6 +78,8 @@ const AddList = ({ open, setOpen }) => {
             const errMsg =
                 err?.response?.data?.errMsg || "Failed to add new list";
             alert(errMsg);
+        } finally {
+            setAddingList(false);
         }
     };
 
@@ -126,7 +133,7 @@ const AddList = ({ open, setOpen }) => {
                         onClick={handleAddList}
                         className="button--style--dark w-1/2"
                     >
-                        + add
+                        {!addingList ? "+ add" : "adding..."}
                     </button>
                     <button
                         onClick={() => setOpen(false)}
