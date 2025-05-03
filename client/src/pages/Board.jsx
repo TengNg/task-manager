@@ -603,12 +603,6 @@ const Board = () => {
                 <p className="font-medium mx-auto text-center mt-20 text-gray-600">
                     {error.msg}
                 </p>
-                <button
-                    className="button--style text-sm hover:bg-gray-600 hover:text-gray-100"
-                    onClick={() => navigate("/boards")}
-                >
-                    Back to Boards
-                </button>
             </section>
         );
     }

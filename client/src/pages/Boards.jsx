@@ -1,10 +1,8 @@
 import { useEffect, useRef } from "react";
 import { useState } from "react";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import useKeyBinds from "../hooks/useKeyBinds";
 import BoardItem from "../components/board/BoardItem";
 import BoardForm from "../components/board/BoardForm";
-import PinnedBoards from "../components/board/PinnedBoards";
 import Title from "../components/ui/Title";
 import JoinBoardRequestForm from "../components/board/JoinBoardRequestForm";
 import BoardsHelp from "../components/ui/BoardsHelp";

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { axiosPrivate } from "../api/axios";
@@ -20,11 +20,14 @@ export default function Login() {
 
     const navigate = useNavigate();
 
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/boards";
+
     useEffect(() => {
         const isLoggedIn = async () => {
             const response = await axiosPrivate.get("/check-cookies");
             if (response.status === 200) {
-                navigate("/boards", { replace: true });
+                navigate(from, { replace: true });
             }
         };
         isLoggedIn().catch((err) => {
@@ -49,7 +52,7 @@ export default function Login() {
             setUsername("");
             setPassword("");
             setSuccess(true);
-            navigate(`/boards`, { replace: true });
+            navigate(from, { replace: true });
         } catch (err) {
             if (!err?.response) {
                 setErrMsg("No Server Response");
